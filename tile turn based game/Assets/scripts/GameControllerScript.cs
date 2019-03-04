@@ -18,18 +18,18 @@ public class GameControllerScript : MonoBehaviour {
 
     private void Awake()
     {
-        DontDestroyOnLoad(this);
-        DBC = gameObject.GetComponent<DatabaseController>();
+        DontDestroyOnLoad(this); //need this to always be here
+        DBC = gameObject.GetComponent<DatabaseController>(); //referance to database
     }
 
     void OnEnable ()
     {
-        SceneManager.sceneLoaded += OnSceneLoaded;
+        SceneManager.sceneLoaded += OnSceneLoaded;//blabla
 	}
 
     public void CreateNewMap ()
     {
-        SceneManager.LoadScene(2);
+        SceneManager.LoadScene(2);//notes and stuff
     }
 
     private void OnSceneLoaded( Scene sceneVar , LoadSceneMode Mode) 
@@ -59,7 +59,7 @@ public class GameControllerScript : MonoBehaviour {
             UnityEngine.Debug.Log(e);
             throw;
         }
-    }//when map editor scene loads, creat map of map size loaded with all grass
+    }//when map editor scene loads, create map of map size loaded with all grass
 
     private void DrawMap () 
     {
