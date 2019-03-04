@@ -10,15 +10,20 @@ public class SpriteController : MonoBehaviour
     public Vector2 currentPos;
     public Sprite[] Sprits;
     public int counter;
-    public GameObject MouseOverlay;
-    public GameObject MouseOverlaySelected;
+    public SpriteRenderer MouseOverlaySpriteRender;
 
+
+    private void Awake()
+    {
+        GCS = GameObject.Find("GameController").GetComponent<GameControllerScript>();
+        MouseOverlaySpriteRender = gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>();
+        MouseOverlaySpriteRender.enabled = false;
+    }
     // Use this for initialization
     void Start()
     {
-        GCS = GameObject.Find("GameController").GetComponent<GameControllerScript>();
-        MouseOverlay.SetActive(false);
-        MouseOverlaySelected.SetActive(false);
+        
+        //MouseOverlaySelected.SetActive(false);
     }
 
     private void addMouseOverlays()
@@ -93,16 +98,16 @@ public class SpriteController : MonoBehaviour
 
     private void OnMouseEnter() 
     {
-        MouseOverlay.SetActive(true);
+        MouseOverlaySpriteRender.enabled = true;
     }
 
     private void OnMouseExit()
     {
-        MouseOverlay.SetActive(false);
+        MouseOverlaySpriteRender.enabled = false;
     }
 
     private void OnMouseDown()
     {
-        GCS.MouseSelectedController(MouseOverlaySelected, gameObject);
+        //GCS.MouseSelectedController(MouseOverlaySelected, gameObject);
     }
 }

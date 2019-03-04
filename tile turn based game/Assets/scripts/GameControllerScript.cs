@@ -12,7 +12,7 @@ public class GameControllerScript : MonoBehaviour {
     public Dictionary<Vector2, GameObject> TilePos = new Dictionary<Vector2, GameObject>();
     private GameObject CameraVar;
     public GameObject[] TileArray;
-    public GameObject SelectedTileOverlay;
+    //public GameObject SelectedTileOverlay;
     public GameObject SelectedTile;
     public DatabaseController DBC;
 
@@ -110,11 +110,11 @@ public class GameControllerScript : MonoBehaviour {
         }
     }//adds tiles to dicitonary as position for key and game object for value.
 
-    public void MouseSelectedController(GameObject STL, GameObject ST)
+    /*public void MouseSelectedController(SpriteRenderer STL, GameObject ST)
     {
         if (SelectedTileOverlay != null) { SelectedTileOverlay.SetActive(false); }
         SelectedTileOverlay = STL;
         SelectedTile = ST;
         SelectedTileOverlay.SetActive(true);
-    }
+    }*/ //needs fixed
 }

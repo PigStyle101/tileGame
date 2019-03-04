@@ -62,15 +62,23 @@ public class DatabaseController : MonoBehaviour {
     public void spawnSomeShitTest(Vector2 location, int index)
     {
 
-        GameObject TGO = new GameObject();
-        TGO.name = TerrainDictionary[index].Title;
-        TGO.AddComponent<SpriteRenderer>();
-        Texture2D temptextur = loadTexture(TerrainDictionary[index].ArtworkDirectory[0]);
-        TGO.GetComponent<SpriteRenderer>().sprite = Sprite.Create(temptextur, new Rect(0, 0, temptextur.width, temptextur.height), new Vector2(0, 0), 64);
-        TGO.AddComponent<BoxCollider2D>();
-        TGO.AddComponent<snaptogrid>();
+        GameObject TGO = new GameObject(); //create gameobject
+        TGO.name = TerrainDictionary[index].Title; //change the name
+        TGO.AddComponent<SpriteRenderer>(); //add a sprite controller
+        Texture2D temptextur = loadTexture(TerrainDictionary[index].ArtworkDirectory[0]); //get the texture for the sprite
+        TGO.GetComponent<SpriteRenderer>().sprite = Sprite.Create(temptextur, new Rect(0, 0, temptextur.width, temptextur.height), new Vector2(0, 0), 64); //set the sprite to the texture
+        TGO.AddComponent<BoxCollider2D>(); //add a box collider
+
+        GameObject MouseOverlayGO = new GameObject(); //creating the cild object for mouse overlay
+        Texture2D tempmousetextur = loadTexture(MouseDictionary[index].ArtworkDirectory[0]); //getting the texture
+        MouseOverlayGO.AddComponent<SpriteRenderer>().sprite = Sprite.Create(tempmousetextur, new Rect(0, 0, tempmousetextur.width, tempmousetextur.height), new Vector2(0, 0), 64); //adding it to sprite
+        MouseOverlayGO.GetComponent<SpriteRenderer>().sortingOrder = 1; //making it so its on top of the default sprite
+        MouseOverlayGO.transform.parent = TGO.transform; //setting its parent to the main game object
+        MouseOverlayGO.name = "MouseOverlay"; //changing the name
+        TGO.AddComponent<SpriteController>(); //adding the sprite controller script to it
+
         NewTile = Instantiate(TGO, location, Quaternion.Euler(0, 0, 0));
-        NewTile.name = "Grass";
+        NewTile.name = TerrainDictionary[index].Title;
     } //used to spawn objects from data base
     public Texture2D loadTexture(string FilePath)
     {
