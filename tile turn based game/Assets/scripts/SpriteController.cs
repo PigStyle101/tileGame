@@ -16,7 +16,7 @@ public class SpriteController : MonoBehaviour
     private void Awake()
     {
         GCS = GameObject.Find("GameController").GetComponent<GameControllerScript>();
-        MouseOverlaySpriteRender = gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>();
+        MouseOverlaySpriteRender = gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>(); //this is working now
         MouseOverlaySpriteRender.enabled = false;
     }
     // Use this for initialization
