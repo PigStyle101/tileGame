@@ -1,0 +1,8 @@
+{
+  "ID": 1,
+  "Title": "Water",
+  "Walkable": false,
+  "Description": "Deep water",
+  "DefenceBonus": 0,
+  "Slug": "water_tile"
+}
