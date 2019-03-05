@@ -19,7 +19,7 @@ public class DatabaseController : MonoBehaviour {
     {
         try
         {
-            Debug.Log("Fetching json files");
+            Debug.Log("Fetching json terrain files");
             foreach (string file in Directory.GetFiles(Application.dataPath + "/StreamingAssets/Terrain/Data/", "*.json")) //gets only json files form this path
             {
                 var grassstring = File.ReadAllText(file); //temp string to hold the json data
@@ -41,7 +41,7 @@ public class DatabaseController : MonoBehaviour {
     {
         try
         {
-            Debug.Log("Fetching json files");
+            Debug.Log("Fetching json mouse overlay files");
             foreach (string file in Directory.GetFiles(Application.dataPath + "/StreamingAssets/MouseOverlays/Data/", "*.json"))
             {
                 var TempString = File.ReadAllText(file);
@@ -104,7 +104,7 @@ public class DatabaseController : MonoBehaviour {
 
 }
 
-public class Terrain //this needs to corolate with the json file info
+public class Terrain //the json file cannot have values that are not stated here, this can have more values then the json
 {
     public int ID;
     public string Title;
