@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System;
-using LitJson;
-
 public class GameControllerScript : MonoBehaviour {
 
     public int mapSize;
@@ -12,7 +10,7 @@ public class GameControllerScript : MonoBehaviour {
     public Dictionary<Vector2, GameObject> TilePos = new Dictionary<Vector2, GameObject>();
     private GameObject CameraVar;
     public GameObject[] TileArray;
-    //public GameObject SelectedTileOverlay;
+    public SpriteRenderer SelectedTileOverlay;
     public GameObject SelectedTile;
     public DatabaseController DBC;
 
@@ -67,7 +65,7 @@ public class GameControllerScript : MonoBehaviour {
         {
             foreach (var kvp in MapDictionary)
             {
-                DBC.spawnSomeShitTest(kvp.Key, 0);
+                DBC.CreateAdnSpawnTerrain(kvp.Key, 0);  //WWWWWWHHHHHHHHHHYYYYYYYYYYYYYYYYYYYYYYYYYY!!!!!!!!!!?!?!?!?!?!??!?!?!?
             }
             CameraVar = GameObject.Find("MainCamera");
             CameraVar.transform.position = new Vector3(mapSize / 2 - .5f, mapSize / 2 - .5f, mapSize * -1);
@@ -77,7 +75,7 @@ public class GameControllerScript : MonoBehaviour {
             UnityEngine.Debug.Log(e);
             throw;
         }
-    }// create the physical part of the map and reset camera position to center
+    }// create the physical part of the map and reset camera position to center                                 //////EVERY OTHER TILE SPAWNED IS AT 0,0 DONT KNOW WHY.....
 
     public void AddTilesToDictionary ()
     {
@@ -110,11 +108,11 @@ public class GameControllerScript : MonoBehaviour {
         }
     }//adds tiles to dicitonary as position for key and game object for value.
 
-    /*public void MouseSelectedController(SpriteRenderer STL, GameObject ST)
+    public void MouseSelectedController(SpriteRenderer STL, GameObject ST)
     {
-        if (SelectedTileOverlay != null) { SelectedTileOverlay.SetActive(false); }
+        if (SelectedTileOverlay != null) { SelectedTileOverlay.enabled = false; }
         SelectedTileOverlay = STL;
         SelectedTile = ST;
-        SelectedTileOverlay.SetActive(true);
-    }*/ //needs fixed
+        SelectedTileOverlay.enabled = true;
+    }// sets selected tile to whatever tile is clicked on and enables the clickon overlay
 }

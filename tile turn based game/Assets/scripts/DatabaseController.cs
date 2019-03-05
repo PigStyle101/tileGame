@@ -59,40 +59,45 @@ public class DatabaseController : MonoBehaviour {
         }
     }//same as getTerrainJson
 
-    public void spawnSomeShitTest(Vector2 location, int index)
+    public void CreateAdnSpawnTerrain(Vector2 location, int index)
     {
 
-        GameObject TGO = new GameObject(); //create gameobject
-        TGO.name = TerrainDictionary[index].Title; //change the name
-        TGO.AddComponent<SpriteRenderer>(); //add a sprite controller
-        Texture2D temptextur = loadTexture(TerrainDictionary[index].ArtworkDirectory[0]); //get the texture for the sprite
-        TGO.GetComponent<SpriteRenderer>().sprite = Sprite.Create(temptextur, new Rect(0, 0, temptextur.width, temptextur.height), new Vector2(0, 0), 64); //set the sprite to the texture
-        TGO.AddComponent<BoxCollider2D>(); //add a box collider
+        GameObject TGO = new GameObject();                                                                                  //create gameobject
+        TGO.name = TerrainDictionary[index].Title;                                                                          //change the name
+        TGO.AddComponent<SpriteRenderer>();                                                                                 //add a sprite controller
+        TGO.GetComponent<SpriteRenderer>().sprite = loadSprite(TerrainDictionary[index].ArtworkDirectory[0]);               //set the sprite to the texture
+        TGO.AddComponent<BoxCollider2D>();                                                                                  //add a box collider
+                                                                                                                            //////// JUST WORK DAMB IT///////////
+        GameObject MouseOverlayGO = new GameObject();                                                                       //creating the cild object for mouse overlay
+        MouseOverlayGO.AddComponent<SpriteRenderer>().sprite = loadSprite(MouseDictionary[0].ArtworkDirectory[0]);          //adding it to sprite
+        MouseOverlayGO.GetComponent<SpriteRenderer>().sortingOrder = 1;                                                     //making it so its on top of the default sprite
+        MouseOverlayGO.transform.parent = TGO.transform;                                                                    //setting its parent to the main game object
+        MouseOverlayGO.name = "MouseOverlay";                                                                               //changing the name
+        TGO.AddComponent<SpriteController>();                                                                               //adding the sprite controller script to it
 
-        GameObject MouseOverlayGO = new GameObject(); //creating the cild object for mouse overlay
-        Texture2D tempmousetextur = loadTexture(MouseDictionary[index].ArtworkDirectory[0]); //getting the texture
-        MouseOverlayGO.AddComponent<SpriteRenderer>().sprite = Sprite.Create(tempmousetextur, new Rect(0, 0, tempmousetextur.width, tempmousetextur.height), new Vector2(0, 0), 64); //adding it to sprite
-        MouseOverlayGO.GetComponent<SpriteRenderer>().sortingOrder = 1; //making it so its on top of the default sprite
-        MouseOverlayGO.transform.parent = TGO.transform; //setting its parent to the main game object
-        MouseOverlayGO.name = "MouseOverlay"; //changing the name
-        TGO.AddComponent<SpriteController>(); //adding the sprite controller script to it
+        GameObject MouseOverlaySelectedGO = new GameObject();                                                               //creating the cild object for mouse overlay selected
+        MouseOverlaySelectedGO.AddComponent<SpriteRenderer>().sprite = loadSprite(MouseDictionary[0].ArtworkDirectory[1]);  //adding it to sprite
+        MouseOverlaySelectedGO.GetComponent<SpriteRenderer>().sortingOrder = 1;                                             //making it so its on top of the default sprite
+        MouseOverlaySelectedGO.transform.parent = TGO.transform;                                                            //setting its parent to the main game object
+        MouseOverlaySelectedGO.name = "MouseOverlaySelected";                                                               //changing the name
 
         NewTile = Instantiate(TGO, location, Quaternion.Euler(0, 0, 0));
         NewTile.name = TerrainDictionary[index].Title;
-    } //used to spawn objects from data base
-    public Texture2D loadTexture(string FilePath)
+    } //used to spawn objects from data base          //////EVERY OTHER TILE SPAWNED IS AT 0,0 DONT KNOW WHY.....
+
+    public Sprite loadSprite(string FilePath)
     {
         Texture2D Tex2D;
+        Sprite TempSprite;
         byte[] FileData;
 
         if (File.Exists(FilePath))
         {
             FileData = File.ReadAllBytes(FilePath);
             Tex2D = new Texture2D(2, 2);           // Create new "empty" texture
-            if (Tex2D.LoadImage(FileData))         // Load the imagedata into the texture (size is set automatically)
-            {
-                return Tex2D;                      // If data = readable -> return texture
-            }
+            Tex2D.LoadImage(FileData);         // Load the imagedata into the texture (size is set automatically)
+            TempSprite = Sprite.Create(Tex2D, new Rect(0, 0, Tex2D.width, Tex2D.height), new Vector2(0, 0), 64);
+            return TempSprite;
         }
         return null;
     }// checks for images that are to be used for artwork stuffs

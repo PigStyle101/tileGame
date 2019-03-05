@@ -11,19 +11,16 @@ public class SpriteController : MonoBehaviour
     public Sprite[] Sprits;
     public int counter;
     public SpriteRenderer MouseOverlaySpriteRender;
+    public SpriteRenderer MouseOverlaySelectedSpriteRender;
 
 
-    private void Awake()
+    void Start()
     {
         GCS = GameObject.Find("GameController").GetComponent<GameControllerScript>();
         MouseOverlaySpriteRender = gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>(); //this is working now
+        MouseOverlaySelectedSpriteRender = gameObject.transform.GetChild(1).GetComponent<SpriteRenderer>();
         MouseOverlaySpriteRender.enabled = false;
-    }
-    // Use this for initialization
-    void Start()
-    {
-        
-        //MouseOverlaySelected.SetActive(false);
+        MouseOverlaySelectedSpriteRender.enabled = false;
     }
 
     private void addMouseOverlays()
@@ -33,10 +30,10 @@ public class SpriteController : MonoBehaviour
 
     private void OnMouseUp()
     {
-        WaterSpriteController();
+        //WaterSpriteController();
     }
-
-    public void WaterSpriteController()
+    //WORK IN PROGRESS, actually... need to think about the best way to do this, might be easyer to use overlays?? not sure yet..... currently using a different sprite for things
+    /*public void WaterSpriteController()
     {
         UnityEngine.Debug.Log("Starting Water Sprite Controller");
         try
@@ -95,6 +92,7 @@ public class SpriteController : MonoBehaviour
             throw;
         }
     }
+    */
 
     private void OnMouseEnter() 
     {
@@ -108,6 +106,6 @@ public class SpriteController : MonoBehaviour
 
     private void OnMouseDown()
     {
-        //GCS.MouseSelectedController(MouseOverlaySelected, gameObject);
+        GCS.MouseSelectedController(MouseOverlaySelectedSpriteRender, gameObject);
     }
 }

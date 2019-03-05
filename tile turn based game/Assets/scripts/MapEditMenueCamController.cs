@@ -1,20 +1,26 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class MapEditMenueCamController : MonoBehaviour {
 
     public float dragSpeed = .5f;
     private Vector3 dragOrigin;
     private GameControllerScript GCS;
+    public GameObject MapEditorTilesButtonPrefab;
+    public GameObject ContentWindow;
+    private DatabaseController DBC;
 
-    // Use this for initialization
+    // this script is currently back up to date
     void Start ()
     {
         GCS = GameObject.Find("GameController").GetComponent<GameControllerScript>();
+        DBC = GameObject.Find("GameController").GetComponent<DatabaseController>();
+        AddButtonsToContent();
     }
-	
-	// Update is called once per frame
+
 	void Update ()
     {
         MoveScreen();
@@ -40,20 +46,32 @@ public class MapEditMenueCamController : MonoBehaviour {
         if (gameObject.transform.position.y > GCS.mapSize) { gameObject.transform.position = new Vector3(transform.position.x, GCS.mapSize, transform.position.z); }
         if (gameObject.transform.position.x < 0) { gameObject.transform.position = new Vector3(0, transform.position.y, transform.position.z); }
         if (gameObject.transform.position.y < 0) { gameObject.transform.position = new Vector3(transform.position.x, 0, transform.position.z); }
-    }
+    } //controls camera movment
 
-    /*public void ChangeTileSelectedToWater()
+    void ChangeTileSelectedToButtonTile()
     {
-        GCS.SelectedTile.name = "Water";
-        GCS.SelectedTile.GetComponent<SpriteRenderer>().sprite = WaterSprite;
-        foreach (KeyValuePair<Vector2,GameObject> kvp in GCS.TilePos)
+        foreach (KeyValuePair<int,Terrain> kvp in DBC.TerrainDictionary) 
         {
-            kvp.Value.GetComponent<SpriteController>().WaterSpriteController();
+            if (EventSystem.current.currentSelectedGameObject.name == kvp.Value.Title) //checks through dictionary for matching tile to button name
+            {
+                Debug.Log("Changing tile to " + kvp.Value.Title); 
+                GCS.SelectedTile.name = kvp.Value.Title;//change name of tile
+                GCS.SelectedTile.GetComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.TerrainDictionary[kvp.Key].ArtworkDirectory[0]); //change sprite of tile
+            }
+        }
+    } //changes tile name and sprite to new tile
+
+    private void AddButtonsToContent()
+    {
+        Debug.Log("Adding buttons to content window");
+        foreach (KeyValuePair<int, Terrain> kvp in DBC.TerrainDictionary) //adds a button for each terrain in the database
+        {
+            GameObject tempbutton = Instantiate(MapEditorTilesButtonPrefab, ContentWindow.transform); //create button and set its parent to content
+            tempbutton.name = kvp.Value.Title; //change name
+            tempbutton.transform.GetChild(0).GetComponent<Text>().text = kvp.Value.Title; //change text on button to match sprite
+            tempbutton.GetComponent<Image>().sprite = DBC.loadSprite(DBC.TerrainDictionary[kvp.Key].ArtworkDirectory[0]); //set sprite
+            tempbutton.GetComponent<Button>().onClick.AddListener(ChangeTileSelectedToButtonTile); //adds method to button clicked
+
         }
     }
-    public void ChangeTileSelectedToGrass()
-    {
-        GCS.SelectedTile.name = "Grass";
-        GCS.SelectedTile.GetComponent<SpriteRenderer>().sprite = GrassSprite;
-    }*/
 }
