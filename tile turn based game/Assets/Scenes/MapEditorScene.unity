@@ -574,6 +574,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dragSpeed: 0.5
+  scrollSpeed: 2
   MapEditorTilesButtonPrefab: {fileID: 5068642067974219700, guid: e71309b71a08c014d839d42eba95aafb,
     type: 3}
   ContentWindow: {fileID: 292426003}
@@ -995,8 +996,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1020879490}
   m_HandleRect: {fileID: 1020879489}
   m_Direction: 0
-  m_Value: 0
-  m_Size: 0.99999994
+  m_Value: 1
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

@@ -6,12 +6,14 @@ using UnityEngine.EventSystems;
 
 public class MapEditMenueCamController : MonoBehaviour {
 
-    public float dragSpeed = .5f;
+    public float dragSpeed;
+    public int scrollSpeed;
     private Vector3 dragOrigin;
     private GameControllerScript GCS;
     public GameObject MapEditorTilesButtonPrefab;
     public GameObject ContentWindow;
     private DatabaseController DBC;
+    
 
     // this script is currently back up to date
     void Start ()
@@ -23,11 +25,13 @@ public class MapEditMenueCamController : MonoBehaviour {
 
 	void Update ()
     {
-        MoveScreen();
+        MoveScreenXandY();
+        MoveScreenZ();
     }
 
-    private void MoveScreen()
+    private void MoveScreenXandY()
     {
+
         if (Input.GetMouseButtonDown(0))
         {
             dragOrigin = Input.mousePosition;
@@ -46,19 +50,35 @@ public class MapEditMenueCamController : MonoBehaviour {
         if (gameObject.transform.position.y > GCS.mapSize) { gameObject.transform.position = new Vector3(transform.position.x, GCS.mapSize, transform.position.z); }
         if (gameObject.transform.position.x < 0) { gameObject.transform.position = new Vector3(0, transform.position.y, transform.position.z); }
         if (gameObject.transform.position.y < 0) { gameObject.transform.position = new Vector3(transform.position.x, 0, transform.position.z); }
-    } //controls camera movment
+    } //controls camera movment y and x
+
+    private void MoveScreenZ()
+    {
+        int z = new int();
+        if (Input.GetAxis("Mouse ScrollWheel") > 0) { z = scrollSpeed; }
+        if (Input.GetAxis("Mouse ScrollWheel") < 0) { z = -scrollSpeed; }
+        
+        transform.Translate(new Vector3(0, 0, z), Space.World);
+
+        if (gameObject.transform.position.z > -1) { gameObject.transform.position = new Vector3(transform.position.x,transform.position.y, -1); }
+        if (gameObject.transform.position.z < -GCS.mapSize * 2) { gameObject.transform.position = new Vector3(transform.position.x, transform.position.y, -GCS.mapSize * 2); }
+    }//controls camera z movement
 
     void ChangeTileSelectedToButtonTile()
     {
-        foreach (KeyValuePair<int,Terrain> kvp in DBC.TerrainDictionary) 
+        if (GCS.SelectedTile != null)
         {
-            if (EventSystem.current.currentSelectedGameObject.name == kvp.Value.Title) //checks through dictionary for matching tile to button name
+            foreach (KeyValuePair<int, Terrain> kvp in DBC.TerrainDictionary)
             {
-                Debug.Log("Changing tile to " + kvp.Value.Title); 
-                GCS.SelectedTile.name = kvp.Value.Title;//change name of tile
-                GCS.SelectedTile.GetComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.TerrainDictionary[kvp.Key].ArtworkDirectory[0]); //change sprite of tile
+                if (EventSystem.current.currentSelectedGameObject.name == kvp.Value.Title) //checks through dictionary for matching tile to button name
+                {
+                    Debug.Log("Changing tile to " + kvp.Value.Title);
+                    GCS.SelectedTile.name = kvp.Value.Title;//change name of tile
+                    GCS.SelectedTile.GetComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.TerrainDictionary[kvp.Key].ArtworkDirectory[0]); //change sprite of tile
+                }
             }
         }
+        
     } //changes tile name and sprite to new tile
 
     private void AddButtonsToContent()
@@ -73,5 +93,7 @@ public class MapEditMenueCamController : MonoBehaviour {
             tempbutton.GetComponent<Button>().onClick.AddListener(ChangeTileSelectedToButtonTile); //adds method to button clicked
 
         }
-    }
+    } //populates the tile selection bar
+
+    
 }

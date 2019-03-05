@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 [ExecuteInEditMode]
 public class SpriteController : MonoBehaviour
@@ -96,7 +97,8 @@ public class SpriteController : MonoBehaviour
 
     private void OnMouseEnter() 
     {
-        MouseOverlaySpriteRender.enabled = true;
+        if (!EventSystem.current.IsPointerOverGameObject())
+            MouseOverlaySpriteRender.enabled = true;
     }
 
     private void OnMouseExit()
@@ -106,6 +108,7 @@ public class SpriteController : MonoBehaviour
 
     private void OnMouseDown()
     {
-        GCS.MouseSelectedController(MouseOverlaySelectedSpriteRender, gameObject);
+        if (!EventSystem.current.IsPointerOverGameObject())
+            GCS.MouseSelectedController(MouseOverlaySelectedSpriteRender, gameObject);
     }
 }

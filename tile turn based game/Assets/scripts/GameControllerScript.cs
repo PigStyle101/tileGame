@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System;
-public class GameControllerScript : MonoBehaviour {
 
-    public int mapSize;
+public class GameControllerScript : MonoBehaviour {
+    
     private Dictionary <Vector2,string> MapDictionary = new Dictionary<Vector2,string>();
     public Dictionary<Vector2, GameObject> TilePos = new Dictionary<Vector2, GameObject>();
     private GameObject CameraVar;
@@ -13,6 +13,7 @@ public class GameControllerScript : MonoBehaviour {
     public SpriteRenderer SelectedTileOverlay;
     public GameObject SelectedTile;
     public DatabaseController DBC;
+    public int mapSize;
 
     private void Awake()
     {
@@ -25,8 +26,9 @@ public class GameControllerScript : MonoBehaviour {
         SceneManager.sceneLoaded += OnSceneLoaded;//blabla
 	}
 
-    public void CreateNewMap ()
+    public void CreateNewMap (int MapSize)
     {
+        mapSize = MapSize;
         SceneManager.LoadScene(2);//notes and stuff
     }
 
