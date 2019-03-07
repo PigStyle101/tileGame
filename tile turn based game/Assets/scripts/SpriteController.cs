@@ -34,7 +34,7 @@ public class SpriteController : MonoBehaviour
         //WaterSpriteController();
     }
     //WORK IN PROGRESS, actually... need to think about the best way to do this, might be easyer to use overlays?? not sure yet..... currently using a different sprite for things
-    /*public void WaterSpriteController()
+    public void WaterSpriteController()
     {
         UnityEngine.Debug.Log("Starting Water Sprite Controller");
         try
@@ -51,10 +51,10 @@ public class SpriteController : MonoBehaviour
                 Vector2 bottomPos = currentPos + new Vector2(0, -1);
                 Vector2 bottomLeftPos = currentPos + new Vector2(-1, -1);
                 Vector2 leftPos = currentPos + new Vector2(-1, 0);
-                bool Top;
-                bool Left;
-                bool Right;
-                bool Bottom;
+                bool Top = new bool();
+                bool Left = new bool();
+                bool Right = new bool();
+                bool Bottom = new bool();
                 UnityEngine.Debug.Log("Starting if Statments");
                 // check how many waters around
                 //if (surrounding blocks that are land is = 1) {use waterland1side, then rotate to be correct}
@@ -76,6 +76,9 @@ public class SpriteController : MonoBehaviour
                         break;
                     case 2:
                         UnityEngine.Debug.Log("Case 2");
+                        if(Top == true && Bottom == true) { /*change to waterland2sideoposite rotation.z = 0*/}
+                        if (Left == true && Right == true) { /*change to waterland2sideoposite rotation.z = 180*/}
+                        if (Left == true && Top == true) { /*change to WaterLand2Side90Deg rotation.z = 180*/}
                         break;
                     case 3:
                         UnityEngine.Debug.Log("Case 3");
@@ -93,7 +96,7 @@ public class SpriteController : MonoBehaviour
             throw;
         }
     }
-    */
+    
 
     private void OnMouseEnter() 
     {

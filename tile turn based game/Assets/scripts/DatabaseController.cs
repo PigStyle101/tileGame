@@ -67,7 +67,7 @@ public class DatabaseController : MonoBehaviour {
         TGO.AddComponent<SpriteRenderer>();                                                                                 //add a sprite controller
         TGO.GetComponent<SpriteRenderer>().sprite = loadSprite(TerrainDictionary[index].ArtworkDirectory[0]);               //set the sprite to the texture
         TGO.AddComponent<BoxCollider2D>();                                                                                  //add a box collider
-                                                                                                                            //////// JUST WORK DAMB IT///////////
+
         GameObject MouseOverlayGO = new GameObject();                                                                       //creating the cild object for mouse overlay
         MouseOverlayGO.AddComponent<SpriteRenderer>().sprite = loadSprite(MouseDictionary[0].ArtworkDirectory[0]);          //adding it to sprite
         MouseOverlayGO.GetComponent<SpriteRenderer>().sortingOrder = 1;                                                     //making it so its on top of the default sprite
@@ -80,10 +80,8 @@ public class DatabaseController : MonoBehaviour {
         MouseOverlaySelectedGO.GetComponent<SpriteRenderer>().sortingOrder = 1;                                             //making it so its on top of the default sprite
         MouseOverlaySelectedGO.transform.parent = TGO.transform;                                                            //setting its parent to the main game object
         MouseOverlaySelectedGO.name = "MouseOverlaySelected";                                                               //changing the name
-
-        NewTile = Instantiate(TGO, location, Quaternion.Euler(0, 0, 0));
-        NewTile.name = TerrainDictionary[index].Title;
-    } //used to spawn objects from data base          //////EVERY OTHER TILE SPAWNED IS AT 0,0 DONT KNOW WHY.....
+        TGO.transform.position = location;
+    } //used to spawn objects from data base
 
     public Sprite loadSprite(string FilePath)
     {

@@ -53,7 +53,7 @@ public class MenueController : MonoBehaviour {
         int tempMapSize = new int();
         if (int.TryParse(mapsizeIF.text, out tempMapSize))
         {
-            if (tempMapSize >= 20 && tempMapSize <= 100)
+            if (tempMapSize >= 10 && tempMapSize <= 100)
             {
                 GCS.CreateNewMap(tempMapSize);
             }

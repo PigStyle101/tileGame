@@ -67,7 +67,7 @@ public class GameControllerScript : MonoBehaviour {
         {
             foreach (var kvp in MapDictionary)
             {
-                DBC.CreateAdnSpawnTerrain(kvp.Key, 0);  //WWWWWWHHHHHHHHHHYYYYYYYYYYYYYYYYYYYYYYYYYY!!!!!!!!!!?!?!?!?!?!??!?!?!?
+                DBC.CreateAdnSpawnTerrain(kvp.Key, 0); 
             }
             CameraVar = GameObject.Find("MainCamera");
             CameraVar.transform.position = new Vector3(mapSize / 2 - .5f, mapSize / 2 - .5f, mapSize * -1);
