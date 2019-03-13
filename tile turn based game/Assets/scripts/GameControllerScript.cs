@@ -36,7 +36,7 @@ public class GameControllerScript : MonoBehaviour {
     {
         try
         {
-            Debug.Log("OnSceneLoaded: " + sceneVar.name);
+            Debug.Log("OnSceneLoaded: " + sceneVar.name);//debug thing
             Debug.Log(Mode);
 
             if (sceneVar.name == "MapEditorScene")

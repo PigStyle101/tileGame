@@ -11,7 +11,9 @@ public class MapEditMenueCamController : MonoBehaviour {
     private Vector3 dragOrigin;
     private GameControllerScript GCS;
     public GameObject MapEditorTilesButtonPrefab;
-    public GameObject ContentWindow;
+    public GameObject ContentWindowTerrain;
+    public GameObject ContentWindowUnits;
+    public GameObject ContentWindowBuilding;
     private DatabaseController DBC;
     
 
@@ -20,7 +22,7 @@ public class MapEditMenueCamController : MonoBehaviour {
     {
         GCS = GameObject.Find("GameController").GetComponent<GameControllerScript>();
         DBC = GameObject.Find("GameController").GetComponent<DatabaseController>();
-        AddButtonsToContent();
+        AddTerrainButtonsToContent();
     }
 
 	void Update ()
@@ -81,19 +83,42 @@ public class MapEditMenueCamController : MonoBehaviour {
         
     } //changes tile name and sprite to new tile
 
-    private void AddButtonsToContent()
+    private void AddTerrainButtonsToContent()
     {
-        Debug.Log("Adding buttons to content window");
+        Debug.Log("Adding terrain buttons to content window");
         foreach (KeyValuePair<int, Terrain> kvp in DBC.TerrainDictionary) //adds a button for each terrain in the database
         {
-            GameObject tempbutton = Instantiate(MapEditorTilesButtonPrefab, ContentWindow.transform); //create button and set its parent to content
+            GameObject tempbutton = Instantiate(MapEditorTilesButtonPrefab, ContentWindowTerrain.transform); //create button and set its parent to content
             tempbutton.name = kvp.Value.Title; //change name
             tempbutton.transform.GetChild(0).GetComponent<Text>().text = kvp.Value.Title; //change text on button to match sprite
             tempbutton.GetComponent<Image>().sprite = DBC.loadSprite(DBC.TerrainDictionary[kvp.Key].ArtworkDirectory[0]); //set sprite
             tempbutton.GetComponent<Button>().onClick.AddListener(ChangeTileSelectedToButtonTile); //adds method to button clicked
-
         }
     } //populates the tile selection bar
 
-    
+    private void AddUnitButtonsToContent()
+    {
+        Debug.Log("Adding unit buttons to content window");
+        foreach (KeyValuePair<int, Unit> kvp in DBC.UnitDictionary) //adds a button for each terrain in the database
+        {
+            GameObject tempbutton = Instantiate(MapEditorTilesButtonPrefab, ContentWindowUnits.transform); //create button and set its parent to content
+            tempbutton.name = kvp.Value.Title; //change name
+            tempbutton.transform.GetChild(0).GetComponent<Text>().text = kvp.Value.Title; //change text on button to match sprite
+            tempbutton.GetComponent<Image>().sprite = DBC.loadSprite(DBC.UnitDictionary[kvp.Key].ArtworkDirectory[0]); //set sprite
+            tempbutton.GetComponent<Button>().onClick.AddListener(ChangeTileSelectedToButtonTile); //adds method to button clicked
+        }
+    } //populates the tile selection bar
+
+    private void AddBuildingButtonsToContent()
+    {
+        Debug.Log("Adding building buttons to content window");
+        foreach (KeyValuePair<int, Building> kvp in DBC.BuildingDictionary) //adds a button for each terrain in the database
+        {
+            GameObject tempbutton = Instantiate(MapEditorTilesButtonPrefab, ContentWindowBuilding.transform); //create button and set its parent to content
+            tempbutton.name = kvp.Value.Title; //change name
+            tempbutton.transform.GetChild(0).GetComponent<Text>().text = kvp.Value.Title; //change text on button to match sprite
+            tempbutton.GetComponent<Image>().sprite = DBC.loadSprite(DBC.BuildingDictionary[kvp.Key].ArtworkDirectory[0]); //set sprite
+            tempbutton.GetComponent<Button>().onClick.AddListener(ChangeTileSelectedToButtonTile); //adds method to button clicked
+        }
+    } //populates the tile selection bar
 }
