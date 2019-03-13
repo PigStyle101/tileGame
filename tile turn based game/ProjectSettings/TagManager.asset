@@ -45,3 +45,15 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Terrain
+    uniqueID: 944976493
+    locked: 0
+  - name: Buildings
+    uniqueID: 680818013
+    locked: 0
+  - name: Units
+    uniqueID: 1010558691
+    locked: 0
+  - name: Menu
+    uniqueID: 2355927657
+    locked: 0

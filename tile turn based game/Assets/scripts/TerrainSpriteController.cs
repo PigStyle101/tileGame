@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 [ExecuteInEditMode]
-public class SpriteController : MonoBehaviour
+public class TerrainSpriteController : MonoBehaviour
 {
 
     private GameControllerScript GCS;
@@ -113,5 +113,13 @@ public class SpriteController : MonoBehaviour
     {
         if (!EventSystem.current.IsPointerOverGameObject())
             GCS.MouseSelectedController(MouseOverlaySelectedSpriteRender, gameObject);
+    }
+
+    private void RayCastTest()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+         
+        }
     }
 }

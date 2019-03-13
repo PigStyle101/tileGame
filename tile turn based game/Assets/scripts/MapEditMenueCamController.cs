@@ -14,7 +14,11 @@ public class MapEditMenueCamController : MonoBehaviour {
     public GameObject ContentWindowTerrain;
     public GameObject ContentWindowUnits;
     public GameObject ContentWindowBuilding;
+    public GameObject ScrollWindowTerrain;
+    public GameObject ScrollWindowUnits;
+    public GameObject ScrollWindowBuilding;
     private DatabaseController DBC;
+    public string SelectedTab;
     
 
     // this script is currently back up to date
@@ -23,6 +27,8 @@ public class MapEditMenueCamController : MonoBehaviour {
         GCS = GameObject.Find("GameController").GetComponent<GameControllerScript>();
         DBC = GameObject.Find("GameController").GetComponent<DatabaseController>();
         AddTerrainButtonsToContent();
+        AddBuildingButtonsToContent();
+        AddUnitButtonsToContent();
     }
 
 	void Update ()
@@ -83,6 +89,32 @@ public class MapEditMenueCamController : MonoBehaviour {
         
     } //changes tile name and sprite to new tile
 
+    void ChangeOrSpawnUnit()
+    {
+        if (GCS.SelectedUnit != null)
+        {
+            foreach (KeyValuePair<int, Unit> kvp in DBC.UnitDictionary)
+            {
+                if (EventSystem.current.currentSelectedGameObject.name == kvp.Value.Title) //checks through dictionary for matching tile to button name
+                {
+                    Debug.Log("Changing tile to " + kvp.Value.Title);
+                    GCS.SelectedTile.name = kvp.Value.Title;//change name of tile
+                    GCS.SelectedTile.GetComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.UnitDictionary[kvp.Key].ArtworkDirectory[0]); //change sprite of tile
+                }
+            }
+        }
+        else
+        {
+            foreach (KeyValuePair<int, Unit> kvp in DBC.UnitDictionary)
+            {
+                if (EventSystem.current.currentSelectedGameObject.name == kvp.Value.Title)
+                {
+                    DBC.CreateAndSpawnUnit(GCS.SelectedTile.transform.position, kvp.Value.ID);
+                    Debug.Log("Spawning: " + " at location: " + GCS.SelectedTile.transform.position);
+                }
+            }
+        }
+    }
     private void AddTerrainButtonsToContent()
     {
         Debug.Log("Adding terrain buttons to content window");
@@ -105,7 +137,7 @@ public class MapEditMenueCamController : MonoBehaviour {
             tempbutton.name = kvp.Value.Title; //change name
             tempbutton.transform.GetChild(0).GetComponent<Text>().text = kvp.Value.Title; //change text on button to match sprite
             tempbutton.GetComponent<Image>().sprite = DBC.loadSprite(DBC.UnitDictionary[kvp.Key].ArtworkDirectory[0]); //set sprite
-            tempbutton.GetComponent<Button>().onClick.AddListener(ChangeTileSelectedToButtonTile); //adds method to button clicked
+            tempbutton.GetComponent<Button>().onClick.AddListener(ChangeOrSpawnUnit); //adds method to button clicked
         }
     } //populates the tile selection bar
 
@@ -121,4 +153,28 @@ public class MapEditMenueCamController : MonoBehaviour {
             tempbutton.GetComponent<Button>().onClick.AddListener(ChangeTileSelectedToButtonTile); //adds method to button clicked
         }
     } //populates the tile selection bar
+
+    public void TerrainButtonClicked()
+    {
+        ScrollWindowTerrain.SetActive(true);
+        ScrollWindowBuilding.SetActive(false);
+        ScrollWindowUnits.SetActive(false);
+        SelectedTab = "Terrain";
+    }
+
+    public void BuildingButtonClicked()
+    {
+        ScrollWindowTerrain.SetActive(false);
+        ScrollWindowBuilding.SetActive(true);
+        ScrollWindowUnits.SetActive(false);
+        SelectedTab = "Building";
+    }
+
+    public void UnitButtonClicked()
+    {
+        ScrollWindowTerrain.SetActive(false);
+        ScrollWindowBuilding.SetActive(false);
+        ScrollWindowUnits.SetActive(true);
+        SelectedTab = "Unit";
+    }
 }

@@ -8,12 +8,15 @@ public class GameControllerScript : MonoBehaviour {
     
     private Dictionary <Vector2,string> MapDictionary = new Dictionary<Vector2,string>();
     public Dictionary<Vector2, GameObject> TilePos = new Dictionary<Vector2, GameObject>();
+    public Dictionary<Vector2, GameObject> UnitPos = new Dictionary<Vector2, GameObject>();
     private GameObject CameraVar;
     public GameObject[] TileArray;
+    public GameObject[] UnitArray;
     public SpriteRenderer SelectedTileOverlay;
     public GameObject SelectedTile;
     public DatabaseController DBC;
     public int mapSize;
+    public GameObject SelectedUnit;
 
     private void Awake()
     {
@@ -110,6 +113,11 @@ public class GameControllerScript : MonoBehaviour {
         }
     }//adds tiles to dicitonary as position for key and game object for value.
 
+    public void AddUnitsToDictionary()
+    {
+        UnitArray = GameObject.FindGameObjectsWithTag("Unit");
+    } //needs finished
+
     public void MouseSelectedController(SpriteRenderer STL, GameObject ST)
     {
         if (SelectedTileOverlay != null) { SelectedTileOverlay.enabled = false; }
@@ -117,4 +125,10 @@ public class GameControllerScript : MonoBehaviour {
         SelectedTile = ST;
         SelectedTileOverlay.enabled = true;
     }// sets selected tile to whatever tile is clicked on and enables the clickon overlay
+
+    public void UnitSelectedController(GameObject GO)
+    {
+        if (GO.tag == "Unit") { SelectedUnit = GO; } else { Debug.LogError("GameControllerScript unitSelectedController Failed"); }
+    }
+
 }
