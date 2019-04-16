@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class RayCastTester : MonoBehaviour
 {
+    public string TagFilter;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -26,7 +28,10 @@ public class RayCastTester : MonoBehaviour
             for (int i = 0; i < hits.Length; i++)
             {
                 RaycastHit hit = hits[i];
-                Debug.Log(hit.transform.name);
+                if (hit.transform.tag == TagFilter)
+                {
+                    Debug.Log(hit.transform.name);
+                }
             }
         }
     }

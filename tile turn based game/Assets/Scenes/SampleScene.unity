@@ -239,6 +239,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a7225c93c7bc4f546aab843c5f52c927, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  TagFilter: 
 --- !u!4 &711816699
 Transform:
   m_ObjectHideFlags: 0
@@ -414,6 +415,10 @@ PrefabInstance:
     - target: {fileID: 1363522445917080, guid: 59de0882df6300c4488204281a953b77, type: 3}
       propertyPath: m_Name
       value: Water (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1363522445917080, guid: 59de0882df6300c4488204281a953b77, type: 3}
+      propertyPath: m_TagString
+      value: Unit
       objectReference: {fileID: 0}
     - target: {fileID: 4096483155614918, guid: 59de0882df6300c4488204281a953b77, type: 3}
       propertyPath: m_LocalPosition.x

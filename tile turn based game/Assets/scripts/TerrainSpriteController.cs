@@ -12,16 +12,18 @@ public class TerrainSpriteController : MonoBehaviour
     public Sprite[] Sprits;
     public int counter;
     public SpriteRenderer MouseOverlaySpriteRender;
-    public SpriteRenderer MouseOverlaySelectedSpriteRender;
+    //public SpriteRenderer MouseOverlaySelectedSpriteRender;
+    private MapEditMenueCamController MEMCC;
+    private DatabaseController DBC;
 
 
     void Start()
     {
+        MEMCC = GameObject.Find("MainCamera").GetComponent<MapEditMenueCamController>();
         GCS = GameObject.Find("GameController").GetComponent<GameControllerScript>();
-        MouseOverlaySpriteRender = gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>(); //this is working now
-        MouseOverlaySelectedSpriteRender = gameObject.transform.GetChild(1).GetComponent<SpriteRenderer>();
+        DBC = GameObject.Find("GameController").GetComponent<DatabaseController>();
+        MouseOverlaySpriteRender = gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>();
         MouseOverlaySpriteRender.enabled = false;
-        MouseOverlaySelectedSpriteRender.enabled = false;
     }
 
     private void addMouseOverlays()
@@ -109,17 +111,18 @@ public class TerrainSpriteController : MonoBehaviour
         MouseOverlaySpriteRender.enabled = false;
     }
 
-    private void OnMouseDown()
+    public void ChangeTile() //if a terrain is selected and the player clicks a tile it changes the tile to the correct terrain
     {
-        if (!EventSystem.current.IsPointerOverGameObject())
-            GCS.MouseSelectedController(MouseOverlaySelectedSpriteRender, gameObject);
-    }
-
-    private void RayCastTest()
-    {
-        if (Input.GetMouseButtonDown(0))
+        Debug.Log("ChangTile activated");
+        foreach (KeyValuePair<int, Terrain> kvp in DBC.TerrainDictionary)
         {
-         
+            if (MEMCC.SelectedButton == kvp.Value.Title) //checks through dictionary for matching tile to button name
+            {
+                //Debug.Log("Changing tile to " + kvp.Value.Title);
+                gameObject.name = kvp.Value.Title;//change name of tile
+                gameObject.GetComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.TerrainDictionary[kvp.Key].ArtworkDirectory[0]); //change sprite of tile
+            }
         }
+        
     }
 }

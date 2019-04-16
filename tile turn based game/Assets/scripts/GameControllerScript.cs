@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System;
+using System.IO;
 
 public class GameControllerScript : MonoBehaviour {
     
@@ -17,6 +18,8 @@ public class GameControllerScript : MonoBehaviour {
     public DatabaseController DBC;
     public int mapSize;
     public GameObject SelectedUnit;
+    private MapEditMenueCamController MEMCC;
+    private string CurrentScene;
 
     private void Awake()
     {
@@ -29,21 +32,26 @@ public class GameControllerScript : MonoBehaviour {
         SceneManager.sceneLoaded += OnSceneLoaded;//blabla
 	}
 
+    private void Update()
+    {
+        RayCastTesterMethod();
+    }
+
     public void CreateNewMap (int MapSize)
     {
         mapSize = MapSize;
         SceneManager.LoadScene(2);//notes and stuff
-    }
+    }//does what it says
 
     private void OnSceneLoaded( Scene sceneVar , LoadSceneMode Mode) 
     {
         try
         {
             Debug.Log("OnSceneLoaded: " + sceneVar.name);//debug thing
-            Debug.Log(Mode);
-
+            CurrentScene = sceneVar.name;
             if (sceneVar.name == "MapEditorScene")
             {
+                MEMCC = GameObject.Find("MainCamera").GetComponent<MapEditMenueCamController>();
                 for (int i = 0; i < mapSize; i++)
                 {
                     for (int o = 0; o < mapSize; o++)
@@ -80,7 +88,7 @@ public class GameControllerScript : MonoBehaviour {
             UnityEngine.Debug.Log(e);
             throw;
         }
-    }// create the physical part of the map and reset camera position to center                                 //////EVERY OTHER TILE SPAWNED IS AT 0,0 DONT KNOW WHY.....
+    }// create the physical part of the map and reset camera position to center
 
     public void AddTilesToDictionary ()
     {
@@ -113,10 +121,19 @@ public class GameControllerScript : MonoBehaviour {
         }
     }//adds tiles to dicitonary as position for key and game object for value.
 
-    public void AddUnitsToDictionary()
+    public void AddUnitsToDictionary(GameObject tgo)
     {
-        UnitArray = GameObject.FindGameObjectsWithTag("Unit");
-    } //needs finished
+        if (UnitPos.ContainsKey(tgo.transform.position))
+        {
+            UnitPos.Remove(tgo.transform.position);
+            UnitPos.Add(tgo.transform.position, tgo);
+        }
+        else
+        {
+            UnitPos.Add(tgo.transform.position, tgo);
+        }
+        
+    } //adds unit to dictionary and deletes unit if key is already taken
 
     public void MouseSelectedController(SpriteRenderer STL, GameObject ST)
     {
@@ -126,9 +143,84 @@ public class GameControllerScript : MonoBehaviour {
         SelectedTileOverlay.enabled = true;
     }// sets selected tile to whatever tile is clicked on and enables the clickon overlay
 
-    public void UnitSelectedController(GameObject GO)
+    public void RayCastTesterMethod()
     {
-        if (GO.tag == "Unit") { SelectedUnit = GO; } else { Debug.LogError("GameControllerScript unitSelectedController Failed"); }
-    }
+        try
+        {
+            if (Input.GetMouseButtonDown(0) && CurrentScene == "MapEditorScene")
+            {
+                //Debug.Log("Raycast activated");
+                Ray ray = GameObject.Find("MainCamera").GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
+                RaycastHit[] hits;
+                hits = Physics.RaycastAll(ray);
+                //Debug.Log(hits.Length);
+                for (int i = 0; i < hits.Length; i++)
+                {
+                    RaycastHit hit = hits[i];
+                    if (hit.transform.tag == MEMCC.SelectedTab)
+                    {
+                        if (hit.transform.tag == "Terrain")
+                        {
+                            Debug.Log("Raycast hit: " + hit.transform.name);
+                            TerrainSpriteController TSC = hit.transform.GetComponent<TerrainSpriteController>();
+                            if (hit.transform.name != MEMCC.SelectedButton)
+                            {
+                                TSC.ChangeTile();
+                            } 
+                        }
+                        else if (hit.transform.tag == "Unit")
+                        {
+                            Debug.Log("Raycast hit: " + hit.transform.name);
+                            UnitSpriteController UPC = hit.transform.GetComponent<UnitSpriteController>();
+                            if(hit.transform.name != MEMCC.SelectedButton)
+                            {
+                                UPC.ChangeUnit();
+                            }
+                        }
+                    }
+                    else if (hit.transform.tag == "Terrain")
+                    {
+                        if (!UnitPos.ContainsKey(hit.transform.position))
+                        {
+                            Debug.Log("Raycast hit: " + hit.transform.name);
+                            foreach (KeyValuePair<int, Unit> kvp in DBC.UnitDictionary)
+                            {
+                                if (kvp.Value.Title == MEMCC.SelectedButton)
+                                {
+                                    GameObject tgo = DBC.CreateAndSpawnUnit(hit.transform.position, kvp.Key);
+                                    AddUnitsToDictionary(tgo);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.Log(e);
+            throw;
+        }
+    }// used to check were mouse is hitting and then act acordingly
 
+    public void SaveMap(Dictionary<Vector2, GameObject> TP, Dictionary<Vector2, GameObject> UP)
+    {
+        Map save = new Map();
+        foreach (KeyValuePair<Vector2, GameObject> kvp in TP)
+        {
+            save.TerrainPositions.Add(kvp.Key, kvp.Value.transform.name);
+        }
+        foreach (KeyValuePair<Vector2, GameObject> kvp in UP)
+        {
+            save.UnitPosition.Add(kvp.Key, kvp.Value.transform.name);
+        }
+        var tempjson = JsonUtility.ToJson(save);
+    }//working on this, going to try usign json to save the map. need to finish this and add save button to menue.
+}
+
+[Serializable]
+public class Map
+{
+    public Dictionary<Vector2, string> TerrainPositions;
+    public Dictionary<Vector2, string> UnitPosition;
 }

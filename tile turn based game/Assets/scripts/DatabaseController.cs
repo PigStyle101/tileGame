@@ -141,7 +141,8 @@ public class DatabaseController : MonoBehaviour {
         TGO.AddComponent<SpriteRenderer>();                                                                                 //add a sprite controller
         TGO.GetComponent<SpriteRenderer>().sprite = loadSprite(TerrainDictionary[index].ArtworkDirectory[0]);               //set the sprite to the texture
         TGO.GetComponent<SpriteRenderer>().sortingLayerName = "Terrain";
-        TGO.AddComponent<BoxCollider2D>();
+        TGO.AddComponent<BoxCollider>();
+        TGO.GetComponent<BoxCollider>().size = new Vector3(.95f, .95f, .1f);
         TGO.tag = ("Terrain");
 
         GameObject MouseOverlayGO = new GameObject();                                                                       //creating the cild object for mouse overlay
@@ -151,26 +152,21 @@ public class DatabaseController : MonoBehaviour {
         MouseOverlayGO.transform.parent = TGO.transform;                                                                    //setting its parent to the main game object
         MouseOverlayGO.name = "MouseOverlay";                                                                               //changing the name
         TGO.AddComponent<TerrainSpriteController>();                                                                               //adding the sprite controller script to it
-
-        GameObject MouseOverlaySelectedGO = new GameObject();                                                               //creating the cild object for mouse overlay selected
-        MouseOverlaySelectedGO.AddComponent<SpriteRenderer>().sprite = loadSprite(MouseDictionary[0].ArtworkDirectory[1]);  //adding it to sprite
-        MouseOverlaySelectedGO.GetComponent<SpriteRenderer>().sortingLayerName = "Terrain";
-        MouseOverlaySelectedGO.GetComponent<SpriteRenderer>().sortingOrder = 2;                                             //making it so its on top of the default sprite
-        MouseOverlaySelectedGO.transform.parent = TGO.transform;                                                            //setting its parent to the main game object
-        MouseOverlaySelectedGO.name = "MouseOverlaySelected";                                                               //changing the name
         TGO.transform.position = location;
     } //used to spawn objects from data base
 
-    public void CreateAndSpawnUnit(Vector2 location, int index)
+    public GameObject CreateAndSpawnUnit(Vector2 location,int index)
     {
         GameObject TGO = new GameObject();
         TGO.name = UnitDictionary[index].Title;
         TGO.AddComponent<SpriteRenderer>();
         TGO.GetComponent<SpriteRenderer>().sprite = loadSprite(UnitDictionary[index].ArtworkDirectory[0]);
         TGO.GetComponent<SpriteRenderer>().sortingLayerName = "Units";
-        TGO.AddComponent<BoxCollider2D>();
+        TGO.AddComponent<BoxCollider>();
+        TGO.AddComponent<UnitSpriteController>();
         TGO.tag = "Unit";
         TGO.transform.position = location;
+        return TGO;
     }
 
     public Sprite loadSprite(string FilePath)
