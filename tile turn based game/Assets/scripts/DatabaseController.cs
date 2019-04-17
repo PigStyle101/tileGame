@@ -26,7 +26,7 @@ public class DatabaseController : MonoBehaviour {
             foreach (string file in Directory.GetFiles(Application.dataPath + "/StreamingAssets/Terrain/Data/", "*.json")) //gets only json files form this path
             {
                 var grassstring = File.ReadAllText(file); //temp string to hold the json data
-                var tempjson = JsonUtility.FromJson<Terrain>(grassstring); //this converts from json string to unity object
+                Terrain tempjson = JsonUtility.FromJson<Terrain>(grassstring); //this converts from json string to unity object
                 Debug.Log("Adding: " + tempjson.Slug + " to database");
                 if (!TerrainDictionary.ContainsKey(tempjson.ID))
                 {

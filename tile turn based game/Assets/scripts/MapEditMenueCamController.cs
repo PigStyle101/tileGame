@@ -21,6 +21,9 @@ public class MapEditMenueCamController : MonoBehaviour {
     public string SelectedTab;
     public string SelectedButton;
     public Text CurrentSelectedButtonText;
+    public GameObject SavePanel;
+    public Text SaveFeedback;
+    public InputField SaveInputField;
 
     // this script is currently back up to date
     void Start ()
@@ -32,6 +35,7 @@ public class MapEditMenueCamController : MonoBehaviour {
         AddUnitButtonsToContent();
         SelectedTab = "Terrain";
         SelectedButton = "Grass";
+        SavePanel.SetActive(false);
         CurrentSelectedButtonText.text = "Currently Selected: " + DBC.TerrainDictionary[0].Title;
     }
 
@@ -89,6 +93,7 @@ public class MapEditMenueCamController : MonoBehaviour {
         UnityEngine.Debug.Log("Selected tile changed too: " + SelectedButton);
         CurrentSelectedButtonText.text = "Currently Selected: " + EventSystem.current.currentSelectedGameObject.name;
     }
+
     private void AddTerrainButtonsToContent()
     {
         Debug.Log("Adding terrain buttons to content window");
@@ -154,5 +159,20 @@ public class MapEditMenueCamController : MonoBehaviour {
         SelectedTab = "Unit";
         CurrentSelectedButtonText.text = "Currently Selected: " + DBC.UnitDictionary[0].Title;
         SelectedButton = DBC.UnitDictionary[0].Title;
+    }
+
+    public void MainSaveButtonClicked()
+    {
+        SavePanel.SetActive(true);
+    }
+
+    public void SavePanelBackButtonClicked()
+    {
+        SavePanel.SetActive(false);
+    }
+
+    public void SavePanelSaveButtonClicked()
+    {
+        GCS.SaveMap(GCS.TilePos, GCS.UnitPos,SaveInputField.text);
     }
 }

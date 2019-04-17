@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using System;
 using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 
 public class GameControllerScript : MonoBehaviour {
     
@@ -203,24 +204,68 @@ public class GameControllerScript : MonoBehaviour {
         }
     }// used to check were mouse is hitting and then act acordingly
 
-    public void SaveMap(Dictionary<Vector2, GameObject> TP, Dictionary<Vector2, GameObject> UP)
+    public void SaveMap(Dictionary<Vector2, GameObject> TP, Dictionary<Vector2, GameObject> UP,string SaveName)
     {
-        Map save = new Map();
-        foreach (KeyValuePair<Vector2, GameObject> kvp in TP)
+        if (!System.IO.File.Exists(Application.dataPath + "/StreamingAssets/Saves/" + SaveName + ".dat"))
         {
-            save.TerrainPositions.Add(kvp.Key, kvp.Value.transform.name);
+            Map save = new Map();
+            foreach (KeyValuePair<Vector2, GameObject> kvp in TP)
+            {
+                save.TerrainPositions.Add(kvp.Key, kvp.Value.transform.name);
+            }
+            foreach (KeyValuePair<Vector2, GameObject> kvp in UP)
+            {
+                save.UnitPosition.Add(kvp.Key, kvp.Value.transform.name);
+            }
+            string destination = Application.dataPath + "/StreamingAssets/Saves/" + SaveName + ".dat";
+            var fs = File.Create(destination);
+            BinaryFormatter bf = new BinaryFormatter();
+            bf.Serialize(fs, save);
+            fs.Close();
+            MEMCC.SaveFeedback.text = "File saved as: " + SaveName;
         }
-        foreach (KeyValuePair<Vector2, GameObject> kvp in UP)
+        else
         {
-            save.UnitPosition.Add(kvp.Key, kvp.Value.transform.name);
+            MEMCC.SaveFeedback.text = "Current file name is already in use, please rename your save or delete old file.";
         }
-        var tempjson = JsonUtility.ToJson(save);
     }//working on this, going to try usign json to save the map. need to finish this and add save button to menue.
+
+    public void loadMap(string name)
+    {
+        Map load = new Map();
+        string destination = Application.dataPath + "/StreamingAssets/Saves/" + name + ".dat";
+        FileStream fs = File.OpenRead(destination);
+        BinaryFormatter bf = new BinaryFormatter();
+        load = (Map)bf.Deserialize(fs);
+    }// working on this, need to add play scene and load map into it. should work something like the load mapeditor funtion.
 }
 
 [Serializable]
 public class Map
 {
-    public Dictionary<Vector2, string> TerrainPositions;
-    public Dictionary<Vector2, string> UnitPosition;
+    public Dictionary<SeralizableVector2, string> TerrainPositions = new Dictionary<SeralizableVector2, string>();
+    public Dictionary<SeralizableVector2, string> UnitPosition = new Dictionary<SeralizableVector2, string>();
+}
+[Serializable]
+public class SeralizableVector2
+{
+    public float x;
+    public float y;
+
+    public SeralizableVector2(float rx,float ry)
+    {
+        x = rx;
+        y = ry;
+    }
+
+    public static implicit operator Vector2 (SeralizableVector2 rValue)
+    {
+        Vector2 newVec = new Vector2(rValue.x, rValue.y);
+        return newVec;
+    }
+
+    public static implicit operator SeralizableVector2(Vector2 Value)
+    {
+        return new SeralizableVector2(Value.x, Value.y);
+    }
 }
