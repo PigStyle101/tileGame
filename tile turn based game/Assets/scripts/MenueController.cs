@@ -2,14 +2,20 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.IO;
+using UnityEngine.EventSystems;
+
 public class MenueController : MonoBehaviour {
 
     public GameObject MainMenuePanel;
     public GameObject MapEditorMenuePanel;
     public GameObject PlayMenuePanel;
+    public GameObject LoadGamePanel;
     private GameControllerScript GCS;
     public InputField mapsizeIF;
     public Text errorTextField;
+    public GameObject LoadMenueButtonPrefab;
+    public GameObject ContentWindowLoad;
 
 
     // Use this for initialization
@@ -53,7 +59,7 @@ public class MenueController : MonoBehaviour {
         int tempMapSize = new int();
         if (int.TryParse(mapsizeIF.text, out tempMapSize))
         {
-            if (tempMapSize >= 20 && tempMapSize <= 100)
+            if (tempMapSize >= 10 && tempMapSize <= 100)
             {
                 GCS.CreateNewMap(tempMapSize);
             }
@@ -67,6 +73,21 @@ public class MenueController : MonoBehaviour {
             errorTextField.text = "Not a valid input";
         }
 
+    }
+
+    public void GetSaves()
+    {
+        foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/Saves", "*.dat")))
+        {
+            GameObject tempbutton = Instantiate(LoadMenueButtonPrefab, ContentWindowLoad.transform); //create button and set its parent to content
+            tempbutton.name = file; //change name
+            tempbutton.GetComponent<Button>().onClick.AddListener(LoadSelected); //adds method to button clicked
+        }
+    }
+
+    public void LoadSelected()
+    {
+        GCS.LoadMap(EventSystem.current.currentSelectedGameObject.name);
     }
 
 }

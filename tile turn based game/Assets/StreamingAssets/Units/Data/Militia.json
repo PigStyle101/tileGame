@@ -1,0 +1,11 @@
+{
+  "ID": 0,
+  "Attack": 1,
+  "Defence": 1,
+  "Range": 1,
+  "MovePoints": 3,
+  "Cost":  100,
+  "Title": "Militia",
+  "Description": "Weak unit overall but cheap",
+  "Slug": "militia_unit"
+}

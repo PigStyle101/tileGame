@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using System.IO;
 
 public class MapEditMenueCamController : MonoBehaviour {
 
@@ -10,17 +11,37 @@ public class MapEditMenueCamController : MonoBehaviour {
     public int scrollSpeed;
     private Vector3 dragOrigin;
     private GameControllerScript GCS;
-    public GameObject MapEditorTilesButtonPrefab;
-    public GameObject ContentWindow;
     private DatabaseController DBC;
-    
+    public GameObject MapEditorTilesButtonPrefab;
+    public GameObject ContentWindowTerrain;
+    public GameObject ContentWindowUnits;
+    public GameObject ContentWindowBuilding;
+    public GameObject ScrollWindowTerrain;
+    public GameObject ScrollWindowUnits;
+    public GameObject ScrollWindowBuilding;
+    public GameObject MainPanel;
+    public GameObject LoadPanel;
+    public GameObject SavePanel;
+    public GameObject LoadButtonPrefab;
+    public GameObject ContentWindowLoadButtons;
+    public string SelectedTab;
+    public string SelectedButton;
+    public Text CurrentSelectedButtonText;
+    public Text SaveFeedback;
+    public InputField SaveInputField;
 
     // this script is currently back up to date
     void Start ()
     {
         GCS = GameObject.Find("GameController").GetComponent<GameControllerScript>();
         DBC = GameObject.Find("GameController").GetComponent<DatabaseController>();
-        AddButtonsToContent();
+        AddTerrainButtonsToContent();
+        AddBuildingButtonsToContent();
+        AddUnitButtonsToContent();
+        SelectedTab = "Terrain";
+        SelectedButton = "Grass";
+        SavePanel.SetActive(false);
+        CurrentSelectedButtonText.text = "Currently Selected: " + DBC.TerrainDictionary[0].Title;
     }
 
 	void Update ()
@@ -64,36 +85,132 @@ public class MapEditMenueCamController : MonoBehaviour {
         if (gameObject.transform.position.z < -GCS.mapSize * 2) { gameObject.transform.position = new Vector3(transform.position.x, transform.position.y, -GCS.mapSize * 2); }
     }//controls camera z movement
 
-    void ChangeTileSelectedToButtonTile()
+    void ChangeSelectedTerrainTobutton()
     {
-        if (GCS.SelectedTile != null)
-        {
-            foreach (KeyValuePair<int, Terrain> kvp in DBC.TerrainDictionary)
-            {
-                if (EventSystem.current.currentSelectedGameObject.name == kvp.Value.Title) //checks through dictionary for matching tile to button name
-                {
-                    Debug.Log("Changing tile to " + kvp.Value.Title);
-                    GCS.SelectedTile.name = kvp.Value.Title;//change name of tile
-                    GCS.SelectedTile.GetComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.TerrainDictionary[kvp.Key].ArtworkDirectory[0]); //change sprite of tile
-                }
-            }
-        }
-        
-    } //changes tile name and sprite to new tile
+        SelectedButton = EventSystem.current.currentSelectedGameObject.name;
+        UnityEngine.Debug.Log("Selected tile changed too: " + SelectedButton);
+        CurrentSelectedButtonText.text = "Currently Selected: " + EventSystem.current.currentSelectedGameObject.name;
+    }
 
-    private void AddButtonsToContent()
+    void ChangeSelectedButtonUnit()
     {
-        Debug.Log("Adding buttons to content window");
+        SelectedButton = EventSystem.current.currentSelectedGameObject.name;
+        UnityEngine.Debug.Log("Selected tile changed too: " + SelectedButton);
+        CurrentSelectedButtonText.text = "Currently Selected: " + EventSystem.current.currentSelectedGameObject.name;
+    }
+
+    private void AddTerrainButtonsToContent()
+    {
+        Debug.Log("Adding terrain buttons to content window");
         foreach (KeyValuePair<int, Terrain> kvp in DBC.TerrainDictionary) //adds a button for each terrain in the database
         {
-            GameObject tempbutton = Instantiate(MapEditorTilesButtonPrefab, ContentWindow.transform); //create button and set its parent to content
+            GameObject tempbutton = Instantiate(MapEditorTilesButtonPrefab, ContentWindowTerrain.transform); //create button and set its parent to content
             tempbutton.name = kvp.Value.Title; //change name
             tempbutton.transform.GetChild(0).GetComponent<Text>().text = kvp.Value.Title; //change text on button to match sprite
             tempbutton.GetComponent<Image>().sprite = DBC.loadSprite(DBC.TerrainDictionary[kvp.Key].ArtworkDirectory[0]); //set sprite
-            tempbutton.GetComponent<Button>().onClick.AddListener(ChangeTileSelectedToButtonTile); //adds method to button clicked
-
+            tempbutton.GetComponent<Button>().onClick.AddListener(ChangeSelectedTerrainTobutton); //adds method to button clicked
         }
     } //populates the tile selection bar
 
-    
+    private void AddUnitButtonsToContent()
+    {
+        Debug.Log("Adding unit buttons to content window");
+        foreach (KeyValuePair<int, Unit> kvp in DBC.UnitDictionary) //adds a button for each terrain in the database
+        {
+            GameObject tempbutton = Instantiate(MapEditorTilesButtonPrefab, ContentWindowUnits.transform); //create button and set its parent to content
+            tempbutton.name = kvp.Value.Title; //change name
+            tempbutton.transform.GetChild(0).GetComponent<Text>().text = kvp.Value.Title; //change text on button to match sprite
+            tempbutton.GetComponent<Image>().sprite = DBC.loadSprite(DBC.UnitDictionary[kvp.Key].ArtworkDirectory[0]); //set sprite
+            tempbutton.GetComponent<Button>().onClick.AddListener(ChangeSelectedButtonUnit); //adds method to button clicked
+        }
+    } //populates the tile selection bar
+
+    private void AddBuildingButtonsToContent()
+    {
+        Debug.Log("Adding building buttons to content window");
+        foreach (KeyValuePair<int, Building> kvp in DBC.BuildingDictionary) //adds a button for each terrain in the database
+        {
+            GameObject tempbutton = Instantiate(MapEditorTilesButtonPrefab, ContentWindowBuilding.transform); //create button and set its parent to content
+            tempbutton.name = kvp.Value.Title; //change name
+            tempbutton.transform.GetChild(0).GetComponent<Text>().text = kvp.Value.Title; //change text on button to match sprite
+            tempbutton.GetComponent<Image>().sprite = DBC.loadSprite(DBC.BuildingDictionary[kvp.Key].ArtworkDirectory[0]); //set sprite
+            tempbutton.GetComponent<Button>().onClick.AddListener(ChangeSelectedTerrainTobutton); //adds method to button clicked
+        }
+    } //populates the tile selection bar
+
+    private void AddLoadButtonsToContent()
+    {
+        string[] files = Directory.GetFiles(Application.dataPath + "/StreamingAssets/Saves/", "*.dat");
+        foreach(string file in files)
+        {
+            //Debug.Log(Path.GetFileNameWithoutExtension(file));
+            GameObject temploadbutton = Instantiate(LoadButtonPrefab, ContentWindowLoadButtons.transform);
+            temploadbutton.name = Path.GetFileNameWithoutExtension(file);
+            temploadbutton.transform.GetChild(0).GetComponent<Text>().text = Path.GetFileNameWithoutExtension(file);
+            temploadbutton.GetComponent<Button>().onClick.AddListener(LoadButtonClicked);
+        }
+    }
+
+    public void TerrainButtonClicked()
+    {
+        ScrollWindowTerrain.SetActive(true);
+        ScrollWindowBuilding.SetActive(false);
+        ScrollWindowUnits.SetActive(false);
+        SelectedTab = "Terrain";
+        CurrentSelectedButtonText.text = "Currently Selected: " + DBC.TerrainDictionary[0].Title;
+        SelectedButton = DBC.TerrainDictionary[0].Title;
+    }
+
+    public void BuildingButtonClicked()
+    {
+        ScrollWindowTerrain.SetActive(false);
+        ScrollWindowBuilding.SetActive(true);
+        ScrollWindowUnits.SetActive(false);
+        SelectedTab = "Building";
+    }
+
+    public void UnitButtonClicked()
+    {
+        ScrollWindowTerrain.SetActive(false);
+        ScrollWindowBuilding.SetActive(false);
+        ScrollWindowUnits.SetActive(true);
+        SelectedTab = "Unit";
+        CurrentSelectedButtonText.text = "Currently Selected: " + DBC.UnitDictionary[0].Title;
+        SelectedButton = DBC.UnitDictionary[0].Title;
+    }
+
+    public void MainSaveButtonClicked()
+    {
+        SavePanel.SetActive(true);
+        MainPanel.SetActive(false);
+    }
+
+    public void MainLoadButtonClicked()
+    {
+        AddLoadButtonsToContent();
+        MainPanel.SetActive(false);
+        LoadPanel.SetActive(true);
+    }
+
+    public void LoadPanelBackButtonClicked()
+    {
+        LoadPanel.SetActive(false);
+        MainPanel.SetActive(true);
+    }
+
+    public void SavePanelBackButtonClicked()
+    {
+        SavePanel.SetActive(false);
+        MainPanel.SetActive(true);
+    }
+
+    public void SavePanelSaveButtonClicked()
+    {
+        GCS.SaveMap(GCS.TilePos, GCS.UnitPos,SaveInputField.text);
+    }
+
+    public void LoadButtonClicked()
+    {
+        GCS.LoadMap(EventSystem.current.currentSelectedGameObject.name);
+    }
 }

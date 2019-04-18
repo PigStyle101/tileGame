@@ -1,0 +1,11 @@
+{
+  "ID": 2,
+  "Attack": 2,
+  "Defence": 2,
+  "Range": 1,
+  "MovePoints": 2,
+  "Cost": 200,
+  "Title": "Soldier",
+  "Description": "Strong unit with high attack and defence with moderate movement",
+  "Slug": "soldier_unit"
+}

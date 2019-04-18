@@ -1,0 +1,11 @@
+{
+  "ID": 1,
+  "Attack": 1,
+  "Defence": 1,
+  "Range": 2,
+  "MovePoints": 3,
+  "Cost": 200,
+  "Title": "Archer",
+  "Description": "Ranged unit with low defence and average movement",
+  "Slug": "archer_unit"
+}

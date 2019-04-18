@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 [ExecuteInEditMode]
-public class SpriteController : MonoBehaviour
+public class TerrainSpriteController : MonoBehaviour
 {
 
     private GameControllerScript GCS;
@@ -12,29 +12,26 @@ public class SpriteController : MonoBehaviour
     public Sprite[] Sprits;
     public int counter;
     public SpriteRenderer MouseOverlaySpriteRender;
-    public SpriteRenderer MouseOverlaySelectedSpriteRender;
+    //public SpriteRenderer MouseOverlaySelectedSpriteRender;
+    private MapEditMenueCamController MEMCC;
+    private DatabaseController DBC;
 
 
     void Start()
     {
+        MEMCC = GameObject.Find("MainCamera").GetComponent<MapEditMenueCamController>();
         GCS = GameObject.Find("GameController").GetComponent<GameControllerScript>();
-        MouseOverlaySpriteRender = gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>(); //this is working now
-        MouseOverlaySelectedSpriteRender = gameObject.transform.GetChild(1).GetComponent<SpriteRenderer>();
+        DBC = GameObject.Find("GameController").GetComponent<DatabaseController>();
+        MouseOverlaySpriteRender = gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>();
         MouseOverlaySpriteRender.enabled = false;
-        MouseOverlaySelectedSpriteRender.enabled = false;
-    }
-
-    private void addMouseOverlays()
-    {
-
     }
 
     private void OnMouseUp()
     {
         //WaterSpriteController();
-    }
-    //WORK IN PROGRESS, actually... need to think about the best way to do this, might be easyer to use overlays?? not sure yet..... currently using a different sprite for things
-    /*public void WaterSpriteController()
+    }//WORK IN PROGRESS, actually... need to think about the best way to do this, might be easyer to use overlays?? not sure yet..... currently using a different sprite for things
+
+    public void WaterSpriteController()
     {
         UnityEngine.Debug.Log("Starting Water Sprite Controller");
         try
@@ -51,10 +48,10 @@ public class SpriteController : MonoBehaviour
                 Vector2 bottomPos = currentPos + new Vector2(0, -1);
                 Vector2 bottomLeftPos = currentPos + new Vector2(-1, -1);
                 Vector2 leftPos = currentPos + new Vector2(-1, 0);
-                bool Top;
-                bool Left;
-                bool Right;
-                bool Bottom;
+                bool Top = new bool();
+                bool Left = new bool();
+                bool Right = new bool();
+                bool Bottom = new bool();
                 UnityEngine.Debug.Log("Starting if Statments");
                 // check how many waters around
                 //if (surrounding blocks that are land is = 1) {use waterland1side, then rotate to be correct}
@@ -76,6 +73,9 @@ public class SpriteController : MonoBehaviour
                         break;
                     case 2:
                         UnityEngine.Debug.Log("Case 2");
+                        if(Top == true && Bottom == true) { /*change to waterland2sideoposite rotation.z = 0*/}
+                        if (Left == true && Right == true) { /*change to waterland2sideoposite rotation.z = 180*/}
+                        if (Left == true && Top == true) { /*change to WaterLand2Side90Deg rotation.z = 180*/}
                         break;
                     case 3:
                         UnityEngine.Debug.Log("Case 3");
@@ -93,7 +93,7 @@ public class SpriteController : MonoBehaviour
             throw;
         }
     }
-    */
+    
 
     private void OnMouseEnter() 
     {
@@ -106,9 +106,18 @@ public class SpriteController : MonoBehaviour
         MouseOverlaySpriteRender.enabled = false;
     }
 
-    private void OnMouseDown()
+    public void ChangeTile() //if a terrain is selected and the player clicks a tile it changes the tile to the correct terrain
     {
-        if (!EventSystem.current.IsPointerOverGameObject())
-            GCS.MouseSelectedController(MouseOverlaySelectedSpriteRender, gameObject);
+        Debug.Log("ChangTile activated");
+        foreach (KeyValuePair<int, Terrain> kvp in DBC.TerrainDictionary)
+        {
+            if (MEMCC.SelectedButton == kvp.Value.Title) //checks through dictionary for matching tile to button name
+            {
+                //Debug.Log("Changing tile to " + kvp.Value.Title);
+                gameObject.name = kvp.Value.Title;//change name of tile
+                gameObject.GetComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.TerrainDictionary[kvp.Key].ArtworkDirectory[0]); //change sprite of tile
+            }
+        }
+        
     }
 }
