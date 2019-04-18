@@ -26,16 +26,11 @@ public class TerrainSpriteController : MonoBehaviour
         MouseOverlaySpriteRender.enabled = false;
     }
 
-    private void addMouseOverlays()
-    {
-
-    }
-
     private void OnMouseUp()
     {
         //WaterSpriteController();
-    }
-    //WORK IN PROGRESS, actually... need to think about the best way to do this, might be easyer to use overlays?? not sure yet..... currently using a different sprite for things
+    }//WORK IN PROGRESS, actually... need to think about the best way to do this, might be easyer to use overlays?? not sure yet..... currently using a different sprite for things
+
     public void WaterSpriteController()
     {
         UnityEngine.Debug.Log("Starting Water Sprite Controller");

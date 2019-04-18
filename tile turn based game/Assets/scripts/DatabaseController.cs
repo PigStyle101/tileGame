@@ -5,6 +5,11 @@ using System.IO;
 
 [System.Serializable]
 public class DatabaseController : MonoBehaviour {
+
+    //this is the second main controller script, everything that needs to be loaded into the game from streaming assets folder should be done through here. 
+    //i will need to add a way for looking for more stuff that modders may add. like say a ability or something that is not already in the game. 
+    //should potentialy be able to add game changing scripts though this at some point, will need some reasurch i think.
+
     public Dictionary<int, Terrain> TerrainDictionary = new Dictionary<int, Terrain>(); //stores the classes based on there id
     public Dictionary<int, MouseOverlays> MouseDictionary = new Dictionary<int, MouseOverlays>();
     public Dictionary<int, Unit> UnitDictionary = new Dictionary<int, Unit>();

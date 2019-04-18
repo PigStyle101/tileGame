@@ -8,7 +8,16 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 public class GameControllerScript : MonoBehaviour {
     
-    private Dictionary <Vector2,string> MapDictionary = new Dictionary<Vector2,string>();
+    //Everything should be able to be referanced and saved by id, or something off of the asset classes(ie:terrain,unit,building) in database manager
+    //The reason for that is to make the game modable and easyer to add stuff to, as we will never need to ajdust the script unless
+    //we are adding a new game mackanice, or something of that sort. i will figure out a way to add scripts to the game later that can override current script for modders.
+    //there is a few things that i will need to change over to using a id, as i was just putting names and stuff in while i was figuring out how to make it all work.
+
+    //this script is ment to be the controller uterly and completely, everything that needs to be stored or can make major adjustments should be ran through here,
+    //database controller should be the only other major script. 
+    //there is probably functions i need to move into here, but for now it was easyer to write them as i go and in the simplest way.
+
+    private Dictionary <Vector2,string> MapDictionary = new Dictionary<Vector2,string>();// this string needs to be converted to a int id, 
     public Dictionary<Vector2, GameObject> TilePos = new Dictionary<Vector2, GameObject>();
     public Dictionary<Vector2, GameObject> UnitPos = new Dictionary<Vector2, GameObject>();
     private GameObject CameraVar;
@@ -21,6 +30,7 @@ public class GameControllerScript : MonoBehaviour {
     public GameObject SelectedUnit;
     private MapEditMenueCamController MEMCC;
     private string CurrentScene;
+    private List<string> LoadButtons;
 
     private void Awake()
     {
@@ -61,7 +71,7 @@ public class GameControllerScript : MonoBehaviour {
                         //UnityEngine.Debug.Log("Added Key: " + i + o);
                     }
                 }
-                DrawMap();
+                DrawNewMapForMapEditor();
                 MapDictionary.Clear(); //clear dictionary for good measure
                 AddTilesToDictionary();
             }
@@ -73,11 +83,11 @@ public class GameControllerScript : MonoBehaviour {
         }
     }//when map editor scene loads, create map of map size loaded with all grass
 
-    private void DrawMap () 
+    private void DrawNewMapForMapEditor () 
     {
         try
         {
-            foreach (var kvp in MapDictionary)
+            foreach (var kvp in MapDictionary) //runs creation script for each 
             {
                 DBC.CreateAdnSpawnTerrain(kvp.Key, 0); 
             }
@@ -90,6 +100,36 @@ public class GameControllerScript : MonoBehaviour {
             throw;
         }
     }// create the physical part of the map and reset camera position to center
+
+    private void DrawLoadMapFromMapEditor(Map mapToLoad)
+    {
+        try
+        {
+            var TilesToDelete = GameObject.FindGameObjectsWithTag("Terrain");
+            var UnitsToDelete = GameObject.FindGameObjectsWithTag("Terrain");
+            foreach(var GO in TilesToDelete)
+            {
+                Destroy(GO);
+            }
+            foreach(var GOU in UnitsToDelete)
+            {
+                Destroy(GOU);
+            }
+            foreach(var kvp in mapToLoad.TerrainPositions)
+            {
+                DBC.CreateAdnSpawnTerrain(kvp.Key, kvp.Value);
+            }
+            foreach(var kvp in mapToLoad.UnitPosition)
+            {
+                DBC.CreateAndSpawnUnit(kvp.Key, kvp.Value);
+            }
+        }
+        catch(Exception e)
+        {
+            Debug.Log(e);
+            throw;
+        }
+    }//working on this, need to adjust the position dictionarys to clear and repopulate when a new map is loaded
 
     public void AddTilesToDictionary ()
     {
@@ -211,11 +251,23 @@ public class GameControllerScript : MonoBehaviour {
             Map save = new Map();
             foreach (KeyValuePair<Vector2, GameObject> kvp in TP)
             {
-                save.TerrainPositions.Add(kvp.Key, kvp.Value.transform.name);
+                foreach(var kvvp in DBC.TerrainDictionary)
+                {
+                    if (kvp.Value.transform.name == kvvp.Value.Title)
+                    {
+                        save.TerrainPositions.Add(kvp.Key, kvvp.Key);
+                    }
+                }
             }
             foreach (KeyValuePair<Vector2, GameObject> kvp in UP)
             {
-                save.UnitPosition.Add(kvp.Key, kvp.Value.transform.name);
+                foreach(var keyvp in DBC.UnitDictionary)
+                {
+                    if (kvp.Value.transform.name == keyvp.Value.Title)
+                    {
+                        save.UnitPosition.Add(kvp.Key, keyvp.Key);
+                    }
+                }
             }
             string destination = Application.dataPath + "/StreamingAssets/Saves/" + SaveName + ".dat";
             var fs = File.Create(destination);
@@ -228,23 +280,28 @@ public class GameControllerScript : MonoBehaviour {
         {
             MEMCC.SaveFeedback.text = "Current file name is already in use, please rename your save or delete old file.";
         }
-    }//working on this, going to try usign json to save the map. need to finish this and add save button to menue.
+    }//checks if file already exsist and if it does not it creates new file and stores current map items into dictionarys as (location,id number)
 
-    public void loadMap(string name)
+    public void LoadMap(string name)
     {
         Map load = new Map();
         string destination = Application.dataPath + "/StreamingAssets/Saves/" + name + ".dat";
         FileStream fs = File.OpenRead(destination);
         BinaryFormatter bf = new BinaryFormatter();
         load = (Map)bf.Deserialize(fs);
-    }// working on this, need to add play scene and load map into it. should work something like the load mapeditor funtion.
+
+        if (SceneManager.GetActiveScene().name == "MapEditorScene")
+        {
+            DrawLoadMapFromMapEditor(load);
+        }
+    }// working on this, need to add a load function into the map editor.
 }
 
 [Serializable]
 public class Map
 {
-    public Dictionary<SeralizableVector2, string> TerrainPositions = new Dictionary<SeralizableVector2, string>();
-    public Dictionary<SeralizableVector2, string> UnitPosition = new Dictionary<SeralizableVector2, string>();
+    public Dictionary<SeralizableVector2, int> TerrainPositions = new Dictionary<SeralizableVector2, int>();
+    public Dictionary<SeralizableVector2, int> UnitPosition = new Dictionary<SeralizableVector2, int>();
 }
 [Serializable]
 public class SeralizableVector2

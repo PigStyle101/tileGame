@@ -8,8 +8,8 @@ public class UnitSpriteController : MonoBehaviour
     private GameControllerScript GCS;
     private MapEditMenueCamController MEMCC;
     private DatabaseController DBC;
+    
 
-    // Start is called before the first frame update
     void Start()
     {
         GCS = GameObject.Find("GameController").GetComponent<GameControllerScript>();

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using System.IO;
 
 public class MapEditMenueCamController : MonoBehaviour {
 
@@ -10,6 +11,7 @@ public class MapEditMenueCamController : MonoBehaviour {
     public int scrollSpeed;
     private Vector3 dragOrigin;
     private GameControllerScript GCS;
+    private DatabaseController DBC;
     public GameObject MapEditorTilesButtonPrefab;
     public GameObject ContentWindowTerrain;
     public GameObject ContentWindowUnits;
@@ -17,11 +19,14 @@ public class MapEditMenueCamController : MonoBehaviour {
     public GameObject ScrollWindowTerrain;
     public GameObject ScrollWindowUnits;
     public GameObject ScrollWindowBuilding;
-    private DatabaseController DBC;
+    public GameObject MainPanel;
+    public GameObject LoadPanel;
+    public GameObject SavePanel;
+    public GameObject LoadButtonPrefab;
+    public GameObject ContentWindowLoadButtons;
     public string SelectedTab;
     public string SelectedButton;
     public Text CurrentSelectedButtonText;
-    public GameObject SavePanel;
     public Text SaveFeedback;
     public InputField SaveInputField;
 
@@ -133,6 +138,19 @@ public class MapEditMenueCamController : MonoBehaviour {
         }
     } //populates the tile selection bar
 
+    private void AddLoadButtonsToContent()
+    {
+        string[] files = Directory.GetFiles(Application.dataPath + "/StreamingAssets/Saves/", "*.dat");
+        foreach(string file in files)
+        {
+            //Debug.Log(Path.GetFileNameWithoutExtension(file));
+            GameObject temploadbutton = Instantiate(LoadButtonPrefab, ContentWindowLoadButtons.transform);
+            temploadbutton.name = Path.GetFileNameWithoutExtension(file);
+            temploadbutton.transform.GetChild(0).GetComponent<Text>().text = Path.GetFileNameWithoutExtension(file);
+            temploadbutton.GetComponent<Button>().onClick.AddListener(LoadButtonClicked);
+        }
+    }
+
     public void TerrainButtonClicked()
     {
         ScrollWindowTerrain.SetActive(true);
@@ -164,15 +182,35 @@ public class MapEditMenueCamController : MonoBehaviour {
     public void MainSaveButtonClicked()
     {
         SavePanel.SetActive(true);
+        MainPanel.SetActive(false);
+    }
+
+    public void MainLoadButtonClicked()
+    {
+        AddLoadButtonsToContent();
+        MainPanel.SetActive(false);
+        LoadPanel.SetActive(true);
+    }
+
+    public void LoadPanelBackButtonClicked()
+    {
+        LoadPanel.SetActive(false);
+        MainPanel.SetActive(true);
     }
 
     public void SavePanelBackButtonClicked()
     {
         SavePanel.SetActive(false);
+        MainPanel.SetActive(true);
     }
 
     public void SavePanelSaveButtonClicked()
     {
         GCS.SaveMap(GCS.TilePos, GCS.UnitPos,SaveInputField.text);
+    }
+
+    public void LoadButtonClicked()
+    {
+        GCS.LoadMap(EventSystem.current.currentSelectedGameObject.name);
     }
 }

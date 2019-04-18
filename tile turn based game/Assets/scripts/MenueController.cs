@@ -87,7 +87,7 @@ public class MenueController : MonoBehaviour {
 
     public void LoadSelected()
     {
-        GCS.loadMap(EventSystem.current.currentSelectedGameObject.name);
+        GCS.LoadMap(EventSystem.current.currentSelectedGameObject.name);
     }
 
 }
