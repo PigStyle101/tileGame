@@ -20,6 +20,7 @@ public class DatabaseController : MonoBehaviour {
     {
         GetTerrianJsons();
         GetUnitJsons();
+        GetBuildingJsons();
         GetMouseJson();
     }
 
@@ -158,7 +159,7 @@ public class DatabaseController : MonoBehaviour {
         MouseOverlayGO.name = "MouseOverlay";                                                                               //changing the name
         TGO.AddComponent<TerrainSpriteController>();                                                                               //adding the sprite controller script to it
         TGO.transform.position = location;
-    } //used to spawn objects from data base
+    } //used to spawn terrian from database
 
     public GameObject CreateAndSpawnUnit(Vector2 location,int index)
     {
@@ -168,8 +169,24 @@ public class DatabaseController : MonoBehaviour {
         TGO.GetComponent<SpriteRenderer>().sprite = loadSprite(UnitDictionary[index].ArtworkDirectory[0]);
         TGO.GetComponent<SpriteRenderer>().sortingLayerName = "Units";
         TGO.AddComponent<BoxCollider>();
+        TGO.GetComponent<BoxCollider>().size = new Vector3(.95f, .95f, .1f);
         TGO.AddComponent<UnitSpriteController>();
         TGO.tag = "Unit";
+        TGO.transform.position = location;
+        return TGO;
+    } //used to spawn units form database
+
+    public GameObject CreateAndSpawnBuilding(Vector2 location, int index)
+    {
+        GameObject TGO = new GameObject();
+        TGO.name = BuildingDictionary[index].Title;
+        TGO.AddComponent<SpriteRenderer>();
+        TGO.GetComponent<SpriteRenderer>().sprite = loadSprite(BuildingDictionary[index].ArtworkDirectory[0]);
+        TGO.GetComponent<SpriteRenderer>().sortingLayerName = "Buildings";
+        TGO.AddComponent<BoxCollider>();
+        TGO.GetComponent<BoxCollider>().size = new Vector3(.95f, .95f, .1f);
+        TGO.AddComponent<UnitSpriteController>();
+        TGO.tag = "Building";
         TGO.transform.position = location;
         return TGO;
     }

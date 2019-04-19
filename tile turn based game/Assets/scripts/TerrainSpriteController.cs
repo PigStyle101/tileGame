@@ -12,7 +12,6 @@ public class TerrainSpriteController : MonoBehaviour
     public Sprite[] Sprits;
     public int counter;
     public SpriteRenderer MouseOverlaySpriteRender;
-    //public SpriteRenderer MouseOverlaySelectedSpriteRender;
     private MapEditMenueCamController MEMCC;
     private DatabaseController DBC;
 
@@ -24,6 +23,11 @@ public class TerrainSpriteController : MonoBehaviour
         DBC = GameObject.Find("GameController").GetComponent<DatabaseController>();
         MouseOverlaySpriteRender = gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>();
         MouseOverlaySpriteRender.enabled = false;
+    }
+
+    private void Update()
+    {
+        MouseOverlayRayCaster();
     }
 
     private void OnMouseUp()
@@ -94,17 +98,32 @@ public class TerrainSpriteController : MonoBehaviour
         }
     }
     
-
-    private void OnMouseEnter() 
+    //BUG IN MOUSEOVERLAYRAYCASTER// all the terrian mouse overlay will activate when mouse is hovered over certain units
+    private void MouseOverlayRayCaster()
     {
         if (!EventSystem.current.IsPointerOverGameObject())
-            MouseOverlaySpriteRender.enabled = true;
-    }
-
-    private void OnMouseExit()
-    {
-        MouseOverlaySpriteRender.enabled = false;
-    }
+        {
+            Ray ray = GameObject.Find("MainCamera").GetComponent<Camera>().ScreenPointToRay(Input.mousePosition); //find all objects under mouse
+            RaycastHit[] hits;
+            hits = Physics.RaycastAll(ray); //add them to array
+            string LastHit = "none"; //initate variable for last hit
+            foreach (var hit in hits)
+            {
+                if (hit.transform == this.transform  || LastHit == "Unit") //was last hit a unit? or this?
+                {
+                    MouseOverlaySpriteRender.enabled = true;
+                }
+                else if (hit.transform.tag == "Unit") //if unit set last hit accordingly
+                {
+                    LastHit = hit.transform.tag = "Unit";
+                }
+                else //else disable overlay
+                {
+                    MouseOverlaySpriteRender.enabled = false;
+                }
+            } 
+        }
+    } //checks if mouse is over tile, activates mouseoverlay if it is.
 
     public void ChangeTile() //if a terrain is selected and the player clicks a tile it changes the tile to the correct terrain
     {

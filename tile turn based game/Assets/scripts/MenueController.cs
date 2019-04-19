@@ -18,7 +18,7 @@ public class MenueController : MonoBehaviour {
     public GameObject ContentWindowLoad;
 
 
-    // Use this for initialization
+    // everything in here is pretty self explanitory.
     void Start ()
     {
         GCS = GameObject.Find("GameController").GetComponent<GameControllerScript>();	

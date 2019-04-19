@@ -17,7 +17,6 @@ public class UnitSpriteController : MonoBehaviour
         DBC = GameObject.Find("GameController").GetComponent<DatabaseController>();
     }
 
-    // Update is called once per frame
     void Update()
     {
         
@@ -25,14 +24,22 @@ public class UnitSpriteController : MonoBehaviour
 
     public void ChangeUnit()
     {
-        Debug.Log("ChangUnit activated");
-        foreach (KeyValuePair<int, Unit> kvp in DBC.UnitDictionary)
+        if (MEMCC.SelectedButton == "Delete Unit")
         {
-            if (MEMCC.SelectedButton == kvp.Value.Title) //checks through dictionary for matching tile to button name
+            Debug.Log("Deleting Unit");
+            Destroy(gameObject);
+        }
+        else
+        {
+            Debug.Log("ChangUnit activated");
+            foreach (KeyValuePair<int, Unit> kvp in DBC.UnitDictionary)
             {
-                //Debug.Log("Changing tile to " + kvp.Value.Title);
-                gameObject.name = kvp.Value.Title;//change name of tile
-                gameObject.GetComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.UnitDictionary[kvp.Key].ArtworkDirectory[0]); //change sprite of tile
+                if (MEMCC.SelectedButton == kvp.Value.Title) //checks through dictionary for matching tile to button name
+                {
+                    //Debug.Log("Changing tile to " + kvp.Value.Title);
+                    gameObject.name = kvp.Value.Title;//change name of tile
+                    gameObject.GetComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.UnitDictionary[kvp.Key].ArtworkDirectory[0]); //change sprite of tile
+                }
             }
         }
     }
