@@ -154,10 +154,10 @@ public class DatabaseController : MonoBehaviour {
         GameObject MouseOverlayGO = new GameObject();                                                                       //creating the cild object for mouse overlay
         MouseOverlayGO.AddComponent<SpriteRenderer>().sprite = loadSprite(MouseDictionary[0].ArtworkDirectory[0]);          //adding it to sprite
         MouseOverlayGO.GetComponent<SpriteRenderer>().sortingLayerName = "Terrain";
-        MouseOverlayGO.GetComponent<SpriteRenderer>().sortingOrder = 2;                                                     //making it so its on top of the default sprite
+        MouseOverlayGO.GetComponent<SpriteRenderer>().sortingOrder = 3;                                                     //making it so its on top of the default sprite
         MouseOverlayGO.transform.parent = TGO.transform;                                                                    //setting its parent to the main game object
         MouseOverlayGO.name = "MouseOverlay";                                                                               //changing the name
-        TGO.AddComponent<TerrainSpriteController>();                                                                               //adding the sprite controller script to it
+        TGO.AddComponent<SpriteController>();                                                                               //adding the sprite controller script to it
         TGO.transform.position = location;
     } //used to spawn terrian from database
 
@@ -170,7 +170,7 @@ public class DatabaseController : MonoBehaviour {
         TGO.GetComponent<SpriteRenderer>().sortingLayerName = "Units";
         TGO.AddComponent<BoxCollider>();
         TGO.GetComponent<BoxCollider>().size = new Vector3(.95f, .95f, .1f);
-        TGO.AddComponent<UnitSpriteController>();
+        TGO.AddComponent<SpriteController>();
         TGO.tag = "Unit";
         TGO.transform.position = location;
         return TGO;
@@ -185,7 +185,7 @@ public class DatabaseController : MonoBehaviour {
         TGO.GetComponent<SpriteRenderer>().sortingLayerName = "Buildings";
         TGO.AddComponent<BoxCollider>();
         TGO.GetComponent<BoxCollider>().size = new Vector3(.95f, .95f, .1f);
-        TGO.AddComponent<UnitSpriteController>();
+        TGO.AddComponent<SpriteController>();
         TGO.tag = "Building";
         TGO.transform.position = location;
         return TGO;

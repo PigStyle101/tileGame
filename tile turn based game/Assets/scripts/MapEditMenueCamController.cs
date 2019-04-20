@@ -58,13 +58,13 @@ public class MapEditMenueCamController : MonoBehaviour {
     private void MoveScreenXandY()
     {
 
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(1))
         {
             dragOrigin = Input.mousePosition;
             return;
         }
 
-        if (!Input.GetMouseButton(0)) return;
+        if (!Input.GetMouseButton(1)) return;
 
         Vector3 pos = Camera.main.ScreenToViewportPoint(Input.mousePosition - dragOrigin);
 
