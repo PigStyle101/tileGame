@@ -22,6 +22,29 @@ public class SpriteController : MonoBehaviour
     private Vector3 BottomLeftRotOffset = new Vector3(0, 0, 180);
     private Vector2 TopLeftPosOffset = new Vector2(1, 0);
     private Vector3 TopLeftRotOffset = new Vector3(0, 0, 90);
+    private Vector2 Road1wayRightPosOffset = new Vector2(0, 1);
+    private Vector3 Road1wayRightRotOffset = new Vector3(0, 0, 270);
+    private Vector2 Road1wayBottomPosOffset = new Vector2(1, 1);
+    private Vector3 Road1wayBottomRotOffset = new Vector3(0, 0, 180);
+    private Vector2 Road1wayLeftPosOffset = new Vector2(1, 0);
+    private Vector3 Road1wayLeftRotOffset = new Vector3(0, 0, 90);
+    private Vector2 Road2way90TopPosOffset = new Vector2(1, 1);
+    private Vector3 Road2way90TopRotOffset = new Vector3(0, 0, 180);
+    private Vector2 Road2way90RightPosOffset = new Vector2(1, 0);
+    private Vector3 Road2way90RightRotOffset = new Vector3(0, 0, 90);
+    private Vector2 Road2way90LeftPosOffset = new Vector2(0, 1);
+    private Vector3 Road2way90LeftRotOffset = new Vector3(0, 0, 270);
+    private Vector2 Road2wayStraightTopBottomPosOffset = new Vector2(1, 0);
+    private Vector3 Road2wayStraightTopBottomRotOffset = new Vector3(0, 0, 90);
+    private Vector2 Road3wayTopPosOffset = new Vector2(1, 1);
+    private Vector3 Road3wayTopRotOffset = new Vector3(0, 0, 180);
+    private Vector2 Road3wayRightPosOffset = new Vector2(1, 0);
+    private Vector3 Road3wayRightRotOffset = new Vector3(0, 0, 90);
+    private Vector2 Road3wayLeftPosOffset = new Vector2(0, 1);
+    private Vector3 Road3wayLeftRotOffset = new Vector3(0, 0, 270);
+
+    private Vector2 OriginalPos;
+    private Vector3 OriginalRot;
 
     // Start is called before the first frame update
     void Start()
@@ -30,6 +53,8 @@ public class SpriteController : MonoBehaviour
         MEMCC = GameObject.Find("MainCamera").GetComponent<MapEditMenueCamController>();
         DBC = GameObject.Find("GameController").GetComponent<DatabaseController>();
 
+        OriginalPos = gameObject.transform.position;
+        OriginalRot = gameObject.transform.eulerAngles;
         if (gameObject.transform.tag == "Terrain")
         {
             MouseOverlaySpriteRender = gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>();
@@ -70,6 +95,7 @@ public class SpriteController : MonoBehaviour
         if (MEMCC.SelectedButton == "Delete Unit")
         {
             Debug.Log("Deleting Unit");
+            GCS.UnitPos.Remove(gameObject.transform.position);
             Destroy(gameObject);
         }
         else
@@ -130,7 +156,7 @@ public class SpriteController : MonoBehaviour
         }
     } //checks if mouse is over tile, activates mouseoverlay if it is.
 
-    public void TerrainSpriteAdjuster()
+    public void WaterSpriteController()
     {
         if (gameObject.name == "Water")
         {
@@ -434,5 +460,161 @@ public class SpriteController : MonoBehaviour
             }
         }
 
+    }
+
+    public void RoadSpriteController()
+    {
+        if (gameObject.name == "Road")
+        {
+            var SR = gameObject.GetComponent<SpriteRenderer>();
+            int TileId = 0;
+            int counter = 0;
+            foreach (var kvp in DBC.TerrainDictionary)
+            {
+                if (kvp.Value.Title == gameObject.name)
+                {
+                    TileId = kvp.Value.ID;
+                    Debug.Log("Set ID to: " + kvp.Value.ID);
+                }
+            }
+            Vector2 topPos = OriginalPos + new Vector2(0, 1);
+            Vector2 rightPos = OriginalPos + new Vector2(1, 0);
+            Vector2 bottomPos = OriginalPos + new Vector2(0, -1);
+            Vector2 leftPos = OriginalPos + new Vector2(-1, 0);
+            bool topBool = false;
+            bool rightbool = false;
+            bool bottombool = false;
+            bool leftbool = false;
+
+            if (GCS.TilePos.ContainsKey(topPos))
+            {
+                if (GCS.TilePos[topPos].name == "Road")
+                {
+                    counter = counter + 1;
+                    topBool = true;
+                } 
+            }
+            if (GCS.TilePos.ContainsKey(rightPos))
+            {
+                if (GCS.TilePos[rightPos].name == "Road")
+                {
+                    counter = counter + 1;
+                    rightbool = true;
+                } 
+            }
+            if (GCS.TilePos.ContainsKey(bottomPos))
+            {
+                if (GCS.TilePos[bottomPos].name == "Road")
+                {
+                    counter = counter + 1;
+                    bottombool = true;
+                } 
+            }
+            if (GCS.TilePos.ContainsKey(leftPos))
+            {
+                if (GCS.TilePos[leftPos].name == "Road")
+                {
+                    counter = counter + 1;
+                    leftbool = true;
+                } 
+            }
+
+            switch (counter)
+            {
+                case 0:
+                    SR.sprite = DBC.loadSprite(DBC.TerrainDictionary[TileId].ArtworkDirectory[0]);
+                    break;
+                case 1:
+                    SR.sprite = DBC.loadSprite(DBC.TerrainDictionary[TileId].ArtworkDirectory[1]);
+                    if (topBool)
+                    {
+                        gameObject.transform.position = OriginalPos;
+                        gameObject.transform.eulerAngles = OriginalRot;
+                    }
+                    else if (rightbool)
+                    {
+                        gameObject.transform.position = Road1wayRightPosOffset + OriginalPos;
+                        gameObject.transform.eulerAngles = Road1wayRightRotOffset + OriginalRot;
+                    }
+                    else if (bottombool)
+                    {
+                        gameObject.transform.position = Road1wayBottomPosOffset + OriginalPos;
+                        gameObject.transform.eulerAngles = Road1wayBottomRotOffset + OriginalRot;
+                    }
+                    else if (leftbool)
+                    {
+                        gameObject.transform.position = Road1wayLeftPosOffset + OriginalPos;
+                        gameObject.transform.eulerAngles = Road1wayLeftRotOffset + OriginalRot;
+                    }
+                    break;
+                case 2:
+                    if (topBool && rightbool)
+                    {
+                        SR.sprite = DBC.loadSprite(DBC.TerrainDictionary[TileId].ArtworkDirectory[2]);
+                        gameObject.transform.position = Road2way90TopPosOffset + OriginalPos;
+                        gameObject.transform.eulerAngles = Road2way90TopRotOffset + OriginalRot;
+                    }
+                    else if (rightbool && bottombool)
+                    {
+                        SR.sprite = DBC.loadSprite(DBC.TerrainDictionary[TileId].ArtworkDirectory[2]);
+                        gameObject.transform.position = Road2way90RightPosOffset + OriginalPos;
+                        gameObject.transform.eulerAngles = Road2way90RightRotOffset + OriginalRot;
+                    }
+                    else if(bottombool && leftbool)
+                    {
+                        SR.sprite = DBC.loadSprite(DBC.TerrainDictionary[TileId].ArtworkDirectory[2]);
+                        gameObject.transform.position = OriginalPos;
+                        gameObject.transform.eulerAngles = OriginalRot;
+                    }
+                    else if (leftbool && topBool)
+                    {
+                        SR.sprite = DBC.loadSprite(DBC.TerrainDictionary[TileId].ArtworkDirectory[2]);
+                        gameObject.transform.position = Road2way90LeftPosOffset + OriginalPos;
+                        gameObject.transform.eulerAngles = Road2way90LeftRotOffset + OriginalRot;
+                    }
+                    else if (topBool && bottombool)
+                    {
+                        SR.sprite = DBC.loadSprite(DBC.TerrainDictionary[TileId].ArtworkDirectory[3]);
+                        gameObject.transform.position = Road2wayStraightTopBottomPosOffset + OriginalPos;
+                        gameObject.transform.eulerAngles = Road2wayStraightTopBottomRotOffset + OriginalRot;
+                    }
+                    else if (leftbool && rightbool)
+                    {
+                        SR.sprite = DBC.loadSprite(DBC.TerrainDictionary[TileId].ArtworkDirectory[3]);
+                        gameObject.transform.position = OriginalPos;
+                        gameObject.transform.eulerAngles = OriginalRot;
+                    }
+                    break;
+                case 3:
+                    SR.sprite = DBC.loadSprite(DBC.TerrainDictionary[TileId].ArtworkDirectory[4]);
+                    if (!bottombool)
+                    {
+                        gameObject.transform.position = Road3wayTopPosOffset + OriginalPos;
+                        gameObject.transform.eulerAngles = Road3wayTopRotOffset + OriginalRot;
+                    }
+                    else if (!leftbool)
+                    {
+                        gameObject.transform.position = Road3wayRightPosOffset + OriginalPos;
+                        gameObject.transform.eulerAngles = Road3wayRightRotOffset + OriginalRot;
+                    }
+                    else if (!topBool)
+                    {
+                        gameObject.transform.position = OriginalPos;
+                        gameObject.transform.eulerAngles = OriginalRot;
+                    }
+                    else if (!rightbool)
+                    {
+                        gameObject.transform.position = Road3wayRightPosOffset + OriginalPos;
+                        gameObject.transform.eulerAngles = Road3wayRightRotOffset + OriginalRot;
+                    }
+                    break;
+                case 4:
+                    SR.sprite = DBC.loadSprite(DBC.TerrainDictionary[TileId].ArtworkDirectory[5]);
+                    gameObject.transform.position = OriginalPos;
+                    gameObject.transform.eulerAngles = OriginalRot;
+                    break;
+            }
+            counter = 0;
+        }
     }
 }

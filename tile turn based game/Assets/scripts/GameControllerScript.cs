@@ -355,7 +355,8 @@ public class GameControllerScript : MonoBehaviour {
     {
         foreach(var kvp in TilePos)
         {
-            kvp.Value.GetComponent<SpriteController>().TerrainSpriteAdjuster();
+            kvp.Value.GetComponent<SpriteController>().WaterSpriteController();
+            kvp.Value.GetComponent<SpriteController>().RoadSpriteController();
         }
     }
 }
