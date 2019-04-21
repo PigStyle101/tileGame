@@ -150,6 +150,7 @@ public class DatabaseController : MonoBehaviour {
         TGO.AddComponent<BoxCollider>();
         TGO.GetComponent<BoxCollider>().size = new Vector3(.95f, .95f, .1f);
         TGO.tag = ("Terrain");
+        //TGO.AddComponent<RectTransform>();
 
         GameObject MouseOverlayGO = new GameObject();                                                                       //creating the cild object for mouse overlay
         MouseOverlayGO.AddComponent<SpriteRenderer>().sprite = loadSprite(MouseDictionary[0].ArtworkDirectory[0]);          //adding it to sprite
@@ -200,9 +201,9 @@ public class DatabaseController : MonoBehaviour {
         if (File.Exists(FilePath))
         {
             FileData = File.ReadAllBytes(FilePath);
-            Tex2D = new Texture2D(2, 2);           // Create new "empty" texture
+            Tex2D = new Texture2D(2, 2); // Create new "empty" texture
             Tex2D.LoadImage(FileData);         // Load the imagedata into the texture (size is set automatically)
-            TempSprite = Sprite.Create(Tex2D, new Rect(0, 0, Tex2D.width, Tex2D.height), new Vector2(0, 0), 64);
+            TempSprite = Sprite.Create(Tex2D, new Rect(0, 0, Tex2D.width, Tex2D.height), new Vector2(0.5f, 0.5f), 64);
             return TempSprite;
         }
         return null;
