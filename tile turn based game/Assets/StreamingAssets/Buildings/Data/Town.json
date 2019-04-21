@@ -1,0 +1,8 @@
+{
+  "ID": 0,
+  "Title": "Town",
+  "Walkable": true,
+  "Description": "A collection of huts",
+  "DefenceBonus": 1,
+  "Slug": "Town_Building"
+}

@@ -28,7 +28,10 @@ public class MapEditMenueCamController : MonoBehaviour {
     public string SelectedButton;
     public Text CurrentSelectedButtonText;
     public Text SaveFeedback;
+    public Text LoadFeedback;
     public InputField SaveInputField;
+    private string CurrentlySelectedLoadFile;
+    private GameObject CurrentlySelectedLoadGameObject;
 
     // this script is currently back up to date
     void Start ()
@@ -40,8 +43,10 @@ public class MapEditMenueCamController : MonoBehaviour {
         AddUnitButtonsToContent();
         SelectedTab = "Terrain";
         SelectedButton = "Grass";
+        SaveFeedback.text = "Use only letters, cannot save with name that is already in use";
         SavePanel.SetActive(false);
         CurrentSelectedButtonText.text = "Currently Selected: " + DBC.TerrainDictionary[0].Title;
+        LoadPanelBackButtonClicked();
     }
 
 	void Update ()
@@ -53,13 +58,13 @@ public class MapEditMenueCamController : MonoBehaviour {
     private void MoveScreenXandY()
     {
 
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(1))
         {
             dragOrigin = Input.mousePosition;
             return;
         }
 
-        if (!Input.GetMouseButton(0)) return;
+        if (!Input.GetMouseButton(1)) return;
 
         Vector3 pos = Camera.main.ScreenToViewportPoint(Input.mousePosition - dragOrigin);
 
@@ -90,14 +95,14 @@ public class MapEditMenueCamController : MonoBehaviour {
         SelectedButton = EventSystem.current.currentSelectedGameObject.name;
         UnityEngine.Debug.Log("Selected tile changed too: " + SelectedButton);
         CurrentSelectedButtonText.text = "Currently Selected: " + EventSystem.current.currentSelectedGameObject.name;
-    }
+    } //changes to whatever button is clicked
 
     void ChangeSelectedButtonUnit()
     {
         SelectedButton = EventSystem.current.currentSelectedGameObject.name;
         UnityEngine.Debug.Log("Selected tile changed too: " + SelectedButton);
         CurrentSelectedButtonText.text = "Currently Selected: " + EventSystem.current.currentSelectedGameObject.name;
-    }
+    } //same as terrrain, but for units
 
     private void AddTerrainButtonsToContent()
     {
@@ -123,6 +128,11 @@ public class MapEditMenueCamController : MonoBehaviour {
             tempbutton.GetComponent<Image>().sprite = DBC.loadSprite(DBC.UnitDictionary[kvp.Key].ArtworkDirectory[0]); //set sprite
             tempbutton.GetComponent<Button>().onClick.AddListener(ChangeSelectedButtonUnit); //adds method to button clicked
         }
+
+        GameObject temppbutton = Instantiate(MapEditorTilesButtonPrefab, ContentWindowUnits.transform);
+        temppbutton.name = "Delete Unit";
+        temppbutton.transform.GetChild(0).GetComponent<Text>().text = "Delete Unit";
+        temppbutton.GetComponent<Button>().onClick.AddListener(ChangeSelectedButtonUnit);
     } //populates the tile selection bar
 
     private void AddBuildingButtonsToContent()
@@ -147,9 +157,18 @@ public class MapEditMenueCamController : MonoBehaviour {
             GameObject temploadbutton = Instantiate(LoadButtonPrefab, ContentWindowLoadButtons.transform);
             temploadbutton.name = Path.GetFileNameWithoutExtension(file);
             temploadbutton.transform.GetChild(0).GetComponent<Text>().text = Path.GetFileNameWithoutExtension(file);
-            temploadbutton.GetComponent<Button>().onClick.AddListener(LoadButtonClicked);
+            temploadbutton.GetComponent<Button>().onClick.AddListener(LoadFileButtonClicked);
         }
-    }
+    } //searches saves file and adds a button for each save
+
+    private void RemoveLoadButtonsFromContent()
+    {
+        var childcount = ContentWindowLoadButtons.transform.childCount;
+        for (int i = 0; i < childcount; i++)
+        {
+            Destroy(ContentWindowLoadButtons.transform.GetChild(i).gameObject);
+        }
+    } //this is needed so that ever time the AddLoadButtonsToContent is called the buttons will be refreshed
 
     public void TerrainButtonClicked()
     {
@@ -159,7 +178,7 @@ public class MapEditMenueCamController : MonoBehaviour {
         SelectedTab = "Terrain";
         CurrentSelectedButtonText.text = "Currently Selected: " + DBC.TerrainDictionary[0].Title;
         SelectedButton = DBC.TerrainDictionary[0].Title;
-    }
+    } //sets the terrian content window as the active one
 
     public void BuildingButtonClicked()
     {
@@ -167,7 +186,7 @@ public class MapEditMenueCamController : MonoBehaviour {
         ScrollWindowBuilding.SetActive(true);
         ScrollWindowUnits.SetActive(false);
         SelectedTab = "Building";
-    }
+    } //sets the building content window as the active one
 
     public void UnitButtonClicked()
     {
@@ -177,40 +196,61 @@ public class MapEditMenueCamController : MonoBehaviour {
         SelectedTab = "Unit";
         CurrentSelectedButtonText.text = "Currently Selected: " + DBC.UnitDictionary[0].Title;
         SelectedButton = DBC.UnitDictionary[0].Title;
-    }
+    } //sets the unit content window as the active one
 
     public void MainSaveButtonClicked()
     {
         SavePanel.SetActive(true);
         MainPanel.SetActive(false);
-    }
+    } //opens save panel
 
     public void MainLoadButtonClicked()
     {
+        RemoveLoadButtonsFromContent();
         AddLoadButtonsToContent();
         MainPanel.SetActive(false);
         LoadPanel.SetActive(true);
-    }
+    } //opens load panel
 
     public void LoadPanelBackButtonClicked()
     {
         LoadPanel.SetActive(false);
         MainPanel.SetActive(true);
-    }
+    } //cloese load panel
 
     public void SavePanelBackButtonClicked()
     {
         SavePanel.SetActive(false);
         MainPanel.SetActive(true);
-    }
+    } //closes save panel
 
     public void SavePanelSaveButtonClicked()
     {
         GCS.SaveMap(GCS.TilePos, GCS.UnitPos,SaveInputField.text);
-    }
+    } //activates save script in GameControllerScript
 
     public void LoadButtonClicked()
     {
-        GCS.LoadMap(EventSystem.current.currentSelectedGameObject.name);
+        if (CurrentlySelectedLoadFile != null)
+        {
+            GCS.LoadMap(CurrentlySelectedLoadFile);
+            LoadFeedback.text = "Loaded " + CurrentlySelectedLoadFile;
+        }
+        else
+        {
+            LoadFeedback.text = "Please select map to load";
+        }
+    }  //checks if any load buttons ahve been selected and then runs load script form GameControllerScript
+
+    public void LoadFileButtonClicked()
+    {
+        CurrentlySelectedLoadFile = EventSystem.current.currentSelectedGameObject.name;
+        CurrentlySelectedLoadGameObject = EventSystem.current.currentSelectedGameObject;
+    } //sets variable to the name of whatever button was clicked
+
+    public void LoadPanelDeleteButtonClicked()
+    {
+        File.Delete(Application.dataPath + "/StreamingAssets/Saves/" + CurrentlySelectedLoadFile + ".dat");
+        Destroy(CurrentlySelectedLoadGameObject);
     }
 }

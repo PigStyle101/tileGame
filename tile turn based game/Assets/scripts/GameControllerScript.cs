@@ -5,6 +5,8 @@ using UnityEngine.SceneManagement;
 using System;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using UnityEngine.EventSystems;
+using System.Text.RegularExpressions;
 
 public class GameControllerScript : MonoBehaviour {
     
@@ -15,11 +17,11 @@ public class GameControllerScript : MonoBehaviour {
 
     //this script is ment to be the controller uterly and completely, everything that needs to be stored or can make major adjustments should be ran through here,
     //database controller should be the only other major script. 
-    //there is probably functions i need to move into here, but for now it was easyer to write them as i go and in the simplest way.
 
     private Dictionary <Vector2,string> MapDictionary = new Dictionary<Vector2,string>();// this string needs to be converted to a int id, 
     public Dictionary<Vector2, GameObject> TilePos = new Dictionary<Vector2, GameObject>();
     public Dictionary<Vector2, GameObject> UnitPos = new Dictionary<Vector2, GameObject>();
+    public Dictionary<Vector2, GameObject> BuildingPos = new Dictionary<Vector2, GameObject>();
     private GameObject CameraVar;
     public GameObject[] TileArray;
     public GameObject[] UnitArray;
@@ -45,14 +47,14 @@ public class GameControllerScript : MonoBehaviour {
 
     private void Update()
     {
-        RayCastTesterMethod();
+        RayCastForMapEditor();
     }
 
     public void CreateNewMap (int MapSize)
     {
         mapSize = MapSize;
         SceneManager.LoadScene(2);//notes and stuff
-    }//does what it says
+    }//used to pull map size from menue controller script and set a varaible in here
 
     private void OnSceneLoaded( Scene sceneVar , LoadSceneMode Mode) 
     {
@@ -107,6 +109,8 @@ public class GameControllerScript : MonoBehaviour {
         {
             var TilesToDelete = GameObject.FindGameObjectsWithTag("Terrain");
             var UnitsToDelete = GameObject.FindGameObjectsWithTag("Terrain");
+            TilePos.Clear();
+            UnitPos.Clear();
             foreach(var GO in TilesToDelete)
             {
                 Destroy(GO);
@@ -122,6 +126,11 @@ public class GameControllerScript : MonoBehaviour {
             foreach(var kvp in mapToLoad.UnitPosition)
             {
                 DBC.CreateAndSpawnUnit(kvp.Key, kvp.Value);
+            }
+            AddTilesToDictionary();
+            foreach(GameObject UGO in GameObject.FindGameObjectsWithTag("Unit"))
+            {
+                AddUnitsToDictionary(UGO);
             }
         }
         catch(Exception e)
@@ -176,6 +185,19 @@ public class GameControllerScript : MonoBehaviour {
         
     } //adds unit to dictionary and deletes unit if key is already taken
 
+    public void AddBuildingToDictionary(GameObject bgo)
+    {
+        if (BuildingPos.ContainsKey(bgo.transform.position))
+        {
+            BuildingPos.Remove(bgo.transform.position);
+            BuildingPos.Add(bgo.transform.position, bgo);
+        }
+        else
+        {
+            BuildingPos.Add(bgo.transform.position, bgo);
+        }
+    }
+
     public void MouseSelectedController(SpriteRenderer STL, GameObject ST)
     {
         if (SelectedTileOverlay != null) { SelectedTileOverlay.enabled = false; }
@@ -184,11 +206,11 @@ public class GameControllerScript : MonoBehaviour {
         SelectedTileOverlay.enabled = true;
     }// sets selected tile to whatever tile is clicked on and enables the clickon overlay
 
-    public void RayCastTesterMethod()
+    public void RayCastForMapEditor()
     {
-        try
+        if (!EventSystem.current.IsPointerOverGameObject())
         {
-            if (Input.GetMouseButtonDown(0) && CurrentScene == "MapEditorScene")
+            if (Input.GetMouseButtonDown(0) && CurrentScene == "MapEditorScene") //are we in map editor scene?
             {
                 //Debug.Log("Raycast activated");
                 Ray ray = GameObject.Find("MainCamera").GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
@@ -198,38 +220,60 @@ public class GameControllerScript : MonoBehaviour {
                 for (int i = 0; i < hits.Length; i++)
                 {
                     RaycastHit hit = hits[i];
-                    if (hit.transform.tag == MEMCC.SelectedTab)
+                    if (hit.transform.tag == MEMCC.SelectedTab) //is the hit tag = to what we are trying to place down?
                     {
-                        if (hit.transform.tag == "Terrain")
+                        if (hit.transform.tag == "Terrain") //is it a terrain?
                         {
-                            Debug.Log("Raycast hit: " + hit.transform.name);
-                            TerrainSpriteController TSC = hit.transform.GetComponent<TerrainSpriteController>();
-                            if (hit.transform.name != MEMCC.SelectedButton)
+                            SpriteController SC = hit.transform.GetComponent<SpriteController>();
+                            if (hit.transform.name != MEMCC.SelectedButton) //are we changing the tile to something new?
                             {
-                                TSC.ChangeTile();
-                            } 
+                                Debug.Log("Changing unit to " + MEMCC.SelectedButton);
+                                SC.ChangeTile(); //change tile to new terrain tile
+                                AddTilesToDictionary();
+                                SpriteUpdateActivator();
+                            }
                         }
-                        else if (hit.transform.tag == "Unit")
+                        else if (hit.transform.tag == "Unit") //is the hit a unit?
                         {
-                            Debug.Log("Raycast hit: " + hit.transform.name);
-                            UnitSpriteController UPC = hit.transform.GetComponent<UnitSpriteController>();
-                            if(hit.transform.name != MEMCC.SelectedButton)
+                            SpriteController SC = hit.transform.GetComponent<SpriteController>();
+                            if (hit.transform.name != MEMCC.SelectedButton) //are we changing the unit to something new?
                             {
-                                UPC.ChangeUnit();
+                                Debug.Log("Changing unit to " + MEMCC.SelectedButton);
+                                SC.ChangeUnit(); //change to new unit
+                                AddUnitsToDictionary(hit.transform.gameObject);
+                            }
+                        }
+                        else if (hit.transform.tag == "Building")
+                        {
+
+                        }
+                    }
+                    else if (hit.transform.tag == "Terrain" && MEMCC.SelectedTab == "Unit") //is the current hit not equal to what we are trying to place down. we are trying to place a unit.
+                    {
+                        if (!UnitPos.ContainsKey(hit.transform.position)) //is there a unit there already?
+                        {
+                            foreach (KeyValuePair<int, Unit> kvp in DBC.UnitDictionary)
+                            {
+                                if (kvp.Value.Title == MEMCC.SelectedButton) //need to find id for what unit we are trying to place
+                                {
+                                    GameObject tgo = DBC.CreateAndSpawnUnit(hit.transform.position, kvp.Key); //creat new unit at position on tile we clicked on.
+                                    AddUnitsToDictionary(tgo);
+                                    Debug.Log("Creating " + MEMCC.SelectedButton + " at " + hit.transform.position);
+                                }
                             }
                         }
                     }
-                    else if (hit.transform.tag == "Terrain")
+                    else if (hit.transform.tag == "Terrain" && MEMCC.SelectedTab == "Building")
                     {
-                        if (!UnitPos.ContainsKey(hit.transform.position))
+                        if (!BuildingPos.ContainsKey(hit.transform.position))
                         {
-                            Debug.Log("Raycast hit: " + hit.transform.name);
-                            foreach (KeyValuePair<int, Unit> kvp in DBC.UnitDictionary)
+                            foreach (KeyValuePair<int, Building> kvp in DBC.BuildingDictionary)
                             {
-                                if (kvp.Value.Title == MEMCC.SelectedButton)
+                                if (kvp.Value.Title == MEMCC.SelectedButton) //need to find id for what unit we are trying to place
                                 {
-                                    GameObject tgo = DBC.CreateAndSpawnUnit(hit.transform.position, kvp.Key);
-                                    AddUnitsToDictionary(tgo);
+                                    GameObject tgo = DBC.CreateAndSpawnBuilding(hit.transform.position, kvp.Key); //creat new building at position on tile we clicked on.
+                                    AddBuildingToDictionary(tgo);
+                                    Debug.Log("Creating " + MEMCC.SelectedButton + " at " + hit.transform.position);
                                 }
                             }
                         }
@@ -237,44 +281,54 @@ public class GameControllerScript : MonoBehaviour {
                 }
             }
         }
-        catch (Exception e)
-        {
-            Debug.Log(e);
-            throw;
-        }
+
     }// used to check were mouse is hitting and then act acordingly
 
     public void SaveMap(Dictionary<Vector2, GameObject> TP, Dictionary<Vector2, GameObject> UP,string SaveName)
     {
         if (!System.IO.File.Exists(Application.dataPath + "/StreamingAssets/Saves/" + SaveName + ".dat"))
         {
-            Map save = new Map();
-            foreach (KeyValuePair<Vector2, GameObject> kvp in TP)
+            if (SaveName != "")
             {
-                foreach(var kvvp in DBC.TerrainDictionary)
+                if (!Regex.IsMatch(SaveName, @"^[a-z][A-Z]+$"))
                 {
-                    if (kvp.Value.transform.name == kvvp.Value.Title)
+                    Map save = new Map();
+                    foreach (KeyValuePair<Vector2, GameObject> kvp in TP)
                     {
-                        save.TerrainPositions.Add(kvp.Key, kvvp.Key);
+                        foreach (var kvvp in DBC.TerrainDictionary)
+                        {
+                            if (kvp.Value.transform.name == kvvp.Value.Title)
+                            {
+                                save.TerrainPositions.Add(kvp.Key, kvvp.Key);
+                            }
+                        }
                     }
+                    foreach (KeyValuePair<Vector2, GameObject> kvp in UP)
+                    {
+                        foreach (var keyvp in DBC.UnitDictionary)
+                        {
+                            if (kvp.Value.transform.name == keyvp.Value.Title)
+                            {
+                                save.UnitPosition.Add(kvp.Key, keyvp.Key);
+                            }
+                        }
+                    }
+                    string destination = Application.dataPath + "/StreamingAssets/Saves/" + SaveName + ".dat";
+                    var fs = File.Create(destination);
+                    BinaryFormatter bf = new BinaryFormatter();
+                    bf.Serialize(fs, save);
+                    fs.Close();
+                    MEMCC.SaveFeedback.text = "File saved as: " + SaveName;  
+                }
+                else
+                {
+                    MEMCC.SaveFeedback.text = "Only use letters";
                 }
             }
-            foreach (KeyValuePair<Vector2, GameObject> kvp in UP)
+            else
             {
-                foreach(var keyvp in DBC.UnitDictionary)
-                {
-                    if (kvp.Value.transform.name == keyvp.Value.Title)
-                    {
-                        save.UnitPosition.Add(kvp.Key, keyvp.Key);
-                    }
-                }
+                MEMCC.SaveFeedback.text = "Add a name.";
             }
-            string destination = Application.dataPath + "/StreamingAssets/Saves/" + SaveName + ".dat";
-            var fs = File.Create(destination);
-            BinaryFormatter bf = new BinaryFormatter();
-            bf.Serialize(fs, save);
-            fs.Close();
-            MEMCC.SaveFeedback.text = "File saved as: " + SaveName;
         }
         else
         {
@@ -289,12 +343,22 @@ public class GameControllerScript : MonoBehaviour {
         FileStream fs = File.OpenRead(destination);
         BinaryFormatter bf = new BinaryFormatter();
         load = (Map)bf.Deserialize(fs);
+        fs.Close();
 
         if (SceneManager.GetActiveScene().name == "MapEditorScene")
         {
             DrawLoadMapFromMapEditor(load);
         }
-    }// working on this, need to add a load function into the map editor.
+    }// opens file and deseralizes it and then sends the info to drawLoadMapFromEditor function
+
+    public void SpriteUpdateActivator()
+    {
+        foreach(var kvp in TilePos)
+        {
+            kvp.Value.GetComponent<SpriteController>().WaterSpriteController();
+            kvp.Value.GetComponent<SpriteController>().RoadSpriteController();
+        }
+    }
 }
 
 [Serializable]
@@ -302,7 +366,8 @@ public class Map
 {
     public Dictionary<SeralizableVector2, int> TerrainPositions = new Dictionary<SeralizableVector2, int>();
     public Dictionary<SeralizableVector2, int> UnitPosition = new Dictionary<SeralizableVector2, int>();
-}
+} //this is needed to save the map, might be better way to do this.
+
 [Serializable]
 public class SeralizableVector2
 {
@@ -325,4 +390,4 @@ public class SeralizableVector2
     {
         return new SeralizableVector2(Value.x, Value.y);
     }
-}
+} //this is needed for seralization, as vectors from unity are not seralizable.

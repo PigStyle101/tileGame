@@ -20,6 +20,7 @@ public class DatabaseController : MonoBehaviour {
     {
         GetTerrianJsons();
         GetUnitJsons();
+        GetBuildingJsons();
         GetMouseJson();
     }
 
@@ -149,16 +150,17 @@ public class DatabaseController : MonoBehaviour {
         TGO.AddComponent<BoxCollider>();
         TGO.GetComponent<BoxCollider>().size = new Vector3(.95f, .95f, .1f);
         TGO.tag = ("Terrain");
+        //TGO.AddComponent<RectTransform>();
 
         GameObject MouseOverlayGO = new GameObject();                                                                       //creating the cild object for mouse overlay
         MouseOverlayGO.AddComponent<SpriteRenderer>().sprite = loadSprite(MouseDictionary[0].ArtworkDirectory[0]);          //adding it to sprite
         MouseOverlayGO.GetComponent<SpriteRenderer>().sortingLayerName = "Terrain";
-        MouseOverlayGO.GetComponent<SpriteRenderer>().sortingOrder = 2;                                                     //making it so its on top of the default sprite
+        MouseOverlayGO.GetComponent<SpriteRenderer>().sortingOrder = 3;                                                     //making it so its on top of the default sprite
         MouseOverlayGO.transform.parent = TGO.transform;                                                                    //setting its parent to the main game object
         MouseOverlayGO.name = "MouseOverlay";                                                                               //changing the name
-        TGO.AddComponent<TerrainSpriteController>();                                                                               //adding the sprite controller script to it
+        TGO.AddComponent<SpriteController>();                                                                               //adding the sprite controller script to it
         TGO.transform.position = location;
-    } //used to spawn objects from data base
+    } //used to spawn terrian from database
 
     public GameObject CreateAndSpawnUnit(Vector2 location,int index)
     {
@@ -168,8 +170,24 @@ public class DatabaseController : MonoBehaviour {
         TGO.GetComponent<SpriteRenderer>().sprite = loadSprite(UnitDictionary[index].ArtworkDirectory[0]);
         TGO.GetComponent<SpriteRenderer>().sortingLayerName = "Units";
         TGO.AddComponent<BoxCollider>();
-        TGO.AddComponent<UnitSpriteController>();
+        TGO.GetComponent<BoxCollider>().size = new Vector3(.95f, .95f, .1f);
+        TGO.AddComponent<SpriteController>();
         TGO.tag = "Unit";
+        TGO.transform.position = location;
+        return TGO;
+    } //used to spawn units form database
+
+    public GameObject CreateAndSpawnBuilding(Vector2 location, int index)
+    {
+        GameObject TGO = new GameObject();
+        TGO.name = BuildingDictionary[index].Title;
+        TGO.AddComponent<SpriteRenderer>();
+        TGO.GetComponent<SpriteRenderer>().sprite = loadSprite(BuildingDictionary[index].ArtworkDirectory[0]);
+        TGO.GetComponent<SpriteRenderer>().sortingLayerName = "Buildings";
+        TGO.AddComponent<BoxCollider>();
+        TGO.GetComponent<BoxCollider>().size = new Vector3(.95f, .95f, .1f);
+        TGO.AddComponent<SpriteController>();
+        TGO.tag = "Building";
         TGO.transform.position = location;
         return TGO;
     }
@@ -183,9 +201,9 @@ public class DatabaseController : MonoBehaviour {
         if (File.Exists(FilePath))
         {
             FileData = File.ReadAllBytes(FilePath);
-            Tex2D = new Texture2D(2, 2);           // Create new "empty" texture
+            Tex2D = new Texture2D(2, 2); // Create new "empty" texture
             Tex2D.LoadImage(FileData);         // Load the imagedata into the texture (size is set automatically)
-            TempSprite = Sprite.Create(Tex2D, new Rect(0, 0, Tex2D.width, Tex2D.height), new Vector2(0, 0), 64);
+            TempSprite = Sprite.Create(Tex2D, new Rect(0, 0, Tex2D.width, Tex2D.height), new Vector2(0.5f, 0.5f), 64);
             return TempSprite;
         }
         return null;
