@@ -16,12 +16,17 @@ public class MenueController : MonoBehaviour {
     public Text errorTextField;
     public GameObject LoadMenueButtonPrefab;
     public GameObject ContentWindowLoad;
+    public Slider LoadingSlider;
+    public GameObject LoadingPanel;
+    public GameObject MainPanel;
 
 
     // everything in here is pretty self explanitory.
     void Start ()
     {
-        GCS = GameObject.Find("GameController").GetComponent<GameControllerScript>();	
+        GCS = GameObject.Find("GameController").GetComponent<GameControllerScript>();
+        LoadingPanel.SetActive(true);
+        MainPanel.SetActive(false);
 	}
 
     public void MapEditorPanelControlller()
@@ -88,6 +93,12 @@ public class MenueController : MonoBehaviour {
     public void LoadSelected()
     {
         GCS.LoadMap(EventSystem.current.currentSelectedGameObject.name);
+    }
+
+    public void LoadingUpdater(float f)
+    {
+        LoadingSlider.value = f;
+        if (f == 1f) { LoadingPanel.SetActive(false);MainPanel.SetActive(true); }
     }
 
 }

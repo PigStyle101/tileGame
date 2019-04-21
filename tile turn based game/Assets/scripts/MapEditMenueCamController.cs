@@ -90,19 +90,12 @@ public class MapEditMenueCamController : MonoBehaviour {
         if (gameObject.transform.position.z < -GCS.mapSize * 2) { gameObject.transform.position = new Vector3(transform.position.x, transform.position.y, -GCS.mapSize * 2); }
     }//controls camera z movement
 
-    void ChangeSelectedTerrainTobutton()
+    void ChangeSelectedButton()
     {
         SelectedButton = EventSystem.current.currentSelectedGameObject.name;
-        UnityEngine.Debug.Log("Selected tile changed too: " + SelectedButton);
+        //UnityEngine.Debug.Log("Selected tile changed too: " + SelectedButton);
         CurrentSelectedButtonText.text = "Currently Selected: " + EventSystem.current.currentSelectedGameObject.name;
     } //changes to whatever button is clicked
-
-    void ChangeSelectedButtonUnit()
-    {
-        SelectedButton = EventSystem.current.currentSelectedGameObject.name;
-        UnityEngine.Debug.Log("Selected tile changed too: " + SelectedButton);
-        CurrentSelectedButtonText.text = "Currently Selected: " + EventSystem.current.currentSelectedGameObject.name;
-    } //same as terrrain, but for units
 
     private void AddTerrainButtonsToContent()
     {
@@ -113,7 +106,7 @@ public class MapEditMenueCamController : MonoBehaviour {
             tempbutton.name = kvp.Value.Title; //change name
             tempbutton.transform.GetChild(0).GetComponent<Text>().text = kvp.Value.Title; //change text on button to match sprite
             tempbutton.GetComponent<Image>().sprite = DBC.loadSprite(DBC.TerrainDictionary[kvp.Key].ArtworkDirectory[0]); //set sprite
-            tempbutton.GetComponent<Button>().onClick.AddListener(ChangeSelectedTerrainTobutton); //adds method to button clicked
+            tempbutton.GetComponent<Button>().onClick.AddListener(ChangeSelectedButton); //adds method to button clicked
         }
     } //populates the tile selection bar
 
@@ -126,13 +119,13 @@ public class MapEditMenueCamController : MonoBehaviour {
             tempbutton.name = kvp.Value.Title; //change name
             tempbutton.transform.GetChild(0).GetComponent<Text>().text = kvp.Value.Title; //change text on button to match sprite
             tempbutton.GetComponent<Image>().sprite = DBC.loadSprite(DBC.UnitDictionary[kvp.Key].ArtworkDirectory[0]); //set sprite
-            tempbutton.GetComponent<Button>().onClick.AddListener(ChangeSelectedButtonUnit); //adds method to button clicked
+            tempbutton.GetComponent<Button>().onClick.AddListener(ChangeSelectedButton); //adds method to button clicked
         }
 
         GameObject temppbutton = Instantiate(MapEditorTilesButtonPrefab, ContentWindowUnits.transform);
         temppbutton.name = "Delete Unit";
         temppbutton.transform.GetChild(0).GetComponent<Text>().text = "Delete Unit";
-        temppbutton.GetComponent<Button>().onClick.AddListener(ChangeSelectedButtonUnit);
+        temppbutton.GetComponent<Button>().onClick.AddListener(ChangeSelectedButton);
     } //populates the tile selection bar
 
     private void AddBuildingButtonsToContent()
@@ -144,8 +137,13 @@ public class MapEditMenueCamController : MonoBehaviour {
             tempbutton.name = kvp.Value.Title; //change name
             tempbutton.transform.GetChild(0).GetComponent<Text>().text = kvp.Value.Title; //change text on button to match sprite
             tempbutton.GetComponent<Image>().sprite = DBC.loadSprite(DBC.BuildingDictionary[kvp.Key].ArtworkDirectory[0]); //set sprite
-            tempbutton.GetComponent<Button>().onClick.AddListener(ChangeSelectedTerrainTobutton); //adds method to button clicked
+            tempbutton.GetComponent<Button>().onClick.AddListener(ChangeSelectedButton); //adds method to button clicked
         }
+
+        GameObject temppbutton = Instantiate(MapEditorTilesButtonPrefab, ContentWindowBuilding.transform);
+        temppbutton.name = "Delete Building";
+        temppbutton.transform.GetChild(0).GetComponent<Text>().text = "Delete Building";
+        temppbutton.GetComponent<Button>().onClick.AddListener(ChangeSelectedButton);
     } //populates the tile selection bar
 
     private void AddLoadButtonsToContent()
@@ -226,7 +224,7 @@ public class MapEditMenueCamController : MonoBehaviour {
 
     public void SavePanelSaveButtonClicked()
     {
-        GCS.SaveMap(GCS.TilePos, GCS.UnitPos,SaveInputField.text);
+        GCS.SaveMap(GCS.TilePos, GCS.UnitPos,GCS.BuildingPos,SaveInputField.text);
     } //activates save script in GameControllerScript
 
     public void LoadButtonClicked()

@@ -15,13 +15,21 @@ public class DatabaseController : MonoBehaviour {
     public Dictionary<int, Unit> UnitDictionary = new Dictionary<int, Unit>();
     public Dictionary<int, Building> BuildingDictionary = new Dictionary<int, Building>();
     private GameObject NewTile;
+    private MenueController MC;
 
     private void Start()
     {
+        MC = GameObject.Find("Canvas").GetComponent<MenueController>();
+        MC.LoadingUpdater(.2f);
         GetTerrianJsons();
+        MC.LoadingUpdater(.4f);
         GetUnitJsons();
+        MC.LoadingUpdater(.6f);
         GetBuildingJsons();
+        MC.LoadingUpdater(.8f);
         GetMouseJson();
+        MC.LoadingUpdater(1f);
+        
     }
 
     public void GetTerrianJsons()

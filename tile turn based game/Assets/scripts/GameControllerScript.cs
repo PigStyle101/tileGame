@@ -108,9 +108,11 @@ public class GameControllerScript : MonoBehaviour {
         try
         {
             var TilesToDelete = GameObject.FindGameObjectsWithTag("Terrain");
-            var UnitsToDelete = GameObject.FindGameObjectsWithTag("Terrain");
+            var UnitsToDelete = GameObject.FindGameObjectsWithTag("Unit");
+            var BuildingsToDelete = GameObject.FindGameObjectsWithTag("Building");
             TilePos.Clear();
             UnitPos.Clear();
+            BuildingPos.Clear();
             foreach(var GO in TilesToDelete)
             {
                 Destroy(GO);
@@ -118,6 +120,10 @@ public class GameControllerScript : MonoBehaviour {
             foreach(var GOU in UnitsToDelete)
             {
                 Destroy(GOU);
+            }
+            foreach(var BGO in BuildingsToDelete)
+            {
+                Destroy(BGO);
             }
             foreach(var kvp in mapToLoad.TerrainPositions)
             {
@@ -127,10 +133,23 @@ public class GameControllerScript : MonoBehaviour {
             {
                 DBC.CreateAndSpawnUnit(kvp.Key, kvp.Value);
             }
+            foreach(var kvp in mapToLoad.BuildingPositions)
+            {
+                DBC.CreateAndSpawnBuilding(kvp.Key, kvp.Value);
+            }
             AddTilesToDictionary();
             foreach(GameObject UGO in GameObject.FindGameObjectsWithTag("Unit"))
             {
                 AddUnitsToDictionary(UGO);
+            }
+            foreach(GameObject BGO in GameObject.FindGameObjectsWithTag("Building"))
+            {
+                AddBuildingToDictionary(BGO);
+            }
+            foreach(var kvp in TilePos)
+            {
+                kvp.Value.GetComponent<SpriteController>().RoadSpriteController();
+                kvp.Value.GetComponent<SpriteController>().WaterSpriteController();
             }
         }
         catch(Exception e)
@@ -239,13 +258,27 @@ public class GameControllerScript : MonoBehaviour {
                             if (hit.transform.name != MEMCC.SelectedButton) //are we changing the unit to something new?
                             {
                                 Debug.Log("Changing unit to " + MEMCC.SelectedButton);
+                                if (MEMCC.SelectedButton == "Delete Unit")
+                                {
+                                    UnitPos.Remove(hit.transform.position);
+                                }
                                 SC.ChangeUnit(); //change to new unit
                                 AddUnitsToDictionary(hit.transform.gameObject);
                             }
                         }
                         else if (hit.transform.tag == "Building")
                         {
-
+                            SpriteController SC = hit.transform.GetComponent<SpriteController>();
+                            if (hit.transform.name != MEMCC.SelectedButton) //are we changing the unit to something new?
+                            {
+                                Debug.Log("Changing building to " + MEMCC.SelectedButton);
+                                if (MEMCC.SelectedButton == "Delete Building")
+                                {
+                                    BuildingPos.Remove(hit.transform.position);
+                                }
+                                SC.ChangeBuilding(); //change to new unit
+                                AddBuildingToDictionary(hit.transform.gameObject);
+                            }
                         }
                     }
                     else if (hit.transform.tag == "Terrain" && MEMCC.SelectedTab == "Unit") //is the current hit not equal to what we are trying to place down. we are trying to place a unit.
@@ -284,7 +317,7 @@ public class GameControllerScript : MonoBehaviour {
 
     }// used to check were mouse is hitting and then act acordingly
 
-    public void SaveMap(Dictionary<Vector2, GameObject> TP, Dictionary<Vector2, GameObject> UP,string SaveName)
+    public void SaveMap(Dictionary<Vector2, GameObject> TP, Dictionary<Vector2, GameObject> UP,Dictionary<Vector2,GameObject> BP, string SaveName)
     {
         if (!System.IO.File.Exists(Application.dataPath + "/StreamingAssets/Saves/" + SaveName + ".dat"))
         {
@@ -303,14 +336,30 @@ public class GameControllerScript : MonoBehaviour {
                             }
                         }
                     }
-                    foreach (KeyValuePair<Vector2, GameObject> kvp in UP)
+                    foreach (KeyValuePair<Vector2, GameObject> ukvp in UP)
                     {
-                        foreach (var keyvp in DBC.UnitDictionary)
+                        if (ukvp.Value != null)
                         {
-                            if (kvp.Value.transform.name == keyvp.Value.Title)
+                            foreach (var keyvp in DBC.UnitDictionary)
                             {
-                                save.UnitPosition.Add(kvp.Key, keyvp.Key);
+                                if (ukvp.Value.transform.name == keyvp.Value.Title)
+                                {
+                                    save.UnitPosition.Add(ukvp.Key, keyvp.Key);
+                                }
                             }
+                        }
+                    }
+                    foreach (KeyValuePair<Vector2, GameObject> bkvp in BP)
+                    {
+                        if (bkvp.Value != null)
+                        {
+                            foreach (var keyvvp in DBC.BuildingDictionary)
+                            {
+                                if (bkvp.Value.transform.name == keyvvp.Value.Title)
+                                {
+                                    save.BuildingPositions.Add(bkvp.Key, keyvvp.Key);
+                                }
+                            } 
                         }
                     }
                     string destination = Application.dataPath + "/StreamingAssets/Saves/" + SaveName + ".dat";
@@ -366,6 +415,7 @@ public class Map
 {
     public Dictionary<SeralizableVector2, int> TerrainPositions = new Dictionary<SeralizableVector2, int>();
     public Dictionary<SeralizableVector2, int> UnitPosition = new Dictionary<SeralizableVector2, int>();
+    public Dictionary<SeralizableVector2, int> BuildingPositions = new Dictionary<SeralizableVector2, int>();
 } //this is needed to save the map, might be better way to do this.
 
 [Serializable]

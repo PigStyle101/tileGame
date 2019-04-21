@@ -79,7 +79,6 @@ public class SpriteController : MonoBehaviour
         if (MEMCC.SelectedButton == "Delete Unit")
         {
             Debug.Log("Deleting Unit");
-            GCS.UnitPos.Remove(gameObject.transform.position);
             Destroy(gameObject);
         }
         else
@@ -152,7 +151,7 @@ public class SpriteController : MonoBehaviour
                 if (kvp.Value.Title == gameObject.name)
                 {
                     TileId = kvp.Value.ID;
-                    Debug.Log("Set ID to: " + kvp.Value.ID);
+                    //Debug.Log("Set ID to: " + kvp.Value.ID);
                 }
             }
             Vector2 topLeftPos = currentPos + new Vector2(-1, 1);
@@ -452,7 +451,7 @@ public class SpriteController : MonoBehaviour
                 if (kvp.Value.Title == gameObject.name)
                 {
                     TileId = kvp.Value.ID;
-                    Debug.Log("Set ID to: " + kvp.Value.ID);
+                    //Debug.Log("Set ID to: " + kvp.Value.ID);
                 }
             }
             Vector2 topPos = OriginalPos + new Vector2(0, 1);
