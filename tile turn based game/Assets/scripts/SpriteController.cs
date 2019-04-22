@@ -26,19 +26,19 @@ public class SpriteController : MonoBehaviour
     private Vector3 Road3wayTopRotOffset = new Vector3(0, 0, 180);
     private Vector3 Road3wayRightRotOffset = new Vector3(0, 0, 90);
     private Vector3 Road3wayLeftRotOffset = new Vector3(0, 0, 270);
-
-    private Vector2 OriginalPos;
     private Vector3 OriginalRot;
+    public int Team;
 
     // Start is called before the first frame update
-    void Start()
+    private void Awake()
     {
         GCS = GameObject.Find("GameController").GetComponent<GameControllerScript>();
         MEMCC = GameObject.Find("MainCamera").GetComponent<MapEditMenueCamController>();
         DBC = GameObject.Find("GameController").GetComponent<DatabaseController>();
-
-        OriginalPos = gameObject.transform.position;
-        OriginalRot = gameObject.transform.eulerAngles;
+        Team = MEMCC.SelectedTeam;
+    }
+    void Start()
+    {
         if (gameObject.transform.tag == "Terrain")
         {
             MouseOverlaySpriteRender = gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>();
@@ -106,6 +106,7 @@ public class SpriteController : MonoBehaviour
                 //Debug.Log("Changing tile to " + kvp.Value.Title);
                 gameObject.name = kvp.Value.Title;//change name of tile
                 gameObject.GetComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.TerrainDictionary[kvp.Key].ArtworkDirectory[0]); //change sprite of tile
+                gameObject.transform.eulerAngles = new Vector3(0, 0, 0);
             }
         }
 
@@ -141,7 +142,7 @@ public class SpriteController : MonoBehaviour
 
     public void WaterSpriteController()
     {
-        if (gameObject.name == "Water")
+        if (gameObject.name == DBC.TerrainDictionary[1].Title)
         {
             //UnityEngine.Debug.Log("Starting Water Sprite Controller");
             var currentPos = (Vector2)transform.position;
@@ -441,8 +442,13 @@ public class SpriteController : MonoBehaviour
 
     public void RoadSpriteController()
     {
-        if (gameObject.name == "Road")
+        if (gameObject.name == DBC.TerrainDictionary[3].Title)
         {
+            var currentPos = (Vector2)transform.position;
+            if (OriginalRot == null)
+            {
+                OriginalRot = gameObject.transform.eulerAngles;
+            }
             var SR = gameObject.GetComponent<SpriteRenderer>();
             int TileId = 0;
             int counter = 0;
@@ -454,10 +460,10 @@ public class SpriteController : MonoBehaviour
                     //Debug.Log("Set ID to: " + kvp.Value.ID);
                 }
             }
-            Vector2 topPos = OriginalPos + new Vector2(0, 1);
-            Vector2 rightPos = OriginalPos + new Vector2(1, 0);
-            Vector2 bottomPos = OriginalPos + new Vector2(0, -1);
-            Vector2 leftPos = OriginalPos + new Vector2(-1, 0);
+            Vector2 topPos = currentPos + new Vector2(0, 1);
+            Vector2 rightPos = currentPos + new Vector2(1, 0);
+            Vector2 bottomPos = currentPos + new Vector2(0, -1);
+            Vector2 leftPos = currentPos + new Vector2(-1, 0);
             bool topBool = false;
             bool rightbool = false;
             bool bottombool = false;
@@ -577,6 +583,30 @@ public class SpriteController : MonoBehaviour
                     break;
             }
             counter = 0;
+        }
+    }
+
+    public void TeamSpriteController()
+    {
+        if (gameObject.tag == "Unit")
+        {
+            foreach(var kvp in DBC.UnitDictionary)
+            {
+                if (gameObject.name == kvp.Value.Title)
+                {
+                    gameObject.GetComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.UnitDictionary[kvp.Value.ID].ArtworkDirectory[Team]);
+                }
+            }
+        }
+        else if (gameObject.tag == "Building")
+        {
+            foreach(var kvp in DBC.BuildingDictionary)
+            {
+                if (gameObject.name == kvp.Value.Title)
+                {
+                    gameObject.GetComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.BuildingDictionary[kvp.Value.ID].ArtworkDirectory[Team]);
+                }
+            }
         }
     }
 }

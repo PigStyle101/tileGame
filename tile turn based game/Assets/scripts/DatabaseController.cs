@@ -170,7 +170,7 @@ public class DatabaseController : MonoBehaviour {
         TGO.transform.position = location;
     } //used to spawn terrian from database
 
-    public GameObject CreateAndSpawnUnit(Vector2 location,int index)
+    public GameObject CreateAndSpawnUnit(Vector2 location,int index, int team)
     {
         GameObject TGO = new GameObject();
         TGO.name = UnitDictionary[index].Title;
@@ -180,12 +180,13 @@ public class DatabaseController : MonoBehaviour {
         TGO.AddComponent<BoxCollider>();
         TGO.GetComponent<BoxCollider>().size = new Vector3(.95f, .95f, .1f);
         TGO.AddComponent<SpriteController>();
+        TGO.GetComponent<SpriteController>().Team = team;
         TGO.tag = "Unit";
         TGO.transform.position = location;
         return TGO;
     } //used to spawn units form database
 
-    public GameObject CreateAndSpawnBuilding(Vector2 location, int index)
+    public GameObject CreateAndSpawnBuilding(Vector2 location, int index, int team)
     {
         GameObject TGO = new GameObject();
         TGO.name = BuildingDictionary[index].Title;
@@ -195,6 +196,7 @@ public class DatabaseController : MonoBehaviour {
         TGO.AddComponent<BoxCollider>();
         TGO.GetComponent<BoxCollider>().size = new Vector3(.95f, .95f, .1f);
         TGO.AddComponent<SpriteController>();
+        TGO.GetComponent<SpriteController>().Team = team;
         TGO.tag = "Building";
         TGO.transform.position = location;
         return TGO;
@@ -219,6 +221,7 @@ public class DatabaseController : MonoBehaviour {
 
 }
 
+[System.Serializable]
 public class Terrain //the json file cannot have values that are not stated here, this can have more values then the json
 {
     public int ID;
@@ -273,6 +276,7 @@ public class MouseOverlays
     }
 }//same use as terrian class
 
+[System.Serializable]
 public class Unit
 {
     public int ID;
@@ -285,6 +289,7 @@ public class Unit
     public string Description;
     public string Slug;
     public List<string> ArtworkDirectory;
+    public int Team;
 
     public void GetSprites()
     {
@@ -304,6 +309,7 @@ public class Unit
     }
 }
 
+[System.Serializable]
 public class Building
 {
     public int ID;
@@ -312,6 +318,7 @@ public class Building
     public string Description;
     public string Slug;
     public List<string> ArtworkDirectory;
+    public int Team;
 
     public void GetSprites()
     {

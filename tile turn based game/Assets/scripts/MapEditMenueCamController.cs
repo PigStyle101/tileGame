@@ -26,6 +26,7 @@ public class MapEditMenueCamController : MonoBehaviour {
     public GameObject ContentWindowLoadButtons;
     public string SelectedTab;
     public string SelectedButton;
+    public int SelectedTeam;
     public Text CurrentSelectedButtonText;
     public Text SaveFeedback;
     public Text LoadFeedback;
@@ -43,6 +44,7 @@ public class MapEditMenueCamController : MonoBehaviour {
         AddUnitButtonsToContent();
         SelectedTab = "Terrain";
         SelectedButton = "Grass";
+        SelectedTeam = 1;
         SaveFeedback.text = "Use only letters, cannot save with name that is already in use";
         SavePanel.SetActive(false);
         CurrentSelectedButtonText.text = "Currently Selected: " + DBC.TerrainDictionary[0].Title;
@@ -250,5 +252,10 @@ public class MapEditMenueCamController : MonoBehaviour {
     {
         File.Delete(Application.dataPath + "/StreamingAssets/Saves/" + CurrentlySelectedLoadFile + ".dat");
         Destroy(CurrentlySelectedLoadGameObject);
+    }
+
+    public void TeamButtonClicked()
+    {
+        SelectedTeam = int.Parse(EventSystem.current.currentSelectedGameObject.name);
     }
 }

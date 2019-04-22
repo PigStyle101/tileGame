@@ -127,15 +127,15 @@ public class GameControllerScript : MonoBehaviour {
             }
             foreach(var kvp in mapToLoad.TerrainPositions)
             {
-                DBC.CreateAdnSpawnTerrain(kvp.Key, kvp.Value);
+                DBC.CreateAdnSpawnTerrain(kvp.Key, kvp.Value.ID);
             }
             foreach(var kvp in mapToLoad.UnitPosition)
             {
-                DBC.CreateAndSpawnUnit(kvp.Key, kvp.Value);
+                DBC.CreateAndSpawnUnit(kvp.Key, kvp.Value.ID,kvp.Value.Team);
             }
             foreach(var kvp in mapToLoad.BuildingPositions)
             {
-                DBC.CreateAndSpawnBuilding(kvp.Key, kvp.Value);
+                DBC.CreateAndSpawnBuilding(kvp.Key, kvp.Value.ID,kvp.Value.Team);
             }
             AddTilesToDictionary();
             foreach(GameObject UGO in GameObject.FindGameObjectsWithTag("Unit"))
@@ -146,11 +146,7 @@ public class GameControllerScript : MonoBehaviour {
             {
                 AddBuildingToDictionary(BGO);
             }
-            foreach(var kvp in TilePos)
-            {
-                kvp.Value.GetComponent<SpriteController>().RoadSpriteController();
-                kvp.Value.GetComponent<SpriteController>().WaterSpriteController();
-            }
+            SpriteUpdateActivator();
         }
         catch(Exception e)
         {
@@ -246,7 +242,7 @@ public class GameControllerScript : MonoBehaviour {
                             SpriteController SC = hit.transform.GetComponent<SpriteController>();
                             if (hit.transform.name != MEMCC.SelectedButton) //are we changing the tile to something new?
                             {
-                                Debug.Log("Changing unit to " + MEMCC.SelectedButton);
+                                Debug.Log("Changing terrain to " + MEMCC.SelectedButton);
                                 SC.ChangeTile(); //change tile to new terrain tile
                                 AddTilesToDictionary();
                                 SpriteUpdateActivator();
@@ -264,20 +260,32 @@ public class GameControllerScript : MonoBehaviour {
                                 }
                                 SC.ChangeUnit(); //change to new unit
                                 AddUnitsToDictionary(hit.transform.gameObject);
+                                SpriteUpdateActivator();
+                            }
+                            else if (hit.transform.GetComponent<SpriteController>().Team != MEMCC.SelectedTeam)
+                            {
+                                hit.transform.GetComponent<SpriteController>().Team = MEMCC.SelectedTeam;
+                                SpriteUpdateActivator();
                             }
                         }
                         else if (hit.transform.tag == "Building")
                         {
                             SpriteController SC = hit.transform.GetComponent<SpriteController>();
-                            if (hit.transform.name != MEMCC.SelectedButton) //are we changing the unit to something new?
+                            if (hit.transform.name != MEMCC.SelectedButton) //are we changing the building to something new?
                             {
                                 Debug.Log("Changing building to " + MEMCC.SelectedButton);
                                 if (MEMCC.SelectedButton == "Delete Building")
                                 {
                                     BuildingPos.Remove(hit.transform.position);
                                 }
-                                SC.ChangeBuilding(); //change to new unit
+                                SC.ChangeBuilding(); //change to new building
                                 AddBuildingToDictionary(hit.transform.gameObject);
+                                SpriteUpdateActivator();
+                            }
+                            else if (hit.transform.GetComponent<SpriteController>().Team != MEMCC.SelectedTeam)
+                            {
+                                hit.transform.GetComponent<SpriteController>().Team = MEMCC.SelectedTeam;
+                                SpriteUpdateActivator();
                             }
                         }
                     }
@@ -289,9 +297,22 @@ public class GameControllerScript : MonoBehaviour {
                             {
                                 if (kvp.Value.Title == MEMCC.SelectedButton) //need to find id for what unit we are trying to place
                                 {
-                                    GameObject tgo = DBC.CreateAndSpawnUnit(hit.transform.position, kvp.Key); //creat new unit at position on tile we clicked on.
-                                    AddUnitsToDictionary(tgo);
-                                    Debug.Log("Creating " + MEMCC.SelectedButton + " at " + hit.transform.position);
+                                    bool tempbool = false;
+                                    foreach (var item in DBC.TerrainDictionary)
+                                    {
+                                        if (hit.transform.name ==item.Value.Title)
+                                        {
+                                            tempbool = item.Value.Walkable;
+                                        }
+                                    }
+                                    if (tempbool)
+                                    {
+                                        GameObject tgo = DBC.CreateAndSpawnUnit(hit.transform.position, kvp.Key,MEMCC.SelectedTeam); //creat new unit at position on tile we clicked on.
+                                        tgo.GetComponent<SpriteController>().Team = MEMCC.SelectedTeam;
+                                        AddUnitsToDictionary(tgo);
+                                        Debug.Log("Creating " + MEMCC.SelectedButton + " at " + hit.transform.position);
+                                        SpriteUpdateActivator();
+                                    }
                                 }
                             }
                         }
@@ -304,9 +325,22 @@ public class GameControllerScript : MonoBehaviour {
                             {
                                 if (kvp.Value.Title == MEMCC.SelectedButton) //need to find id for what unit we are trying to place
                                 {
-                                    GameObject tgo = DBC.CreateAndSpawnBuilding(hit.transform.position, kvp.Key); //creat new building at position on tile we clicked on.
-                                    AddBuildingToDictionary(tgo);
-                                    Debug.Log("Creating " + MEMCC.SelectedButton + " at " + hit.transform.position);
+                                    bool tempbool = false;
+                                    foreach (var item in DBC.TerrainDictionary)
+                                    {
+                                        if (hit.transform.name == item.Value.Title)
+                                        {
+                                            tempbool = item.Value.Walkable;
+                                        }
+                                    }
+                                    if (tempbool)
+                                    {
+                                        GameObject tgo = DBC.CreateAndSpawnBuilding(hit.transform.position, kvp.Key,MEMCC.SelectedTeam); //creat new building at position on tile we clicked on.
+                                        tgo.GetComponent<SpriteController>().Team = MEMCC.SelectedTeam;
+                                        AddBuildingToDictionary(tgo);
+                                        Debug.Log("Creating " + MEMCC.SelectedButton + " at " + hit.transform.position);
+                                        SpriteUpdateActivator();
+                                    }
                                 }
                             }
                         }
@@ -332,7 +366,7 @@ public class GameControllerScript : MonoBehaviour {
                         {
                             if (kvp.Value.transform.name == kvvp.Value.Title)
                             {
-                                save.TerrainPositions.Add(kvp.Key, kvvp.Key);
+                                save.TerrainPositions.Add(kvp.Key, kvvp.Value);
                             }
                         }
                     }
@@ -344,7 +378,9 @@ public class GameControllerScript : MonoBehaviour {
                             {
                                 if (ukvp.Value.transform.name == keyvp.Value.Title)
                                 {
-                                    save.UnitPosition.Add(ukvp.Key, keyvp.Key);
+                                    save.UnitPosition.Add(ukvp.Key, keyvp.Value);
+                                    save.UnitPosition[ukvp.Key].Team = ukvp.Value.transform.GetComponent<SpriteController>().Team;//this errors, cant figure out why
+
                                 }
                             }
                         }
@@ -353,11 +389,12 @@ public class GameControllerScript : MonoBehaviour {
                     {
                         if (bkvp.Value != null)
                         {
-                            foreach (var keyvvp in DBC.BuildingDictionary)
+                            foreach (var kvp in DBC.BuildingDictionary)
                             {
-                                if (bkvp.Value.transform.name == keyvvp.Value.Title)
+                                if (bkvp.Value.transform.name == kvp.Value.Title)
                                 {
-                                    save.BuildingPositions.Add(bkvp.Key, keyvvp.Key);
+                                    save.BuildingPositions.Add(bkvp.Key, kvp.Value);
+                                    save.BuildingPositions[bkvp.Key].Team = bkvp.Value.transform.GetComponent<SpriteController>().Team;
                                 }
                             } 
                         }
@@ -407,15 +444,23 @@ public class GameControllerScript : MonoBehaviour {
             kvp.Value.GetComponent<SpriteController>().WaterSpriteController();
             kvp.Value.GetComponent<SpriteController>().RoadSpriteController();
         }
+        foreach(var kvp in UnitPos)
+        {
+            kvp.Value.GetComponent<SpriteController>().TeamSpriteController();
+        }
+        foreach (var kvp in BuildingPos)
+        {
+            kvp.Value.GetComponent<SpriteController>().TeamSpriteController();
+        }
     }
 }
 
 [Serializable]
 public class Map
 {
-    public Dictionary<SeralizableVector2, int> TerrainPositions = new Dictionary<SeralizableVector2, int>();
-    public Dictionary<SeralizableVector2, int> UnitPosition = new Dictionary<SeralizableVector2, int>();
-    public Dictionary<SeralizableVector2, int> BuildingPositions = new Dictionary<SeralizableVector2, int>();
+    public Dictionary<SeralizableVector2, Terrain> TerrainPositions = new Dictionary<SeralizableVector2, Terrain>();
+    public Dictionary<SeralizableVector2, Unit> UnitPosition = new Dictionary<SeralizableVector2, Unit>();
+    public Dictionary<SeralizableVector2, Building> BuildingPositions = new Dictionary<SeralizableVector2, Building>();
 } //this is needed to save the map, might be better way to do this.
 
 [Serializable]
