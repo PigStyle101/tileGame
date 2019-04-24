@@ -445,10 +445,7 @@ public class SpriteController : MonoBehaviour
         if (gameObject.name == DBC.TerrainDictionary[3].Title)
         {
             var currentPos = (Vector2)transform.position;
-            if (OriginalRot == null)
-            {
-                OriginalRot = gameObject.transform.eulerAngles;
-            }
+            OriginalRot = gameObject.transform.eulerAngles;
             var SR = gameObject.GetComponent<SpriteRenderer>();
             int TileId = 0;
             int counter = 0;

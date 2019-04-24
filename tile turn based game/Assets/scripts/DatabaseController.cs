@@ -16,9 +16,11 @@ public class DatabaseController : MonoBehaviour {
     public Dictionary<int, Building> BuildingDictionary = new Dictionary<int, Building>();
     private GameObject NewTile;
     private MenueController MC;
+    private GameControllerScript GCS;
 
     private void Start()
     {
+        GCS = gameObject.GetComponent<GameControllerScript>();
         MC = GameObject.Find("Canvas").GetComponent<MenueController>();
         MC.LoadingUpdater(.2f);
         GetTerrianJsons();
@@ -147,7 +149,7 @@ public class DatabaseController : MonoBehaviour {
         }
     }//same as getTerrainJson
 
-    public void CreateAdnSpawnTerrain(Vector2 location, int index)
+    public GameObject CreateAdnSpawnTerrain(Vector2 location, int index)
     {
 
         GameObject TGO = new GameObject();                                                                                  //create gameobject
@@ -168,6 +170,7 @@ public class DatabaseController : MonoBehaviour {
         MouseOverlayGO.name = "MouseOverlay";                                                                               //changing the name
         TGO.AddComponent<SpriteController>();                                                                               //adding the sprite controller script to it
         TGO.transform.position = location;
+        return TGO;
     } //used to spawn terrian from database
 
     public GameObject CreateAndSpawnUnit(Vector2 location,int index, int team)

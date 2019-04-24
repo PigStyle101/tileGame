@@ -150,7 +150,7 @@ public class MapEditMenueCamController : MonoBehaviour {
 
     private void AddLoadButtonsToContent()
     {
-        string[] files = Directory.GetFiles(Application.dataPath + "/StreamingAssets/Saves/", "*.dat");
+        string[] files = Directory.GetFiles(Application.dataPath + "/StreamingAssets/Saves/", "*.json");
         foreach(string file in files)
         {
             //Debug.Log(Path.GetFileNameWithoutExtension(file));
@@ -250,7 +250,7 @@ public class MapEditMenueCamController : MonoBehaviour {
 
     public void LoadPanelDeleteButtonClicked()
     {
-        File.Delete(Application.dataPath + "/StreamingAssets/Saves/" + CurrentlySelectedLoadFile + ".dat");
+        File.Delete(Application.dataPath + "/StreamingAssets/Saves/" + CurrentlySelectedLoadFile + ".json");
         Destroy(CurrentlySelectedLoadGameObject);
     }
 
