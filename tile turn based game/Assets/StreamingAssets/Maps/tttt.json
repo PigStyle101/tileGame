@@ -5,108 +5,120 @@
                 "x": 0.0,
                 "y": 0.0
             },
-            "Name": "Road",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 2
         },
         {
             "Location": {
                 "x": 0.0,
                 "y": 1.0
             },
-            "Name": "Road",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 0.0,
                 "y": 2.0
             },
-            "Name": "Road",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 0.0,
                 "y": 3.0
             },
-            "Name": "Water",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 0.0,
                 "y": 4.0
             },
-            "Name": "Water",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 0.0,
                 "y": 5.0
             },
-            "Name": "Water",
+            "Name": "Road",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 0.0,
                 "y": 6.0
             },
-            "Name": "Water",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 0.0,
                 "y": 7.0
             },
-            "Name": "Water",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 0.0,
                 "y": 8.0
             },
-            "Name": "Road",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 0.0,
                 "y": 9.0
             },
-            "Name": "Road",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 0.0,
                 "y": 10.0
             },
-            "Name": "Road",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 1.0,
                 "y": 0.0
             },
-            "Name": "Road",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
@@ -115,70 +127,78 @@
             },
             "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 1.0,
                 "y": 2.0
             },
-            "Name": "Road",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 1.0,
                 "y": 3.0
             },
-            "Name": "Water",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 1.0,
                 "y": 4.0
             },
-            "Name": "Water",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 1.0,
                 "y": 5.0
             },
-            "Name": "Water",
+            "Name": "Road",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 1.0,
                 "y": 6.0
             },
-            "Name": "Water",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 1.0,
                 "y": 7.0
             },
-            "Name": "Water",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 1.0,
                 "y": 8.0
             },
-            "Name": "Road",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
@@ -187,25 +207,28 @@
             },
             "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 1.0,
                 "y": 10.0
             },
-            "Name": "Road",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 2.0,
                 "y": 0.0
             },
-            "Name": "Road",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
@@ -214,70 +237,78 @@
             },
             "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 2.0,
                 "y": 2.0
             },
-            "Name": "Road",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 2.0,
                 "y": 3.0
             },
-            "Name": "Water",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 2.0,
                 "y": 4.0
             },
-            "Name": "Water",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 2.0,
                 "y": 5.0
             },
-            "Name": "Water",
+            "Name": "Road",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 2.0,
                 "y": 6.0
             },
-            "Name": "Water",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 2.0,
                 "y": 7.0
             },
-            "Name": "Water",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 2.0,
                 "y": 8.0
             },
-            "Name": "Road",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
@@ -286,115 +317,128 @@
             },
             "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 2.0,
                 "y": 10.0
             },
-            "Name": "Road",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 3.0,
                 "y": 0.0
             },
-            "Name": "Road",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 3.0,
                 "y": 1.0
             },
-            "Name": "Road",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 3.0,
                 "y": 2.0
             },
-            "Name": "Road",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 3.0,
                 "y": 3.0
             },
-            "Name": "Water",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 3.0,
                 "y": 4.0
             },
-            "Name": "Water",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 3.0,
                 "y": 5.0
             },
-            "Name": "Water",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 3.0,
                 "y": 6.0
             },
-            "Name": "Water",
+            "Name": "Forest",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 3.0,
                 "y": 7.0
             },
-            "Name": "Water",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 3.0,
                 "y": 8.0
             },
-            "Name": "Road",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 3.0,
                 "y": 9.0
             },
-            "Name": "Road",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 3.0,
                 "y": 10.0
             },
-            "Name": "Road",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
@@ -403,7 +447,8 @@
             },
             "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
@@ -412,34 +457,38 @@
             },
             "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 4.0,
                 "y": 2.0
             },
-            "Name": "Road",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 4.0,
                 "y": 3.0
             },
-            "Name": "Water",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 4.0,
                 "y": 4.0
             },
-            "Name": "Water",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
@@ -448,7 +497,8 @@
             },
             "Name": "Water",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
@@ -457,7 +507,8 @@
             },
             "Name": "Water",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
@@ -466,16 +517,18 @@
             },
             "Name": "Water",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 4.0,
                 "y": 8.0
             },
-            "Name": "Road",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
@@ -484,7 +537,8 @@
             },
             "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
@@ -493,7 +547,8 @@
             },
             "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
@@ -502,7 +557,8 @@
             },
             "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
@@ -511,34 +567,38 @@
             },
             "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 5.0,
                 "y": 2.0
             },
-            "Name": "Road",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 5.0,
                 "y": 3.0
             },
-            "Name": "Water",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 5.0,
                 "y": 4.0
             },
-            "Name": "Water",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
@@ -547,7 +607,8 @@
             },
             "Name": "Water",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
@@ -556,7 +617,8 @@
             },
             "Name": "Water",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
@@ -565,16 +627,18 @@
             },
             "Name": "Water",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 5.0,
                 "y": 8.0
             },
-            "Name": "Road",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
@@ -583,7 +647,8 @@
             },
             "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
@@ -592,7 +657,8 @@
             },
             "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
@@ -601,7 +667,8 @@
             },
             "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
@@ -610,70 +677,78 @@
             },
             "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 6.0,
                 "y": 2.0
             },
-            "Name": "Road",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 6.0,
                 "y": 3.0
             },
-            "Name": "Water",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 6.0,
                 "y": 4.0
             },
-            "Name": "Water",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 6.0,
                 "y": 5.0
             },
-            "Name": "Water",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 6.0,
                 "y": 6.0
             },
-            "Name": "Water",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 6.0,
                 "y": 7.0
             },
-            "Name": "Water",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 6.0,
                 "y": 8.0
             },
-            "Name": "Road",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
@@ -682,7 +757,8 @@
             },
             "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
@@ -691,106 +767,118 @@
             },
             "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 7.0,
                 "y": 0.0
             },
-            "Name": "Water",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 7.0,
                 "y": 1.0
             },
-            "Name": "Water",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 7.0,
                 "y": 2.0
             },
-            "Name": "Road",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 7.0,
                 "y": 3.0
             },
-            "Name": "Water",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 7.0,
                 "y": 4.0
             },
-            "Name": "Water",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 7.0,
                 "y": 5.0
             },
-            "Name": "Water",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 7.0,
                 "y": 6.0
             },
-            "Name": "Water",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 7.0,
                 "y": 7.0
             },
-            "Name": "Water",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 7.0,
                 "y": 8.0
             },
-            "Name": "Road",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 7.0,
                 "y": 9.0
             },
-            "Name": "Water",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 7.0,
                 "y": 10.0
             },
-            "Name": "Water",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
@@ -799,7 +887,8 @@
             },
             "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
@@ -808,70 +897,78 @@
             },
             "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 8.0,
                 "y": 2.0
             },
-            "Name": "Road",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 8.0,
                 "y": 3.0
             },
-            "Name": "Road",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 8.0,
                 "y": 4.0
             },
-            "Name": "Road",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 8.0,
                 "y": 5.0
             },
-            "Name": "Road",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 8.0,
                 "y": 6.0
             },
-            "Name": "Road",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 8.0,
                 "y": 7.0
             },
-            "Name": "Road",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 8.0,
                 "y": 8.0
             },
-            "Name": "Road",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
@@ -880,7 +977,8 @@
             },
             "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
@@ -889,7 +987,8 @@
             },
             "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
@@ -898,7 +997,8 @@
             },
             "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
@@ -907,7 +1007,8 @@
             },
             "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
@@ -916,7 +1017,8 @@
             },
             "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
@@ -925,16 +1027,18 @@
             },
             "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 9.0,
                 "y": 4.0
             },
-            "Name": "Road",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
@@ -943,16 +1047,18 @@
             },
             "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 9.0,
                 "y": 6.0
             },
-            "Name": "Road",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
@@ -961,7 +1067,8 @@
             },
             "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
@@ -970,7 +1077,8 @@
             },
             "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
@@ -979,7 +1087,8 @@
             },
             "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
@@ -988,7 +1097,8 @@
             },
             "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
@@ -997,7 +1107,8 @@
             },
             "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
@@ -1006,7 +1117,8 @@
             },
             "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
@@ -1015,7 +1127,8 @@
             },
             "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
@@ -1024,34 +1137,38 @@
             },
             "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 10.0,
                 "y": 4.0
             },
-            "Name": "Road",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 10.0,
                 "y": 5.0
             },
-            "Name": "Road",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 10.0,
                 "y": 6.0
             },
-            "Name": "Road",
+            "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
@@ -1060,7 +1177,8 @@
             },
             "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
@@ -1069,7 +1187,8 @@
             },
             "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
@@ -1078,7 +1197,8 @@
             },
             "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
@@ -1087,160 +1207,88 @@
             },
             "Name": "Grass",
             "Team": 0,
-            "Type": "Terrain"
+            "Type": "Terrain",
+            "TeamCount": 0
         },
         {
             "Location": {
-                "x": 4.0,
-                "y": 1.0
+                "x": 3.0,
+                "y": 6.0
             },
-            "Name": "Soldier",
+            "Name": "Militia",
             "Team": 3,
-            "Type": "Unit"
+            "Type": "Unit",
+            "TeamCount": 0
         },
         {
             "Location": {
-                "x": 4.0,
-                "y": 0.0
+                "x": 3.0,
+                "y": 7.0
             },
-            "Name": "Soldier",
+            "Name": "Militia",
             "Team": 3,
-            "Type": "Unit"
-        },
-        {
-            "Location": {
-                "x": 7.0,
-                "y": 2.0
-            },
-            "Name": "Soldier",
-            "Team": 2,
-            "Type": "Unit"
-        },
-        {
-            "Location": {
-                "x": 7.0,
-                "y": 8.0
-            },
-            "Name": "Soldier",
-            "Team": 2,
-            "Type": "Unit"
+            "Type": "Unit",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 4.0,
-                "y": 9.0
-            },
-            "Name": "Soldier",
-            "Team": 1,
-            "Type": "Unit"
-        },
-        {
-            "Location": {
-                "x": 5.0,
-                "y": 9.0
-            },
-            "Name": "Soldier",
-            "Team": 1,
-            "Type": "Unit"
-        },
-        {
-            "Location": {
-                "x": 8.0,
                 "y": 8.0
             },
             "Name": "Archer",
-            "Team": 2,
-            "Type": "Unit"
+            "Team": 3,
+            "Type": "Unit",
+            "TeamCount": 0
         },
         {
             "Location": {
-                "x": 8.0,
-                "y": 2.0
+                "x": 5.0,
+                "y": 8.0
             },
             "Name": "Archer",
+            "Team": 3,
+            "Type": "Unit",
+            "TeamCount": 0
+        },
+        {
+            "Location": {
+                "x": 6.0,
+                "y": 7.0
+            },
+            "Name": "Militia",
             "Team": 2,
-            "Type": "Unit"
+            "Type": "Unit",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 1.0,
-                "y": 9.0
+                "y": 6.0
             },
             "Name": "Town",
             "Team": 1,
-            "Type": "Building"
-        },
-        {
-            "Location": {
-                "x": 9.0,
-                "y": 5.0
-            },
-            "Name": "Town",
-            "Team": 2,
-            "Type": "Building"
+            "Type": "Building",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 1.0,
-                "y": 1.0
-            },
-            "Name": "Town",
-            "Team": 3,
-            "Type": "Building"
-        },
-        {
-            "Location": {
-                "x": 9.0,
-                "y": 3.0
-            },
-            "Name": "Town",
-            "Team": 2,
-            "Type": "Building"
-        },
-        {
-            "Location": {
-                "x": 9.0,
                 "y": 7.0
             },
             "Name": "Town",
             "Team": 2,
-            "Type": "Building"
-        },
-        {
-            "Location": {
-                "x": 10.0,
-                "y": 7.0
-            },
-            "Name": "Town",
-            "Team": 2,
-            "Type": "Building"
-        },
-        {
-            "Location": {
-                "x": 10.0,
-                "y": 3.0
-            },
-            "Name": "Town",
-            "Team": 2,
-            "Type": "Building"
+            "Type": "Building",
+            "TeamCount": 0
         },
         {
             "Location": {
                 "x": 2.0,
-                "y": 1.0
+                "y": 6.0
             },
             "Name": "Town",
             "Team": 3,
-            "Type": "Building"
-        },
-        {
-            "Location": {
-                "x": 2.0,
-                "y": 9.0
-            },
-            "Name": "Town",
-            "Team": 1,
-            "Type": "Building"
+            "Type": "Building",
+            "TeamCount": 0
         }
     ]
 }

@@ -4,8 +4,9 @@
   "Defence": 1,
   "Range": 1,
   "MovePoints": 3,
-  "Cost":  100,
+  "Cost": 100,
   "Title": "Militia",
   "Description": "Weak unit overall but cheap",
-  "Slug": "militia_unit"
+  "Slug": "militia_unit",
+  "Type": "Unit"
 }

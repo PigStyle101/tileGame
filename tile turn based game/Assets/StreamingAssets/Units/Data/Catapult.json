@@ -7,5 +7,6 @@
   "Cost": 300,
   "Title": "Catapult",
   "Description": "Long ranged unit with high damage but low movement",
-  "Slug": "catapult_unit"
+  "Slug": "catapult_unit",
+  "Type": "Unit"
 }

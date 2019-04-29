@@ -4,5 +4,6 @@
   "Walkable": true,
   "Description": "Field of Grass",
   "DefenceBonus": 0,
-  "Slug": "grass_tile"
+  "Slug": "grass_tile",
+  "Type":  "Terrain"
 }

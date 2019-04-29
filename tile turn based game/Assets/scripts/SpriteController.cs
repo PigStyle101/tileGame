@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 
 public class SpriteController : MonoBehaviour
 {
     private GameControllerScript GCS;
     private MapEditMenueCamController MEMCC;
     private DatabaseController DBC;
-    public SpriteRenderer MouseOverlaySpriteRender;
     private Dictionary<string, GameObject> WaterOverlays = new Dictionary<string, GameObject>();
     private Vector3 TopRotOffest = new Vector3(0, 0, 90);
     private Vector3 LeftRotOffset = new Vector3(0, 0, 180);
@@ -27,19 +27,27 @@ public class SpriteController : MonoBehaviour
     private Vector3 Road3wayRightRotOffset = new Vector3(0, 0, 90);
     private Vector3 Road3wayLeftRotOffset = new Vector3(0, 0, 270);
     private Vector3 OriginalRot;
+    [HideInInspector]
+    public SpriteRenderer MouseOverlaySpriteRender;
+    [HideInInspector]
     public int Team;
+    public bool Movable;
 
     // Start is called before the first frame update
     private void Awake()
     {
+        if (SceneManager.GetActiveScene().name == "MapEditorScene")
+        {
+            MEMCC = GameObject.Find("MainCamera").GetComponent<MapEditMenueCamController>();
+            Team = MEMCC.SelectedTeam;
+        }
         GCS = GameObject.Find("GameController").GetComponent<GameControllerScript>();
-        MEMCC = GameObject.Find("MainCamera").GetComponent<MapEditMenueCamController>();
         DBC = GameObject.Find("GameController").GetComponent<DatabaseController>();
-        Team = MEMCC.SelectedTeam;
     }
     void Start()
     {
-        if (gameObject.transform.tag == "Terrain")
+        
+        if (gameObject.transform.tag == DBC.TerrainDictionary[0].Type)
         {
             MouseOverlaySpriteRender = gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>();
             MouseOverlaySpriteRender.enabled = false;
@@ -107,6 +115,16 @@ public class SpriteController : MonoBehaviour
                 gameObject.name = kvp.Value.Title;//change name of tile
                 gameObject.GetComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.TerrainDictionary[kvp.Key].ArtworkDirectory[0]); //change sprite of tile
                 gameObject.transform.eulerAngles = new Vector3(0, 0, 0);
+                if (GCS.UnitPos.ContainsKey(gameObject.transform.position) && DBC.TerrainDictionary[kvp.Key].Walkable == false)
+                {
+                    Destroy(GCS.UnitPos[gameObject.transform.position]);
+                    GCS.UnitPos.Remove(gameObject.transform.position);
+                }
+                if (GCS.BuildingPos.ContainsKey(gameObject.transform.position) && DBC.TerrainDictionary[kvp.Key].Walkable == false)
+                {
+                    Destroy(GCS.BuildingPos[gameObject.transform.position]);
+                    GCS.BuildingPos.Remove(gameObject.transform.position);
+                }
             }
         }
 
@@ -114,7 +132,7 @@ public class SpriteController : MonoBehaviour
 
     private void MouseOverlayRayCaster()
     {
-        if (gameObject.transform.tag == "Terrain")
+        if (gameObject.transform.tag == DBC.TerrainDictionary[0].Type)
         {
             if (!EventSystem.current.IsPointerOverGameObject())
             {
@@ -127,7 +145,7 @@ public class SpriteController : MonoBehaviour
                     {
                         MouseOverlaySpriteRender.enabled = true;
                     }
-                    else if (hit.transform.tag == "Unit" || hit.transform.tag == "Building") //if tag is a unit or building do nothing.
+                    else if (hit.transform.tag == DBC.UnitDictionary[0].Type || hit.transform.tag == DBC.BuildingDictionary[0].Type) //if tag is a unit or building do nothing.
                     {
 
                     }
@@ -438,14 +456,17 @@ public class SpriteController : MonoBehaviour
             }
         }
 
-    }
+    } //Controlls the overlay for adding banks to the water sprites
 
     public void RoadSpriteController()
     {
         if (gameObject.name == DBC.TerrainDictionary[3].Title)
         {
             var currentPos = (Vector2)transform.position;
-            OriginalRot = gameObject.transform.eulerAngles;
+            if (OriginalRot == null)
+            {
+                OriginalRot = gameObject.transform.eulerAngles;
+            }
             var SR = gameObject.GetComponent<SpriteRenderer>();
             int TileId = 0;
             int counter = 0;
@@ -581,7 +602,7 @@ public class SpriteController : MonoBehaviour
             }
             counter = 0;
         }
-    }
+    } //makes teh roads attatch to each other
 
     public void TeamSpriteController()
     {
@@ -605,5 +626,17 @@ public class SpriteController : MonoBehaviour
                 }
             }
         }
-    }
+    }   //controlls the sprite for unit or building based on the team
+
+    public void RoundUpdater()
+    {
+        if (Team == GCS.CurrentTeamsTurn && gameObject.tag == DBC.UnitDictionary[0].Type)
+        {
+            Movable = true;
+        }
+        else
+        {
+            Movable = false;
+        }
+    }  //used to set the movable variable. called from game controller
 }

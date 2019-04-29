@@ -7,6 +7,7 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine.EventSystems;
 using System.Text.RegularExpressions;
+using UnityEngine.UI;
 
 public class GameControllerScript : MonoBehaviour {
     
@@ -23,21 +24,37 @@ public class GameControllerScript : MonoBehaviour {
     public Dictionary<Vector2, GameObject> UnitPos = new Dictionary<Vector2, GameObject>();
     public Dictionary<Vector2, GameObject> BuildingPos = new Dictionary<Vector2, GameObject>();
     private GameObject CameraVar;
-    public GameObject[] TileArray;
-    public GameObject[] UnitArray;
-    public SpriteRenderer SelectedTileOverlay;
-    public GameObject SelectedTile;
-    public DatabaseController DBC;
-    public int mapSize;
-    public GameObject SelectedUnit;
-    private MapEditMenueCamController MEMCC;
     private string CurrentScene;
     private List<string> LoadButtons;
+    private DatabaseController DBC;
+    private MapEditMenueCamController MEMCC;
+    private PlaySceneCamController PSCC;
+    [HideInInspector]
+    public GameObject[] TileArray;
+    [HideInInspector]
+    public GameObject[] UnitArray;
+    [HideInInspector]
+    public SpriteRenderer SelectedTileOverlay;
+    [HideInInspector]
+    public GameObject SelectedTile;
+    [HideInInspector]
+    public int EditorMapSize;
+    [HideInInspector]
+    public int PlayMapSize;
+    public GameObject SelectedUnitPlayScene = null;
+    [HideInInspector]
+    public string MapNameForPlayScene;
+    [HideInInspector]
+    public string PlaySceneLoadStatus;
+    [HideInInspector]
+    public int TeamCount;
+    [HideInInspector]
+    public int CurrentTeamsTurn;
 
     private void Awake()
     {
-        DontDestroyOnLoad(this); //need this to always be here
         DBC = gameObject.GetComponent<DatabaseController>(); //referance to database
+        DontDestroyOnLoad(gameObject);
     }
 
     void OnEnable ()
@@ -48,11 +65,12 @@ public class GameControllerScript : MonoBehaviour {
     private void Update()
     {
         RayCastForMapEditor();
+        RayCastForPlayScene();
     }
 
-    public void CreateNewMap (int MapSize)
+    public void CreateNewMapForMapEditor (int MapSize)
     {
-        mapSize = MapSize;
+        EditorMapSize = MapSize;
         SceneManager.LoadScene(2);//notes and stuff
     }//used to pull map size from menue controller script and set a varaible in here
 
@@ -65,16 +83,29 @@ public class GameControllerScript : MonoBehaviour {
             if (sceneVar.name == "MapEditorScene")
             {
                 MEMCC = GameObject.Find("MainCamera").GetComponent<MapEditMenueCamController>();
-                for (int i = 0; i < mapSize; i++)
+                for (int i = 0; i < EditorMapSize; i++)
                 {
-                    for (int o = 0; o < mapSize; o++)
+                    for (int o = 0; o < EditorMapSize; o++)
                     {
-                        MapDictionary.Add(new Vector2(i, o), "Grass");
+                        MapDictionary.Add(new Vector2(i, o), DBC.TerrainDictionary[0].Title);
                         //UnityEngine.Debug.Log("Added Key: " + i + o);
                     }
                 }
                 DrawNewMapForMapEditor();
                 MapDictionary.Clear(); //clear dictionary for good measure
+            }
+            else if (sceneVar.name == "PlayScene")
+            {
+                PSCC = GameObject.Find("MainCamera").GetComponent<PlaySceneCamController>();
+                if (PlaySceneLoadStatus == "NewGame")
+                {
+                    LoadMapPlayScene(MapNameForPlayScene);
+                    PlaySceneNewGameInitalizer();
+                }
+            }
+            else if (sceneVar.name  == "MainMenuScene")
+            {
+
             }
         }
         catch (Exception e)
@@ -94,7 +125,7 @@ public class GameControllerScript : MonoBehaviour {
                 AddTilesToDictionary(go);
             }
             CameraVar = GameObject.Find("MainCamera");
-            CameraVar.transform.position = new Vector3(mapSize / 2 - .5f, mapSize / 2 - .5f, mapSize * -1);
+            CameraVar.transform.position = new Vector3(EditorMapSize / 2 - .5f, EditorMapSize / 2 - .5f, EditorMapSize * -1);
         }
         catch (Exception e)
         {
@@ -153,9 +184,9 @@ public class GameControllerScript : MonoBehaviour {
 
     public void RayCastForMapEditor()
     {
-        if (!EventSystem.current.IsPointerOverGameObject())
+        if (Input.GetMouseButtonDown(0) && CurrentScene == "MapEditorScene") //are we in map editor scene?
         {
-            if (Input.GetMouseButtonDown(0) && CurrentScene == "MapEditorScene") //are we in map editor scene?
+            if (!EventSystem.current.IsPointerOverGameObject()) 
             {
                 //Debug.Log("Raycast activated");
                 Ray ray = GameObject.Find("MainCamera").GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
@@ -167,7 +198,7 @@ public class GameControllerScript : MonoBehaviour {
                     RaycastHit hit = hits[i];
                     if (hit.transform.tag == MEMCC.SelectedTab) //is the hit tag = to what we are trying to place down?
                     {
-                        if (hit.transform.tag == "Terrain") //is it a terrain?
+                        if (hit.transform.tag == DBC.TerrainDictionary[0].Type) //is it a terrain?
                         {
                             SpriteController SC = hit.transform.GetComponent<SpriteController>();
                             if (hit.transform.name != MEMCC.SelectedButton) //are we changing the tile to something new?
@@ -178,7 +209,7 @@ public class GameControllerScript : MonoBehaviour {
                                 SpriteUpdateActivator();
                             }
                         }
-                        else if (hit.transform.tag == "Unit") //is the hit a unit?
+                        else if (hit.transform.tag == DBC.UnitDictionary[0].Type) //is the hit a unit?
                         {
                             SpriteController SC = hit.transform.GetComponent<SpriteController>();
                             if (hit.transform.name != MEMCC.SelectedButton) //are we changing the unit to something new?
@@ -198,7 +229,7 @@ public class GameControllerScript : MonoBehaviour {
                                 SpriteUpdateActivator();
                             }
                         }
-                        else if (hit.transform.tag == "Building")
+                        else if (hit.transform.tag == DBC.BuildingDictionary[0].Type)
                         {
                             SpriteController SC = hit.transform.GetComponent<SpriteController>();
                             if (hit.transform.name != MEMCC.SelectedButton) //are we changing the building to something new?
@@ -219,23 +250,19 @@ public class GameControllerScript : MonoBehaviour {
                             }
                         }
                     }
-                    else if (hit.transform.tag == "Terrain" && MEMCC.SelectedTab == "Unit") //is the current hit not equal to what we are trying to place down. we are trying to place a unit.
+                    else if (hit.transform.tag == DBC.TerrainDictionary[0].Type && MEMCC.SelectedTab == DBC.UnitDictionary[0].Type) //is the current hit not equal to what we are trying to place down. we are trying to place a unit.
                     {
-                        Debug.Log("1");
                         if (!UnitPos.ContainsKey(hit.transform.position)) //is there a unit there already?
                         {
-                            Debug.Log("2"); ;
                             foreach (KeyValuePair<int, Unit> kvp in DBC.UnitDictionary)
                             {
                                 if (kvp.Value.Title == MEMCC.SelectedButton) //need to find id for what unit we are trying to place
                                 {
-                                    Debug.Log("3");
                                     bool tempbool = false;
                                     foreach (var item in DBC.TerrainDictionary)
                                     {
                                         if (hit.transform.name ==item.Value.Title)
-                                        {
-                                            Debug.Log("4");
+                                        {;
                                             tempbool = item.Value.Walkable;
                                         }
                                     }
@@ -251,7 +278,7 @@ public class GameControllerScript : MonoBehaviour {
                             }
                         }
                     }
-                    else if (hit.transform.tag == "Terrain" && MEMCC.SelectedTab == "Building")
+                    else if (hit.transform.tag == DBC.TerrainDictionary[0].Type && MEMCC.SelectedTab == DBC.BuildingDictionary[0].Type)
                     {
                         if (!BuildingPos.ContainsKey(hit.transform.position))
                         {
@@ -285,16 +312,93 @@ public class GameControllerScript : MonoBehaviour {
 
     }// used to check were mouse is hitting and then act acordingly
 
+    public void RayCastForPlayScene()
+    {
+        if (Input.GetMouseButtonDown(0) && CurrentScene == "PlayScene") //are we in play scene?
+        {
+            if (!EventSystem.current.IsPointerOverGameObject()) //dont want to click through menus
+            {
+                Ray ray = GameObject.Find("MainCamera").GetComponent<Camera>().ScreenPointToRay(Input.mousePosition); //GET THEM RAYS
+                RaycastHit[] hits;
+                hits = Physics.RaycastAll(ray);
+                Debug.Log("Starting play scene ray hits");
+                for (int i = 0; i < hits.Length; i++) // GO THROUGH THEM RAYS
+                {
+                    RaycastHit hit = hits[i];
+                    if (hit.transform.tag == DBC.UnitDictionary[0].Type && SelectedUnitPlayScene == null && hit.transform.GetComponent<SpriteController>().Movable)
+                    {//is the hit a unit? is the unit movable? is the unit not selected?
+                        SelectedUnitPlayScene = hit.transform.gameObject; //set unit to selected unit
+                        Debug.Log("SelectedUnit = " + SelectedUnitPlayScene.transform.name);
+                    }
+                    else if (hit.transform.tag == DBC.UnitDictionary[0].Type && SelectedUnitPlayScene == hit.transform.gameObject) //is the hit a unit? is the unit selected already?
+                    {
+                        SelectedUnitPlayScene = null; //clear selected unit variable
+                        Debug.Log("Selected unit set to null");
+                    }
+                    else if (hit.transform.tag == DBC.TerrainDictionary[0].Type || hit.transform.tag == DBC.BuildingDictionary[0].Type) //is the hit a terrain or building?
+                    {
+                        Debug.Log("Building or terrain hit");
+                        if (SelectedUnitPlayScene != null)
+                        {
+                            if (hit.transform.position != SelectedUnitPlayScene.transform.position) //is the building or terrain not the one the unit is standing on?
+                            {
+                                if (!UnitPos.ContainsKey(hit.transform.position))
+                                {
+                                    int originalPositionOfUnit = ((int)SelectedUnitPlayScene.transform.position.x) + ((int)SelectedUnitPlayScene.transform.position.y); //get unit position
+                                    int MoveToPosition = ((int)hit.transform.position.x) + ((int)hit.transform.position.y); //get position we want to move to
+                                    int MovePointsNeeded = System.Math.Abs(originalPositionOfUnit - MoveToPosition); //do teh math to get how many move points are needed
+                                    Debug.Log("Move points needed:" + MovePointsNeeded);
+                                    int MovePoints = 0; //delair a variable
+                                    foreach (var kvp in DBC.UnitDictionary) //need to get the unit move points
+                                    {
+                                        if (SelectedUnitPlayScene.transform.name == kvp.Value.Title)
+                                        {
+                                            MovePoints = kvp.Value.MovePoints;
+                                            Debug.Log("Move points avalible: " + MovePoints);
+                                        }
+                                    }
+                                    if (MovePointsNeeded <= MovePoints) //does the unit have enough move points?
+                                    {
+                                        Debug.Log("Moving Unit");
+                                        SelectedUnitPlayScene.transform.position = hit.transform.position; //move unit
+                                        SelectedUnitPlayScene.GetComponent<SpriteController>().Movable = false; //set unit movable to false
+                                        SelectedUnitPlayScene = null;
+                                    }
+                                    else
+                                    {
+                                        Debug.Log("Not enough move points");
+                                    }
+                                }
+                                else
+                                {
+                                    Debug.Log("Unit in the way");
+                                }
+                            } 
+                        }
+                    }
+                    else
+                    {
+                        Debug.Log("Nothing hit");
+                    }
+                }
+            }
+        }
+    } //used to check were mouse is hitting and then act acordingly  //STILL WORKING ON THIS, NOT ENTIRLY SURE HOW I AM GOING TO DO THIS YET
+
     public void SaveMap(Dictionary<Vector2, GameObject> TP, Dictionary<Vector2, GameObject> UP,Dictionary<Vector2,GameObject> BP, string SaveName)
     {
-        if (!System.IO.File.Exists(Application.dataPath + "/StreamingAssets/Saves/" + SaveName + ".json"))
+        if (!System.IO.File.Exists(Application.dataPath + "/StreamingAssets/Maps/" + SaveName + ".json"))
         {
             if (SaveName != "")
             {
                 if (!Regex.IsMatch(SaveName, @"^[a-z][A-Z]+$"))
                 {
                     int count = 0;
+                    TeamCount = 0;
                     Map[] save = new Map[TP.Count + UP.Count + BP.Count];
+                    bool team1 = false;
+                    bool team2 = false;
+                    bool team3 = false;
                     foreach (KeyValuePair<Vector2, GameObject> kvp in TP)
                     {
                         if (kvp.Value != null)
@@ -302,8 +406,7 @@ public class GameControllerScript : MonoBehaviour {
                             save[count] = new Map();
                             save[count].Location = kvp.Key;
                             save[count].Name = kvp.Value.name;
-                            save[count].Type = "Terrain";
-                            //save[count].Team = kvp.Value.GetComponent<SpriteController>().Team;
+                            save[count].Type = DBC.TerrainDictionary[0].Type;
                             count = count + 1; 
                         }
                     }
@@ -314,9 +417,21 @@ public class GameControllerScript : MonoBehaviour {
                             save[count] = new Map();
                             save[count].Location = kvp.Key;
                             save[count].Name = kvp.Value.name;
-                            save[count].Type = "Unit";
+                            save[count].Type = DBC.UnitDictionary[0].Type;
                             save[count].Team = kvp.Value.GetComponent<SpriteController>().Team;
                             count = count + 1;
+                            if (kvp.Value.GetComponent<SpriteController>().Team == 1)
+                            {
+                                team1 = true;
+                            }
+                            if (kvp.Value.GetComponent<SpriteController>().Team == 2)
+                            {
+                                team2 = true;
+                            }
+                            if (kvp.Value.GetComponent<SpriteController>().Team == 3)
+                            {
+                                team3 = true;
+                            }
                         }
                     }
                     foreach (KeyValuePair<Vector2, GameObject> kvp in BP)
@@ -328,21 +443,41 @@ public class GameControllerScript : MonoBehaviour {
                                 save[count] = new Map();
                                 save[count].Location = kvp.Key;
                                 save[count].Name = kvp.Value.name;
-                                save[count].Type = "Building";
+                                save[count].Type = DBC.BuildingDictionary[0].Type;
                                 save[count].Team = kvp.Value.GetComponent<SpriteController>().Team;
                                 count = count + 1;
                             }
                         }
                     }
-                    string tempjson = JsonHelper.ToJson(save, true);
-                    FileStream fs = File.Create(Application.dataPath + "/StreamingAssets/Saves/" + SaveName + ".json");
-                    StreamWriter sr = new StreamWriter(fs);
-                    sr.Write(tempjson);
-                    sr.Close();
-                    sr.Dispose();
-                    fs.Close();
-                    fs.Dispose();
-                    MEMCC.SaveFeedback.text = "File saved as: " + SaveName;  
+                    if (team1)
+                    {
+                        TeamCount = TeamCount + 1;
+                    }
+                    if (team2)
+                    {
+                        TeamCount = TeamCount + 1;
+                    }
+                    if (team3)
+                    {
+                        TeamCount = TeamCount + 1;
+                    }
+                    if (TeamCount >= 2)
+                    {
+                        save[0].TeamCount = TeamCount;
+                        string tempjson = JsonHelper.ToJson(save, true);
+                        FileStream fs = File.Create(Application.dataPath + "/StreamingAssets/Maps/" + SaveName + ".json");
+                        StreamWriter sr = new StreamWriter(fs);
+                        sr.Write(tempjson);
+                        sr.Close();
+                        sr.Dispose();
+                        fs.Close();
+                        fs.Dispose();
+                        MEMCC.SaveFeedback.text = "File saved as: " + SaveName;   
+                    }
+                    else
+                    {
+                        MEMCC.SaveFeedback.text = "Need to have more then 1 team to save a map";
+                    }
                 }
                 else
                 {
@@ -360,16 +495,16 @@ public class GameControllerScript : MonoBehaviour {
         }
     }//checks if file already exsist and if it does not it creates new file and stores current map items into dictionarys as (location,id number)
 
-    public void LoadMap(string name)
+    public void LoadMapMapEditor(string name)
     {
-        StreamReader SR = new StreamReader( Application.dataPath + "/StreamingAssets/Saves/" + name + ".json");
+        StreamReader SR = new StreamReader( Application.dataPath + "/StreamingAssets/Maps/" + name + ".json");
         string tempstring = SR.ReadToEnd();
         Map[] Load = JsonHelper.FromJson<Map>(tempstring);
 
 
-        var TilesToDelete = GameObject.FindGameObjectsWithTag("Terrain");
-        var UnitsToDelete = GameObject.FindGameObjectsWithTag("Unit");
-        var BuildingsToDelete = GameObject.FindGameObjectsWithTag("Building");
+        var TilesToDelete = GameObject.FindGameObjectsWithTag(DBC.TerrainDictionary[0].Type);
+        var UnitsToDelete = GameObject.FindGameObjectsWithTag(DBC.UnitDictionary[0].Type);
+        var BuildingsToDelete = GameObject.FindGameObjectsWithTag(DBC.BuildingDictionary[0].Type);
         TilePos.Clear();
         UnitPos.Clear();
         BuildingPos.Clear();
@@ -388,7 +523,7 @@ public class GameControllerScript : MonoBehaviour {
 
         for (int i = 0; i < Load.Length; i++)
         {
-            if (Load[i].Type == "Terrain")
+            if (Load[i].Type == DBC.TerrainDictionary[0].Type)
             {
                 foreach(var kvp in DBC.TerrainDictionary)
                 {
@@ -398,7 +533,7 @@ public class GameControllerScript : MonoBehaviour {
                     }
                 }
             }
-            else if (Load[i].Type == "Unit")
+            else if (Load[i].Type == DBC.UnitDictionary[0].Type)
             {
                 foreach (var kvp in DBC.UnitDictionary)
                 {
@@ -408,7 +543,7 @@ public class GameControllerScript : MonoBehaviour {
                     }
                 }
             }
-            else if (Load[i].Type == "Building")
+            else if (Load[i].Type == DBC.BuildingDictionary[0].Type)
             {
                 foreach (var kvp in DBC.BuildingDictionary)
                 {
@@ -420,15 +555,15 @@ public class GameControllerScript : MonoBehaviour {
             }
         }
 
-        foreach(var go in GameObject.FindGameObjectsWithTag("Terrain"))
+        foreach(var go in GameObject.FindGameObjectsWithTag(DBC.TerrainDictionary[0].Type))
         {
             AddTilesToDictionary(go);
         }
-        foreach (var go in GameObject.FindGameObjectsWithTag("Unit"))
+        foreach (var go in GameObject.FindGameObjectsWithTag(DBC.UnitDictionary[0].Type))
         {
             AddUnitsToDictionary(go);
         }
-        foreach (var go in GameObject.FindGameObjectsWithTag("Building"))
+        foreach (var go in GameObject.FindGameObjectsWithTag(DBC.BuildingDictionary[0].Type))
         {
             AddBuildingToDictionary(go);
         }
@@ -436,6 +571,72 @@ public class GameControllerScript : MonoBehaviour {
         SR.Dispose();
         SpriteUpdateActivator();
     }// opens file and deseralizes it and then sends the info to drawLoadMapFromEditor function
+
+    public void LoadMapPlayScene(string name)
+    {
+        StreamReader SR = new StreamReader(Application.dataPath + "/StreamingAssets/Maps/" + name + ".json");
+        string tempstring = SR.ReadToEnd();
+        Map[] Load = JsonHelper.FromJson<Map>(tempstring);
+
+        for (int i = 0; i < Load.Length; i++)
+        {
+            if (Load[i].Type == DBC.TerrainDictionary[0].Type)
+            {
+                foreach (var kvp in DBC.TerrainDictionary)
+                {
+                    if (kvp.Value.Title == Load[i].Name)
+                    {
+                        DBC.CreateAdnSpawnTerrain(Load[i].Location, kvp.Value.ID);
+                        if (Load[i].Location.x > PlayMapSize)
+                        {
+                            PlayMapSize = (int)Load[i].Location.x;
+                        }
+                    }
+                }
+            }
+            else if (Load[i].Type == DBC.UnitDictionary[0].Type)
+            {
+                foreach (var kvp in DBC.UnitDictionary)
+                {
+                    if (kvp.Value.Title == Load[i].Name)
+                    {
+                        DBC.CreateAndSpawnUnit(Load[i].Location, kvp.Value.ID, Load[i].Team);
+                    }
+                }
+            }
+            else if (Load[i].Type == DBC.BuildingDictionary[0].Type)
+            {
+                foreach (var kvp in DBC.BuildingDictionary)
+                {
+                    if (kvp.Value.Title == Load[i].Name)
+                    {
+                        DBC.CreateAndSpawnBuilding(Load[i].Location, kvp.Value.ID, Load[i].Team);
+                    }
+                }
+            }
+        }
+
+        TeamCount = Load[0].TeamCount;
+        Debug.Log("TeamCount = " + TeamCount);
+
+        foreach (var go in GameObject.FindGameObjectsWithTag(DBC.TerrainDictionary[0].Type))
+        {
+            AddTilesToDictionary(go);
+        }
+        foreach (var go in GameObject.FindGameObjectsWithTag(DBC.UnitDictionary[0].Type))
+        {
+            AddUnitsToDictionary(go);
+        }
+        foreach (var go in GameObject.FindGameObjectsWithTag(DBC.BuildingDictionary[0].Type))
+        {
+            AddBuildingToDictionary(go);
+        }
+        SR.Close();
+        SR.Dispose();
+        SpriteUpdateActivator();
+        CameraVar = GameObject.Find("MainCamera");
+        CameraVar.transform.position = new Vector3(PlayMapSize / 2 - .5f, PlayMapSize / 2 - .5f, PlayMapSize * -1);
+    }
 
     public void SpriteUpdateActivator()
     {
@@ -459,6 +660,45 @@ public class GameControllerScript : MonoBehaviour {
             }
         }
     }
+
+    public void PlaySceneNewGameInitalizer()
+    {
+        System.Random rnd = new System.Random();
+        CurrentTeamsTurn = rnd.Next(1, TeamCount + 1);
+        PSCC.CurrentPlayerTurnText.text = CurrentTeamsTurn.ToString();
+        foreach (var kvp in UnitPos)
+        {
+            kvp.Value.GetComponent<SpriteController>().RoundUpdater();
+        }
+    }
+
+    public void PlaySceneTurnChanger()
+    {
+        if (CurrentTeamsTurn != TeamCount)
+        {
+            CurrentTeamsTurn = CurrentTeamsTurn + 1;
+        }
+        else
+        {
+            CurrentTeamsTurn = 1;
+        }
+        PSCC.CurrentPlayerTurnText.text = CurrentTeamsTurn.ToString();
+        foreach (var kvp in UnitPos)
+        {
+            kvp.Value.GetComponent<SpriteController>().RoundUpdater();
+        }
+    }
+
+    public void LoadingUpdater(float f)
+    {
+        Slider LoadingSlider = GameObject.Find("Canvas").GetComponentInChildren<Slider>();
+        LoadingSlider.value = f;
+        if (f == 1f)
+        {
+            SceneManager.LoadScene("MainMenuScene");
+            DBC.Initalisation = false;
+        }
+    }
 }
 
 [Serializable]
@@ -468,6 +708,7 @@ public class Map
     public string Name;
     public int Team;
     public string Type;
+    public int TeamCount;
 } //this is needed to save the map, might be better way to do this.
 
 [Serializable]

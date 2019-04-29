@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
+using System.Reflection;
+using System;
 
 [System.Serializable]
 public class DatabaseController : MonoBehaviour {
@@ -15,29 +17,55 @@ public class DatabaseController : MonoBehaviour {
     public Dictionary<int, Unit> UnitDictionary = new Dictionary<int, Unit>();
     public Dictionary<int, Building> BuildingDictionary = new Dictionary<int, Building>();
     private GameObject NewTile;
-    private MenueController MC;
     private GameControllerScript GCS;
+    [HideInInspector]
+    public bool Initalisation = true;
+    public float dragSpeedOffset;
+    [HideInInspector]
+    public int DragSpeed;
+    [HideInInspector]
+    public int scrollSpeed;
 
     private void Start()
     {
+
         GCS = gameObject.GetComponent<GameControllerScript>();
-        MC = GameObject.Find("Canvas").GetComponent<MenueController>();
-        MC.LoadingUpdater(.2f);
+        GetMasterJson();
+        GCS.LoadingUpdater(.2f);
         GetTerrianJsons();
-        MC.LoadingUpdater(.4f);
+        GCS.LoadingUpdater(.4f);
         GetUnitJsons();
-        MC.LoadingUpdater(.6f);
+        GCS.LoadingUpdater(.6f);
         GetBuildingJsons();
-        MC.LoadingUpdater(.8f);
+        GCS.LoadingUpdater(.8f);
         GetMouseJson();
-        MC.LoadingUpdater(1f);
-        
+        GCS.LoadingUpdater(1f);
+    }
+
+    public void GetMasterJson()
+    {
+        try
+        {
+
+            Debug.Log("Fetching json master file");
+            var grassstring = File.ReadAllText(Application.dataPath + "/StreamingAssets/MasterData/Master.json"); //temp string to hold the json data
+            Master tempjson = JsonUtility.FromJson<Master>(grassstring); //this converts from json string to unity object
+            scrollSpeed = tempjson.ScrollSpeed;
+            DragSpeed = tempjson.DragSpeed;
+            Debug.Log("Finished fetching json master file");
+        }
+        catch (System.Exception e)
+        {
+            Debug.Log(e);
+            throw;
+        }
     }
 
     public void GetTerrianJsons()
     {
         try
         {
+            
             Debug.Log("Fetching json terrain files");
             foreach (string file in Directory.GetFiles(Application.dataPath + "/StreamingAssets/Terrain/Data/", "*.json")) //gets only json files form this path
             {
@@ -156,15 +184,15 @@ public class DatabaseController : MonoBehaviour {
         TGO.name = TerrainDictionary[index].Title;                                                                          //change the name
         TGO.AddComponent<SpriteRenderer>();                                                                                 //add a sprite controller
         TGO.GetComponent<SpriteRenderer>().sprite = loadSprite(TerrainDictionary[index].ArtworkDirectory[0]);               //set the sprite to the texture
-        TGO.GetComponent<SpriteRenderer>().sortingLayerName = "Terrain";
+        TGO.GetComponent<SpriteRenderer>().sortingLayerName = TerrainDictionary[index].Type;
         TGO.AddComponent<BoxCollider>();
         TGO.GetComponent<BoxCollider>().size = new Vector3(.95f, .95f, .1f);
-        TGO.tag = ("Terrain");
+        TGO.tag = (TerrainDictionary[index].Type);
         //TGO.AddComponent<RectTransform>();
 
-        GameObject MouseOverlayGO = new GameObject();                                                                       //creating the cild object for mouse overlay
+        GameObject MouseOverlayGO = new GameObject();                                                                       //creating the child object for mouse overlay
         MouseOverlayGO.AddComponent<SpriteRenderer>().sprite = loadSprite(MouseDictionary[0].ArtworkDirectory[0]);          //adding it to sprite
-        MouseOverlayGO.GetComponent<SpriteRenderer>().sortingLayerName = "Terrain";
+        MouseOverlayGO.GetComponent<SpriteRenderer>().sortingLayerName = TerrainDictionary[index].Type;
         MouseOverlayGO.GetComponent<SpriteRenderer>().sortingOrder = 3;                                                     //making it so its on top of the default sprite
         MouseOverlayGO.transform.parent = TGO.transform;                                                                    //setting its parent to the main game object
         MouseOverlayGO.name = "MouseOverlay";                                                                               //changing the name
@@ -179,12 +207,12 @@ public class DatabaseController : MonoBehaviour {
         TGO.name = UnitDictionary[index].Title;
         TGO.AddComponent<SpriteRenderer>();
         TGO.GetComponent<SpriteRenderer>().sprite = loadSprite(UnitDictionary[index].ArtworkDirectory[0]);
-        TGO.GetComponent<SpriteRenderer>().sortingLayerName = "Units";
+        TGO.GetComponent<SpriteRenderer>().sortingLayerName = UnitDictionary[index].Type;
         TGO.AddComponent<BoxCollider>();
         TGO.GetComponent<BoxCollider>().size = new Vector3(.95f, .95f, .1f);
         TGO.AddComponent<SpriteController>();
         TGO.GetComponent<SpriteController>().Team = team;
-        TGO.tag = "Unit";
+        TGO.tag = UnitDictionary[index].Type;
         TGO.transform.position = location;
         return TGO;
     } //used to spawn units form database
@@ -195,12 +223,12 @@ public class DatabaseController : MonoBehaviour {
         TGO.name = BuildingDictionary[index].Title;
         TGO.AddComponent<SpriteRenderer>();
         TGO.GetComponent<SpriteRenderer>().sprite = loadSprite(BuildingDictionary[index].ArtworkDirectory[0]);
-        TGO.GetComponent<SpriteRenderer>().sortingLayerName = "Buildings";
+        TGO.GetComponent<SpriteRenderer>().sortingLayerName = BuildingDictionary[index].Type;
         TGO.AddComponent<BoxCollider>();
         TGO.GetComponent<BoxCollider>().size = new Vector3(.95f, .95f, .1f);
         TGO.AddComponent<SpriteController>();
         TGO.GetComponent<SpriteController>().Team = team;
-        TGO.tag = "Building";
+        TGO.tag = BuildingDictionary[index].Type;
         TGO.transform.position = location;
         return TGO;
     }
@@ -225,7 +253,7 @@ public class DatabaseController : MonoBehaviour {
 }
 
 [System.Serializable]
-public class Terrain //the json file cannot have values that are not stated here, this can have more values then the json
+public class Terrain
 {
     public int ID;
     public string Title;
@@ -233,6 +261,7 @@ public class Terrain //the json file cannot have values that are not stated here
     public string Description;
     public int DefenceBonus;
     public string Slug;
+    public string Type;
     public List<string> ArtworkDirectory;
 
 
@@ -252,13 +281,14 @@ public class Terrain //the json file cannot have values that are not stated here
         Debug.Log("Sprites found: " + count);
         count = 0;
     }  //checks how many sprites are in folder and adds them to the directory
-}
+}//the json file cannot have values that are not stated here, this can have more values then the json
 
 public class MouseOverlays
 {
     public int ID;
     public string Title;
     public string Slug;
+    public string Type;
     public List<string> ArtworkDirectory;
 
     public void GetSprites()
@@ -291,6 +321,7 @@ public class Unit
     public string Title;
     public string Description;
     public string Slug;
+    public string Type;
     public List<string> ArtworkDirectory;
     public int Team;
 
@@ -310,16 +341,19 @@ public class Unit
         Debug.Log("Sprites found: " + count);
         count = 0;
     }
-}
+}//same use as terrian class
 
 [System.Serializable]
 public class Building
 {
     public int ID;
-    public string AvaliibleUnits;
+    public string BuyableUnits;
     public string Title;
     public string Description;
     public string Slug;
+    public int DefenceBonus;
+    public bool Walkable;
+    public string Type;
     public List<string> ArtworkDirectory;
     public int Team;
 
@@ -339,5 +373,14 @@ public class Building
         Debug.Log("Sprites found: " + count);
         count = 0;
     }
+}//same use as terrian class
+
+[System.Serializable]
+public class Master
+{
+    public int DragSpeed;
+    public int ScrollSpeed;
 }
+
+
 

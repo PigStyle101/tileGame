@@ -16,41 +16,54 @@ public class MenueController : MonoBehaviour {
     public Text errorTextField;
     public GameObject LoadMenueButtonPrefab;
     public GameObject ContentWindowLoad;
-    public Slider LoadingSlider;
-    public GameObject LoadingPanel;
+    public GameObject ContentWindowNewGame;
     public GameObject MainPanel;
+    private DatabaseController DBC;
 
 
     // everything in here is pretty self explanitory.
-    void Start ()
+    void Start()
     {
+        DBC = GameObject.Find("GameController").GetComponent<DatabaseController>();
         GCS = GameObject.Find("GameController").GetComponent<GameControllerScript>();
-        LoadingPanel.SetActive(true);
-        MainPanel.SetActive(false);
-	}
+        MainPanel.SetActive(true);
+        MainMenueButtonClicked();
+    }
 
-    public void MapEditorPanelControlller()
+    public void MapEditorButtonClicked()
     {
         MainMenuePanel.SetActive(false);
         MapEditorMenuePanel.SetActive(true);
         PlayMenuePanel.SetActive(false);
+        LoadGamePanel.SetActive(false);
     }
 
-    public void MainMenuePanelControlller ()
+    public void MainMenueButtonClicked ()
     {
         MainMenuePanel.SetActive(true);
         MapEditorMenuePanel.SetActive(false);
         PlayMenuePanel.SetActive(false);
+        LoadGamePanel.SetActive(false);
     }
 
-    public void PlayGamePanelController ()
+    public void NewGameButtonClicked ()
     {
         MainMenuePanel.SetActive(false);
         MapEditorMenuePanel.SetActive(false);
         PlayMenuePanel.SetActive(true);
+        LoadGamePanel.SetActive(false);
+        GetMaps();
     }
 
-    public void QuitGameController ()
+    public void LoadGameButtonClicked()
+    {
+        MainMenuePanel.SetActive(false);
+        MapEditorMenuePanel.SetActive(false);
+        PlayMenuePanel.SetActive(false);
+        LoadGamePanel.SetActive(true);
+    }
+
+    public void QuitGameButtonClicked ()
     {
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
@@ -66,7 +79,7 @@ public class MenueController : MonoBehaviour {
         {
             if (tempMapSize >= 10 && tempMapSize <= 100)
             {
-                GCS.CreateNewMap(tempMapSize);
+                GCS.CreateNewMapForMapEditor(tempMapSize);
             }
             else
             {
@@ -80,25 +93,26 @@ public class MenueController : MonoBehaviour {
 
     }
 
-    public void GetSaves()
+    public void GetMaps()
     {
-        foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/Saves", "*.dat")))
+        var childcount = ContentWindowNewGame.transform.childCount;
+        for (int i = 0; i < childcount; i++)
         {
-            GameObject tempbutton = Instantiate(LoadMenueButtonPrefab, ContentWindowLoad.transform); //create button and set its parent to content
-            tempbutton.name = file; //change name
+            Destroy(ContentWindowNewGame.transform.GetChild(i).gameObject);
+        }
+        foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/Maps", "*.json")))
+        {
+            GameObject tempbutton = Instantiate(LoadMenueButtonPrefab, ContentWindowNewGame.transform); //create button and set its parent to content
+            tempbutton.name = Path.GetFileNameWithoutExtension(file); //change name
+            tempbutton.transform.GetChild(0).GetComponent<Text>().text = Path.GetFileNameWithoutExtension(file);
             tempbutton.GetComponent<Button>().onClick.AddListener(LoadSelected); //adds method to button clicked
         }
     }
 
     public void LoadSelected()
     {
-        GCS.LoadMap(EventSystem.current.currentSelectedGameObject.name);
+        GCS.MapNameForPlayScene = EventSystem.current.currentSelectedGameObject.name;
+        UnityEngine.SceneManagement.SceneManager.LoadScene("PlayScene");
+        GCS.PlaySceneLoadStatus = "NewGame";
     }
-
-    public void LoadingUpdater(float f)
-    {
-        LoadingSlider.value = f;
-        if (f == 1f) { LoadingPanel.SetActive(false);MainPanel.SetActive(true); }
-    }
-
 }

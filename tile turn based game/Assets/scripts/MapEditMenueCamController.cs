@@ -4,14 +4,16 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.IO;
+using UnityEngine.SceneManagement;
 
 public class MapEditMenueCamController : MonoBehaviour {
 
-    public float dragSpeed;
-    public int scrollSpeed;
+    
     private Vector3 dragOrigin;
     private GameControllerScript GCS;
     private DatabaseController DBC;
+    private string CurrentlySelectedLoadFile;
+    private GameObject CurrentlySelectedLoadGameObject;
     public GameObject MapEditorTilesButtonPrefab;
     public GameObject ContentWindowTerrain;
     public GameObject ContentWindowUnits;
@@ -24,15 +26,16 @@ public class MapEditMenueCamController : MonoBehaviour {
     public GameObject SavePanel;
     public GameObject LoadButtonPrefab;
     public GameObject ContentWindowLoadButtons;
-    public string SelectedTab;
-    public string SelectedButton;
-    public int SelectedTeam;
     public Text CurrentSelectedButtonText;
     public Text SaveFeedback;
     public Text LoadFeedback;
     public InputField SaveInputField;
-    private string CurrentlySelectedLoadFile;
-    private GameObject CurrentlySelectedLoadGameObject;
+    [HideInInspector]
+    public string SelectedTab;
+    [HideInInspector]
+    public string SelectedButton;
+    [HideInInspector]
+    public int SelectedTeam;
 
     // this script is currently back up to date
     void Start ()
@@ -70,12 +73,12 @@ public class MapEditMenueCamController : MonoBehaviour {
 
         Vector3 pos = Camera.main.ScreenToViewportPoint(Input.mousePosition - dragOrigin);
 
-        Vector3 move = new Vector3(pos.x * dragSpeed * -1, pos.y * dragSpeed * -1, 0);
+        Vector3 move = new Vector3(pos.x * DBC.dragSpeedOffset * DBC.DragSpeed * -1, pos.y * DBC.dragSpeedOffset * DBC.DragSpeed * -1, 0);
 
         transform.Translate(move, Space.World);
 
-        if (gameObject.transform.position.x > GCS.mapSize) { gameObject.transform.position = new Vector3(GCS.mapSize, transform.position.y, transform.position.z); }
-        if (gameObject.transform.position.y > GCS.mapSize) { gameObject.transform.position = new Vector3(transform.position.x, GCS.mapSize, transform.position.z); }
+        if (gameObject.transform.position.x > GCS.EditorMapSize) { gameObject.transform.position = new Vector3(GCS.EditorMapSize, transform.position.y, transform.position.z); }
+        if (gameObject.transform.position.y > GCS.EditorMapSize) { gameObject.transform.position = new Vector3(transform.position.x, GCS.EditorMapSize, transform.position.z); }
         if (gameObject.transform.position.x < 0) { gameObject.transform.position = new Vector3(0, transform.position.y, transform.position.z); }
         if (gameObject.transform.position.y < 0) { gameObject.transform.position = new Vector3(transform.position.x, 0, transform.position.z); }
     } //controls camera movment y and x
@@ -83,19 +86,18 @@ public class MapEditMenueCamController : MonoBehaviour {
     private void MoveScreenZ()
     {
         int z = new int();
-        if (Input.GetAxis("Mouse ScrollWheel") > 0) { z = scrollSpeed; }
-        if (Input.GetAxis("Mouse ScrollWheel") < 0) { z = -scrollSpeed; }
+        if (Input.GetAxis("Mouse ScrollWheel") > 0) { z = DBC.scrollSpeed; }
+        if (Input.GetAxis("Mouse ScrollWheel") < 0) { z = -DBC.scrollSpeed; }
         
         transform.Translate(new Vector3(0, 0, z), Space.World);
 
         if (gameObject.transform.position.z > -1) { gameObject.transform.position = new Vector3(transform.position.x,transform.position.y, -1); }
-        if (gameObject.transform.position.z < -GCS.mapSize * 2) { gameObject.transform.position = new Vector3(transform.position.x, transform.position.y, -GCS.mapSize * 2); }
+        if (gameObject.transform.position.z < -GCS.EditorMapSize * 2) { gameObject.transform.position = new Vector3(transform.position.x, transform.position.y, -GCS.EditorMapSize * 2); }
     }//controls camera z movement
 
     void ChangeSelectedButton()
     {
         SelectedButton = EventSystem.current.currentSelectedGameObject.name;
-        //UnityEngine.Debug.Log("Selected tile changed too: " + SelectedButton);
         CurrentSelectedButtonText.text = "Currently Selected: " + EventSystem.current.currentSelectedGameObject.name;
     } //changes to whatever button is clicked
 
@@ -150,7 +152,7 @@ public class MapEditMenueCamController : MonoBehaviour {
 
     private void AddLoadButtonsToContent()
     {
-        string[] files = Directory.GetFiles(Application.dataPath + "/StreamingAssets/Saves/", "*.json");
+        string[] files = Directory.GetFiles(Application.dataPath + "/StreamingAssets/Maps/", "*.json");
         foreach(string file in files)
         {
             //Debug.Log(Path.GetFileNameWithoutExtension(file));
@@ -233,7 +235,7 @@ public class MapEditMenueCamController : MonoBehaviour {
     {
         if (CurrentlySelectedLoadFile != null)
         {
-            GCS.LoadMap(CurrentlySelectedLoadFile);
+            GCS.LoadMapMapEditor(CurrentlySelectedLoadFile);
             LoadFeedback.text = "Loaded " + CurrentlySelectedLoadFile;
         }
         else
@@ -250,12 +252,32 @@ public class MapEditMenueCamController : MonoBehaviour {
 
     public void LoadPanelDeleteButtonClicked()
     {
-        File.Delete(Application.dataPath + "/StreamingAssets/Saves/" + CurrentlySelectedLoadFile + ".json");
+        File.Delete(Application.dataPath + "/StreamingAssets/Maps/" + CurrentlySelectedLoadFile + ".json");
         Destroy(CurrentlySelectedLoadGameObject);
     }
 
     public void TeamButtonClicked()
     {
         SelectedTeam = int.Parse(EventSystem.current.currentSelectedGameObject.name);
+    }
+
+    public void MainMenuButtonClicked()
+    {
+        foreach(var GO in GameObject.FindGameObjectsWithTag("Terrain"))
+        {
+            Destroy(GO);
+        }
+        foreach (var GO in GameObject.FindGameObjectsWithTag("Unit"))
+        {
+            Destroy(GO);
+        }
+        foreach (var GO in GameObject.FindGameObjectsWithTag("Building"))
+        {
+            Destroy(GO);
+        }
+        GCS.BuildingPos.Clear();
+        GCS.TilePos.Clear();
+        GCS.UnitPos.Clear();
+        SceneManager.LoadScene("MainMenuScene");
     }
 }

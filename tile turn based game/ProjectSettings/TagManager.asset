@@ -47,10 +47,10 @@ TagManager:
   - name: Terrain
     uniqueID: 944976493
     locked: 0
-  - name: Buildings
+  - name: Building
     uniqueID: 680818013
     locked: 0
-  - name: Units
+  - name: Unit
     uniqueID: 1010558691
     locked: 0
   - name: Menu

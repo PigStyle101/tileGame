@@ -7,5 +7,6 @@
   "Cost": 200,
   "Title": "Soldier",
   "Description": "Strong unit with high attack and defence with moderate movement",
-  "Slug": "soldier_unit"
+  "Slug": "soldier_unit",
+  "Type":  "Unit"
 }
