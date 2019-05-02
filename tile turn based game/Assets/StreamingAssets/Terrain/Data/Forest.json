@@ -5,5 +5,6 @@
   "Description": "Forest with lots of trees",
   "DefenceBonus": 1,
   "Slug": "forest_tile",
-  "Type": "Terrain"
+  "Type": "Terrain",
+  "Weight": 3
 }

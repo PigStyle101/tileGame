@@ -5,5 +5,6 @@
   "Description": "A well traveled path",
   "DefenceBonus": 0,
   "Slug": "road_tile",
-  "Type":  "Terrain"
+  "Type": "Terrain",
+  "Weight":  1
 }

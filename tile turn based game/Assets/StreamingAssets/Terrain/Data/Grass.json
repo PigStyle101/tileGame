@@ -5,5 +5,6 @@
   "Description": "Field of Grass",
   "DefenceBonus": 0,
   "Slug": "grass_tile",
-  "Type":  "Terrain"
+  "Type": "Terrain",
+  "Weight": 2
 }

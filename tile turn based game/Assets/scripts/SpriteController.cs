@@ -31,7 +31,16 @@ public class SpriteController : MonoBehaviour
     public SpriteRenderer MouseOverlaySpriteRender;
     [HideInInspector]
     public int Team;
-    public bool Movable;
+    [HideInInspector]
+    public bool UnitMovable;
+    public bool Occupied;
+    [HideInInspector]
+    public int Weight;
+    [HideInInspector]
+    public List<Vector2> FloodFillList;
+    [HideInInspector]
+    public int MovePoints;
+    public Dictionary<Vector2, int[]> TilesWeights = new Dictionary<Vector2, int[]>();
 
     // Start is called before the first frame update
     private void Awake()
@@ -46,7 +55,7 @@ public class SpriteController : MonoBehaviour
     }
     void Start()
     {
-        
+
         if (gameObject.transform.tag == DBC.TerrainDictionary[0].Type)
         {
             MouseOverlaySpriteRender = gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>();
@@ -154,7 +163,7 @@ public class SpriteController : MonoBehaviour
                         MouseOverlaySpriteRender.enabled = false;
                     }
                 }
-            } 
+            }
         }
     } //checks if mouse is over tile, activates mouseoverlay if it is.
 
@@ -210,7 +219,7 @@ public class SpriteController : MonoBehaviour
                     if (WaterOverlays.ContainsKey("TopLandOverlay"))
                     {
                         Destroy(WaterOverlays["TopLandOverlay"]);
-                        WaterOverlays.Remove("TopLandOverlay"); 
+                        WaterOverlays.Remove("TopLandOverlay");
                     }
                 }
             }
@@ -493,7 +502,7 @@ public class SpriteController : MonoBehaviour
                 {
                     counter = counter + 1;
                     topBool = true;
-                } 
+                }
             }
             if (GCS.TilePos.ContainsKey(rightPos))
             {
@@ -501,7 +510,7 @@ public class SpriteController : MonoBehaviour
                 {
                     counter = counter + 1;
                     rightbool = true;
-                } 
+                }
             }
             if (GCS.TilePos.ContainsKey(bottomPos))
             {
@@ -509,7 +518,7 @@ public class SpriteController : MonoBehaviour
                 {
                     counter = counter + 1;
                     bottombool = true;
-                } 
+                }
             }
             if (GCS.TilePos.ContainsKey(leftPos))
             {
@@ -517,7 +526,7 @@ public class SpriteController : MonoBehaviour
                 {
                     counter = counter + 1;
                     leftbool = true;
-                } 
+                }
             }
 
             switch (counter)
@@ -555,7 +564,7 @@ public class SpriteController : MonoBehaviour
                         SR.sprite = DBC.loadSprite(DBC.TerrainDictionary[TileId].ArtworkDirectory[2]);
                         gameObject.transform.eulerAngles = Road2way90RightRotOffset + OriginalRot;
                     }
-                    else if(bottombool && leftbool)
+                    else if (bottombool && leftbool)
                     {
                         SR.sprite = DBC.loadSprite(DBC.TerrainDictionary[TileId].ArtworkDirectory[2]);
                         gameObject.transform.eulerAngles = OriginalRot;
@@ -608,7 +617,7 @@ public class SpriteController : MonoBehaviour
     {
         if (gameObject.tag == "Unit")
         {
-            foreach(var kvp in DBC.UnitDictionary)
+            foreach (var kvp in DBC.UnitDictionary)
             {
                 if (gameObject.name == kvp.Value.Title)
                 {
@@ -618,7 +627,7 @@ public class SpriteController : MonoBehaviour
         }
         else if (gameObject.tag == "Building")
         {
-            foreach(var kvp in DBC.BuildingDictionary)
+            foreach (var kvp in DBC.BuildingDictionary)
             {
                 if (gameObject.name == kvp.Value.Title)
                 {
@@ -630,13 +639,92 @@ public class SpriteController : MonoBehaviour
 
     public void RoundUpdater()
     {
-        if (Team == GCS.CurrentTeamsTurn && gameObject.tag == DBC.UnitDictionary[0].Type)
+        if (Team == GCS.CurrentTeamsTurn && gameObject.tag == DBC.UnitDictionary[0].Type) //object is on the current team and it is a unit
         {
-            Movable = true;
+            UnitMovable = true;
+            foreach (var kvp in DBC.UnitDictionary)
+            {
+                if (gameObject.transform.name == kvp.Value.Title)
+                {
+                    GetTileValues(gameObject.transform.position);
+                }
+            }
+        }
+        else if (gameObject.tag == DBC.TerrainDictionary[0].Type) // else if terrain 
+        {
+            UnitMovable = false;
+            if (GCS.UnitPos.ContainsKey(gameObject.transform.position))
+            {
+                Occupied = true;
+                //Debug.Log("set tile " + gameObject.transform.position + "Occupied to " + Occupied);
+            }
+            else
+            {
+                Occupied = false;
+            }
         }
         else
         {
-            Movable = false;
+            UnitMovable = false;
         }
     }  //used to set the movable variable. called from game controller
+
+    public void GetTileValues(Vector2 Position)
+    {
+        Debug.Log ("MP = " + MovePoints);
+        List<Vector2> Directions = new List<Vector2>();
+        Directions.Add( new Vector2(0, 1));
+        Directions.Add( new Vector2(1, 0));
+        Directions.Add( new Vector2(0, -1));
+        Directions.Add( new Vector2(-1, 0));
+        int count = 1;
+        TilesWeights.Clear();
+        
+        foreach (var dir in Directions)
+        {
+            if (GCS.TilePos.ContainsKey(Position + dir) && !TilesWeights.ContainsKey(Position + dir))
+            {
+                if (GCS.TilePos[Position + dir].GetComponent<SpriteController>().Weight <= MovePoints && !GCS.TilePos[Position + dir].GetComponent<SpriteController>().Occupied)
+                {
+                    int[] temparray = new int[2];
+                    temparray[0] = count;
+                    temparray[1] = GCS.TilePos[Position].GetComponent<SpriteController>().Weight;
+                    TilesWeights.Add(Position + dir, temparray); 
+                }
+            }
+        }
+        //count = count + 1;
+        while (count <= MovePoints)
+        {
+            int[] tempIntArray = new int[2];
+            Dictionary<Vector2, int[]> Temp = new Dictionary<Vector2, int[]>();
+            foreach (var kvp in TilesWeights)
+            {
+                foreach(var dir in Directions)
+                {
+                    if (GCS.TilePos.ContainsKey(kvp.Key + dir) && !TilesWeights.ContainsKey(kvp.Key + dir) && !Temp.ContainsKey(kvp.Key + dir))
+                    {
+                        if (kvp.Value[1] + GCS.TilePos[kvp.Key + dir].GetComponent<SpriteController>().Weight <= MovePoints && !GCS.TilePos[kvp.Key + dir].GetComponent<SpriteController>().Occupied)
+                        {
+                            tempIntArray[0] = count;
+                            tempIntArray[1] = GCS.TilePos[kvp.Key + dir].transform.GetComponent<SpriteController>().Weight + kvp.Value[1];
+                            Temp.Add(kvp.Key + dir, tempIntArray); 
+                        }
+                    }
+                }
+            }
+            foreach(var kvp in Temp)
+            {
+                TilesWeights.Add(kvp.Key, kvp.Value);
+            }
+            if (count == 15)
+            {
+                Debug.Log("Broke, count at:" + count);
+                break;
+            }
+            count = count + 1;
+        }
+        
+    }
 }
+

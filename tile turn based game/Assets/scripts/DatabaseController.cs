@@ -197,6 +197,7 @@ public class DatabaseController : MonoBehaviour {
         MouseOverlayGO.transform.parent = TGO.transform;                                                                    //setting its parent to the main game object
         MouseOverlayGO.name = "MouseOverlay";                                                                               //changing the name
         TGO.AddComponent<SpriteController>();                                                                               //adding the sprite controller script to it
+        TGO.GetComponent<SpriteController>().Weight = TerrainDictionary[index].Weight;
         TGO.transform.position = location;
         return TGO;
     } //used to spawn terrian from database
@@ -212,6 +213,7 @@ public class DatabaseController : MonoBehaviour {
         TGO.GetComponent<BoxCollider>().size = new Vector3(.95f, .95f, .1f);
         TGO.AddComponent<SpriteController>();
         TGO.GetComponent<SpriteController>().Team = team;
+        TGO.GetComponent<SpriteController>().MovePoints = UnitDictionary[index].MovePoints;
         TGO.tag = UnitDictionary[index].Type;
         TGO.transform.position = location;
         return TGO;
@@ -262,6 +264,7 @@ public class Terrain
     public int DefenceBonus;
     public string Slug;
     public string Type;
+    public int Weight;
     public List<string> ArtworkDirectory;
 
 

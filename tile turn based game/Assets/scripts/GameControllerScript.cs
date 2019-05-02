@@ -30,10 +30,6 @@ public class GameControllerScript : MonoBehaviour {
     private MapEditMenueCamController MEMCC;
     private PlaySceneCamController PSCC;
     [HideInInspector]
-    public GameObject[] TileArray;
-    [HideInInspector]
-    public GameObject[] UnitArray;
-    [HideInInspector]
     public SpriteRenderer SelectedTileOverlay;
     [HideInInspector]
     public GameObject SelectedTile;
@@ -325,15 +321,29 @@ public class GameControllerScript : MonoBehaviour {
                 for (int i = 0; i < hits.Length; i++) // GO THROUGH THEM RAYS
                 {
                     RaycastHit hit = hits[i];
-                    if (hit.transform.tag == DBC.UnitDictionary[0].Type && SelectedUnitPlayScene == null && hit.transform.GetComponent<SpriteController>().Movable)
+                    if (hit.transform.tag == DBC.UnitDictionary[0].Type && SelectedUnitPlayScene == null && hit.transform.GetComponent<SpriteController>().UnitMovable)
                     {//is the hit a unit? is the unit movable? is the unit not selected?
                         SelectedUnitPlayScene = hit.transform.gameObject; //set unit to selected unit
                         Debug.Log("SelectedUnit = " + SelectedUnitPlayScene.transform.name);
+                        foreach(var kvp in SelectedUnitPlayScene.GetComponent<SpriteController>().TilesWeights)
+                        {
+                            foreach(var t in TilePos)
+                            {
+                                if (kvp.Key == (Vector2)t.Value.transform.position)
+                                {
+                                    t.Value.transform.GetComponent<SpriteRenderer>().color = new Color(.5F, .5F, .5F); //sets dark tint to tiles that the unit can move too
+                                }
+                            }
+                        }
                     }
                     else if (hit.transform.tag == DBC.UnitDictionary[0].Type && SelectedUnitPlayScene == hit.transform.gameObject) //is the hit a unit? is the unit selected already?
                     {
                         SelectedUnitPlayScene = null; //clear selected unit variable
                         Debug.Log("Selected unit set to null");
+                        foreach(var kvp in TilePos)
+                        {
+                            kvp.Value.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1);
+                        }
                     }
                     else if (hit.transform.tag == DBC.TerrainDictionary[0].Type || hit.transform.tag == DBC.BuildingDictionary[0].Type) //is the hit a terrain or building?
                     {
@@ -344,25 +354,29 @@ public class GameControllerScript : MonoBehaviour {
                             {
                                 if (!UnitPos.ContainsKey(hit.transform.position))
                                 {
-                                    int originalPositionOfUnit = ((int)SelectedUnitPlayScene.transform.position.x) + ((int)SelectedUnitPlayScene.transform.position.y); //get unit position
-                                    int MoveToPosition = ((int)hit.transform.position.x) + ((int)hit.transform.position.y); //get position we want to move to
-                                    int MovePointsNeeded = System.Math.Abs(originalPositionOfUnit - MoveToPosition); //do teh math to get how many move points are needed
-                                    Debug.Log("Move points needed:" + MovePointsNeeded);
-                                    int MovePoints = 0; //delair a variable
-                                    foreach (var kvp in DBC.UnitDictionary) //need to get the unit move points
-                                    {
-                                        if (SelectedUnitPlayScene.transform.name == kvp.Value.Title)
-                                        {
-                                            MovePoints = kvp.Value.MovePoints;
-                                            Debug.Log("Move points avalible: " + MovePoints);
-                                        }
-                                    }
-                                    if (MovePointsNeeded <= MovePoints) //does the unit have enough move points?
+                                    Vector2 originalPositionOfUnit = SelectedUnitPlayScene.transform.position; //get unit position
+                                    Vector2 MoveToPosition = hit.transform.position; //get position we want to move to
+                                    if (SelectedUnitPlayScene.GetComponent<SpriteController>().TilesWeights.ContainsKey(MoveToPosition)) //does the unit have enough move points?
                                     {
                                         Debug.Log("Moving Unit");
                                         SelectedUnitPlayScene.transform.position = hit.transform.position; //move unit
-                                        SelectedUnitPlayScene.GetComponent<SpriteController>().Movable = false; //set unit movable to false
+                                        SelectedUnitPlayScene.GetComponent<SpriteController>().UnitMovable = false; //set unit movable to false
+                                        UnitPos.Remove(originalPositionOfUnit);
+                                        if (UnitPos.ContainsKey(originalPositionOfUnit))
+                                        {
+                                            Debug.Log("Key was not deleted");
+                                        }
+                                        UnitPos.Add(MoveToPosition, SelectedUnitPlayScene);
                                         SelectedUnitPlayScene = null;
+                                        foreach (var kvp in TilePos)
+                                        {
+                                            kvp.Value.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1);
+                                            kvp.Value.GetComponent<SpriteController>().RoundUpdater();
+                                        }
+                                        foreach(var kvp in UnitPos)
+                                        {
+                                            kvp.Value.GetComponent<SpriteController>().GetTileValues(kvp.Key);
+                                        }
                                     }
                                     else
                                     {
@@ -666,6 +680,10 @@ public class GameControllerScript : MonoBehaviour {
         System.Random rnd = new System.Random();
         CurrentTeamsTurn = rnd.Next(1, TeamCount + 1);
         PSCC.CurrentPlayerTurnText.text = CurrentTeamsTurn.ToString();
+        foreach (var kvp in TilePos)
+        {
+            kvp.Value.GetComponent<SpriteController>().RoundUpdater();
+        }
         foreach (var kvp in UnitPos)
         {
             kvp.Value.GetComponent<SpriteController>().RoundUpdater();
@@ -684,6 +702,10 @@ public class GameControllerScript : MonoBehaviour {
         }
         PSCC.CurrentPlayerTurnText.text = CurrentTeamsTurn.ToString();
         foreach (var kvp in UnitPos)
+        {
+            kvp.Value.GetComponent<SpriteController>().RoundUpdater();
+        }
+        foreach (var kvp in TilePos)
         {
             kvp.Value.GetComponent<SpriteController>().RoundUpdater();
         }
