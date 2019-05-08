@@ -6,5 +6,5 @@
   "DefenceBonus": 0,
   "Slug": "water_tile",
   "Type": "Terrain",
-  "Weight": 100
+  "Weight": 1
 }

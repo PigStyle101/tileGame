@@ -517,6 +517,8 @@ MonoBehaviour:
   dragSpeedOffset: 0.5
   DragSpeed: 0
   scrollSpeed: 0
+  CanvasPrefab: {fileID: 6243326969869550210, guid: c093f5acd985f354dafcf77a8e44acb7,
+    type: 3}
 --- !u!114 &1259027381
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -529,16 +531,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 944ebfd83f79f824080be26a614b86a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TileArray: []
-  UnitArray: []
   SelectedTileOverlay: {fileID: 0}
   SelectedTile: {fileID: 0}
   EditorMapSize: 0
   PlayMapSize: 0
-  SelectedUnit: {fileID: 0}
+  SelectedUnitPlayScene: {fileID: 0}
   MapNameForPlayScene: 
   PlaySceneLoadStatus: 
   TeamCount: 0
+  CurrentTeamsTurn: 0
 --- !u!224 &1259027382
 RectTransform:
   m_ObjectHideFlags: 0

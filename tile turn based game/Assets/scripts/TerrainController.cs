@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.SceneManagement;
 
-public class SpriteController : MonoBehaviour
+public class TerrainController : MonoBehaviour
 {
     private GameControllerScript GCS;
     private MapEditMenueCamController MEMCC;
@@ -29,87 +28,41 @@ public class SpriteController : MonoBehaviour
     private Vector3 OriginalRot;
     [HideInInspector]
     public SpriteRenderer MouseOverlaySpriteRender;
-    [HideInInspector]
-    public int Team;
-    [HideInInspector]
-    public bool UnitMovable;
     public bool Occupied;
     [HideInInspector]
     public int Weight;
+    //[HideInInspector]
+    public bool Walkable;
     [HideInInspector]
-    public List<Vector2> FloodFillList;
-    [HideInInspector]
-    public int MovePoints;
-    public Dictionary<Vector2, int[]> TilesWeights = new Dictionary<Vector2, int[]>();
+    public int DefenceBonus;
 
-    // Start is called before the first frame update
     private void Awake()
     {
-        if (SceneManager.GetActiveScene().name == "MapEditorScene")
-        {
-            MEMCC = GameObject.Find("MainCamera").GetComponent<MapEditMenueCamController>();
-            Team = MEMCC.SelectedTeam;
-        }
         GCS = GameObject.Find("GameController").GetComponent<GameControllerScript>();
         DBC = GameObject.Find("GameController").GetComponent<DatabaseController>();
     }
+
     void Start()
     {
-
-        if (gameObject.transform.tag == DBC.TerrainDictionary[0].Type)
-        {
-            MouseOverlaySpriteRender = gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>();
-            MouseOverlaySpriteRender.enabled = false;
-        }
+        MouseOverlaySpriteRender = gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>();
+        MouseOverlaySpriteRender.enabled = false;
     }
 
-    // Update is called once per frame
     void Update()
     {
         MouseOverlayRayCaster();
     }
 
-    public void ChangeBuilding()
+    public void TerrainRoundUpdater()
     {
-        if (MEMCC.SelectedButton == "Delete Building")
+        if (GCS.UnitPos.ContainsKey(gameObject.transform.position))
         {
-            Debug.Log("Deleting Building");
-            Destroy(gameObject);
+            Occupied = true;
+            //Debug.Log("set tile " + gameObject.transform.position + "Occupied to " + Occupied);
         }
         else
         {
-            Debug.Log("ChangBuilding activated");
-            foreach (KeyValuePair<int, Building> kvp in DBC.BuildingDictionary)
-            {
-                if (MEMCC.SelectedButton == kvp.Value.Title) //checks through dictionary for matching tile to button name
-                {
-                    //Debug.Log("Changing tile to " + kvp.Value.Title);
-                    gameObject.name = kvp.Value.Title;//change name of tile
-                    gameObject.GetComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.BuildingDictionary[kvp.Key].ArtworkDirectory[0]); //change sprite of tile
-                }
-            }
-        }
-    }
-
-    public void ChangeUnit()
-    {
-        if (MEMCC.SelectedButton == "Delete Unit")
-        {
-            Debug.Log("Deleting Unit");
-            Destroy(gameObject);
-        }
-        else
-        {
-            Debug.Log("ChangUnit activated");
-            foreach (KeyValuePair<int, Unit> kvp in DBC.UnitDictionary)
-            {
-                if (MEMCC.SelectedButton == kvp.Value.Title) //checks through dictionary for matching tile to button name
-                {
-                    //Debug.Log("Changing tile to " + kvp.Value.Title);
-                    gameObject.name = kvp.Value.Title;//change name of tile
-                    gameObject.GetComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.UnitDictionary[kvp.Key].ArtworkDirectory[0]); //change sprite of tile
-                }
-            }
+            Occupied = false;
         }
     }
 
@@ -612,119 +565,4 @@ public class SpriteController : MonoBehaviour
             counter = 0;
         }
     } //makes teh roads attatch to each other
-
-    public void TeamSpriteController()
-    {
-        if (gameObject.tag == "Unit")
-        {
-            foreach (var kvp in DBC.UnitDictionary)
-            {
-                if (gameObject.name == kvp.Value.Title)
-                {
-                    gameObject.GetComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.UnitDictionary[kvp.Value.ID].ArtworkDirectory[Team]);
-                }
-            }
-        }
-        else if (gameObject.tag == "Building")
-        {
-            foreach (var kvp in DBC.BuildingDictionary)
-            {
-                if (gameObject.name == kvp.Value.Title)
-                {
-                    gameObject.GetComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.BuildingDictionary[kvp.Value.ID].ArtworkDirectory[Team]);
-                }
-            }
-        }
-    }   //controlls the sprite for unit or building based on the team
-
-    public void RoundUpdater()
-    {
-        if (Team == GCS.CurrentTeamsTurn && gameObject.tag == DBC.UnitDictionary[0].Type) //object is on the current team and it is a unit
-        {
-            UnitMovable = true;
-            foreach (var kvp in DBC.UnitDictionary)
-            {
-                if (gameObject.transform.name == kvp.Value.Title)
-                {
-                    GetTileValues(gameObject.transform.position);
-                }
-            }
-        }
-        else if (gameObject.tag == DBC.TerrainDictionary[0].Type) // else if terrain 
-        {
-            UnitMovable = false;
-            if (GCS.UnitPos.ContainsKey(gameObject.transform.position))
-            {
-                Occupied = true;
-                //Debug.Log("set tile " + gameObject.transform.position + "Occupied to " + Occupied);
-            }
-            else
-            {
-                Occupied = false;
-            }
-        }
-        else
-        {
-            UnitMovable = false;
-        }
-    }  //used to set the movable variable. called from game controller
-
-    public void GetTileValues(Vector2 Position)
-    {
-        Debug.Log ("MP = " + MovePoints);
-        List<Vector2> Directions = new List<Vector2>();
-        Directions.Add( new Vector2(0, 1));
-        Directions.Add( new Vector2(1, 0));
-        Directions.Add( new Vector2(0, -1));
-        Directions.Add( new Vector2(-1, 0));
-        int count = 1;
-        TilesWeights.Clear();
-        
-        foreach (var dir in Directions)
-        {
-            if (GCS.TilePos.ContainsKey(Position + dir) && !TilesWeights.ContainsKey(Position + dir))
-            {
-                if (GCS.TilePos[Position + dir].GetComponent<SpriteController>().Weight <= MovePoints && !GCS.TilePos[Position + dir].GetComponent<SpriteController>().Occupied)
-                {
-                    int[] temparray = new int[2];
-                    temparray[0] = count;
-                    temparray[1] = GCS.TilePos[Position].GetComponent<SpriteController>().Weight;
-                    TilesWeights.Add(Position + dir, temparray); 
-                }
-            }
-        }
-        //count = count + 1;
-        while (count <= MovePoints)
-        {
-            int[] tempIntArray = new int[2];
-            Dictionary<Vector2, int[]> Temp = new Dictionary<Vector2, int[]>();
-            foreach (var kvp in TilesWeights)
-            {
-                foreach(var dir in Directions)
-                {
-                    if (GCS.TilePos.ContainsKey(kvp.Key + dir) && !TilesWeights.ContainsKey(kvp.Key + dir) && !Temp.ContainsKey(kvp.Key + dir))
-                    {
-                        if (kvp.Value[1] + GCS.TilePos[kvp.Key + dir].GetComponent<SpriteController>().Weight <= MovePoints && !GCS.TilePos[kvp.Key + dir].GetComponent<SpriteController>().Occupied)
-                        {
-                            tempIntArray[0] = count;
-                            tempIntArray[1] = GCS.TilePos[kvp.Key + dir].transform.GetComponent<SpriteController>().Weight + kvp.Value[1];
-                            Temp.Add(kvp.Key + dir, tempIntArray); 
-                        }
-                    }
-                }
-            }
-            foreach(var kvp in Temp)
-            {
-                TilesWeights.Add(kvp.Key, kvp.Value);
-            }
-            if (count == 15)
-            {
-                Debug.Log("Broke, count at:" + count);
-                break;
-            }
-            count = count + 1;
-        }
-        
-    }
 }
-

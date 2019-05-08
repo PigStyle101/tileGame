@@ -4,6 +4,7 @@
   "Defence": 2,
   "Range": 2,
   "MovePoints": 6,
+  "Health": 5,
   "Cost": 200,
   "Title": "Archer",
   "Description": "Ranged unit with low defence and average movement",

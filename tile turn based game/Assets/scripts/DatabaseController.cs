@@ -4,6 +4,7 @@ using UnityEngine;
 using System.IO;
 using System.Reflection;
 using System;
+using UnityEngine.UI;
 
 [System.Serializable]
 public class DatabaseController : MonoBehaviour {
@@ -25,6 +26,7 @@ public class DatabaseController : MonoBehaviour {
     public int DragSpeed;
     [HideInInspector]
     public int scrollSpeed;
+    public GameObject CanvasPrefab;
 
     private void Start()
     {
@@ -196,8 +198,10 @@ public class DatabaseController : MonoBehaviour {
         MouseOverlayGO.GetComponent<SpriteRenderer>().sortingOrder = 3;                                                     //making it so its on top of the default sprite
         MouseOverlayGO.transform.parent = TGO.transform;                                                                    //setting its parent to the main game object
         MouseOverlayGO.name = "MouseOverlay";                                                                               //changing the name
-        TGO.AddComponent<SpriteController>();                                                                               //adding the sprite controller script to it
-        TGO.GetComponent<SpriteController>().Weight = TerrainDictionary[index].Weight;
+        TGO.AddComponent<TerrainController>();                                                                               //adding the sprite controller script to it
+        TGO.GetComponent<TerrainController>().Weight = TerrainDictionary[index].Weight;
+        TGO.GetComponent<TerrainController>().Walkable = TerrainDictionary[index].Walkable;
+        TGO.GetComponent<TerrainController>().DefenceBonus = TerrainDictionary[index].DefenceBonus;
         TGO.transform.position = location;
         return TGO;
     } //used to spawn terrian from database
@@ -211,11 +215,21 @@ public class DatabaseController : MonoBehaviour {
         TGO.GetComponent<SpriteRenderer>().sortingLayerName = UnitDictionary[index].Type;
         TGO.AddComponent<BoxCollider>();
         TGO.GetComponent<BoxCollider>().size = new Vector3(.95f, .95f, .1f);
-        TGO.AddComponent<SpriteController>();
-        TGO.GetComponent<SpriteController>().Team = team;
-        TGO.GetComponent<SpriteController>().MovePoints = UnitDictionary[index].MovePoints;
+        TGO.AddComponent<UnitController>();
+        TGO.GetComponent<UnitController>().Team = team;
+        TGO.GetComponent<UnitController>().MovePoints = UnitDictionary[index].MovePoints;
+        TGO.GetComponent<UnitController>().Attack = UnitDictionary[index].Attack;
+        TGO.GetComponent<UnitController>().Defence = UnitDictionary[index].Defence;
+        TGO.GetComponent<UnitController>().MaxHealth = UnitDictionary[index].Health;
+        TGO.GetComponent<UnitController>().Health = UnitDictionary[index].Health;
+        TGO.GetComponent<UnitController>().Range = UnitDictionary[index].Range;
         TGO.tag = UnitDictionary[index].Type;
         TGO.transform.position = location;
+
+        GameObject TempCan = Instantiate(CanvasPrefab, TGO.transform);
+        TempCan.transform.localPosition = new Vector3(0, 0, 0);
+        TempCan.GetComponentInChildren<Text>().text = UnitDictionary[index].Health.ToString();
+
         return TGO;
     } //used to spawn units form database
 
@@ -228,8 +242,8 @@ public class DatabaseController : MonoBehaviour {
         TGO.GetComponent<SpriteRenderer>().sortingLayerName = BuildingDictionary[index].Type;
         TGO.AddComponent<BoxCollider>();
         TGO.GetComponent<BoxCollider>().size = new Vector3(.95f, .95f, .1f);
-        TGO.AddComponent<SpriteController>();
-        TGO.GetComponent<SpriteController>().Team = team;
+        TGO.AddComponent<BuildingController>();
+        TGO.GetComponent<BuildingController>().Team = team;
         TGO.tag = BuildingDictionary[index].Type;
         TGO.transform.position = location;
         return TGO;
@@ -319,6 +333,7 @@ public class Unit
     public int Attack;
     public int Defence;
     public int Range;
+    public int Health;
     public int MovePoints;
     public int Cost;
     public string Title;
