@@ -229,6 +229,11 @@ public class DatabaseController : MonoBehaviour {
         GameObject TempCan = Instantiate(CanvasPrefab, TGO.transform);
         TempCan.transform.localPosition = new Vector3(0, 0, 0);
         TempCan.GetComponentInChildren<Text>().text = UnitDictionary[index].Health.ToString();
+        if (GCS.CurrentScene == "PlayScene")
+        {
+            TGO.GetComponent<UnitController>().UnitMovable = false;
+            GCS.AddUnitsToDictionary(TGO);
+        }
 
         return TGO;
     } //used to spawn units form database

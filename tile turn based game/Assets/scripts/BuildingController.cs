@@ -8,8 +8,12 @@ public class BuildingController : MonoBehaviour
     private GameControllerScript GCS;
     private MapEditMenueCamController MEMCC;
     private DatabaseController DBC;
-    [HideInInspector]
+    //[HideInInspector]
     public int Team;
+    //[HideInInspector]
+    public bool Occupied = false;
+    //[HideInInspector]
+    public bool CanBuild;
 
     private void Awake()
     {
@@ -51,6 +55,21 @@ public class BuildingController : MonoBehaviour
                     gameObject.name = kvp.Value.Title;//change name of tile
                     gameObject.GetComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.BuildingDictionary[kvp.Key].ArtworkDirectory[0]); //change sprite of tile
                 }
+            }
+        }
+    }
+
+    public void BuildingRoundUpdater()
+    {
+        foreach(var kvp in GCS.UnitPos)
+        {
+            if (kvp.Key == (Vector2)gameObject.transform.position)
+            {
+                Occupied = true;
+            }
+            else
+            {
+                Occupied = false;
             }
         }
     }

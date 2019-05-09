@@ -24,7 +24,8 @@ public class GameControllerScript : MonoBehaviour {
     public Dictionary<Vector2, GameObject> UnitPos = new Dictionary<Vector2, GameObject>();
     public Dictionary<Vector2, GameObject> BuildingPos = new Dictionary<Vector2, GameObject>();
     private GameObject CameraVar;
-    private string CurrentScene;
+    [HideInInspector]
+    public string CurrentScene;
     private List<string> LoadButtons;
     private DatabaseController DBC;
     private MapEditMenueCamController MEMCC;
@@ -48,6 +49,9 @@ public class GameControllerScript : MonoBehaviour {
     public int CurrentTeamsTurn;
     private Vector2 originalPositionOfUnit;
     private Vector2 MoveToPosition;
+    public AudioClip BattleAudio;
+    public AudioClip MainAudio;
+    public AudioClip MapEditorAudio;
 
     private void Awake()
     {
@@ -105,6 +109,7 @@ public class GameControllerScript : MonoBehaviour {
             {
 
             }
+            //AudioController(sceneVar.name);
         }
         catch (Exception e)
         {
@@ -345,7 +350,7 @@ public class GameControllerScript : MonoBehaviour {
                             PSCC.AttackButtonController(tempint);
                             PSCC.WaitButton.SetActive(true);
                         }
-                        else if (hit.transform.tag == DBC.UnitDictionary[0].Type && SelectedUnitPlayScene == hit.transform.gameObject) //is the hit a unit? is the unit selected already?
+                        else if (hit.transform.tag == DBC.UnitDictionary[0].Type && SelectedUnitPlayScene == hit.transform.gameObject && (Vector2)hit.transform.position == originalPositionOfUnit) //is the hit a unit? is the unit selected already?
                         {
                             SelectedUnitPlayScene = null; //clear selected unit variable
                             Debug.Log("Selected unit set to null");
@@ -706,13 +711,17 @@ public class GameControllerScript : MonoBehaviour {
         System.Random rnd = new System.Random();
         CurrentTeamsTurn = rnd.Next(1, TeamCount + 1);
         PSCC.CurrentPlayerTurnText.text = CurrentTeamsTurn.ToString();
-        foreach (var kvp in TilePos)
+        AllRoundUpdater();
+        foreach(var kvp in BuildingPos)
         {
-            kvp.Value.GetComponent<TerrainController>().TerrainRoundUpdater();
-        }
-        foreach (var kvp in UnitPos)
-        {
-            kvp.Value.GetComponent<UnitController>().UnitRoundUpdater();
+            if (kvp.Value.GetComponent<BuildingController>().Team  == CurrentTeamsTurn)
+            {
+                kvp.Value.GetComponent<BuildingController>().CanBuild = true;
+            }
+            else
+            {
+                kvp.Value.GetComponent<BuildingController>().CanBuild = false;
+            }
         }
     }
 
@@ -727,13 +736,17 @@ public class GameControllerScript : MonoBehaviour {
             CurrentTeamsTurn = 1;
         }
         PSCC.CurrentPlayerTurnText.text = CurrentTeamsTurn.ToString();
-        foreach (var kvp in UnitPos)
+        AllRoundUpdater();
+        foreach (var kvp in BuildingPos)
         {
-            kvp.Value.GetComponent<UnitController>().UnitRoundUpdater();
-        }
-        foreach (var kvp in TilePos)
-        {
-            kvp.Value.GetComponent<TerrainController>().TerrainRoundUpdater();
+            if (kvp.Value.GetComponent<BuildingController>().Team == CurrentTeamsTurn)
+            {
+                kvp.Value.GetComponent<BuildingController>().CanBuild = true;
+            }
+            else
+            {
+                kvp.Value.GetComponent<BuildingController>().CanBuild = false;
+            }
         }
     }
 
@@ -791,6 +804,10 @@ public class GameControllerScript : MonoBehaviour {
         {
             kvp.Value.GetComponent<UnitController>().GetTileValues();
         }
+        foreach (var kvp in BuildingPos)
+        {
+            kvp.Value.GetComponent<BuildingController>().BuildingRoundUpdater();
+        }
         PSCC.SetActionButtonsToFalse();
     }
 
@@ -808,6 +825,41 @@ public class GameControllerScript : MonoBehaviour {
         }
         PSCC.WaitButton.SetActive(false);
         PSCC.CancelButton.SetActive(false);
+    }
+
+    public void AudioController(string SceneName)
+    {
+        if (SceneName == "MainMenuScene")
+        {
+            gameObject.GetComponent<AudioSource>().Stop();
+            gameObject.GetComponent<AudioSource>().PlayOneShot(MainAudio);
+        }
+        else if (SceneName == "MapEditorScene")
+        {
+            gameObject.GetComponent<AudioSource>().Stop();
+            gameObject.GetComponent<AudioSource>().PlayOneShot(MapEditorAudio);
+        }
+        else if (SceneName == "PlayScene")
+        {
+            gameObject.GetComponent<AudioSource>().Stop();
+            gameObject.GetComponent<AudioSource>().PlayOneShot(BattleAudio);
+        }
+    }
+
+    public void AllRoundUpdater()
+    {
+        foreach (var kvp in TilePos)
+        {
+            kvp.Value.GetComponent<TerrainController>().TerrainRoundUpdater();
+        }
+        foreach (var kvp in UnitPos)
+        {
+            kvp.Value.GetComponent<UnitController>().UnitRoundUpdater();
+        }
+        foreach (var kvp in BuildingPos)
+        {
+            kvp.Value.GetComponent<BuildingController>().BuildingRoundUpdater();
+        }
     }
 }
 

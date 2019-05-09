@@ -31,6 +31,11 @@ public class PlaySceneCamController : MonoBehaviour
     public GameObject BuildingDescription;
     public GameObject BuildingToolTipSet;
     public GameObject BuildingToolTipData;
+    public GameObject BuildingButtonPrefab;
+    public GameObject ContentWindowBuilding;
+    public GameObject BuildingPanel;
+    public Vector2 CurrentlySelectedBuilding;
+    public bool BuildingRayBool;
 
     private void Awake()
     {
@@ -41,6 +46,8 @@ public class PlaySceneCamController : MonoBehaviour
     private void Start()
     {
         SetActionButtonsToFalse();
+        BuildingPanel.SetActive(false);
+        AddUnitButtonsToBuildContent();
     }
 
     void Update()
@@ -88,6 +95,7 @@ public class PlaySceneCamController : MonoBehaviour
     public void EndTurnButtonClicked()
     {
         GCS.PlaySceneTurnChanger();
+        BuildingPanel.SetActive(false);
     }
 
     public void AttackButtonController(int enemyCount)
@@ -129,13 +137,15 @@ public class PlaySceneCamController : MonoBehaviour
 
     public void RayCasterForPlayScene()
     {
-        if (Input.GetMouseButtonDown(0)) //are we in play scene?
+        if (Input.GetMouseButtonDown(0))
         {
             if (!EventSystem.current.IsPointerOverGameObject()) //dont want to click through menus
             {
+                Debug.Log("RayHitStarted");
                 Ray ray = GameObject.Find("MainCamera").GetComponent<Camera>().ScreenPointToRay(Input.mousePosition); //GET THEM RAYS
                 RaycastHit[] hits;
                 hits = Physics.RaycastAll(ray);
+                BuildingRayBool = false;
                 Debug.Log("Starting play scene ray hits");
                 for (int i = 0; i < hits.Length; i++) // GO THROUGH THEM RAYS
                 {
@@ -153,7 +163,7 @@ public class PlaySceneCamController : MonoBehaviour
                             }
                         }
                     }
-                    else if (hit.transform.tag == DBC.UnitDictionary[0].Type)
+                    if (hit.transform.tag == DBC.UnitDictionary[0].Type)
                     {
                         foreach (var kvp in DBC.UnitDictionary)
                         {
@@ -166,7 +176,7 @@ public class PlaySceneCamController : MonoBehaviour
                             }
                         }
                     }
-                    else if (hit.transform.tag == DBC.BuildingDictionary[0].Type)
+                    if (hit.transform.tag == DBC.BuildingDictionary[0].Type)
                     {
                         foreach (var kvp in DBC.BuildingDictionary)
                         {
@@ -178,6 +188,64 @@ public class PlaySceneCamController : MonoBehaviour
                                 BuildingToolTipData.GetComponent<Text>().text = kvp.Value.DefenceBonus.ToString();
                             }
                         }
+                    }
+                    if (hit.transform.tag == DBC.BuildingDictionary[0].Type)
+                    {
+                        if (!BuildingRayBool)
+                        {
+                            BuildingRayBool = true;
+                            Debug.Log("1");
+                            if (!hit.transform.GetComponent<BuildingController>().Occupied && hit.transform.GetComponent<BuildingController>().CanBuild && hit.transform.GetComponent<BuildingController>().Team == GCS.CurrentTeamsTurn)
+                            {
+                                Debug.Log("1.1");
+                                BuildingPanel.SetActive(true);
+                                CurrentlySelectedBuilding = hit.transform.position;
+                            }
+                            else
+                            {
+                                Debug.Log("1.2");
+                                BuildingPanel.SetActive(false);
+                            } 
+                        }
+                    }
+                    else  if (hit.transform.tag != DBC.BuildingDictionary[0].Type && !BuildingRayBool)
+                    {
+                        Debug.Log("2");
+                        BuildingPanel.SetActive(false);
+                    }
+                }
+                BuildingRayBool = false;
+            }
+        }
+    }
+
+    private void AddUnitButtonsToBuildContent()
+    {
+        Debug.Log("Adding terrain buttons to content window");
+        foreach (KeyValuePair<int, Unit> kvp in DBC.UnitDictionary) //adds a button for each terrain in the database
+        {
+            GameObject tempbutton = Instantiate(BuildingButtonPrefab, ContentWindowBuilding.transform); //create button and set its parent to content
+            tempbutton.name = kvp.Value.Title; //change name
+            tempbutton.transform.GetChild(0).GetComponent<Text>().text = kvp.Value.Title; //change text on button to match sprite
+            tempbutton.GetComponent<Image>().sprite = DBC.loadSprite(DBC.UnitDictionary[kvp.Key].ArtworkDirectory[0]); //set sprite
+            tempbutton.GetComponent<Button>().onClick.AddListener(CreateUnitController); //adds method to button clicked
+        }
+    } //populates the tile selection bar
+
+    public void CreateUnitController()
+    {
+        foreach(var kvp in DBC.UnitDictionary)
+        {
+            if (kvp.Value.Title == EventSystem.current.currentSelectedGameObject.name)
+            {
+                DBC.CreateAndSpawnUnit(CurrentlySelectedBuilding, kvp.Value.ID, GCS.CurrentTeamsTurn);
+                GCS.AllRoundUpdater();
+                BuildingPanel.SetActive(false);
+                foreach(var b in GCS.BuildingPos)
+                {
+                    if ((Vector2)b.Value.transform.position == CurrentlySelectedBuilding)
+                    {
+                        b.Value.GetComponent<BuildingController>().CanBuild = false;
                     }
                 }
             }
