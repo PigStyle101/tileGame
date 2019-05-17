@@ -30,18 +30,25 @@ public class DatabaseController : MonoBehaviour {
 
     private void Start()
     {
-
-        GCS = gameObject.GetComponent<GameControllerScript>();
-        GetMasterJson();
-        GCS.LoadingUpdater(.2f);
-        GetTerrianJsons();
-        GCS.LoadingUpdater(.4f);
-        GetUnitJsons();
-        GCS.LoadingUpdater(.6f);
-        GetBuildingJsons();
-        GCS.LoadingUpdater(.8f);
-        GetMouseJson();
-        GCS.LoadingUpdater(1f);
+        try
+        {
+            GCS = gameObject.GetComponent<GameControllerScript>();
+            GetMasterJson();
+            GCS.LoadingUpdater(.2f);
+            GetTerrianJsons();
+            GCS.LoadingUpdater(.4f);
+            GetUnitJsons();
+            GCS.LoadingUpdater(.6f);
+            GetBuildingJsons();
+            GCS.LoadingUpdater(.8f);
+            GetMouseJson();
+            GCS.LoadingUpdater(1f);
+        }
+        catch (Exception e)
+        {
+            GCS.LogController(e.ToString());
+            throw;
+        }
     }
 
     public void GetMasterJson()
@@ -56,9 +63,9 @@ public class DatabaseController : MonoBehaviour {
             DragSpeed = tempjson.DragSpeed;
             Debug.Log("Finished fetching json master file");
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
-            Debug.Log(e);
+            GCS.LogController(e.ToString());
             throw;
         }
     }
@@ -85,9 +92,9 @@ public class DatabaseController : MonoBehaviour {
                 }
             }
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
-            Debug.Log(e);
+            GCS.LogController(e.ToString());
             throw;
         }
     }//gets the json files from the terrain/data folder and converts them to unity object and stores tehm into dictionary
@@ -114,9 +121,9 @@ public class DatabaseController : MonoBehaviour {
                 }
             }
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
-            Debug.Log(e);
+            GCS.LogController(e.ToString());
             throw;
         }
     }//gets the json files from the Units/data folder and converts them to unity object and stores tehm into dictionary
@@ -143,9 +150,9 @@ public class DatabaseController : MonoBehaviour {
                 }
             }
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
-            Debug.Log(e);
+            GCS.LogController(e.ToString());
             throw;
         }
     }
@@ -172,103 +179,132 @@ public class DatabaseController : MonoBehaviour {
                 }
             }
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
-            Debug.Log(e);
+            GCS.LogController(e.ToString());
             throw;
         }
     }//same as getTerrainJson
 
     public GameObject CreateAdnSpawnTerrain(Vector2 location, int index)
     {
+        try
+        {
+            GameObject TGO = new GameObject();                                                                                  //create gameobject
+            TGO.name = TerrainDictionary[index].Title;                                                                          //change the name
+            TGO.AddComponent<SpriteRenderer>();                                                                                 //add a sprite controller
+            TGO.GetComponent<SpriteRenderer>().sprite = loadSprite(TerrainDictionary[index].ArtworkDirectory[0]);               //set the sprite to the texture
+            TGO.GetComponent<SpriteRenderer>().sortingLayerName = TerrainDictionary[index].Type;
+            TGO.AddComponent<BoxCollider>();
+            TGO.GetComponent<BoxCollider>().size = new Vector3(.95f, .95f, .1f);
+            TGO.tag = (TerrainDictionary[index].Type);
+            //TGO.AddComponent<RectTransform>();
 
-        GameObject TGO = new GameObject();                                                                                  //create gameobject
-        TGO.name = TerrainDictionary[index].Title;                                                                          //change the name
-        TGO.AddComponent<SpriteRenderer>();                                                                                 //add a sprite controller
-        TGO.GetComponent<SpriteRenderer>().sprite = loadSprite(TerrainDictionary[index].ArtworkDirectory[0]);               //set the sprite to the texture
-        TGO.GetComponent<SpriteRenderer>().sortingLayerName = TerrainDictionary[index].Type;
-        TGO.AddComponent<BoxCollider>();
-        TGO.GetComponent<BoxCollider>().size = new Vector3(.95f, .95f, .1f);
-        TGO.tag = (TerrainDictionary[index].Type);
-        //TGO.AddComponent<RectTransform>();
-
-        GameObject MouseOverlayGO = new GameObject();                                                                       //creating the child object for mouse overlay
-        MouseOverlayGO.AddComponent<SpriteRenderer>().sprite = loadSprite(MouseDictionary[0].ArtworkDirectory[0]);          //adding it to sprite
-        MouseOverlayGO.GetComponent<SpriteRenderer>().sortingLayerName = TerrainDictionary[index].Type;
-        MouseOverlayGO.GetComponent<SpriteRenderer>().sortingOrder = 3;                                                     //making it so its on top of the default sprite
-        MouseOverlayGO.transform.parent = TGO.transform;                                                                    //setting its parent to the main game object
-        MouseOverlayGO.name = "MouseOverlay";                                                                               //changing the name
-        TGO.AddComponent<TerrainController>();                                                                               //adding the sprite controller script to it
-        TGO.GetComponent<TerrainController>().Weight = TerrainDictionary[index].Weight;
-        TGO.GetComponent<TerrainController>().Walkable = TerrainDictionary[index].Walkable;
-        TGO.GetComponent<TerrainController>().DefenceBonus = TerrainDictionary[index].DefenceBonus;
-        TGO.transform.position = location;
-        return TGO;
+            GameObject MouseOverlayGO = new GameObject();                                                                       //creating the child object for mouse overlay
+            MouseOverlayGO.AddComponent<SpriteRenderer>().sprite = loadSprite(MouseDictionary[0].ArtworkDirectory[0]);          //adding it to sprite
+            MouseOverlayGO.GetComponent<SpriteRenderer>().sortingLayerName = TerrainDictionary[index].Type;
+            MouseOverlayGO.GetComponent<SpriteRenderer>().sortingOrder = 3;                                                     //making it so its on top of the default sprite
+            MouseOverlayGO.transform.parent = TGO.transform;                                                                    //setting its parent to the main game object
+            MouseOverlayGO.name = "MouseOverlay";                                                                               //changing the name
+            TGO.AddComponent<TerrainController>();                                                                               //adding the sprite controller script to it
+            TGO.GetComponent<TerrainController>().Weight = TerrainDictionary[index].Weight;
+            TGO.GetComponent<TerrainController>().Walkable = TerrainDictionary[index].Walkable;
+            TGO.GetComponent<TerrainController>().DefenceBonus = TerrainDictionary[index].DefenceBonus;
+            TGO.transform.position = location;
+            return TGO;
+        }
+        catch (Exception e)
+        {
+            GCS.LogController(e.ToString());
+            throw;
+        }
     } //used to spawn terrian from database
 
-    public GameObject CreateAndSpawnUnit(Vector2 location,int index, int team)
+    public GameObject CreateAndSpawnUnit(Vector2 location, int index, int team)
     {
-        GameObject TGO = new GameObject();
-        TGO.name = UnitDictionary[index].Title;
-        TGO.AddComponent<SpriteRenderer>();
-        TGO.GetComponent<SpriteRenderer>().sprite = loadSprite(UnitDictionary[index].ArtworkDirectory[0]);
-        TGO.GetComponent<SpriteRenderer>().sortingLayerName = UnitDictionary[index].Type;
-        TGO.AddComponent<BoxCollider>();
-        TGO.GetComponent<BoxCollider>().size = new Vector3(.95f, .95f, .1f);
-        TGO.AddComponent<UnitController>();
-        TGO.GetComponent<UnitController>().Team = team;
-        TGO.GetComponent<UnitController>().MovePoints = UnitDictionary[index].MovePoints;
-        TGO.GetComponent<UnitController>().Attack = UnitDictionary[index].Attack;
-        TGO.GetComponent<UnitController>().Defence = UnitDictionary[index].Defence;
-        TGO.GetComponent<UnitController>().MaxHealth = UnitDictionary[index].Health;
-        TGO.GetComponent<UnitController>().Health = UnitDictionary[index].Health;
-        TGO.GetComponent<UnitController>().Range = UnitDictionary[index].Range;
-        TGO.tag = UnitDictionary[index].Type;
-        TGO.transform.position = location;
-
-        GameObject TempCan = Instantiate(CanvasPrefab, TGO.transform);
-        TempCan.transform.localPosition = new Vector3(0, 0, 0);
-        TempCan.GetComponentInChildren<Text>().text = UnitDictionary[index].Health.ToString();
-        if (GCS.CurrentScene == "PlayScene")
+        try
         {
-            TGO.GetComponent<UnitController>().UnitMovable = false;
-            GCS.AddUnitsToDictionary(TGO);
-        }
+            GameObject TGO = new GameObject();
+            TGO.name = UnitDictionary[index].Title;
+            TGO.AddComponent<SpriteRenderer>();
+            TGO.GetComponent<SpriteRenderer>().sprite = loadSprite(UnitDictionary[index].ArtworkDirectory[0]);
+            TGO.GetComponent<SpriteRenderer>().sortingLayerName = UnitDictionary[index].Type;
+            TGO.AddComponent<BoxCollider>();
+            TGO.GetComponent<BoxCollider>().size = new Vector3(.95f, .95f, .1f);
+            TGO.AddComponent<UnitController>();
+            TGO.GetComponent<UnitController>().Team = team;
+            TGO.GetComponent<UnitController>().MovePoints = UnitDictionary[index].MovePoints;
+            TGO.GetComponent<UnitController>().Attack = UnitDictionary[index].Attack;
+            TGO.GetComponent<UnitController>().Defence = UnitDictionary[index].Defence;
+            TGO.GetComponent<UnitController>().MaxHealth = UnitDictionary[index].Health;
+            TGO.GetComponent<UnitController>().Health = UnitDictionary[index].Health;
+            TGO.GetComponent<UnitController>().Range = UnitDictionary[index].Range;
+            TGO.tag = UnitDictionary[index].Type;
+            TGO.transform.position = location;
 
-        return TGO;
+            GameObject TempCan = Instantiate(CanvasPrefab, TGO.transform);
+            TempCan.transform.localPosition = new Vector3(0, 0, 0);
+            TempCan.GetComponentInChildren<Text>().text = UnitDictionary[index].Health.ToString();
+            TGO.GetComponent<UnitController>().UnitMovable = true;
+            TGO.GetComponent<UnitController>().UnitMoved = false;
+            GCS.AddUnitsToDictionary(TGO);
+            TGO.GetComponent<UnitController>().TeamSpriteController();
+            return TGO;
+        }
+        catch (Exception e)
+        {
+            GCS.LogController(e.ToString());
+            throw;
+        }
     } //used to spawn units form database
 
     public GameObject CreateAndSpawnBuilding(Vector2 location, int index, int team)
     {
-        GameObject TGO = new GameObject();
-        TGO.name = BuildingDictionary[index].Title;
-        TGO.AddComponent<SpriteRenderer>();
-        TGO.GetComponent<SpriteRenderer>().sprite = loadSprite(BuildingDictionary[index].ArtworkDirectory[0]);
-        TGO.GetComponent<SpriteRenderer>().sortingLayerName = BuildingDictionary[index].Type;
-        TGO.AddComponent<BoxCollider>();
-        TGO.GetComponent<BoxCollider>().size = new Vector3(.95f, .95f, .1f);
-        TGO.AddComponent<BuildingController>();
-        TGO.GetComponent<BuildingController>().Team = team;
-        TGO.tag = BuildingDictionary[index].Type;
-        TGO.transform.position = location;
-        return TGO;
+        try
+        {
+            GameObject TGO = new GameObject();
+            TGO.name = BuildingDictionary[index].Title;
+            TGO.AddComponent<SpriteRenderer>();
+            TGO.GetComponent<SpriteRenderer>().sprite = loadSprite(BuildingDictionary[index].ArtworkDirectory[0]);
+            TGO.GetComponent<SpriteRenderer>().sortingLayerName = BuildingDictionary[index].Type;
+            TGO.AddComponent<BoxCollider>();
+            TGO.GetComponent<BoxCollider>().size = new Vector3(.95f, .95f, .1f);
+            TGO.AddComponent<BuildingController>();
+            TGO.GetComponent<BuildingController>().Team = team;
+            TGO.tag = BuildingDictionary[index].Type;
+            TGO.transform.position = location;
+            return TGO;
+        }
+        catch (Exception e)
+        {
+            GCS.LogController(e.ToString());
+            throw;
+        }
     }
 
     public Sprite loadSprite(string FilePath)
     {
-        Texture2D Tex2D;
-        Sprite TempSprite;
-        byte[] FileData;
-
-        if (File.Exists(FilePath))
+        try
         {
-            FileData = File.ReadAllBytes(FilePath);
-            Tex2D = new Texture2D(2, 2); // Create new "empty" texture
-            Tex2D.LoadImage(FileData);         // Load the imagedata into the texture (size is set automatically)
-            TempSprite = Sprite.Create(Tex2D, new Rect(0, 0, Tex2D.width, Tex2D.height), new Vector2(0.5f, 0.5f), 64);
-            return TempSprite;
+            Texture2D Tex2D;
+            Sprite TempSprite;
+            byte[] FileData;
+
+            if (File.Exists(FilePath))
+            {
+                FileData = File.ReadAllBytes(FilePath);
+                Tex2D = new Texture2D(2, 2); // Create new "empty" texture
+                Tex2D.LoadImage(FileData);         // Load the imagedata into the texture (size is set automatically)
+                TempSprite = Sprite.Create(Tex2D, new Rect(0, 0, Tex2D.width, Tex2D.height), new Vector2(0.5f, 0.5f), 64);
+                return TempSprite;
+            }
+            return null;
         }
-        return null;
+        catch (Exception e)
+        {
+            GCS.LogController(e.ToString());
+            throw;
+        }
     }// checks for images that are to be used for artwork stuffs
 
 }

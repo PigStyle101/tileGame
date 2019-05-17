@@ -52,17 +52,38 @@ public class GameControllerScript : MonoBehaviour {
     public AudioClip BattleAudio;
     public AudioClip MainAudio;
     public AudioClip MapEditorAudio;
+    [HideInInspector]
+    public string LogFile = "log.txt";
+    public bool EchoToConsole = true;
+    public bool AddTimeStamp = true;
 
     private void Awake()
     {
-        DBC = gameObject.GetComponent<DatabaseController>(); //referance to database
-        DontDestroyOnLoad(gameObject);
+        try
+        {
+
+            DBC = gameObject.GetComponent<DatabaseController>(); //referance to database
+            DontDestroyOnLoad(gameObject);
+        }
+        catch (Exception e)
+        {
+            LogController(e.ToString());
+            throw;
+        }
     }
 
     void OnEnable ()
     {
-        SceneManager.sceneLoaded += OnSceneLoaded;//blabla
-	}
+        try
+        {
+            SceneManager.sceneLoaded += OnSceneLoaded;//blabla
+        }
+        catch (Exception e)
+        {
+            LogController(e.ToString());
+            throw;
+        }
+    }
 
     private void Update()
     {
@@ -70,10 +91,26 @@ public class GameControllerScript : MonoBehaviour {
         RayCastForPlayScene();
     }
 
+    public void LogController(string Problem)
+    {
+        StreamWriter writer = new StreamWriter(Application.dataPath + "/StreamingAssets/DebugLogs/" + DateTime.Now.Hour + "-" + DateTime.Now.Minute + "-" + DateTime.Now.Second + ".txt");
+        writer.WriteLine(Problem);
+        writer.Close();
+        writer.Dispose();
+    }
+
     public void CreateNewMapForMapEditor (int MapSize)
     {
-        EditorMapSize = MapSize;
-        SceneManager.LoadScene(2);//notes and stuff
+        try
+        {
+            EditorMapSize = MapSize;
+            SceneManager.LoadScene(2);//notes and stuff
+        }
+        catch (Exception e)
+        {
+            LogController(e.ToString());
+            throw;
+        }
     }//used to pull map size from menue controller script and set a varaible in here
 
     private void OnSceneLoaded( Scene sceneVar , LoadSceneMode Mode) 
@@ -94,7 +131,7 @@ public class GameControllerScript : MonoBehaviour {
                     }
                 }
                 DrawNewMapForMapEditor();
-                MapDictionary.Clear(); //clear dictionary for good measure
+                MapDictionary = new Dictionary<Vector2, string>(); //clear dictionary for good measure
             }
             else if (sceneVar.name == "PlayScene")
             {
@@ -113,7 +150,7 @@ public class GameControllerScript : MonoBehaviour {
         }
         catch (Exception e)
         {
-            UnityEngine.Debug.Log(e);
+            LogController(e.ToString());
             throw;
         }
     }//when map editor scene loads, create map of map size loaded with all grass
@@ -132,178 +169,219 @@ public class GameControllerScript : MonoBehaviour {
         }
         catch (Exception e)
         {
-            UnityEngine.Debug.Log(e);
+            LogController(e.ToString());
             throw;
         }
     }// create the physical part of the map and reset camera position to center
 
     public void AddTilesToDictionary (GameObject tgo)
     {
-        if (TilePos.ContainsKey(tgo.transform.position))
+        try
         {
-            TilePos.Remove(tgo.transform.position);
-            TilePos.Add(tgo.transform.position, tgo);
+            if (TilePos.ContainsKey(tgo.transform.position))
+            {
+                TilePos.Remove(tgo.transform.position);
+                TilePos.Add(tgo.transform.position, tgo);
+            }
+            else
+            {
+                TilePos.Add(tgo.transform.position, tgo);
+            }
         }
-        else
+        catch (Exception e)
         {
-            TilePos.Add(tgo.transform.position, tgo);
+            LogController(e.ToString());
+            throw;
         }
-    }//adds tiles to dicitonary as position for key and game object for value.
+    }//checks if dictionary contains tile and replaces or adds terrain
 
     public void AddUnitsToDictionary(GameObject tgo)
     {
-        if (UnitPos.ContainsKey(tgo.transform.position))
+        try
         {
-            UnitPos.Remove(tgo.transform.position);
-            UnitPos.Add(tgo.transform.position, tgo);
+            if (UnitPos.ContainsKey(tgo.transform.position))
+            {
+                UnitPos.Remove(tgo.transform.position);
+                UnitPos.Add(tgo.transform.position, tgo);
+            }
+            else
+            {
+                UnitPos.Add(tgo.transform.position, tgo);
+            }
         }
-        else
+        catch (Exception e)
         {
-            UnitPos.Add(tgo.transform.position, tgo);
+            LogController(e.ToString());
+            throw;
         }
-        
-    } //adds unit to dictionary and deletes unit if key is already taken
+
+    } //checks if dictionary contains tile and replaces or adds unit
 
     public void AddBuildingToDictionary(GameObject tgo)
     {
-        if (BuildingPos.ContainsKey(tgo.transform.position))
+        try
         {
-            BuildingPos.Remove(tgo.transform.position);
-            BuildingPos.Add(tgo.transform.position, tgo);
+            if (BuildingPos.ContainsKey(tgo.transform.position))
+            {
+                BuildingPos.Remove(tgo.transform.position);
+                BuildingPos.Add(tgo.transform.position, tgo);
+            }
+            else
+            {
+                BuildingPos.Add(tgo.transform.position, tgo);
+            }
         }
-        else
+        catch (Exception e)
         {
-            BuildingPos.Add(tgo.transform.position, tgo);
+            LogController(e.ToString());
+            throw;
         }
-    }
+    } //checks if dictionary contains tile and replaces or adds building
 
     public void MouseSelectedController(SpriteRenderer STL, GameObject ST)
     {
-        if (SelectedTileOverlay != null) { SelectedTileOverlay.enabled = false; }
-        SelectedTileOverlay = STL;
-        SelectedTile = ST;
-        SelectedTileOverlay.enabled = true;
+        try
+        {
+            if (SelectedTileOverlay != null) { SelectedTileOverlay.enabled = false; }
+            SelectedTileOverlay = STL;
+            SelectedTile = ST;
+            SelectedTileOverlay.enabled = true;
+        }
+        catch (Exception e)
+        {
+            LogController(e.ToString());
+            throw;
+        }
     }// sets selected tile to whatever tile is clicked on and enables the clickon overlay
 
     public void RayCastForMapEditor()
     {
-        if (Input.GetMouseButtonDown(0) && CurrentScene == "MapEditorScene") //are we in map editor scene?
+        try
         {
-            if (!EventSystem.current.IsPointerOverGameObject()) 
+            if (Input.GetMouseButtonDown(0) && SceneManager.GetActiveScene().name == "MapEditorScene") //are we in map editor scene?
             {
-                //Debug.Log("Raycast activated");
-                Ray ray = GameObject.Find("MainCamera").GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
-                RaycastHit[] hits;
-                hits = Physics.RaycastAll(ray);
-                //Debug.Log(hits.Length);
-                for (int i = 0; i < hits.Length; i++)
+                if (!EventSystem.current.IsPointerOverGameObject())
                 {
-                    RaycastHit hit = hits[i];
-                    if (hit.transform.tag == MEMCC.SelectedTab) //is the hit tag = to what we are trying to place down?
+                    //Debug.Log("Raycast activated");
+                    Ray ray = GameObject.Find("MainCamera").GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
+                    RaycastHit[] hits;
+                    hits = Physics.RaycastAll(ray);
+                    //Debug.Log(hits.Length);
+                    for (int i = 0; i < hits.Length; i++)
                     {
-                        if (hit.transform.tag == DBC.TerrainDictionary[0].Type) //is it a terrain?
+                        RaycastHit hit = hits[i];
+                        if (hit.transform.tag == MEMCC.SelectedTab) //is the hit tag = to what we are trying to place down?
                         {
-                            TerrainController SC = hit.transform.GetComponent<TerrainController>();
-                            if (hit.transform.name != MEMCC.SelectedButton) //are we changing the tile to something new?
+                            if (hit.transform.tag == DBC.TerrainDictionary[0].Type) //is it a terrain?
                             {
-                                Debug.Log("Changing terrain to " + MEMCC.SelectedButton);
-                                SC.ChangeTile(); //change tile to new terrain tile
-                                AddTilesToDictionary(hit.transform.gameObject);
-                                SpriteUpdateActivator();
-                            }
-                        }
-                        else if (hit.transform.tag == DBC.UnitDictionary[0].Type) //is the hit a unit?
-                        {
-                            UnitController SC = hit.transform.GetComponent<UnitController>();
-                            if (hit.transform.name != MEMCC.SelectedButton) //are we changing the unit to something new?
-                            {
-                                Debug.Log("Changing unit to " + MEMCC.SelectedButton);
-                                if (MEMCC.SelectedButton == "Delete Unit")
+                                TerrainController TC = hit.transform.GetComponent<TerrainController>();
+                                if (hit.transform.name != MEMCC.SelectedButton) //are we changing the tile to something new?
                                 {
-                                    UnitPos.Remove(hit.transform.position);
+                                    Debug.Log("Changing terrain to " + MEMCC.SelectedButton);
+                                    TC.ChangeTile(); //change tile to new terrain tile
+                                    AddTilesToDictionary(hit.transform.gameObject);
+                                    SpriteUpdateActivator();
                                 }
-                                SC.ChangeUnit(); //change to new unit
-                                AddUnitsToDictionary(hit.transform.gameObject);
-                                SpriteUpdateActivator();
                             }
-                            else if (hit.transform.GetComponent<UnitController>().Team != MEMCC.SelectedTeam)
+                            else if (hit.transform.tag == DBC.UnitDictionary[0].Type) //is the hit a unit?
                             {
-                                hit.transform.GetComponent<UnitController>().Team = MEMCC.SelectedTeam;
-                                SpriteUpdateActivator();
-                            }
-                        }
-                        else if (hit.transform.tag == DBC.BuildingDictionary[0].Type)
-                        {
-                            BuildingController SC = hit.transform.GetComponent<BuildingController>();
-                            if (hit.transform.name != MEMCC.SelectedButton) //are we changing the building to something new?
-                            {
-                                Debug.Log("Changing building to " + MEMCC.SelectedButton);
-                                if (MEMCC.SelectedButton == "Delete Building")
+                                UnitController UC = hit.transform.GetComponent<UnitController>();
+                                if (hit.transform.name != MEMCC.SelectedButton) //are we changing the unit to something new?
                                 {
-                                    BuildingPos.Remove(hit.transform.position);
-                                }
-                                SC.ChangeBuilding(); //change to new building
-                                AddBuildingToDictionary(hit.transform.gameObject);
-                                SpriteUpdateActivator();
-                            }
-                            else if (hit.transform.GetComponent<BuildingController>().Team != MEMCC.SelectedTeam)
-                            {
-                                hit.transform.GetComponent<BuildingController>().Team = MEMCC.SelectedTeam;
-                                SpriteUpdateActivator();
-                            }
-                        }
-                    }
-                    else if (hit.transform.tag == DBC.TerrainDictionary[0].Type && MEMCC.SelectedTab == DBC.UnitDictionary[0].Type) //is the current hit not equal to what we are trying to place down. we are trying to place a unit.
-                    {
-                        if (!UnitPos.ContainsKey(hit.transform.position)) //is there a unit there already?
-                        {
-                            foreach (KeyValuePair<int, Unit> kvp in DBC.UnitDictionary)
-                            {
-                                if (kvp.Value.Title == MEMCC.SelectedButton) //need to find id for what unit we are trying to place
-                                {
-                                    bool tempbool = false;
-                                    foreach (var item in DBC.TerrainDictionary)
+                                    Debug.Log("Changing unit to " + MEMCC.SelectedButton);
+                                    if (MEMCC.SelectedButton == "Delete Unit")
                                     {
-                                        if (hit.transform.name ==item.Value.Title)
-                                        {;
-                                            tempbool = item.Value.Walkable;
-                                        }
+                                        UnitPos.Remove(hit.transform.position);
                                     }
-                                    if (tempbool)
+                                    UC.ChangeUnit(); //change to new unit
+                                    if (MEMCC.SelectedButton != "Delete Unit")
                                     {
-                                        GameObject tgo = DBC.CreateAndSpawnUnit(hit.transform.position, kvp.Key,MEMCC.SelectedTeam); //creat new unit at position on tile we clicked on.
-                                        tgo.GetComponent<UnitController>().Team = MEMCC.SelectedTeam;
-                                        AddUnitsToDictionary(tgo);
-                                        Debug.Log("Creating " + MEMCC.SelectedButton + " at " + hit.transform.position);
-                                        SpriteUpdateActivator();
+                                        AddUnitsToDictionary(hit.transform.gameObject);
                                     }
+                                    SpriteUpdateActivator();
+                                }
+                                else if (hit.transform.GetComponent<UnitController>().Team != MEMCC.SelectedTeam)
+                                {
+                                    hit.transform.GetComponent<UnitController>().Team = MEMCC.SelectedTeam;
+                                    SpriteUpdateActivator();
+                                }
+                            }
+                            else if (hit.transform.tag == DBC.BuildingDictionary[0].Type)
+                            {
+                                BuildingController BC = hit.transform.GetComponent<BuildingController>();
+                                if (hit.transform.name != MEMCC.SelectedButton) //are we changing the building to something new?
+                                {
+                                    Debug.Log("Changing building to " + MEMCC.SelectedButton);
+                                    if (MEMCC.SelectedButton == "Delete Building")
+                                    {
+                                        BuildingPos.Remove(hit.transform.position);
+                                    }
+                                    BC.ChangeBuilding(); //change to new building
+                                    if (MEMCC.SelectedButton != "Delete Building")
+                                    {
+                                        AddBuildingToDictionary(hit.transform.gameObject);
+                                    }
+                                    SpriteUpdateActivator();
+                                }
+                                else if (hit.transform.GetComponent<BuildingController>().Team != MEMCC.SelectedTeam)
+                                {
+                                    hit.transform.GetComponent<BuildingController>().Team = MEMCC.SelectedTeam;
+                                    SpriteUpdateActivator();
                                 }
                             }
                         }
-                    }
-                    else if (hit.transform.tag == DBC.TerrainDictionary[0].Type && MEMCC.SelectedTab == DBC.BuildingDictionary[0].Type)
-                    {
-                        if (!BuildingPos.ContainsKey(hit.transform.position))
+                        else if (hit.transform.tag == DBC.TerrainDictionary[0].Type && MEMCC.SelectedTab == DBC.UnitDictionary[0].Type) //is the current hit not equal to what we are trying to place down. we are trying to place a unit.
                         {
-                            foreach (KeyValuePair<int, Building> kvp in DBC.BuildingDictionary)
+                            if (!UnitPos.ContainsKey(hit.transform.position)) //is there a unit there already?
                             {
-                                if (kvp.Value.Title == MEMCC.SelectedButton) //need to find id for what unit we are trying to place
+                                foreach (KeyValuePair<int, Unit> kvp in DBC.UnitDictionary)
                                 {
-                                    bool tempbool = false;
-                                    foreach (var item in DBC.TerrainDictionary)
+                                    if (kvp.Value.Title == MEMCC.SelectedButton) //need to find id for what unit we are trying to place
                                     {
-                                        if (hit.transform.name == item.Value.Title)
+                                        bool tempbool = false;
+                                        foreach (var item in DBC.TerrainDictionary)
                                         {
-                                            tempbool = item.Value.Walkable;
+                                            if (hit.transform.name == item.Value.Title)
+                                            {
+                                                tempbool = item.Value.Walkable;
+                                            }
+                                        }
+                                        if (tempbool)
+                                        {
+                                            GameObject tgo = DBC.CreateAndSpawnUnit(hit.transform.position, kvp.Key, MEMCC.SelectedTeam); //creat new unit at position on tile we clicked on.
+                                            tgo.GetComponent<UnitController>().Team = MEMCC.SelectedTeam;
+                                            AddUnitsToDictionary(tgo);
+                                            Debug.Log("Creating " + MEMCC.SelectedButton + " at " + hit.transform.position);
+                                            SpriteUpdateActivator();
                                         }
                                     }
-                                    if (tempbool)
+                                }
+                            }
+                        }
+                        else if (hit.transform.tag == DBC.TerrainDictionary[0].Type && MEMCC.SelectedTab == DBC.BuildingDictionary[0].Type)
+                        {
+                            if (!BuildingPos.ContainsKey(hit.transform.position))
+                            {
+                                foreach (KeyValuePair<int, Building> kvp in DBC.BuildingDictionary)
+                                {
+                                    if (kvp.Value.Title == MEMCC.SelectedButton) //need to find id for what unit we are trying to place
                                     {
-                                        GameObject tgo = DBC.CreateAndSpawnBuilding(hit.transform.position, kvp.Key,MEMCC.SelectedTeam); //creat new building at position on tile we clicked on.
-                                        tgo.GetComponent<BuildingController>().Team = MEMCC.SelectedTeam;
-                                        AddBuildingToDictionary(tgo);
-                                        Debug.Log("Creating " + MEMCC.SelectedButton + " at " + hit.transform.position);
-                                        SpriteUpdateActivator();
+                                        bool tempbool = false;
+                                        foreach (var item in DBC.TerrainDictionary)
+                                        {
+                                            if (hit.transform.name == item.Value.Title)
+                                            {
+                                                tempbool = item.Value.Walkable;
+                                            }
+                                        }
+                                        if (tempbool)
+                                        {
+                                            GameObject tgo = DBC.CreateAndSpawnBuilding(hit.transform.position, kvp.Key, MEMCC.SelectedTeam); //creat new building at position on tile we clicked on.
+                                            tgo.GetComponent<BuildingController>().Team = MEMCC.SelectedTeam;
+                                            AddBuildingToDictionary(tgo);
+                                            Debug.Log("Creating " + MEMCC.SelectedButton + " at " + hit.transform.position);
+                                            SpriteUpdateActivator();
+                                        }
                                     }
                                 }
                             }
@@ -311,554 +389,681 @@ public class GameControllerScript : MonoBehaviour {
                     }
                 }
             }
+        }
+        catch (Exception e)
+        {
+            LogController(e.ToString());
+            throw;
         }
 
     }// used to check were mouse is hitting and then act acordingly
 
     public void RayCastForPlayScene()
     {
-        if (Input.GetMouseButtonDown(0) && CurrentScene == "PlayScene") //are we in play scene?
+        try
         {
-            if (!EventSystem.current.IsPointerOverGameObject()) //dont want to click through menus
+            if (Input.GetMouseButtonDown(0) && CurrentScene == "PlayScene") //are we in play scene?
             {
-                Ray ray = GameObject.Find("MainCamera").GetComponent<Camera>().ScreenPointToRay(Input.mousePosition); //GET THEM RAYS
-                RaycastHit[] hits;
-                hits = Physics.RaycastAll(ray);
-                Debug.Log("Starting play scene ray hits");
-                for (int i = 0; i < hits.Length; i++) // GO THROUGH THEM RAYS
+                if (!EventSystem.current.IsPointerOverGameObject()) //dont want to click through menus
                 {
-                    RaycastHit hit = hits[i];
-                    if (!PSCC.AttackButtonSelected)
+                    Ray ray = GameObject.Find("MainCamera").GetComponent<Camera>().ScreenPointToRay(Input.mousePosition); //GET THEM RAYS
+                    RaycastHit[] hits;
+                    hits = Physics.RaycastAll(ray);
+                    //Debug.Log("Starting play scene ray hits");
+                    for (int i = 0; i < hits.Length; i++) // GO THROUGH THEM RAYS
                     {
-                        if (hit.transform.tag == DBC.UnitDictionary[0].Type && SelectedUnitPlayScene == null && hit.transform.GetComponent<UnitController>().UnitMovable)
-                        {//is the hit a unit? is the unit movable? is the unit not selected?
-                            SelectedUnitPlayScene = hit.transform.gameObject; //set unit to selected unit
-                            Debug.Log("SelectedUnit = " + SelectedUnitPlayScene.transform.name);
-                            originalPositionOfUnit = SelectedUnitPlayScene.transform.position; //get unit position
-                            MoveToPosition = hit.transform.position;
-                            foreach (var kvp in SelectedUnitPlayScene.GetComponent<UnitController>().TilesWeights)
-                            {
-                                foreach (var t in TilePos)
+                        RaycastHit hit = hits[i];
+                        if (!PSCC.AttackButtonSelected)
+                        {
+                            if (hit.transform.tag == DBC.UnitDictionary[0].Type && SelectedUnitPlayScene == null && hit.transform.GetComponent<UnitController>().UnitMovable)
+                            {//is the hit a unit? is the unit movable? is the unit not selected?
+                                SelectedUnitPlayScene = hit.transform.gameObject; //set unit to selected unit
+                                //Debug.Log("SelectedUnit = " + SelectedUnitPlayScene.transform.name);
+                                originalPositionOfUnit = SelectedUnitPlayScene.transform.position; //get unit position
+                                MoveToPosition = hit.transform.position;
+                                foreach (var kvp in SelectedUnitPlayScene.GetComponent<UnitController>().TilesWeights)
                                 {
-                                    if (kvp.Key == (Vector2)t.Value.transform.position)
+                                    foreach (var t in TilePos)
                                     {
-                                        t.Value.transform.GetComponent<SpriteRenderer>().color = new Color(.5F, .5F, .5F); //sets dark tint to tiles that the unit can move too
+                                        if (kvp.Key == (Vector2)t.Value.transform.position)
+                                        {
+                                            t.Value.transform.GetComponent<SpriteRenderer>().color = new Color(.5F, .5F, .5F); //sets dark tint to tiles that the unit can move too
+                                        }
                                     }
                                 }
+                                int tempint = SelectedUnitPlayScene.GetComponent<UnitController>().GetEnemyUnitsInRange();
+                                PSCC.AttackButtonController(tempint);
+                                PSCC.WaitButton.SetActive(true);
                             }
-                            int tempint = SelectedUnitPlayScene.GetComponent<UnitController>().GetEnemyUnitsInRange();
-                            PSCC.AttackButtonController(tempint);
-                            PSCC.WaitButton.SetActive(true);
-                        }
-                        else if (hit.transform.tag == DBC.UnitDictionary[0].Type && SelectedUnitPlayScene == hit.transform.gameObject && (Vector2)hit.transform.position == originalPositionOfUnit) //is the hit a unit? is the unit selected already?
-                        {
-                            SelectedUnitPlayScene = null; //clear selected unit variable
-                            Debug.Log("Selected unit set to null");
-                            foreach (var kvp in TilePos)
+                            else if (hit.transform.tag == DBC.UnitDictionary[0].Type && SelectedUnitPlayScene == hit.transform.gameObject && (Vector2)hit.transform.position == originalPositionOfUnit) //is the hit a unit? is the unit selected already?
                             {
-                                kvp.Value.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1);
-                            }
-                            originalPositionOfUnit = new Vector2(-1, -1); //get unit position
-                            MoveToPosition = new Vector2(-1,-1);
-                        }
-                        else if (hit.transform.tag == DBC.TerrainDictionary[0].Type || hit.transform.tag == DBC.BuildingDictionary[0].Type) //is the hit a terrain or building?
-                        {
-                            Debug.Log("Building or terrain hit");
-                            if (SelectedUnitPlayScene != null)
-                            {
-                                if (hit.transform.position != SelectedUnitPlayScene.transform.position) //is the building or terrain not the one the unit is standing on?
+                                SelectedUnitPlayScene = null; //clear selected unit variable
+                                //Debug.Log("Selected unit set to null");
+                                foreach (var kvp in TilePos)
                                 {
-                                    if (!UnitPos.ContainsKey(hit.transform.position))
+                                    kvp.Value.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1);
+                                }
+                                originalPositionOfUnit = new Vector2(-1, -1); //get unit position
+                                MoveToPosition = new Vector2(-1, -1);
+                                PSCC.SetActionButtonsToFalse();
+                            }
+                            else if (hit.transform.tag == DBC.TerrainDictionary[0].Type || hit.transform.tag == DBC.BuildingDictionary[0].Type) //is the hit a terrain or building?
+                            {
+                                //Debug.Log("Building or terrain hit");
+                                if (SelectedUnitPlayScene != null)
+                                {
+                                    if (hit.transform.position != SelectedUnitPlayScene.transform.position) //is the building or terrain not the one the unit is standing on?
                                     {
-                                        MoveToPosition = hit.transform.position; //get position we want to move to
-                                        if (SelectedUnitPlayScene.GetComponent<UnitController>().TilesWeights.ContainsKey(MoveToPosition)) //does the unit have enough move points?
+                                        if (!UnitPos.ContainsKey(hit.transform.position))
                                         {
-                                            Debug.Log("Moving Unit");
-                                            SelectedUnitPlayScene.transform.position = hit.transform.position; //move unit
-                                            SelectedUnitPlayScene.GetComponent<UnitController>().UnitMovable = false; //set unit movable to false
-                                            int tempint = SelectedUnitPlayScene.GetComponent<UnitController>().GetEnemyUnitsInRange();
-                                            PSCC.AttackButtonController(tempint);
+                                            MoveToPosition = hit.transform.position; //get position we want to move to
+                                            if (SelectedUnitPlayScene.GetComponent<UnitController>().TilesWeights.ContainsKey(MoveToPosition)) //does the unit have enough move points?
+                                            {
+                                                Debug.Log("Moving Unit");
+                                                SelectedUnitPlayScene.transform.position = hit.transform.position; //move unit
+                                                int tempint = SelectedUnitPlayScene.GetComponent<UnitController>().GetEnemyUnitsInRange();
+                                                PSCC.AttackButtonController(tempint);
+                                            }
+                                            else
+                                            {
+                                                Debug.Log("Not enough move points");
+                                            }
                                         }
                                         else
                                         {
-                                            Debug.Log("Not enough move points");
+                                            Debug.Log("Unit in the way");
                                         }
                                     }
-                                    else
-                                    {
-                                        Debug.Log("Unit in the way");
-                                    }
                                 }
+                            }
+                            else
+                            {
+                                Debug.Log("Nothing hit");
                             }
                         }
                         else
                         {
-                            Debug.Log("Nothing hit");
-                        }
-                    }
-                    else
-                    {
-                        if (SelectedUnitPlayScene.GetComponent<UnitController>().EnemyUnitsInRange.ContainsKey(hit.transform.position) && hit.transform.tag == DBC.UnitDictionary[0].Type)
-                        {
-                            int attack = SelectedUnitPlayScene.GetComponent<UnitController>().Attack;
-                            UnitPos[hit.transform.position].GetComponent<UnitController>().Health = UnitPos[hit.transform.position].GetComponent<UnitController>().Health - attack;
-                            foreach(var kvp in UnitPos)
+                            if (SelectedUnitPlayScene.GetComponent<UnitController>().EnemyUnitsInRange.ContainsKey(hit.transform.position) && hit.transform.tag == DBC.UnitDictionary[0].Type)
                             {
-                                kvp.Value.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1);
+                                int attack = SelectedUnitPlayScene.GetComponent<UnitController>().Attack;
+                                UnitPos[hit.transform.position].GetComponent<UnitController>().Health = UnitPos[hit.transform.position].GetComponent<UnitController>().Health - attack;
+                                foreach (var kvp in UnitPos)
+                                {
+                                    kvp.Value.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1);
+                                }
+                                if (UnitPos[hit.transform.position].GetComponent<UnitController>().Health <= 0)
+                                {
+                                    UnitPos.Remove(hit.transform.position);
+                                    Destroy(hit.transform.gameObject);
+                                }
+                                else
+                                {
+                                    UnitPos[hit.transform.position].GetComponentInChildren<Text>().text = UnitPos[hit.transform.position].GetComponent<UnitController>().Health.ToString();
+                                }
+                                foreach (var kvp in TilePos)
+                                {
+                                    kvp.Value.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1);
+                                }
+                                WaitActionPlayScene();
+                                PSCC.AttackButtonSelected = false;
+                                PSCC.SetActionButtonsToFalse();
+                                break;
                             }
-                            if (UnitPos[hit.transform.position].GetComponent<UnitController>().Health <= 0)
-                            {
-                                UnitPos.Remove(hit.transform.position);
-                                Destroy(hit.transform.gameObject);
-                            }
-                            else
-                            {
-                                UnitPos[hit.transform.position].GetComponentInChildren<Text>().text = UnitPos[hit.transform.position].GetComponent<UnitController>().Health.ToString();
-                            }
-                            foreach (var kvp in TilePos)
-                            {
-                                kvp.Value.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1);
-                            }
-                            WaitActionPlayScene();
-                            PSCC.AttackButtonSelected = false;
-                            PSCC.SetActionButtonsToFalse();
-                            break;
                         }
                     }
                 }
             }
         }
+        catch (Exception e)
+        {
+            LogController(e.ToString());
+            throw;
+        }
     } //used to check were mouse is hitting and then act acordingly
 
     public void SaveMap(Dictionary<Vector2, GameObject> TP, Dictionary<Vector2, GameObject> UP,Dictionary<Vector2,GameObject> BP, string SaveName)
     {
-        if (!System.IO.File.Exists(Application.dataPath + "/StreamingAssets/Maps/" + SaveName + ".json"))
+        try
         {
-            if (SaveName != "")
+            if (!System.IO.File.Exists(Application.dataPath + "/StreamingAssets/Maps/" + SaveName + ".json"))
             {
-                if (!Regex.IsMatch(SaveName, @"^[a-z][A-Z]+$"))
+                if (SaveName != "")
                 {
-                    int count = 0;
-                    TeamCount = 0;
-                    Map[] save = new Map[TP.Count + UP.Count + BP.Count];
-                    bool team1 = false;
-                    bool team2 = false;
-                    bool team3 = false;
-                    foreach (KeyValuePair<Vector2, GameObject> kvp in TP)
+                    if (!Regex.IsMatch(SaveName, @"^[a-z][A-Z]+$"))
                     {
-                        if (kvp.Value != null)
-                        {
-                            save[count] = new Map();
-                            save[count].Location = kvp.Key;
-                            save[count].Name = kvp.Value.name;
-                            save[count].Type = DBC.TerrainDictionary[0].Type;
-                            count = count + 1; 
-                        }
-                    }
-                    foreach (KeyValuePair<Vector2, GameObject> kvp in UP)
-                    {
-                        if (kvp.Value != null)
-                        {
-                            save[count] = new Map();
-                            save[count].Location = kvp.Key;
-                            save[count].Name = kvp.Value.name;
-                            save[count].Type = DBC.UnitDictionary[0].Type;
-                            save[count].Team = kvp.Value.GetComponent<UnitController>().Team;
-                            count = count + 1;
-                            if (kvp.Value.GetComponent<UnitController>().Team == 1)
-                            {
-                                team1 = true;
-                            }
-                            if (kvp.Value.GetComponent<UnitController>().Team == 2)
-                            {
-                                team2 = true;
-                            }
-                            if (kvp.Value.GetComponent<UnitController>().Team == 3)
-                            {
-                                team3 = true;
-                            }
-                        }
-                    }
-                    foreach (KeyValuePair<Vector2, GameObject> kvp in BP)
-                    {
-                        if (kvp.Value != null)
+                        int count = 0;
+                        TeamCount = 0;
+                        Map[] save = new Map[TP.Count + UP.Count + BP.Count];
+                        bool team1 = false;
+                        bool team2 = false;
+                        bool team3 = false;
+                        foreach (KeyValuePair<Vector2, GameObject> kvp in TP)
                         {
                             if (kvp.Value != null)
                             {
                                 save[count] = new Map();
                                 save[count].Location = kvp.Key;
                                 save[count].Name = kvp.Value.name;
-                                save[count].Type = DBC.BuildingDictionary[0].Type;
-                                save[count].Team = kvp.Value.GetComponent<BuildingController>().Team;
+                                save[count].Type = DBC.TerrainDictionary[0].Type;
                                 count = count + 1;
                             }
                         }
-                    }
-                    if (team1)
-                    {
-                        TeamCount = TeamCount + 1;
-                    }
-                    if (team2)
-                    {
-                        TeamCount = TeamCount + 1;
-                    }
-                    if (team3)
-                    {
-                        TeamCount = TeamCount + 1;
-                    }
-                    if (TeamCount >= 2)
-                    {
-                        save[0].TeamCount = TeamCount;
-                        string tempjson = JsonHelper.ToJson(save, true);
-                        FileStream fs = File.Create(Application.dataPath + "/StreamingAssets/Maps/" + SaveName + ".json");
-                        StreamWriter sr = new StreamWriter(fs);
-                        sr.Write(tempjson);
-                        sr.Close();
-                        sr.Dispose();
-                        fs.Close();
-                        fs.Dispose();
-                        MEMCC.SaveFeedback.text = "File saved as: " + SaveName;   
+                        foreach (KeyValuePair<Vector2, GameObject> kvp in UP)
+                        {
+                            if (kvp.Value != null)
+                            {
+                                save[count] = new Map();
+                                save[count].Location = kvp.Key;
+                                save[count].Name = kvp.Value.name;
+                                save[count].Type = DBC.UnitDictionary[0].Type;
+                                save[count].Team = kvp.Value.GetComponent<UnitController>().Team;
+                                count = count + 1;
+                                if (kvp.Value.GetComponent<UnitController>().Team == 1)
+                                {
+                                    team1 = true;
+                                }
+                                if (kvp.Value.GetComponent<UnitController>().Team == 2)
+                                {
+                                    team2 = true;
+                                }
+                                if (kvp.Value.GetComponent<UnitController>().Team == 3)
+                                {
+                                    team3 = true;
+                                }
+                            }
+                        }
+                        foreach (KeyValuePair<Vector2, GameObject> kvp in BP)
+                        {
+                            if (kvp.Value != null)
+                            {
+                                if (kvp.Value != null)
+                                {
+                                    save[count] = new Map();
+                                    save[count].Location = kvp.Key;
+                                    save[count].Name = kvp.Value.name;
+                                    save[count].Type = DBC.BuildingDictionary[0].Type;
+                                    save[count].Team = kvp.Value.GetComponent<BuildingController>().Team;
+                                    count = count + 1;
+                                }
+                            }
+                        }
+                        if (team1)
+                        {
+                            TeamCount = TeamCount + 1;
+                        }
+                        if (team2)
+                        {
+                            TeamCount = TeamCount + 1;
+                        }
+                        if (team3)
+                        {
+                            TeamCount = TeamCount + 1;
+                        }
+                        if (TeamCount >= 2)
+                        {
+                            save[0].TeamCount = TeamCount;
+                            string tempjson = JsonHelper.ToJson(save, true);
+                            FileStream fs = File.Create(Application.dataPath + "/StreamingAssets/Maps/" + SaveName + ".json");
+                            StreamWriter sr = new StreamWriter(fs);
+                            sr.Write(tempjson);
+                            sr.Close();
+                            sr.Dispose();
+                            fs.Close();
+                            fs.Dispose();
+                            MEMCC.SaveFeedback.text = "File saved as: " + SaveName;
+                        }
+                        else
+                        {
+                            MEMCC.SaveFeedback.text = "Need to have more then 1 team to save a map";
+                        }
                     }
                     else
                     {
-                        MEMCC.SaveFeedback.text = "Need to have more then 1 team to save a map";
+                        MEMCC.SaveFeedback.text = "Only use letters";
                     }
                 }
                 else
                 {
-                    MEMCC.SaveFeedback.text = "Only use letters";
+                    MEMCC.SaveFeedback.text = "Add a name.";
                 }
             }
             else
             {
-                MEMCC.SaveFeedback.text = "Add a name.";
+                MEMCC.SaveFeedback.text = "Current file name is already in use, please rename your save or delete old file.";
             }
         }
-        else
+        catch (Exception e)
         {
-            MEMCC.SaveFeedback.text = "Current file name is already in use, please rename your save or delete old file.";
+            LogController(e.ToString());
+            throw;
         }
     }//checks if file already exsist and if it does not it creates new file and stores current map items into dictionarys as (location,id number)
 
     public void LoadMapMapEditor(string name)
     {
-        StreamReader SR = new StreamReader( Application.dataPath + "/StreamingAssets/Maps/" + name + ".json");
-        string tempstring = SR.ReadToEnd();
-        Map[] Load = JsonHelper.FromJson<Map>(tempstring);
+        try
+        {
+            StreamReader SR = new StreamReader(Application.dataPath + "/StreamingAssets/Maps/" + name + ".json");
+            string tempstring = SR.ReadToEnd();
+            Map[] Load = JsonHelper.FromJson<Map>(tempstring);
 
 
-        var TilesToDelete = GameObject.FindGameObjectsWithTag(DBC.TerrainDictionary[0].Type);
-        var UnitsToDelete = GameObject.FindGameObjectsWithTag(DBC.UnitDictionary[0].Type);
-        var BuildingsToDelete = GameObject.FindGameObjectsWithTag(DBC.BuildingDictionary[0].Type);
-        TilePos.Clear();
-        UnitPos.Clear();
-        BuildingPos.Clear();
-        foreach (var GO in TilesToDelete)
-        {
-            Destroy(GO);
-        }
-        foreach (var GOU in UnitsToDelete)
-        {
-            Destroy(GOU);
-        }
-        foreach (var BGO in BuildingsToDelete)
-        {
-            Destroy(BGO);
-        }
-
-        for (int i = 0; i < Load.Length; i++)
-        {
-            if (Load[i].Type == DBC.TerrainDictionary[0].Type)
+            var TilesToDelete = GameObject.FindGameObjectsWithTag(DBC.TerrainDictionary[0].Type);
+            var UnitsToDelete = GameObject.FindGameObjectsWithTag(DBC.UnitDictionary[0].Type);
+            var BuildingsToDelete = GameObject.FindGameObjectsWithTag(DBC.BuildingDictionary[0].Type);
+            BuildingPos = new Dictionary<Vector2, GameObject>();
+            TilePos = new Dictionary<Vector2, GameObject>();
+            UnitPos = new Dictionary<Vector2, GameObject>();
+            foreach (var GO in TilesToDelete)
             {
-                foreach(var kvp in DBC.TerrainDictionary)
-                {
-                    if (kvp.Value.Title == Load[i].Name)
-                    {
-                        DBC.CreateAdnSpawnTerrain(Load[i].Location, kvp.Value.ID);
-                    }
-                }
+                Destroy(GO);
             }
-            else if (Load[i].Type == DBC.UnitDictionary[0].Type)
+            foreach (var GOU in UnitsToDelete)
             {
-                foreach (var kvp in DBC.UnitDictionary)
-                {
-                    if (kvp.Value.Title == Load[i].Name)
-                    {
-                        DBC.CreateAndSpawnUnit(Load[i].Location, kvp.Value.ID,Load[i].Team);
-                    }
-                }
+                Destroy(GOU);
             }
-            else if (Load[i].Type == DBC.BuildingDictionary[0].Type)
+            foreach (var BGO in BuildingsToDelete)
             {
-                foreach (var kvp in DBC.BuildingDictionary)
-                {
-                    if (kvp.Value.Title == Load[i].Name)
-                    {
-                        DBC.CreateAndSpawnBuilding(Load[i].Location, kvp.Value.ID, Load[i].Team);
-                    }
-                }
+                Destroy(BGO);
             }
-        }
 
-        foreach(var go in GameObject.FindGameObjectsWithTag(DBC.TerrainDictionary[0].Type))
-        {
-            AddTilesToDictionary(go);
-        }
-        foreach (var go in GameObject.FindGameObjectsWithTag(DBC.UnitDictionary[0].Type))
-        {
-            AddUnitsToDictionary(go);
-        }
-        foreach (var go in GameObject.FindGameObjectsWithTag(DBC.BuildingDictionary[0].Type))
-        {
-            AddBuildingToDictionary(go);
-        }
-        SR.Close();
-        SR.Dispose();
-        SpriteUpdateActivator();
-    }// opens file and deseralizes it and then sends the info to drawLoadMapFromEditor function
-
-    public void LoadMapPlayScene(string name)
-    {
-        StreamReader SR = new StreamReader(Application.dataPath + "/StreamingAssets/Maps/" + name + ".json");
-        string tempstring = SR.ReadToEnd();
-        Map[] Load = JsonHelper.FromJson<Map>(tempstring);
-
-        for (int i = 0; i < Load.Length; i++)
-        {
-            if (Load[i].Type == DBC.TerrainDictionary[0].Type)
+            for (int i = 0; i < Load.Length; i++)
             {
-                foreach (var kvp in DBC.TerrainDictionary)
+                if (Load[i].Type == DBC.TerrainDictionary[0].Type)
                 {
-                    if (kvp.Value.Title == Load[i].Name)
+                    foreach (var kvp in DBC.TerrainDictionary)
                     {
-                        DBC.CreateAdnSpawnTerrain(Load[i].Location, kvp.Value.ID);
-                        if (Load[i].Location.x > PlayMapSize)
+                        if (kvp.Value.Title == Load[i].Name)
                         {
-                            PlayMapSize = (int)Load[i].Location.x;
+                            DBC.CreateAdnSpawnTerrain(Load[i].Location, kvp.Value.ID);
+                        }
+                    }
+                }
+                else if (Load[i].Type == DBC.UnitDictionary[0].Type)
+                {
+                    foreach (var kvp in DBC.UnitDictionary)
+                    {
+                        if (kvp.Value.Title == Load[i].Name)
+                        {
+                            DBC.CreateAndSpawnUnit(Load[i].Location, kvp.Value.ID, Load[i].Team);
+                        }
+                    }
+                }
+                else if (Load[i].Type == DBC.BuildingDictionary[0].Type)
+                {
+                    foreach (var kvp in DBC.BuildingDictionary)
+                    {
+                        if (kvp.Value.Title == Load[i].Name)
+                        {
+                            DBC.CreateAndSpawnBuilding(Load[i].Location, kvp.Value.ID, Load[i].Team);
                         }
                     }
                 }
             }
-            else if (Load[i].Type == DBC.UnitDictionary[0].Type)
+
+            foreach (var go in GameObject.FindGameObjectsWithTag(DBC.TerrainDictionary[0].Type))
             {
-                foreach (var kvp in DBC.UnitDictionary)
+                AddTilesToDictionary(go);
+            }
+            foreach (var go in GameObject.FindGameObjectsWithTag(DBC.UnitDictionary[0].Type))
+            {
+                AddUnitsToDictionary(go);
+            }
+            foreach (var go in GameObject.FindGameObjectsWithTag(DBC.BuildingDictionary[0].Type))
+            {
+                AddBuildingToDictionary(go);
+            }
+            SR.Close();
+            SR.Dispose();
+            SpriteUpdateActivator();
+        }
+        catch (Exception e)
+        {
+            LogController(e.ToString());
+            throw;
+        }
+    }// opens file and deseralizes it and then sends the info to drawLoadMapFromEditor function
+
+    public void LoadMapPlayScene(string name)
+    {
+        try
+        {
+            StreamReader SR = new StreamReader(Application.dataPath + "/StreamingAssets/Maps/" + name + ".json");
+            string tempstring = SR.ReadToEnd();
+            Map[] Load = JsonHelper.FromJson<Map>(tempstring);
+
+            for (int i = 0; i < Load.Length; i++)
+            {
+                if (Load[i].Type == DBC.TerrainDictionary[0].Type)
                 {
-                    if (kvp.Value.Title == Load[i].Name)
+                    foreach (var kvp in DBC.TerrainDictionary)
                     {
-                        DBC.CreateAndSpawnUnit(Load[i].Location, kvp.Value.ID, Load[i].Team);
+                        if (kvp.Value.Title == Load[i].Name)
+                        {
+                            DBC.CreateAdnSpawnTerrain(Load[i].Location, kvp.Value.ID);
+                            if (Load[i].Location.x > PlayMapSize)
+                            {
+                                PlayMapSize = (int)Load[i].Location.x;
+                            }
+                        }
+                    }
+                }
+                else if (Load[i].Type == DBC.UnitDictionary[0].Type)
+                {
+                    foreach (var kvp in DBC.UnitDictionary)
+                    {
+                        if (kvp.Value.Title == Load[i].Name)
+                        {
+                            DBC.CreateAndSpawnUnit(Load[i].Location, kvp.Value.ID, Load[i].Team);
+                        }
+                    }
+                }
+                else if (Load[i].Type == DBC.BuildingDictionary[0].Type)
+                {
+                    foreach (var kvp in DBC.BuildingDictionary)
+                    {
+                        if (kvp.Value.Title == Load[i].Name)
+                        {
+                            DBC.CreateAndSpawnBuilding(Load[i].Location, kvp.Value.ID, Load[i].Team);
+                        }
                     }
                 }
             }
-            else if (Load[i].Type == DBC.BuildingDictionary[0].Type)
+
+            TeamCount = Load[0].TeamCount;
+            Debug.Log("TeamCount = " + TeamCount);
+
+            foreach (var go in GameObject.FindGameObjectsWithTag(DBC.TerrainDictionary[0].Type))
             {
-                foreach (var kvp in DBC.BuildingDictionary)
-                {
-                    if (kvp.Value.Title == Load[i].Name)
-                    {
-                        DBC.CreateAndSpawnBuilding(Load[i].Location, kvp.Value.ID, Load[i].Team);
-                    }
-                }
+                AddTilesToDictionary(go);
             }
+            foreach (var go in GameObject.FindGameObjectsWithTag(DBC.UnitDictionary[0].Type))
+            {
+                AddUnitsToDictionary(go);
+            }
+            foreach (var go in GameObject.FindGameObjectsWithTag(DBC.BuildingDictionary[0].Type))
+            {
+                AddBuildingToDictionary(go);
+            }
+            SR.Close();
+            SR.Dispose();
+            SpriteUpdateActivator();
+            CameraVar = GameObject.Find("MainCamera");
+            CameraVar.transform.position = new Vector3(PlayMapSize / 2 - .5f, PlayMapSize / 2 - .5f, PlayMapSize * -1);
         }
-
-        TeamCount = Load[0].TeamCount;
-        Debug.Log("TeamCount = " + TeamCount);
-
-        foreach (var go in GameObject.FindGameObjectsWithTag(DBC.TerrainDictionary[0].Type))
+        catch (Exception e)
         {
-            AddTilesToDictionary(go);
+            LogController(e.ToString());
+            throw;
         }
-        foreach (var go in GameObject.FindGameObjectsWithTag(DBC.UnitDictionary[0].Type))
-        {
-            AddUnitsToDictionary(go);
-        }
-        foreach (var go in GameObject.FindGameObjectsWithTag(DBC.BuildingDictionary[0].Type))
-        {
-            AddBuildingToDictionary(go);
-        }
-        SR.Close();
-        SR.Dispose();
-        SpriteUpdateActivator();
-        CameraVar = GameObject.Find("MainCamera");
-        CameraVar.transform.position = new Vector3(PlayMapSize / 2 - .5f, PlayMapSize / 2 - .5f, PlayMapSize * -1);
-    }
+    } //loads the map form file and spawns everything in and then adds them to dictionaries, and finally resets camera position
 
     public void SpriteUpdateActivator()
     {
-        foreach(var kvp in TilePos)
+        try
         {
-            kvp.Value.GetComponent<TerrainController>().WaterSpriteController();
-            kvp.Value.GetComponent<TerrainController>().RoadSpriteController();
-        }
-        foreach(var kvp in UnitPos)
-        {
-            if (kvp.Value != null)
+            foreach (var kvp in TilePos)
             {
-                kvp.Value.GetComponent<UnitController>().TeamSpriteController(); 
+                kvp.Value.GetComponent<TerrainController>().WaterSpriteController();
+                kvp.Value.GetComponent<TerrainController>().RoadSpriteController();
+            }
+            foreach (var kvp in UnitPos)
+            {
+                if (kvp.Value != null)
+                {
+                    kvp.Value.GetComponent<UnitController>().TeamSpriteController();
+                }
+            }
+            foreach (var kvp in BuildingPos)
+            {
+                if (kvp.Value != null)
+                {
+                    kvp.Value.GetComponent<BuildingController>().TeamSpriteUpdater();
+                }
             }
         }
-        foreach (var kvp in BuildingPos)
+        catch (Exception e)
         {
-            if (kvp.Value != null)
-            {
-                kvp.Value.GetComponent<BuildingController>().TeamSpriteUpdater(); 
-            }
+            LogController(e.ToString());
+            throw;
         }
-    }
+    } //used to call for a sprite update when it is needed
 
     public void PlaySceneNewGameInitalizer()
     {
-        System.Random rnd = new System.Random();
-        CurrentTeamsTurn = rnd.Next(1, TeamCount + 1);
-        PSCC.CurrentPlayerTurnText.text = CurrentTeamsTurn.ToString();
-        AllRoundUpdater();
-        foreach(var kvp in BuildingPos)
+        try
         {
-            if (kvp.Value.GetComponent<BuildingController>().Team  == CurrentTeamsTurn)
+            System.Random rnd = new System.Random();
+            CurrentTeamsTurn = rnd.Next(1, TeamCount + 1);
+            PSCC.CurrentPlayerTurnText.text = CurrentTeamsTurn.ToString();
+            AllRoundUpdater();
+            foreach (var kvp in BuildingPos)
             {
-                kvp.Value.GetComponent<BuildingController>().CanBuild = true;
-            }
-            else
-            {
-                kvp.Value.GetComponent<BuildingController>().CanBuild = false;
+                if (kvp.Value.GetComponent<BuildingController>().Team == CurrentTeamsTurn)
+                {
+                    kvp.Value.GetComponent<BuildingController>().CanBuild = true;
+                }
+                else
+                {
+                    kvp.Value.GetComponent<BuildingController>().CanBuild = false;
+                }
             }
         }
-    }
+        catch (Exception e)
+        {
+            LogController(e.ToString());
+            throw;
+        }
+    } //sets up game for new game
 
     public void PlaySceneTurnChanger()
     {
-        if (CurrentTeamsTurn != TeamCount)
+        try
         {
-            CurrentTeamsTurn = CurrentTeamsTurn + 1;
-        }
-        else
-        {
-            CurrentTeamsTurn = 1;
-        }
-        PSCC.CurrentPlayerTurnText.text = CurrentTeamsTurn.ToString();
-        AllRoundUpdater();
-        foreach (var kvp in BuildingPos)
-        {
-            if (kvp.Value.GetComponent<BuildingController>().Team == CurrentTeamsTurn)
+            if (CurrentTeamsTurn != TeamCount)
             {
-                kvp.Value.GetComponent<BuildingController>().CanBuild = true;
+                CurrentTeamsTurn = CurrentTeamsTurn + 1;
             }
             else
             {
-                kvp.Value.GetComponent<BuildingController>().CanBuild = false;
+                CurrentTeamsTurn = 1;
+            }
+            PSCC.CurrentPlayerTurnText.text = CurrentTeamsTurn.ToString();
+            AllRoundUpdater();
+            foreach (var kvp in BuildingPos)
+            {
+                if (kvp.Value.GetComponent<BuildingController>().Team == CurrentTeamsTurn)
+                {
+                    kvp.Value.GetComponent<BuildingController>().CanBuild = true;
+                }
+                else
+                {
+                    kvp.Value.GetComponent<BuildingController>().CanBuild = false;
+                }
+            }
+            List<int> TempList = new List<int>();
+            foreach (var kvp in UnitPos) //check through units to make sure there is still enough players to play the game
+            {
+                if (!TempList.Contains(kvp.Value.GetComponent<UnitController>().Team))
+                {
+                    TempList.Add(kvp.Value.GetComponent<UnitController>().Team);
+                }
+            }
+            if (TempList.Count == 1)
+            {
+                int TempTeam = 0;
+                foreach (var item in TempList)
+                {
+                    TempTeam = item;
+                }
+                PSCC.GameEndController(TempTeam);
             }
         }
-    }
+        catch (Exception e)
+        {
+            LogController(e.ToString());
+            throw;
+        }
+    } //used to controlle variables for when the turn changes
 
     public void LoadingUpdater(float f)
     {
-        Slider LoadingSlider = GameObject.Find("Canvas").GetComponentInChildren<Slider>();
-        LoadingSlider.value = f;
-        if (f == 1f)
+        try
         {
-            SceneManager.LoadScene("MainMenuScene");
-            DBC.Initalisation = false;
+            Slider LoadingSlider = GameObject.Find("Canvas").GetComponentInChildren<Slider>();
+            LoadingSlider.value = f;
+            if (f == 1f)
+            {
+                SceneManager.LoadScene("MainMenuScene");
+                DBC.Initalisation = false;
+            }
         }
-    }
+        catch (Exception e)
+        {
+            LogController(e.ToString());
+            throw;
+        }
+    } //used to load teh game. that way the player does not have to stare at blank screen while it is loading
 
     public void CancelActionPlayScene()
     {
-        if (originalPositionOfUnit != new Vector2(-1,-1))
+        try
         {
-            SelectedUnitPlayScene.transform.position = originalPositionOfUnit;
-            originalPositionOfUnit = new Vector2 (-1,-1);
+            if (originalPositionOfUnit != new Vector2(-1, -1))
+            {
+                SelectedUnitPlayScene.transform.position = originalPositionOfUnit;
+                originalPositionOfUnit = new Vector2(-1, -1);
+            }
+            foreach (var kvp in TilePos)
+            {
+                kvp.Value.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1);
+            }
+            SelectedUnitPlayScene.GetComponent<UnitController>().UnitMovable = true;
+            foreach (var kvp in UnitPos)
+            {
+                kvp.Value.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1);
+            }
+            SelectedUnitPlayScene = null; //clear selected unit variable
+            PSCC.SetActionButtonsToFalse();
         }
-        foreach (var kvp in TilePos)
+        catch (Exception e)
         {
-            kvp.Value.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1);
+            LogController(e.ToString());
+            throw;
         }
-        SelectedUnitPlayScene.GetComponent<UnitController>().UnitMovable = true;
-        foreach(var kvp in UnitPos)
-        {
-            kvp.Value.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1);
-        }
-        SelectedUnitPlayScene = null; //clear selected unit variable
-        PSCC.SetActionButtonsToFalse();
-    }
+    } //returns unit to original position and resets all variables set to it
 
     public void WaitActionPlayScene()
     {
-        if (MoveToPosition != new Vector2(-1,-1))
+        try
         {
-            UnitPos.Remove(originalPositionOfUnit);
-            if (UnitPos.ContainsKey(originalPositionOfUnit))
+            if (MoveToPosition != new Vector2(-1, -1))
             {
-                Debug.Log("Key was not deleted");
+                UnitPos.Remove(originalPositionOfUnit);
+                if (UnitPos.ContainsKey(originalPositionOfUnit))
+                {
+                    Debug.Log("Key was not deleted");
+                }
+                UnitPos.Add(MoveToPosition, SelectedUnitPlayScene);
+                MoveToPosition = new Vector2(-1, -1);
             }
-            UnitPos.Add(MoveToPosition, SelectedUnitPlayScene);
-            MoveToPosition = new Vector2(-1, -1);
+            SelectedUnitPlayScene.GetComponent<UnitController>().UnitMovable = false; //set unit movable to false
+            SelectedUnitPlayScene.GetComponent<UnitController>().UnitMoved = true;
+            SelectedUnitPlayScene = null;
+            foreach (var kvp in TilePos)
+            {
+                kvp.Value.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1);
+                kvp.Value.GetComponent<TerrainController>().TerrainRoundUpdater();
+            }
+            foreach (var kvp in UnitPos)
+            {
+                kvp.Value.GetComponent<UnitController>().GetTileValues();
+            }
+            foreach (var kvp in BuildingPos)
+            {
+                kvp.Value.GetComponent<BuildingController>().BuildingRoundUpdater();
+            }
+            PSCC.SetActionButtonsToFalse();
         }
-        SelectedUnitPlayScene.GetComponent<UnitController>().UnitMovable = false; //set unit movable to false
-        SelectedUnitPlayScene = null;
-        foreach (var kvp in TilePos)
+        catch (Exception e)
         {
-            kvp.Value.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1);
-            kvp.Value.GetComponent<TerrainController>().TerrainRoundUpdater();
+            LogController(e.ToString());
+            throw;
         }
-        foreach (var kvp in UnitPos)
-        {
-            kvp.Value.GetComponent<UnitController>().GetTileValues();
-        }
-        foreach (var kvp in BuildingPos)
-        {
-            kvp.Value.GetComponent<BuildingController>().BuildingRoundUpdater();
-        }
-        PSCC.SetActionButtonsToFalse();
     }
 
     public void AttackActionPlayScene()
     {
-        foreach(var kvp in SelectedUnitPlayScene.GetComponent<UnitController>().EnemyUnitsInRange)
+        try
         {
-            foreach (var u in UnitPos)
+            foreach (var kvp in SelectedUnitPlayScene.GetComponent<UnitController>().EnemyUnitsInRange)
             {
-                if (kvp.Key == u.Key)
+                foreach (var u in UnitPos)
                 {
-                    u.Value.GetComponent<SpriteRenderer>().color = new Color(.5f, .5f, .5f);
+                    if (kvp.Key == u.Key)
+                    {
+                        u.Value.GetComponent<SpriteRenderer>().color = new Color(.5f, .5f, .5f);
+                    }
                 }
             }
+            PSCC.WaitButton.SetActive(false);
+            PSCC.CancelButton.SetActive(false);
         }
-        PSCC.WaitButton.SetActive(false);
-        PSCC.CancelButton.SetActive(false);
+        catch (Exception e)
+        {
+            LogController(e.ToString());
+            throw;
+        }
     }
 
     public void AudioController(string SceneName)
     {
-        if (SceneName == "MainMenuScene")
+        try
         {
-            gameObject.GetComponent<AudioSource>().Stop();
-            gameObject.GetComponent<AudioSource>().PlayOneShot(MainAudio);
+            if (SceneName == "MainMenuScene")
+            {
+                gameObject.GetComponent<AudioSource>().Stop();
+                gameObject.GetComponent<AudioSource>().PlayOneShot(MainAudio);
+            }
+            else if (SceneName == "MapEditorScene")
+            {
+                gameObject.GetComponent<AudioSource>().Stop();
+                gameObject.GetComponent<AudioSource>().PlayOneShot(MapEditorAudio);
+            }
+            else if (SceneName == "PlayScene")
+            {
+                gameObject.GetComponent<AudioSource>().Stop();
+                gameObject.GetComponent<AudioSource>().PlayOneShot(BattleAudio);
+            }
         }
-        else if (SceneName == "MapEditorScene")
+        catch (Exception e)
         {
-            gameObject.GetComponent<AudioSource>().Stop();
-            gameObject.GetComponent<AudioSource>().PlayOneShot(MapEditorAudio);
-        }
-        else if (SceneName == "PlayScene")
-        {
-            gameObject.GetComponent<AudioSource>().Stop();
-            gameObject.GetComponent<AudioSource>().PlayOneShot(BattleAudio);
+            LogController(e.ToString());
+            throw;
         }
     }
 
     public void AllRoundUpdater()
     {
-        foreach (var kvp in TilePos)
+        try
         {
-            kvp.Value.GetComponent<TerrainController>().TerrainRoundUpdater();
+            foreach (var kvp in TilePos)
+            {
+                kvp.Value.GetComponent<TerrainController>().TerrainRoundUpdater();
+            }
+            foreach (var kvp in UnitPos)
+            {
+                kvp.Value.GetComponent<UnitController>().UnitRoundUpdater();
+            }
+            foreach (var kvp in BuildingPos)
+            {
+                kvp.Value.GetComponent<BuildingController>().BuildingRoundUpdater();
+            }
         }
-        foreach (var kvp in UnitPos)
+        catch (Exception e)
         {
-            kvp.Value.GetComponent<UnitController>().UnitRoundUpdater();
-        }
-        foreach (var kvp in BuildingPos)
-        {
-            kvp.Value.GetComponent<BuildingController>().BuildingRoundUpdater();
+            LogController(e.ToString());
+            throw;
         }
     }
 }
