@@ -1,11 +1,13 @@
 {
   "ID": 3,
-  "Attack": 3,
+  "Attack": 5,
   "Defence": 1,
   "Range": 3,
-  "MovePoints": 1,
+  "MovePoints": 2,
+  "Health": 5,
   "Cost": 300,
   "Title": "Catapult",
   "Description": "Long ranged unit with high damage but low movement",
-  "Slug": "catapult_unit"
+  "Slug": "catapult_unit",
+  "Type": "Unit"
 }

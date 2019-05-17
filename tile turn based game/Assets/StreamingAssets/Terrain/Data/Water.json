@@ -4,5 +4,7 @@
   "Walkable": false,
   "Description": "Deep water",
   "DefenceBonus": 0,
-  "Slug": "water_tile"
+  "Slug": "water_tile",
+  "Type": "Terrain",
+  "Weight": 1
 }

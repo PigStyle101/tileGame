@@ -4,5 +4,7 @@
   "Walkable": true,
   "Description": "A well traveled path",
   "DefenceBonus": 0,
-  "Slug": "road_tile"
+  "Slug": "road_tile",
+  "Type": "Terrain",
+  "Weight":  1
 }
