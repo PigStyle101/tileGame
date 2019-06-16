@@ -11,7 +11,6 @@ public class PlaySceneCamController : MonoBehaviour
     Vector3 dragOrigin;
     private GameControllerScript GCS;
     private DatabaseController DBC;
-    [HideInInspector]
     public Text CurrentPlayerTurnText;
     public bool AttackButtonSelected = false;
     public GameObject AttackButton;

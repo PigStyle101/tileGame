@@ -104,7 +104,7 @@ public class GameControllerScript : MonoBehaviour {
         try
         {
             EditorMapSize = MapSize;
-            SceneManager.LoadScene(2);//notes and stuff
+            SceneManager.LoadScene("MapEditorScene");//notes and stuff
         }
         catch (Exception e)
         {
