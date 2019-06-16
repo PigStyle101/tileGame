@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657844, g: 0.49641222, b: 0.57481694, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -518,7 +518,7 @@ MonoBehaviour:
   dragSpeedOffset: 0.5
   DragSpeed: 0
   scrollSpeed: 0
-  CanvasPrefab: {fileID: 6243326969869550210, guid: c093f5acd985f354dafcf77a8e44acb7,
+  CanvasPrefab: {fileID: 6243326969869550210, guid: 3452a4487e55e6f4d869470abf106db2,
     type: 3}
 --- !u!114 &1259027381
 MonoBehaviour:
@@ -532,6 +532,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 944ebfd83f79f824080be26a614b86a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  CurrentScene: 
   SelectedTileOverlay: {fileID: 0}
   SelectedTile: {fileID: 0}
   EditorMapSize: 0
@@ -544,6 +545,9 @@ MonoBehaviour:
   BattleAudio: {fileID: 8300000, guid: b470432d7ce59ed4db71697500c86e9e, type: 3}
   MainAudio: {fileID: 8300000, guid: 63e2d732badada7439c476ac14746617, type: 3}
   MapEditorAudio: {fileID: 8300000, guid: 5b728ca468884df46bea6e8d1d74c2e7, type: 3}
+  LogFile: log.txt
+  EchoToConsole: 1
+  AddTimeStamp: 1
 --- !u!224 &1259027382
 RectTransform:
   m_ObjectHideFlags: 0

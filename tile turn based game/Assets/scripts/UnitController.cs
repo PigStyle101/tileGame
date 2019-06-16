@@ -29,7 +29,7 @@ public class UnitController : MonoBehaviour
     public int Attack;
     [HideInInspector]
     public int Defence;
-    public Dictionary<Vector2, int[]> TilesWeights = new Dictionary<Vector2, int[]>();
+    public Dictionary<Vector2, int> TilesWeights = new Dictionary<Vector2, int>();
     public Dictionary<Vector2, int> TilesChecked = new Dictionary<Vector2, int>();
     public Dictionary<Vector2, int> EnemyUnitsInRange = new Dictionary<Vector2, int>();
 
@@ -119,7 +119,7 @@ public class UnitController : MonoBehaviour
             Directions.Add(new Vector2(0, -1));
             Directions.Add(new Vector2(-1, 0));
             int count = 1; //using this to make the algorith go more rounds then needed, as the most any unit should need is 6 rounds
-            TilesWeights = new Dictionary<Vector2, int[]>();
+            TilesWeights = new Dictionary<Vector2, int>();
 
             foreach (var dir in Directions)
             {
@@ -127,18 +127,17 @@ public class UnitController : MonoBehaviour
                 {
                     if (GCS.TilePos[Position + dir].GetComponent<TerrainController>().Weight <= MovePoints && !GCS.TilePos[Position + dir].GetComponent<TerrainController>().Occupied) //is the wheight less then the total movement points? is there already a unit there?
                     {
-                        int[] temparray = new int[2]; //array to store count and mp used to get to that tile, the count will be needed later for when a ai is added.
-                        temparray[0] = count;
-                        temparray[1] = GCS.TilePos[Position].GetComponent<TerrainController>().Weight; //this is the movement points used so far
-                        TilesWeights.Add(Position + dir, temparray);
+                        int temp; //array to store count and mp used to get to that tile, the count will be needed later for when a ai is added.
+                        temp = GCS.TilePos[Position].GetComponent<TerrainController>().Weight; //this is the movement points used so far
+                        TilesWeights.Add(Position + dir, temp);
                     }
                 }
             }
             //count = count + 1;
-            while (count <= 20)
+            while (count <= 10)
             {
-                int[] tempIntArray = new int[2];
-                Dictionary<Vector2, int[]> Temp = new Dictionary<Vector2, int[]>();
+                int tempInt;
+                Dictionary<Vector2, int> Temp = new Dictionary<Vector2, int>();
                 foreach (var kvp in TilesWeights) //we want to check all tiles in tile weight, maybe could change this to only check tiles that were last added?
                 {
                     foreach (var dir in Directions) //for each tile we are checking we need to look in each direction.
@@ -147,25 +146,24 @@ public class UnitController : MonoBehaviour
                         {
                             if (!Temp.ContainsKey(kvp.Key + dir)) //does the temp already contain the tile?
                             {
-                                if (kvp.Value[1] + GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Weight <= MovePoints && !GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Occupied) //is the wegiht of the tile + move points used already < move points total? unit there?
+                                if (kvp.Value + GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Weight <= MovePoints && !GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Occupied) //is the wegiht of the tile + move points used already < move points total? unit there?
                                 {
                                     if (GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Walkable) // can the tile be walked on?
                                     {
-                                        tempIntArray[0] = count;
-                                        tempIntArray[1] = GCS.TilePos[kvp.Key + dir].transform.GetComponent<TerrainController>().Weight + kvp.Value[1]; //sets this to mp used so far + weight of tile.
-                                        Temp.Add(kvp.Key + dir, tempIntArray);
+                                        tempInt = GCS.TilePos[kvp.Key + dir].transform.GetComponent<TerrainController>().Weight + kvp.Value; //sets this to mp used so far + weight of tile.
+                                        Temp.Add(kvp.Key + dir, tempInt);
                                     }
                                 } 
                             }
                             else //if temp already contains a key for this tile but more mp were used to get there then we want to replace the second value of the array with the lower number
                             {
-                                if (kvp.Value[1] + GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Weight <= MovePoints && !GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Occupied)
+                                if (kvp.Value + GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Weight <= MovePoints && !GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Occupied)
                                 {
                                     if (GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Walkable)
                                     {
-                                        if (kvp.Value[1] + GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Weight < Temp[kvp.Key + dir][1])
+                                        if (kvp.Value + GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Weight < Temp[kvp.Key + dir])
                                         {
-                                            Temp[kvp.Key + dir][1] = kvp.Value[1] + GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Weight;
+                                            Temp[kvp.Key + dir] = kvp.Value + GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Weight;
                                         }
                                     }
                                 }
@@ -177,9 +175,9 @@ public class UnitController : MonoBehaviour
                 {
                     if (TilesWeights.ContainsKey(kvp.Key)) 
                     {
-                        if (kvp.Value[1] < TilesWeights[kvp.Key][1])
+                        if (kvp.Value < TilesWeights[kvp.Key])
                         {
-                            TilesWeights[kvp.Key][1] = kvp.Value[1]; // if tileWheights already contains info for this block, but the mp count is higher replace with lower.
+                            TilesWeights[kvp.Key] = kvp.Value; // if tileWheights already contains info for this block, but the mp count is higher replace with lower.
                         }
                     }
                     else
@@ -187,7 +185,7 @@ public class UnitController : MonoBehaviour
                         TilesWeights.Add(kvp.Key, kvp.Value); // other wise just add info
                     }
                 }
-                if (count == 25)
+                if (count == 15)
                 {
                     Debug.Log("Broke, count at:" + count); //used to make sure while loop dont get stuck some how, wierdly it doe with out this.....
                     break;
