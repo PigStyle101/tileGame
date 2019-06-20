@@ -133,7 +133,6 @@ public class UnitController : MonoBehaviour
                     }
                 }
             }
-            //count = count + 1;
             while (count <= 10)
             {
                 int tempInt;

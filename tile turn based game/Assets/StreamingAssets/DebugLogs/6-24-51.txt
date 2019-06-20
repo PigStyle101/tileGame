@@ -1,7 +1,0 @@
-UnityEngine.MissingReferenceException: The variable CanvasPrefab of DatabaseController doesn't exist anymore.
-You probably need to reassign the CanvasPrefab variable of the 'DatabaseController' script in the inspector.
-  at (wrapper managed-to-native) UnityEngine.Object:Internal_CloneSingleWithParent (UnityEngine.Object,UnityEngine.Transform,bool)
-  at UnityEngine.Object.Instantiate (UnityEngine.Object original, UnityEngine.Transform parent, Boolean instantiateInWorldSpace) [0x00027] in C:\buildslave\unity\build\Runtime\Export\UnityEngineObject.bindings.cs:264 
-  at UnityEngine.Object.Instantiate[GameObject] (UnityEngine.GameObject original, UnityEngine.Transform parent, Boolean worldPositionStays) [0x00009] in C:\buildslave\unity\build\Runtime\Export\UnityEngineObject.bindings.cs:300 
-  at UnityEngine.Object.Instantiate[GameObject] (UnityEngine.GameObject original, UnityEngine.Transform parent) [0x00004] in C:\buildslave\unity\build\Runtime\Export\UnityEngineObject.bindings.cs:295 
-  at DatabaseController.CreateAndSpawnUnit (Vector2 location, Int32 index, Int32 team) [0x0017f] in C:\Users\Pig Style\Desktop\tileGameGit\tileGame\tile turn based game\Assets\scripts\DatabaseController.cs:245 
