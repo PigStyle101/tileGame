@@ -18,7 +18,6 @@ public class DatabaseController : MonoBehaviour {
     public Dictionary<int, Unit> UnitDictionary = new Dictionary<int, Unit>();
     public Dictionary<int, Building> BuildingDictionary = new Dictionary<int, Building>();
     private GameObject NewTile;
-    private GameControllerScript GCS;
     [HideInInspector]
     public bool Initalisation = true;
     public float dragSpeedOffset;
@@ -32,21 +31,21 @@ public class DatabaseController : MonoBehaviour {
     {
         try
         {
-            GCS = gameObject.GetComponent<GameControllerScript>();
+            //GameControllerScript.instance = gameObject.GetComponent<GameControllerScript>();
             GetMasterJson();
-            GCS.LoadingUpdater(.2f);
+            GameControllerScript.instance.LoadingUpdater(.2f);
             GetTerrianJsons();
-            GCS.LoadingUpdater(.4f);
+            GameControllerScript.instance.LoadingUpdater(.4f);
             GetUnitJsons();
-            GCS.LoadingUpdater(.6f);
+            GameControllerScript.instance.LoadingUpdater(.6f);
             GetBuildingJsons();
-            GCS.LoadingUpdater(.8f);
+            GameControllerScript.instance.LoadingUpdater(.8f);
             GetMouseJson();
-            GCS.LoadingUpdater(1f);
+            GameControllerScript.instance.LoadingUpdater(1f);
         }
         catch (Exception e)
         {
-            GCS.LogController(e.ToString());
+            GameControllerScript.instance.LogController(e.ToString());
             throw;
         }
     }
@@ -65,7 +64,7 @@ public class DatabaseController : MonoBehaviour {
         }
         catch (Exception e)
         {
-            GCS.LogController(e.ToString());
+            GameControllerScript.instance.LogController(e.ToString());
             throw;
         }
     }
@@ -94,7 +93,7 @@ public class DatabaseController : MonoBehaviour {
         }
         catch (Exception e)
         {
-            GCS.LogController(e.ToString());
+            GameControllerScript.instance.LogController(e.ToString());
             throw;
         }
     }//gets the json files from the terrain/data folder and converts them to unity object and stores tehm into dictionary
@@ -123,7 +122,7 @@ public class DatabaseController : MonoBehaviour {
         }
         catch (Exception e)
         {
-            GCS.LogController(e.ToString());
+            GameControllerScript.instance.LogController(e.ToString());
             throw;
         }
     }//gets the json files from the Units/data folder and converts them to unity object and stores tehm into dictionary
@@ -152,7 +151,7 @@ public class DatabaseController : MonoBehaviour {
         }
         catch (Exception e)
         {
-            GCS.LogController(e.ToString());
+            GameControllerScript.instance.LogController(e.ToString());
             throw;
         }
     }
@@ -181,7 +180,7 @@ public class DatabaseController : MonoBehaviour {
         }
         catch (Exception e)
         {
-            GCS.LogController(e.ToString());
+            GameControllerScript.instance.LogController(e.ToString());
             throw;
         }
     }//same as getTerrainJson
@@ -215,7 +214,7 @@ public class DatabaseController : MonoBehaviour {
         }
         catch (Exception e)
         {
-            GCS.LogController(e.ToString());
+            GameControllerScript.instance.LogController(e.ToString());
             throw;
         }
     } //used to spawn terrian from database
@@ -247,13 +246,13 @@ public class DatabaseController : MonoBehaviour {
             TempCan.GetComponentInChildren<Text>().text = UnitDictionary[index].Health.ToString();
             TGO.GetComponent<UnitController>().UnitMovable = true;
             TGO.GetComponent<UnitController>().UnitMoved = false;
-            GCS.AddUnitsToDictionary(TGO);
+            GameControllerScript.instance.AddUnitsToDictionary(TGO);
             TGO.GetComponent<UnitController>().TeamSpriteController();
             return TGO;
         }
         catch (Exception e)
         {
-            GCS.LogController(e.ToString());
+            GameControllerScript.instance.LogController(e.ToString());
             throw;
         }
     } //used to spawn units form database
@@ -277,7 +276,7 @@ public class DatabaseController : MonoBehaviour {
         }
         catch (Exception e)
         {
-            GCS.LogController(e.ToString());
+            GameControllerScript.instance.LogController(e.ToString());
             throw;
         }
     }
@@ -302,7 +301,7 @@ public class DatabaseController : MonoBehaviour {
         }
         catch (Exception e)
         {
-            GCS.LogController(e.ToString());
+            GameControllerScript.instance.LogController(e.ToString());
             throw;
         }
     }// checks for images that are to be used for artwork stuffs

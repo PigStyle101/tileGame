@@ -1,2 +1,0 @@
-System.NullReferenceException: Object reference not set to an instance of an object
-  at GameControllerScript.PlaySceneNewGameInitalizer () [0x0001d] in C:\Users\Pig Style\Desktop\tileGameGit\tileGame\tile turn based game\Assets\scripts\GameControllerScript.cs:838 

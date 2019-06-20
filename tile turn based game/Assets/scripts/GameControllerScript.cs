@@ -10,7 +10,7 @@ using System.Text.RegularExpressions;
 using UnityEngine.UI;
 
 public class GameControllerScript : MonoBehaviour {
-    
+
     //Everything should be able to be referanced and saved by id, or something off of the asset classes(ie:terrain,unit,building) in database manager
     //The reason for that is to make the game modable and easyer to add stuff to, as we will never need to ajdust the script unless
     //we are adding a new game mackanice, or something of that sort. i will figure out a way to add scripts to the game later that can override current script for modders.
@@ -18,6 +18,8 @@ public class GameControllerScript : MonoBehaviour {
 
     //this script is ment to be the controller uterly and completely, everything that needs to be stored or can make major adjustments should be ran through here,
     //database controller should be the only other major script. 
+
+    public static GameControllerScript instance = null;
 
     private Dictionary <Vector2,string> MapDictionary = new Dictionary<Vector2,string>();// this string needs to be converted to a int id, 
     public Dictionary<Vector2, GameObject> TilePos = new Dictionary<Vector2, GameObject>();
@@ -61,9 +63,16 @@ public class GameControllerScript : MonoBehaviour {
     {
         try
         {
-
             DBC = gameObject.GetComponent<DatabaseController>(); //referance to database
             DontDestroyOnLoad(gameObject);
+            if (instance == null)
+            {
+                instance = this;
+            }
+            else if (instance != this)
+            {
+                Destroy(gameObject);
+            }
         }
         catch (Exception e)
         {
