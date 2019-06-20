@@ -91,6 +91,10 @@ public class GameControllerScript : MonoBehaviour {
         RayCastForPlayScene();
     }
 
+    /// <summary>
+    /// Saves crash info to DebugLogs file in streaming assets.
+    /// </summary>
+    /// <param name="Problem">String to be saved to file</param>
     public void LogController(string Problem)
     {
         StreamWriter writer = new StreamWriter(Application.dataPath + "/StreamingAssets/DebugLogs/" + DateTime.Now.Hour + "-" + DateTime.Now.Minute + "-" + DateTime.Now.Second + ".txt");
@@ -99,6 +103,10 @@ public class GameControllerScript : MonoBehaviour {
         writer.Dispose();
     }
 
+    /// <summary>
+    /// Saves the map size and loads Map Editor Scene
+    /// </summary>
+    /// <param name="MapSize">Size of map in x and y</param>
     public void CreateNewMapForMapEditor (int MapSize)
     {
         try
@@ -111,9 +119,14 @@ public class GameControllerScript : MonoBehaviour {
             LogController(e.ToString());
             throw;
         }
-    }//used to pull map size from menue controller script and set a varaible in here
+    }
 
-    private void OnSceneLoaded( Scene sceneVar , LoadSceneMode Mode) 
+    /// <summary>
+    /// Checks what scene was loaded then executes required actions
+    /// </summary>
+    /// <param name="sceneVar">Name of scene that was loaded</param>
+    /// <param name="Mode">Not even sure this is needed</param>
+    private void OnSceneLoaded( Scene sceneVar , LoadSceneMode Mode) //do i need LoadSceneMode here?
     {
         try
         {
@@ -126,6 +139,7 @@ public class GameControllerScript : MonoBehaviour {
                 {
                     for (int o = 0; o < EditorMapSize; o++)
                     {
+                        //creates a map in data to use for drawing later
                         MapDictionary.Add(new Vector2(i, o), DBC.TerrainDictionary[0].Title);
                         //UnityEngine.Debug.Log("Added Key: " + i + o);
                     }
@@ -153,8 +167,11 @@ public class GameControllerScript : MonoBehaviour {
             LogController(e.ToString());
             throw;
         }
-    }//when map editor scene loads, create map of map size loaded with all grass
+    }
 
+    /// <summary>
+    /// Creates the graphical representation of the map and sets the camera to center of map
+    /// </summary>
     private void DrawNewMapForMapEditor () 
     {
         try
@@ -172,8 +189,12 @@ public class GameControllerScript : MonoBehaviour {
             LogController(e.ToString());
             throw;
         }
-    }// create the physical part of the map and reset camera position to center
+    }
 
+    /// <summary>
+    /// Checks if TilePos contains terrains tile and replaces or adds it.
+    /// </summary>
+    /// <param name="tgo">Object to check dictionary for.</param>
     public void AddTilesToDictionary (GameObject tgo)
     {
         try
@@ -193,8 +214,12 @@ public class GameControllerScript : MonoBehaviour {
             LogController(e.ToString());
             throw;
         }
-    }//checks if dictionary contains tile and replaces or adds terrain
+    }
 
+    /// <summary>
+    /// Checks if UnitPos contains unit and replaces or adds it.
+    /// </summary>
+    /// <param name="tgo">Unit to check dictionary for.</param>
     public void AddUnitsToDictionary(GameObject tgo)
     {
         try
@@ -215,8 +240,12 @@ public class GameControllerScript : MonoBehaviour {
             throw;
         }
 
-    } //checks if dictionary contains tile and replaces or adds unit
+    }
 
+    /// <summary>
+    /// Checks if BuildingPos contains building and replaces or adds it.
+    /// </summary>
+    /// <param name="tgo">Building to check dictionary for.</param>
     public void AddBuildingToDictionary(GameObject tgo)
     {
         try
@@ -236,8 +265,13 @@ public class GameControllerScript : MonoBehaviour {
             LogController(e.ToString());
             throw;
         }
-    } //checks if dictionary contains tile and replaces or adds building
+    }
 
+    /// <summary>
+    /// Saves variables when clicking on something that is not a overlay
+    /// </summary>
+    /// <param name="STL">Sprite renderer</param>
+    /// <param name="ST">GameObject</param>
     public void MouseSelectedController(SpriteRenderer STL, GameObject ST)
     {
         try
@@ -254,6 +288,9 @@ public class GameControllerScript : MonoBehaviour {
         }
     }// sets selected tile to whatever tile is clicked on and enables the clickon overlay
 
+    /// <summary>
+    /// Checks were mouse is hitting and then acts accordingly.(Used in Map Editor Scene Only)
+    /// </summary>
     public void RayCastForMapEditor()
     {
         try
@@ -398,6 +435,9 @@ public class GameControllerScript : MonoBehaviour {
 
     }// used to check were mouse is hitting and then act acordingly
 
+    /// <summary>
+    /// Checks were mouse is hitting and then acts accordingly.(Used in Play Scene only.)
+    /// </summary>
     public void RayCastForPlayScene()
     {
         try
@@ -521,6 +561,13 @@ public class GameControllerScript : MonoBehaviour {
         }
     } //used to check were mouse is hitting and then act acordingly
 
+    /// <summary>
+    /// Checks if file already exist and if it does not it creates new file and stores map as array
+    /// </summary>
+    /// <param name="TP">Dictionary(Vector2,Gameobjet) that contains Terrain positions</param>
+    /// <param name="UP">Dictionary(Vector2,Gameobjet) that contains Unit positions</param>
+    /// <param name="BP">Dictionary(Vector2,Gameobjet) that contains Building positions</param>
+    /// <param name="SaveName">String for file name.</param>
     public void SaveMap(Dictionary<Vector2, GameObject> TP, Dictionary<Vector2, GameObject> UP,Dictionary<Vector2,GameObject> BP, string SaveName)
     {
         try
@@ -639,6 +686,10 @@ public class GameControllerScript : MonoBehaviour {
         }
     }//checks if file already exsist and if it does not it creates new file and stores current map items into dictionarys as (location,id number)
 
+    /// <summary>
+    /// Opens file and deseralizes it and then sends the info to drawLoadMapFromEditor function. File must be in: Assets/StreamingAssets/Maps/
+    /// </summary>
+    /// <param name="name">Name of map to load</param>
     public void LoadMapMapEditor(string name)
     {
         try
@@ -722,8 +773,12 @@ public class GameControllerScript : MonoBehaviour {
             LogController(e.ToString());
             throw;
         }
-    }// opens file and deseralizes it and then sends the info to drawLoadMapFromEditor function
+    }
 
+    /// <summary>
+    /// Loads the map form file and spawns everything in and then adds them to dictionaries, and finally resets camera position.
+    /// </summary>
+    /// <param name="name">Name of map to load.</param>
     public void LoadMapPlayScene(string name)
     {
         try
@@ -796,8 +851,11 @@ public class GameControllerScript : MonoBehaviour {
             LogController(e.ToString());
             throw;
         }
-    } //loads the map form file and spawns everything in and then adds them to dictionaries, and finally resets camera position
+    }
 
+    /// <summary>
+    /// Used to call for a sprite update when it is needed
+    /// </summary>
     public void SpriteUpdateActivator()
     {
         try
@@ -827,8 +885,11 @@ public class GameControllerScript : MonoBehaviour {
             LogController(e.ToString());
             throw;
         }
-    } //used to call for a sprite update when it is needed
+    }
 
+    /// <summary>
+    /// Picks random team to go first and then adjust gameobject variables to match
+    /// </summary>
     public void PlaySceneNewGameInitalizer()
     {
         try
@@ -856,6 +917,9 @@ public class GameControllerScript : MonoBehaviour {
         }
     } //sets up game for new game
 
+    /// <summary>
+    /// Used to controll variables for when the turn changes
+    /// </summary>
     public void PlaySceneTurnChanger()
     {
         try
@@ -904,8 +968,12 @@ public class GameControllerScript : MonoBehaviour {
             LogController(e.ToString());
             throw;
         }
-    } //used to controlle variables for when the turn changes
+    }
 
+    /// <summary>
+    /// Controls the loading slider in Initalization Scene
+    /// </summary>
+    /// <param name="f">Were to move the slider, using a float between 0-1</param>
     public void LoadingUpdater(float f)
     {
         try
@@ -923,8 +991,11 @@ public class GameControllerScript : MonoBehaviour {
             LogController(e.ToString());
             throw;
         }
-    } //used to load teh game. that way the player does not have to stare at blank screen while it is loading
+    }
 
+    /// <summary>
+    /// Returns unit to original position and resets all variables set to it
+    /// </summary>
     public void CancelActionPlayScene()
     {
         try
@@ -951,8 +1022,11 @@ public class GameControllerScript : MonoBehaviour {
             LogController(e.ToString());
             throw;
         }
-    } //returns unit to original position and resets all variables set to it
+    }
 
+    /// <summary>
+    /// Sets picked position as units new position and changes unit Movable variable to false
+    /// </summary>
     public void WaitActionPlayScene()
     {
         try
@@ -992,6 +1066,9 @@ public class GameControllerScript : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Adds a tint to units that this unit can attack
+    /// </summary>
     public void AttackActionPlayScene()
     {
         try
@@ -1016,6 +1093,10 @@ public class GameControllerScript : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Simple audio controller to test out audio functionallity
+    /// </summary>
+    /// <param name="SceneName"></param>
     public void AudioController(string SceneName)
     {
         try
@@ -1043,6 +1124,9 @@ public class GameControllerScript : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Runs Round updater function for every unit,building and terrain
+    /// </summary>
     public void AllRoundUpdater()
     {
         try
@@ -1062,12 +1146,16 @@ public class GameControllerScript : MonoBehaviour {
         }
         catch (Exception e)
         {
+            Map[] test = new Map[1];
             LogController(e.ToString());
             throw;
         }
     }
 }
 
+/// <summary>
+/// Array class for saving maps. Variables(Variable type-name): SeralizableVector2-Location,string-Name,int-Team,string-Type,int-TeamCount
+/// </summary>
 [Serializable]
 public class Map
 {
@@ -1076,7 +1164,7 @@ public class Map
     public int Team;
     public string Type;
     public int TeamCount;
-} //this is needed to save the map, might be better way to do this.
+}
 
 [Serializable]
 public class SeralizableVector2
