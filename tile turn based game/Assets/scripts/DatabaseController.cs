@@ -13,6 +13,8 @@ public class DatabaseController : MonoBehaviour {
     //i will need to add a way for looking for more stuff that modders may add. like say a ability or something that is not already in the game. 
     //should potentialy be able to add game changing scripts though this at some point, will need some reasurch i think.
 
+    public static DatabaseController instance = null;
+
     public Dictionary<int, Terrain> TerrainDictionary = new Dictionary<int, Terrain>(); //stores the classes based on there id
     public Dictionary<int, MouseOverlays> MouseDictionary = new Dictionary<int, MouseOverlays>();
     public Dictionary<int, Unit> UnitDictionary = new Dictionary<int, Unit>();
@@ -27,11 +29,31 @@ public class DatabaseController : MonoBehaviour {
     public int scrollSpeed;
     public GameObject CanvasPrefab;
 
+    private void Awake()
+    {
+        try
+        {
+            DontDestroyOnLoad(gameObject);
+            if (instance == null)
+            {
+                instance = this;
+            }
+            else if (instance != this)
+            {
+                Destroy(gameObject);
+            }
+        }
+        catch (Exception e)
+        {
+            GameControllerScript.instance.LogController(e.ToString());
+            throw;
+        }
+    }
+
     private void Start()
     {
         try
         {
-            //GameControllerScript.instance = gameObject.GetComponent<GameControllerScript>();
             GetMasterJson();
             GameControllerScript.instance.LoadingUpdater(.2f);
             GetTerrianJsons();

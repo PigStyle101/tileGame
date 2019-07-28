@@ -6,9 +6,7 @@ using System;
 
 public class TerrainController : MonoBehaviour
 {
-    private GameControllerScript GCS;
     private MapEditMenueCamController MEMCC;
-    private DatabaseController DBC;
     private Dictionary<string, GameObject> WaterOverlays = new Dictionary<string, GameObject>();
     private Vector3 TopRotOffest = new Vector3(0, 0, 90);
     private Vector3 LeftRotOffset = new Vector3(0, 0, 180);
@@ -41,16 +39,14 @@ public class TerrainController : MonoBehaviour
     {
         try
         {
-            GCS = GameObject.Find("GameController").GetComponent<GameControllerScript>();
-            DBC = GameObject.Find("GameController").GetComponent<DatabaseController>();
-            if (GCS.CurrentScene == "MapEditorScene")
+            if (GameControllerScript.instance.CurrentScene == "MapEditorScene")
             {
                 MEMCC = GameObject.Find("MainCamera").GetComponent<MapEditMenueCamController>();
             }
         }
         catch (Exception e)
         {
-            GCS.LogController(e.ToString());
+            GameControllerScript.instance.LogController(e.ToString());
             throw;
         }
     }
@@ -64,7 +60,7 @@ public class TerrainController : MonoBehaviour
         }
         catch (Exception e)
         {
-            GCS.LogController(e.ToString());
+            GameControllerScript.instance.LogController(e.ToString());
             throw;
         }
     }
@@ -78,7 +74,7 @@ public class TerrainController : MonoBehaviour
     {
         try
         {
-            if (GCS.UnitPos.ContainsKey(gameObject.transform.position))
+            if (GameControllerScript.instance.UnitPos.ContainsKey(gameObject.transform.position))
             {
                 Occupied = true;
                 //Debug.Log("set tile " + gameObject.transform.position + "Occupied to " + Occupied);
@@ -90,7 +86,7 @@ public class TerrainController : MonoBehaviour
         }
         catch (Exception e)
         {
-            GCS.LogController(e.ToString());
+            GameControllerScript.instance.LogController(e.ToString());
             throw;
         }
     }
@@ -100,30 +96,30 @@ public class TerrainController : MonoBehaviour
         try
         {
             Debug.Log("ChangTile activated");
-            foreach (KeyValuePair<int, Terrain> kvp in DBC.TerrainDictionary)
+            foreach (KeyValuePair<int, Terrain> kvp in DatabaseController.instance.TerrainDictionary)
             {
                 if (MEMCC.SelectedButton == kvp.Value.Title) //checks through dictionary for matching tile to button name
                 {
                     //Debug.Log("Changing tile to " + kvp.Value.Title);
                     gameObject.name = kvp.Value.Title;//change name of tile
-                    gameObject.GetComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.TerrainDictionary[kvp.Key].ArtworkDirectory[0]); //change sprite of tile
+                    gameObject.GetComponent<SpriteRenderer>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.TerrainDictionary[kvp.Key].ArtworkDirectory[0]); //change sprite of tile
                     gameObject.transform.eulerAngles = new Vector3(0, 0, 0);
-                    if (GCS.UnitPos.ContainsKey(gameObject.transform.position) && DBC.TerrainDictionary[kvp.Key].Walkable == false)
+                    if (GameControllerScript.instance.UnitPos.ContainsKey(gameObject.transform.position) && DatabaseController.instance.TerrainDictionary[kvp.Key].Walkable == false)
                     {
-                        Destroy(GCS.UnitPos[gameObject.transform.position]);
-                        GCS.UnitPos.Remove(gameObject.transform.position);
+                        Destroy(GameControllerScript.instance.UnitPos[gameObject.transform.position]);
+                        GameControllerScript.instance.UnitPos.Remove(gameObject.transform.position);
                     }
-                    if (GCS.BuildingPos.ContainsKey(gameObject.transform.position) && DBC.TerrainDictionary[kvp.Key].Walkable == false)
+                    if (GameControllerScript.instance.BuildingPos.ContainsKey(gameObject.transform.position) && DatabaseController.instance.TerrainDictionary[kvp.Key].Walkable == false)
                     {
-                        Destroy(GCS.BuildingPos[gameObject.transform.position]);
-                        GCS.BuildingPos.Remove(gameObject.transform.position);
+                        Destroy(GameControllerScript.instance.BuildingPos[gameObject.transform.position]);
+                        GameControllerScript.instance.BuildingPos.Remove(gameObject.transform.position);
                     }
                 }
             }
         }
         catch (Exception e)
         {
-            GCS.LogController(e.ToString());
+            GameControllerScript.instance.LogController(e.ToString());
             throw;
         }
     }
@@ -132,7 +128,7 @@ public class TerrainController : MonoBehaviour
     {
         try
         {
-            if (gameObject.transform.tag == DBC.TerrainDictionary[0].Type)
+            if (gameObject.transform.tag == DatabaseController.instance.TerrainDictionary[0].Type)
             {
                 if (!EventSystem.current.IsPointerOverGameObject())
                 {
@@ -145,7 +141,7 @@ public class TerrainController : MonoBehaviour
                         {
                             MouseOverlaySpriteRender.enabled = true;
                         }
-                        else if (hit.transform.tag == DBC.UnitDictionary[0].Type || hit.transform.tag == DBC.BuildingDictionary[0].Type) //if tag is a unit or building do nothing.
+                        else if (hit.transform.tag == DatabaseController.instance.UnitDictionary[0].Type || hit.transform.tag == DatabaseController.instance.BuildingDictionary[0].Type) //if tag is a unit or building do nothing.
                         {
 
                         }
@@ -159,7 +155,7 @@ public class TerrainController : MonoBehaviour
         }
         catch (Exception e)
         {
-            GCS.LogController(e.ToString());
+            GameControllerScript.instance.LogController(e.ToString());
             throw;
         }
     } //checks if mouse is over tile, activates mouseoverlay if it is.
@@ -168,12 +164,12 @@ public class TerrainController : MonoBehaviour
     {
         try
         {
-            if (gameObject.name == DBC.TerrainDictionary[1].Title)
+            if (gameObject.name == DatabaseController.instance.TerrainDictionary[1].Title)
             {
                 //UnityEngine.Debug.Log("Starting Water Sprite Controller");
                 var currentPos = (Vector2)transform.position;
                 int TileId = 0;
-                foreach (var kvp in DBC.TerrainDictionary)
+                foreach (var kvp in DatabaseController.instance.TerrainDictionary)
                 {
                     if (kvp.Value.Title == gameObject.name)
                     {
@@ -190,10 +186,10 @@ public class TerrainController : MonoBehaviour
                 Vector2 bottomLeftPos = currentPos + new Vector2(-1, -1);
                 Vector2 leftPos = currentPos + new Vector2(-1, 0);
                 //UnityEngine.Debug.Log("Starting if Statments");
-                if (GCS.TilePos.ContainsKey(topPos))
+                if (GameControllerScript.instance.TilePos.ContainsKey(topPos))
                 {
                     //Debug.Log("tile pos contains key");
-                    if (GCS.TilePos[topPos].name != "Water")//is the tle above this one not water?
+                    if (GameControllerScript.instance.TilePos[topPos].name != "Water")//is the tle above this one not water?
                     {
                         if (WaterOverlays.ContainsKey("TopLandOverlay"))//does the dictionary contain a key for this already?
                         {
@@ -205,7 +201,7 @@ public class TerrainController : MonoBehaviour
                             GameObject RLO = new GameObject();
                             RLO.name = "TopLandOverlay";
                             RLO.transform.position = gameObject.transform.position;
-                            RLO.AddComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.TerrainDictionary[TileId].ArtworkDirectory[2]);
+                            RLO.AddComponent<SpriteRenderer>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.TerrainDictionary[TileId].ArtworkDirectory[2]);
                             RLO.GetComponent<SpriteRenderer>().sortingLayerName = "Terrain";
                             RLO.GetComponent<SpriteRenderer>().sortingOrder = 2;
                             RLO.transform.parent = gameObject.transform;
@@ -222,10 +218,10 @@ public class TerrainController : MonoBehaviour
                         }
                     }
                 }
-                if (GCS.TilePos.ContainsKey(topRightPos))
+                if (GameControllerScript.instance.TilePos.ContainsKey(topRightPos))
                 {
                     //Debug.Log("tile pos contains key");
-                    if (GCS.TilePos[topRightPos].name != "Water")//is the tle above this one not water?
+                    if (GameControllerScript.instance.TilePos[topRightPos].name != "Water")//is the tle above this one not water?
                     {
                         if (WaterOverlays.ContainsKey("TopRightLandOverlay"))//does the dictionary contain a key for this already?
                         {
@@ -237,7 +233,7 @@ public class TerrainController : MonoBehaviour
                             GameObject RLO = new GameObject();
                             RLO.name = "TopRightLandOverlay";
                             RLO.transform.position = gameObject.transform.position;
-                            RLO.AddComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.TerrainDictionary[TileId].ArtworkDirectory[1]);
+                            RLO.AddComponent<SpriteRenderer>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.TerrainDictionary[TileId].ArtworkDirectory[1]);
                             RLO.GetComponent<SpriteRenderer>().sortingLayerName = "Terrain";
                             RLO.GetComponent<SpriteRenderer>().sortingOrder = 2;
                             RLO.transform.parent = gameObject.transform;
@@ -253,10 +249,10 @@ public class TerrainController : MonoBehaviour
                         }
                     }
                 }
-                if (GCS.TilePos.ContainsKey(rightPos))
+                if (GameControllerScript.instance.TilePos.ContainsKey(rightPos))
                 {
                     //Debug.Log("tile pos contains key");
-                    if (GCS.TilePos[rightPos].name != "Water")//is the tle above this one not water?
+                    if (GameControllerScript.instance.TilePos[rightPos].name != "Water")//is the tle above this one not water?
                     {
                         if (WaterOverlays.ContainsKey("RightLandOverlay"))//does the dictionary contain a key for this already?
                         {
@@ -268,7 +264,7 @@ public class TerrainController : MonoBehaviour
                             GameObject RLO = new GameObject();
                             RLO.name = "RightLandOverlay";
                             RLO.transform.position = gameObject.transform.position;
-                            RLO.AddComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.TerrainDictionary[TileId].ArtworkDirectory[2]);
+                            RLO.AddComponent<SpriteRenderer>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.TerrainDictionary[TileId].ArtworkDirectory[2]);
                             RLO.GetComponent<SpriteRenderer>().sortingLayerName = "Terrain";
                             RLO.GetComponent<SpriteRenderer>().sortingOrder = 2;
                             RLO.transform.parent = gameObject.transform;
@@ -284,10 +280,10 @@ public class TerrainController : MonoBehaviour
                         }
                     }
                 }
-                if (GCS.TilePos.ContainsKey(bottomRightPos))
+                if (GameControllerScript.instance.TilePos.ContainsKey(bottomRightPos))
                 {
                     //Debug.Log("tile pos contains key");
-                    if (GCS.TilePos[bottomRightPos].name != "Water")//is the tle above this one not water?
+                    if (GameControllerScript.instance.TilePos[bottomRightPos].name != "Water")//is the tle above this one not water?
                     {
                         if (WaterOverlays.ContainsKey("BottomRightLandOverlay"))//does the dictionary contain a key for this already?
                         {
@@ -299,7 +295,7 @@ public class TerrainController : MonoBehaviour
                             GameObject RLO = new GameObject();
                             RLO.name = "BottomRightLandOverlay";
                             RLO.transform.position = gameObject.transform.position;
-                            RLO.AddComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.TerrainDictionary[TileId].ArtworkDirectory[1]);
+                            RLO.AddComponent<SpriteRenderer>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.TerrainDictionary[TileId].ArtworkDirectory[1]);
                             RLO.GetComponent<SpriteRenderer>().sortingLayerName = "Terrain";
                             RLO.GetComponent<SpriteRenderer>().sortingOrder = 2;
                             RLO.transform.parent = gameObject.transform;
@@ -316,10 +312,10 @@ public class TerrainController : MonoBehaviour
                         }
                     }
                 }
-                if (GCS.TilePos.ContainsKey(bottomPos))
+                if (GameControllerScript.instance.TilePos.ContainsKey(bottomPos))
                 {
                     //Debug.Log("tile pos contains key");
-                    if (GCS.TilePos[bottomPos].name != "Water")//is the tle above this one not water?
+                    if (GameControllerScript.instance.TilePos[bottomPos].name != "Water")//is the tle above this one not water?
                     {
                         if (WaterOverlays.ContainsKey("BottomLandOverlay"))//does the dictionary contain a key for this already?
                         {
@@ -331,7 +327,7 @@ public class TerrainController : MonoBehaviour
                             GameObject RLO = new GameObject();
                             RLO.name = "BottomLandOverlay";
                             RLO.transform.position = gameObject.transform.position;
-                            RLO.AddComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.TerrainDictionary[TileId].ArtworkDirectory[2]);
+                            RLO.AddComponent<SpriteRenderer>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.TerrainDictionary[TileId].ArtworkDirectory[2]);
                             RLO.GetComponent<SpriteRenderer>().sortingLayerName = "Terrain";
                             RLO.GetComponent<SpriteRenderer>().sortingOrder = 2;
                             RLO.transform.parent = gameObject.transform;
@@ -348,10 +344,10 @@ public class TerrainController : MonoBehaviour
                         }
                     }
                 }
-                if (GCS.TilePos.ContainsKey(bottomLeftPos))
+                if (GameControllerScript.instance.TilePos.ContainsKey(bottomLeftPos))
                 {
                     //Debug.Log("tile pos contains key");
-                    if (GCS.TilePos[bottomLeftPos].name != "Water")//is the tle above this one not water?
+                    if (GameControllerScript.instance.TilePos[bottomLeftPos].name != "Water")//is the tle above this one not water?
                     {
                         if (WaterOverlays.ContainsKey("BottomLeftLandOverlay"))//does the dictionary contain a key for this already?
                         {
@@ -363,7 +359,7 @@ public class TerrainController : MonoBehaviour
                             GameObject RLO = new GameObject();
                             RLO.name = "BottomLeftLandOverlay";
                             RLO.transform.position = gameObject.transform.position;
-                            RLO.AddComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.TerrainDictionary[TileId].ArtworkDirectory[1]);
+                            RLO.AddComponent<SpriteRenderer>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.TerrainDictionary[TileId].ArtworkDirectory[1]);
                             RLO.GetComponent<SpriteRenderer>().sortingLayerName = "Terrain";
                             RLO.GetComponent<SpriteRenderer>().sortingOrder = 2;
                             RLO.transform.parent = gameObject.transform;
@@ -380,10 +376,10 @@ public class TerrainController : MonoBehaviour
                         }
                     }
                 }
-                if (GCS.TilePos.ContainsKey(leftPos))
+                if (GameControllerScript.instance.TilePos.ContainsKey(leftPos))
                 {
                     //Debug.Log("tile pos contains key");
-                    if (GCS.TilePos[leftPos].name != "Water")//is the tle above this one not water?
+                    if (GameControllerScript.instance.TilePos[leftPos].name != "Water")//is the tle above this one not water?
                     {
                         if (WaterOverlays.ContainsKey("LeftLandOverlay"))//does the dictionary contain a key for this already?
                         {
@@ -395,7 +391,7 @@ public class TerrainController : MonoBehaviour
                             GameObject RLO = new GameObject();
                             RLO.name = "LeftLandOverlay";
                             RLO.transform.position = gameObject.transform.position;
-                            RLO.AddComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.TerrainDictionary[TileId].ArtworkDirectory[2]);
+                            RLO.AddComponent<SpriteRenderer>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.TerrainDictionary[TileId].ArtworkDirectory[2]);
                             RLO.GetComponent<SpriteRenderer>().sortingLayerName = "Terrain";
                             RLO.GetComponent<SpriteRenderer>().sortingOrder = 2;
                             RLO.transform.parent = gameObject.transform;
@@ -412,10 +408,10 @@ public class TerrainController : MonoBehaviour
                         }
                     }
                 }
-                if (GCS.TilePos.ContainsKey(topLeftPos))
+                if (GameControllerScript.instance.TilePos.ContainsKey(topLeftPos))
                 {
                     //Debug.Log("tile pos contains key");
-                    if (GCS.TilePos[topLeftPos].name != "Water")//is the tle above this one not water?
+                    if (GameControllerScript.instance.TilePos[topLeftPos].name != "Water")//is the tle above this one not water?
                     {
                         if (WaterOverlays.ContainsKey("TopLeftLandOverlay"))//does the dictionary contain a key for this already?
                         {
@@ -427,7 +423,7 @@ public class TerrainController : MonoBehaviour
                             GameObject RLO = new GameObject();
                             RLO.name = "TopLeftLandOverlay";
                             RLO.transform.position = gameObject.transform.position;
-                            RLO.AddComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.TerrainDictionary[TileId].ArtworkDirectory[1]);
+                            RLO.AddComponent<SpriteRenderer>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.TerrainDictionary[TileId].ArtworkDirectory[1]);
                             RLO.GetComponent<SpriteRenderer>().sortingLayerName = "Terrain";
                             RLO.GetComponent<SpriteRenderer>().sortingOrder = 2;
                             RLO.transform.parent = gameObject.transform;
@@ -466,7 +462,7 @@ public class TerrainController : MonoBehaviour
         }
         catch (Exception e)
         {
-            GCS.LogController(e.ToString());
+            GameControllerScript.instance.LogController(e.ToString());
             throw;
         }
     } //Controlls the overlay for adding banks to the water sprites
@@ -475,7 +471,7 @@ public class TerrainController : MonoBehaviour
     {
         try
         {
-            if (gameObject.name == DBC.TerrainDictionary[3].Title)
+            if (gameObject.name == DatabaseController.instance.TerrainDictionary[3].Title)
             {
                 var currentPos = (Vector2)transform.position;
                 if (OriginalRot == null)
@@ -485,7 +481,7 @@ public class TerrainController : MonoBehaviour
                 var SR = gameObject.GetComponent<SpriteRenderer>();
                 int TileId = 0;
                 int counter = 0;
-                foreach (var kvp in DBC.TerrainDictionary)
+                foreach (var kvp in DatabaseController.instance.TerrainDictionary)
                 {
                     if (kvp.Value.Title == gameObject.name)
                     {
@@ -502,33 +498,33 @@ public class TerrainController : MonoBehaviour
                 bool bottombool = false;
                 bool leftbool = false;
 
-                if (GCS.TilePos.ContainsKey(topPos))
+                if (GameControllerScript.instance.TilePos.ContainsKey(topPos))
                 {
-                    if (GCS.TilePos[topPos].name == "Road")
+                    if (GameControllerScript.instance.TilePos[topPos].name == "Road")
                     {
                         counter = counter + 1;
                         topBool = true;
                     }
                 }
-                if (GCS.TilePos.ContainsKey(rightPos))
+                if (GameControllerScript.instance.TilePos.ContainsKey(rightPos))
                 {
-                    if (GCS.TilePos[rightPos].name == "Road")
+                    if (GameControllerScript.instance.TilePos[rightPos].name == "Road")
                     {
                         counter = counter + 1;
                         rightbool = true;
                     }
                 }
-                if (GCS.TilePos.ContainsKey(bottomPos))
+                if (GameControllerScript.instance.TilePos.ContainsKey(bottomPos))
                 {
-                    if (GCS.TilePos[bottomPos].name == "Road")
+                    if (GameControllerScript.instance.TilePos[bottomPos].name == "Road")
                     {
                         counter = counter + 1;
                         bottombool = true;
                     }
                 }
-                if (GCS.TilePos.ContainsKey(leftPos))
+                if (GameControllerScript.instance.TilePos.ContainsKey(leftPos))
                 {
-                    if (GCS.TilePos[leftPos].name == "Road")
+                    if (GameControllerScript.instance.TilePos[leftPos].name == "Road")
                     {
                         counter = counter + 1;
                         leftbool = true;
@@ -538,10 +534,10 @@ public class TerrainController : MonoBehaviour
                 switch (counter)
                 {
                     case 0:
-                        SR.sprite = DBC.loadSprite(DBC.TerrainDictionary[TileId].ArtworkDirectory[0]);
+                        SR.sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.TerrainDictionary[TileId].ArtworkDirectory[0]);
                         break;
                     case 1:
-                        SR.sprite = DBC.loadSprite(DBC.TerrainDictionary[TileId].ArtworkDirectory[1]);
+                        SR.sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.TerrainDictionary[TileId].ArtworkDirectory[1]);
                         if (topBool)
                         {
                             gameObject.transform.eulerAngles = OriginalRot;
@@ -562,37 +558,37 @@ public class TerrainController : MonoBehaviour
                     case 2:
                         if (topBool && rightbool)
                         {
-                            SR.sprite = DBC.loadSprite(DBC.TerrainDictionary[TileId].ArtworkDirectory[2]);
+                            SR.sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.TerrainDictionary[TileId].ArtworkDirectory[2]);
                             gameObject.transform.eulerAngles = Road2way90TopRotOffset + OriginalRot;
                         }
                         else if (rightbool && bottombool)
                         {
-                            SR.sprite = DBC.loadSprite(DBC.TerrainDictionary[TileId].ArtworkDirectory[2]);
+                            SR.sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.TerrainDictionary[TileId].ArtworkDirectory[2]);
                             gameObject.transform.eulerAngles = Road2way90RightRotOffset + OriginalRot;
                         }
                         else if (bottombool && leftbool)
                         {
-                            SR.sprite = DBC.loadSprite(DBC.TerrainDictionary[TileId].ArtworkDirectory[2]);
+                            SR.sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.TerrainDictionary[TileId].ArtworkDirectory[2]);
                             gameObject.transform.eulerAngles = OriginalRot;
                         }
                         else if (leftbool && topBool)
                         {
-                            SR.sprite = DBC.loadSprite(DBC.TerrainDictionary[TileId].ArtworkDirectory[2]);
+                            SR.sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.TerrainDictionary[TileId].ArtworkDirectory[2]);
                             gameObject.transform.eulerAngles = Road2way90LeftRotOffset + OriginalRot;
                         }
                         else if (topBool && bottombool)
                         {
-                            SR.sprite = DBC.loadSprite(DBC.TerrainDictionary[TileId].ArtworkDirectory[3]);
+                            SR.sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.TerrainDictionary[TileId].ArtworkDirectory[3]);
                             gameObject.transform.eulerAngles = Road2wayStraightTopBottomRotOffset + OriginalRot;
                         }
                         else if (leftbool && rightbool)
                         {
-                            SR.sprite = DBC.loadSprite(DBC.TerrainDictionary[TileId].ArtworkDirectory[3]);
+                            SR.sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.TerrainDictionary[TileId].ArtworkDirectory[3]);
                             gameObject.transform.eulerAngles = OriginalRot;
                         }
                         break;
                     case 3:
-                        SR.sprite = DBC.loadSprite(DBC.TerrainDictionary[TileId].ArtworkDirectory[4]);
+                        SR.sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.TerrainDictionary[TileId].ArtworkDirectory[4]);
                         if (!bottombool)
                         {
                             gameObject.transform.eulerAngles = Road3wayTopRotOffset + OriginalRot;
@@ -611,7 +607,7 @@ public class TerrainController : MonoBehaviour
                         }
                         break;
                     case 4:
-                        SR.sprite = DBC.loadSprite(DBC.TerrainDictionary[TileId].ArtworkDirectory[5]);
+                        SR.sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.TerrainDictionary[TileId].ArtworkDirectory[5]);
                         gameObject.transform.eulerAngles = OriginalRot;
                         break;
                 }
@@ -620,7 +616,7 @@ public class TerrainController : MonoBehaviour
         }
         catch (Exception e)
         {
-            GCS.LogController(e.ToString());
+            GameControllerScript.instance.LogController(e.ToString());
             throw;
         }
     } //makes teh roads attatch to each other

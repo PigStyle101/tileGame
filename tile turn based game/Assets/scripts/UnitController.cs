@@ -6,9 +6,7 @@ using System;
 
 public class UnitController : MonoBehaviour
 {
-    private GameControllerScript GCS;
     private MapEditMenueCamController MEMCC;
-    private DatabaseController DBC;
     //[HideInInspector]
     public int Team;
     [HideInInspector]
@@ -42,12 +40,10 @@ public class UnitController : MonoBehaviour
                 MEMCC = GameObject.Find("MainCamera").GetComponent<MapEditMenueCamController>();
                 Team = MEMCC.SelectedTeam;
             }
-            GCS = GameObject.Find("GameController").GetComponent<GameControllerScript>();
-            DBC = GameObject.Find("GameController").GetComponent<DatabaseController>();
         }
         catch (Exception e)
         {
-            GCS.LogController(e.ToString());
+            GameControllerScript.instance.LogController(e.ToString());
             throw;
         }
     }
@@ -56,7 +52,7 @@ public class UnitController : MonoBehaviour
     {
         try
         {
-            if (Team == GCS.CurrentTeamsTurn) //object is on the current team
+            if (Team == GameControllerScript.instance.CurrentTeamsTurn) //object is on the current team
             {
                 if (!UnitMoved)
                 {
@@ -66,7 +62,7 @@ public class UnitController : MonoBehaviour
                 {
                     UnitMovable = false;
                 }
-                foreach (var kvp in DBC.UnitDictionary)
+                foreach (var kvp in DatabaseController.instance.UnitDictionary)
                 {
                     if (gameObject.transform.name == kvp.Value.Title)
                     {
@@ -83,7 +79,7 @@ public class UnitController : MonoBehaviour
         }
         catch (Exception e)
         {
-            GCS.LogController(e.ToString());
+            GameControllerScript.instance.LogController(e.ToString());
             throw;
         }
     }
@@ -92,17 +88,17 @@ public class UnitController : MonoBehaviour
     {
         try
         {
-            foreach (var kvp in DBC.UnitDictionary)
+            foreach (var kvp in DatabaseController.instance.UnitDictionary)
             {
                 if (gameObject.name == kvp.Value.Title)
                 {
-                    gameObject.GetComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.UnitDictionary[kvp.Value.ID].ArtworkDirectory[Team]);
+                    gameObject.GetComponent<SpriteRenderer>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.UnitDictionary[kvp.Value.ID].ArtworkDirectory[Team]);
                 }
             }
         }
         catch (Exception e)
         {
-            GCS.LogController(e.ToString());
+            GameControllerScript.instance.LogController(e.ToString());
             throw;
         }
     }
@@ -123,12 +119,12 @@ public class UnitController : MonoBehaviour
 
             foreach (var dir in Directions)
             {
-                if (GCS.TilePos.ContainsKey(Position + dir) && !TilesWeights.ContainsKey(Position + dir) && GCS.TilePos[Position + dir].GetComponent<TerrainController>().Walkable) //tile there?  already added to tilewhieght? can the tile be walked on?
+                if (GameControllerScript.instance.TilePos.ContainsKey(Position + dir) && !TilesWeights.ContainsKey(Position + dir) && GameControllerScript.instance.TilePos[Position + dir].GetComponent<TerrainController>().Walkable) //tile there?  already added to tilewhieght? can the tile be walked on?
                 {
-                    if (GCS.TilePos[Position + dir].GetComponent<TerrainController>().Weight <= MovePoints && !GCS.TilePos[Position + dir].GetComponent<TerrainController>().Occupied) //is the wheight less then the total movement points? is there already a unit there?
+                    if (GameControllerScript.instance.TilePos[Position + dir].GetComponent<TerrainController>().Weight <= MovePoints && !GameControllerScript.instance.TilePos[Position + dir].GetComponent<TerrainController>().Occupied) //is the wheight less then the total movement points? is there already a unit there?
                     {
                         int temp; //array to store count and mp used to get to that tile, the count will be needed later for when a ai is added.
-                        temp = GCS.TilePos[Position].GetComponent<TerrainController>().Weight; //this is the movement points used so far
+                        temp = GameControllerScript.instance.TilePos[Position + dir].GetComponent<TerrainController>().Weight; //this is the movement points used so far
                         TilesWeights.Add(Position + dir, temp);
                     }
                 }
@@ -141,28 +137,28 @@ public class UnitController : MonoBehaviour
                 {
                     foreach (var dir in Directions) //for each tile we are checking we need to look in each direction.
                     {
-                        if (GCS.TilePos.ContainsKey(kvp.Key + dir)) //is there a tile there?
+                        if (GameControllerScript.instance.TilePos.ContainsKey(kvp.Key + dir)) //is there a tile there?
                         {
                             if (!Temp.ContainsKey(kvp.Key + dir)) //does the temp already contain the tile?
                             {
-                                if (kvp.Value + GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Weight <= MovePoints && !GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Occupied) //is the wegiht of the tile + move points used already < move points total? unit there?
+                                if (kvp.Value + GameControllerScript.instance.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Weight <= MovePoints && !GameControllerScript.instance.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Occupied) //is the wegiht of the tile + move points used already < move points total? unit there?
                                 {
-                                    if (GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Walkable) // can the tile be walked on?
+                                    if (GameControllerScript.instance.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Walkable) // can the tile be walked on?
                                     {
-                                        tempInt = GCS.TilePos[kvp.Key + dir].transform.GetComponent<TerrainController>().Weight + kvp.Value; //sets this to mp used so far + weight of tile.
+                                        tempInt = GameControllerScript.instance.TilePos[kvp.Key + dir].transform.GetComponent<TerrainController>().Weight + kvp.Value; //sets this to mp used so far + weight of tile.
                                         Temp.Add(kvp.Key + dir, tempInt);
                                     }
                                 } 
                             }
                             else //if temp already contains a key for this tile but more mp were used to get there then we want to replace the second value of the array with the lower number
                             {
-                                if (kvp.Value + GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Weight <= MovePoints && !GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Occupied)
+                                if (kvp.Value + GameControllerScript.instance.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Weight <= MovePoints && !GameControllerScript.instance.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Occupied)
                                 {
-                                    if (GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Walkable)
+                                    if (GameControllerScript.instance.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Walkable)
                                     {
-                                        if (kvp.Value + GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Weight < Temp[kvp.Key + dir])
+                                        if (kvp.Value + GameControllerScript.instance.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Weight < Temp[kvp.Key + dir])
                                         {
-                                            Temp[kvp.Key + dir] = kvp.Value + GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Weight;
+                                            Temp[kvp.Key + dir] = kvp.Value + GameControllerScript.instance.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Weight;
                                         }
                                     }
                                 }
@@ -194,7 +190,7 @@ public class UnitController : MonoBehaviour
         }
         catch (Exception e)
         {
-            GCS.LogController(e.ToString());
+            GameControllerScript.instance.LogController(e.ToString());
             throw;
         }
 
@@ -212,20 +208,20 @@ public class UnitController : MonoBehaviour
             else
             {
                 Debug.Log("ChangUnit activated");
-                foreach (KeyValuePair<int, Unit> kvp in DBC.UnitDictionary)
+                foreach (KeyValuePair<int, Unit> kvp in DatabaseController.instance.UnitDictionary)
                 {
                     if (MEMCC.SelectedButton == kvp.Value.Title) //checks through dictionary for matching tile to button name
                     {
                         //Debug.Log("Changing tile to " + kvp.Value.Title);
                         gameObject.name = kvp.Value.Title;//change name of tile
-                        gameObject.GetComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.UnitDictionary[kvp.Key].ArtworkDirectory[0]); //change sprite of tile
+                        gameObject.GetComponent<SpriteRenderer>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.UnitDictionary[kvp.Key].ArtworkDirectory[0]); //change sprite of tile
                     }
                 }
             }
         }
         catch (Exception e)
         {
-            GCS.LogController(e.ToString());
+            GameControllerScript.instance.LogController(e.ToString());
             throw;
         }
     }
@@ -246,11 +242,11 @@ public class UnitController : MonoBehaviour
 
             foreach (var dir in Directions)
             {
-                if (GCS.TilePos.ContainsKey(Position + dir)) //is the tile on the map?
+                if (GameControllerScript.instance.TilePos.ContainsKey(Position + dir)) //is the tile on the map?
                 {
-                    if (!EnemyUnitsInRange.ContainsKey(Position + dir) && GCS.UnitPos.ContainsKey(Position + dir)) //is the key already claimed?
+                    if (!EnemyUnitsInRange.ContainsKey(Position + dir) && GameControllerScript.instance.UnitPos.ContainsKey(Position + dir)) //is the key already claimed?
                     {
-                        if (GCS.UnitPos[Position + dir].GetComponent<UnitController>().Team != gameObject.GetComponent<UnitController>().Team)
+                        if (GameControllerScript.instance.UnitPos[Position + dir].GetComponent<UnitController>().Team != gameObject.GetComponent<UnitController>().Team)
                         {
                             EnemyUnitsInRange.Add(Position + dir, count); //add to dictionary 
                         }
@@ -266,11 +262,11 @@ public class UnitController : MonoBehaviour
                 {
                     foreach (var dir in Directions)
                     {
-                        if (!TilesChecked.ContainsKey(kvp.Key + dir) && GCS.TilePos.ContainsKey(kvp.Key + dir) && !EnemyUnitsInRange.ContainsKey(kvp.Key + dir) && !Temp.ContainsKey(kvp.Key + dir)) //is teh tile there?is key claimed?
+                        if (!TilesChecked.ContainsKey(kvp.Key + dir) && GameControllerScript.instance.TilePos.ContainsKey(kvp.Key + dir) && !EnemyUnitsInRange.ContainsKey(kvp.Key + dir) && !Temp.ContainsKey(kvp.Key + dir)) //is teh tile there?is key claimed?
                         {
-                            if (GCS.UnitPos.ContainsKey(kvp.Key + dir))//does tilesChecked not contain key? is there a unit there?
+                            if (GameControllerScript.instance.UnitPos.ContainsKey(kvp.Key + dir))//does tilesChecked not contain key? is there a unit there?
                             {
-                                if (GCS.UnitPos[kvp.Key + dir].GetComponent<UnitController>().Team != gameObject.GetComponent<UnitController>().Team) //is it not on the same team?
+                                if (GameControllerScript.instance.UnitPos[kvp.Key + dir].GetComponent<UnitController>().Team != gameObject.GetComponent<UnitController>().Team) //is it not on the same team?
                                 {
                                     EnemyUnitsInRange.Add(kvp.Key + dir, count);
                                 }
@@ -296,7 +292,7 @@ public class UnitController : MonoBehaviour
         }
         catch (Exception e)
         {
-            GCS.LogController(e.ToString());
+            GameControllerScript.instance.LogController(e.ToString());
             throw;
         }
     }

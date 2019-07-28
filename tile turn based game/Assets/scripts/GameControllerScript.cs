@@ -16,7 +16,7 @@ public class GameControllerScript : MonoBehaviour {
     //we are adding a new game mackanice, or something of that sort. i will figure out a way to add scripts to the game later that can override current script for modders.
     //there is a few things that i will need to change over to using a id, as i was just putting names and stuff in while i was figuring out how to make it all work.
 
-    //this script is ment to be the controller uterly and completely, everything that needs to be stored or can make major adjustments should be ran through here,
+    //this script is ment to be the controller utterly and completely, everything that needs to be stored or can make major adjustments should be ran through here,
     //database controller should be the only other major script. 
 
     public static GameControllerScript instance = null;
@@ -29,7 +29,6 @@ public class GameControllerScript : MonoBehaviour {
     [HideInInspector]
     public string CurrentScene;
     private List<string> LoadButtons;
-    private DatabaseController DBC;
     private MapEditMenueCamController MEMCC;
     private PlaySceneCamController PSCC;
     [HideInInspector]
@@ -58,12 +57,12 @@ public class GameControllerScript : MonoBehaviour {
     public string LogFile = "log.txt";
     public bool EchoToConsole = true;
     public bool AddTimeStamp = true;
+    public Dictionary<int, int> TeamGold;
 
     private void Awake()
     {
         try
         {
-            DBC = gameObject.GetComponent<DatabaseController>(); //referance to database
             DontDestroyOnLoad(gameObject);
             if (instance == null)
             {
@@ -149,7 +148,7 @@ public class GameControllerScript : MonoBehaviour {
                     for (int o = 0; o < EditorMapSize; o++)
                     {
                         //creates a map in data to use for drawing later
-                        MapDictionary.Add(new Vector2(i, o), DBC.TerrainDictionary[0].Title);
+                        MapDictionary.Add(new Vector2(i, o), DatabaseController.instance.TerrainDictionary[0].Title);
                         //UnityEngine.Debug.Log("Added Key: " + i + o);
                     }
                 }
@@ -187,7 +186,7 @@ public class GameControllerScript : MonoBehaviour {
         {
             foreach (var kvp in MapDictionary) //runs creation script for each 
             {
-                GameObject go = DBC.CreateAdnSpawnTerrain(kvp.Key, 0);
+                GameObject go = DatabaseController.instance.CreateAdnSpawnTerrain(kvp.Key, 0);
                 AddTilesToDictionary(go);
             }
             CameraVar = GameObject.Find("MainCamera");
@@ -318,7 +317,7 @@ public class GameControllerScript : MonoBehaviour {
                         RaycastHit hit = hits[i];
                         if (hit.transform.tag == MEMCC.SelectedTab) //is the hit tag = to what we are trying to place down?
                         {
-                            if (hit.transform.tag == DBC.TerrainDictionary[0].Type) //is it a terrain?
+                            if (hit.transform.tag == DatabaseController.instance.TerrainDictionary[0].Type) //is it a terrain?
                             {
                                 TerrainController TC = hit.transform.GetComponent<TerrainController>();
                                 if (hit.transform.name != MEMCC.SelectedButton) //are we changing the tile to something new?
@@ -329,7 +328,7 @@ public class GameControllerScript : MonoBehaviour {
                                     SpriteUpdateActivator();
                                 }
                             }
-                            else if (hit.transform.tag == DBC.UnitDictionary[0].Type) //is the hit a unit?
+                            else if (hit.transform.tag == DatabaseController.instance.UnitDictionary[0].Type) //is the hit a unit?
                             {
                                 UnitController UC = hit.transform.GetComponent<UnitController>();
                                 if (hit.transform.name != MEMCC.SelectedButton) //are we changing the unit to something new?
@@ -352,7 +351,7 @@ public class GameControllerScript : MonoBehaviour {
                                     SpriteUpdateActivator();
                                 }
                             }
-                            else if (hit.transform.tag == DBC.BuildingDictionary[0].Type)
+                            else if (hit.transform.tag == DatabaseController.instance.BuildingDictionary[0].Type)
                             {
                                 BuildingController BC = hit.transform.GetComponent<BuildingController>();
                                 if (hit.transform.name != MEMCC.SelectedButton) //are we changing the building to something new?
@@ -376,16 +375,16 @@ public class GameControllerScript : MonoBehaviour {
                                 }
                             }
                         }
-                        else if (hit.transform.tag == DBC.TerrainDictionary[0].Type && MEMCC.SelectedTab == DBC.UnitDictionary[0].Type) //is the current hit not equal to what we are trying to place down. we are trying to place a unit.
+                        else if (hit.transform.tag == DatabaseController.instance.TerrainDictionary[0].Type && MEMCC.SelectedTab == DatabaseController.instance.UnitDictionary[0].Type) //is the current hit not equal to what we are trying to place down. we are trying to place a unit.
                         {
                             if (!UnitPos.ContainsKey(hit.transform.position)) //is there a unit there already?
                             {
-                                foreach (KeyValuePair<int, Unit> kvp in DBC.UnitDictionary)
+                                foreach (KeyValuePair<int, Unit> kvp in DatabaseController.instance.UnitDictionary)
                                 {
                                     if (kvp.Value.Title == MEMCC.SelectedButton) //need to find id for what unit we are trying to place
                                     {
                                         bool tempbool = false;
-                                        foreach (var item in DBC.TerrainDictionary)
+                                        foreach (var item in DatabaseController.instance.TerrainDictionary)
                                         {
                                             if (hit.transform.name == item.Value.Title)
                                             {
@@ -394,7 +393,7 @@ public class GameControllerScript : MonoBehaviour {
                                         }
                                         if (tempbool)
                                         {
-                                            GameObject tgo = DBC.CreateAndSpawnUnit(hit.transform.position, kvp.Key, MEMCC.SelectedTeam); //creat new unit at position on tile we clicked on.
+                                            GameObject tgo = DatabaseController.instance.CreateAndSpawnUnit(hit.transform.position, kvp.Key, MEMCC.SelectedTeam); //creat new unit at position on tile we clicked on.
                                             tgo.GetComponent<UnitController>().Team = MEMCC.SelectedTeam;
                                             AddUnitsToDictionary(tgo);
                                             Debug.Log("Creating " + MEMCC.SelectedButton + " at " + hit.transform.position);
@@ -404,16 +403,16 @@ public class GameControllerScript : MonoBehaviour {
                                 }
                             }
                         }
-                        else if (hit.transform.tag == DBC.TerrainDictionary[0].Type && MEMCC.SelectedTab == DBC.BuildingDictionary[0].Type)
+                        else if (hit.transform.tag == DatabaseController.instance.TerrainDictionary[0].Type && MEMCC.SelectedTab == DatabaseController.instance.BuildingDictionary[0].Type)
                         {
                             if (!BuildingPos.ContainsKey(hit.transform.position))
                             {
-                                foreach (KeyValuePair<int, Building> kvp in DBC.BuildingDictionary)
+                                foreach (KeyValuePair<int, Building> kvp in DatabaseController.instance.BuildingDictionary)
                                 {
                                     if (kvp.Value.Title == MEMCC.SelectedButton) //need to find id for what unit we are trying to place
                                     {
                                         bool tempbool = false;
-                                        foreach (var item in DBC.TerrainDictionary)
+                                        foreach (var item in DatabaseController.instance.TerrainDictionary)
                                         {
                                             if (hit.transform.name == item.Value.Title)
                                             {
@@ -422,7 +421,7 @@ public class GameControllerScript : MonoBehaviour {
                                         }
                                         if (tempbool)
                                         {
-                                            GameObject tgo = DBC.CreateAndSpawnBuilding(hit.transform.position, kvp.Key, MEMCC.SelectedTeam); //creat new building at position on tile we clicked on.
+                                            GameObject tgo = DatabaseController.instance.CreateAndSpawnBuilding(hit.transform.position, kvp.Key, MEMCC.SelectedTeam); //creat new building at position on tile we clicked on.
                                             tgo.GetComponent<BuildingController>().Team = MEMCC.SelectedTeam;
                                             AddBuildingToDictionary(tgo);
                                             Debug.Log("Creating " + MEMCC.SelectedButton + " at " + hit.transform.position);
@@ -464,7 +463,7 @@ public class GameControllerScript : MonoBehaviour {
                         RaycastHit hit = hits[i];
                         if (!PSCC.AttackButtonSelected)
                         {
-                            if (hit.transform.tag == DBC.UnitDictionary[0].Type && SelectedUnitPlayScene == null && hit.transform.GetComponent<UnitController>().UnitMovable)
+                            if (hit.transform.tag == DatabaseController.instance.UnitDictionary[0].Type && SelectedUnitPlayScene == null && hit.transform.GetComponent<UnitController>().UnitMovable)
                             {//is the hit a unit? is the unit movable? is the unit not selected?
                                 SelectedUnitPlayScene = hit.transform.gameObject; //set unit to selected unit
                                 //Debug.Log("SelectedUnit = " + SelectedUnitPlayScene.transform.name);
@@ -484,7 +483,7 @@ public class GameControllerScript : MonoBehaviour {
                                 PSCC.AttackButtonController(tempint);
                                 PSCC.WaitButton.SetActive(true);
                             }
-                            else if (hit.transform.tag == DBC.UnitDictionary[0].Type && SelectedUnitPlayScene == hit.transform.gameObject && (Vector2)hit.transform.position == originalPositionOfUnit) //is the hit a unit? is the unit selected already?
+                            else if (hit.transform.tag == DatabaseController.instance.UnitDictionary[0].Type && SelectedUnitPlayScene == hit.transform.gameObject && (Vector2)hit.transform.position == originalPositionOfUnit) //is the hit a unit? is the unit selected already?
                             {
                                 SelectedUnitPlayScene = null; //clear selected unit variable
                                 //Debug.Log("Selected unit set to null");
@@ -496,7 +495,7 @@ public class GameControllerScript : MonoBehaviour {
                                 MoveToPosition = new Vector2(-1, -1);
                                 PSCC.SetActionButtonsToFalse();
                             }
-                            else if (hit.transform.tag == DBC.TerrainDictionary[0].Type || hit.transform.tag == DBC.BuildingDictionary[0].Type) //is the hit a terrain or building?
+                            else if (hit.transform.tag == DatabaseController.instance.TerrainDictionary[0].Type || hit.transform.tag == DatabaseController.instance.BuildingDictionary[0].Type) //is the hit a terrain or building?
                             {
                                 //Debug.Log("Building or terrain hit");
                                 if (SelectedUnitPlayScene != null)
@@ -532,7 +531,7 @@ public class GameControllerScript : MonoBehaviour {
                         }
                         else
                         {
-                            if (SelectedUnitPlayScene.GetComponent<UnitController>().EnemyUnitsInRange.ContainsKey(hit.transform.position) && hit.transform.tag == DBC.UnitDictionary[0].Type)
+                            if (SelectedUnitPlayScene.GetComponent<UnitController>().EnemyUnitsInRange.ContainsKey(hit.transform.position) && hit.transform.tag == DatabaseController.instance.UnitDictionary[0].Type)
                             {
                                 int attack = SelectedUnitPlayScene.GetComponent<UnitController>().Attack;
                                 UnitPos[hit.transform.position].GetComponent<UnitController>().Health = UnitPos[hit.transform.position].GetComponent<UnitController>().Health - attack;
@@ -600,7 +599,7 @@ public class GameControllerScript : MonoBehaviour {
                                 save[count] = new Map();
                                 save[count].Location = kvp.Key;
                                 save[count].Name = kvp.Value.name;
-                                save[count].Type = DBC.TerrainDictionary[0].Type;
+                                save[count].Type = DatabaseController.instance.TerrainDictionary[0].Type;
                                 count = count + 1;
                             }
                         }
@@ -611,7 +610,7 @@ public class GameControllerScript : MonoBehaviour {
                                 save[count] = new Map();
                                 save[count].Location = kvp.Key;
                                 save[count].Name = kvp.Value.name;
-                                save[count].Type = DBC.UnitDictionary[0].Type;
+                                save[count].Type = DatabaseController.instance.UnitDictionary[0].Type;
                                 save[count].Team = kvp.Value.GetComponent<UnitController>().Team;
                                 count = count + 1;
                                 if (kvp.Value.GetComponent<UnitController>().Team == 1)
@@ -637,7 +636,7 @@ public class GameControllerScript : MonoBehaviour {
                                     save[count] = new Map();
                                     save[count].Location = kvp.Key;
                                     save[count].Name = kvp.Value.name;
-                                    save[count].Type = DBC.BuildingDictionary[0].Type;
+                                    save[count].Type = DatabaseController.instance.BuildingDictionary[0].Type;
                                     save[count].Team = kvp.Value.GetComponent<BuildingController>().Team;
                                     count = count + 1;
                                 }
@@ -708,9 +707,9 @@ public class GameControllerScript : MonoBehaviour {
             Map[] Load = JsonHelper.FromJson<Map>(tempstring);
 
 
-            var TilesToDelete = GameObject.FindGameObjectsWithTag(DBC.TerrainDictionary[0].Type);
-            var UnitsToDelete = GameObject.FindGameObjectsWithTag(DBC.UnitDictionary[0].Type);
-            var BuildingsToDelete = GameObject.FindGameObjectsWithTag(DBC.BuildingDictionary[0].Type);
+            var TilesToDelete = GameObject.FindGameObjectsWithTag(DatabaseController.instance.TerrainDictionary[0].Type);
+            var UnitsToDelete = GameObject.FindGameObjectsWithTag(DatabaseController.instance.UnitDictionary[0].Type);
+            var BuildingsToDelete = GameObject.FindGameObjectsWithTag(DatabaseController.instance.BuildingDictionary[0].Type);
             BuildingPos = new Dictionary<Vector2, GameObject>();
             TilePos = new Dictionary<Vector2, GameObject>();
             UnitPos = new Dictionary<Vector2, GameObject>();
@@ -729,47 +728,47 @@ public class GameControllerScript : MonoBehaviour {
 
             for (int i = 0; i < Load.Length; i++)
             {
-                if (Load[i].Type == DBC.TerrainDictionary[0].Type)
+                if (Load[i].Type == DatabaseController.instance.TerrainDictionary[0].Type)
                 {
-                    foreach (var kvp in DBC.TerrainDictionary)
+                    foreach (var kvp in DatabaseController.instance.TerrainDictionary)
                     {
                         if (kvp.Value.Title == Load[i].Name)
                         {
-                            DBC.CreateAdnSpawnTerrain(Load[i].Location, kvp.Value.ID);
+                            DatabaseController.instance.CreateAdnSpawnTerrain(Load[i].Location, kvp.Value.ID);
                         }
                     }
                 }
-                else if (Load[i].Type == DBC.UnitDictionary[0].Type)
+                else if (Load[i].Type == DatabaseController.instance.UnitDictionary[0].Type)
                 {
-                    foreach (var kvp in DBC.UnitDictionary)
+                    foreach (var kvp in DatabaseController.instance.UnitDictionary)
                     {
                         if (kvp.Value.Title == Load[i].Name)
                         {
-                            DBC.CreateAndSpawnUnit(Load[i].Location, kvp.Value.ID, Load[i].Team);
+                            DatabaseController.instance.CreateAndSpawnUnit(Load[i].Location, kvp.Value.ID, Load[i].Team);
                         }
                     }
                 }
-                else if (Load[i].Type == DBC.BuildingDictionary[0].Type)
+                else if (Load[i].Type == DatabaseController.instance.BuildingDictionary[0].Type)
                 {
-                    foreach (var kvp in DBC.BuildingDictionary)
+                    foreach (var kvp in DatabaseController.instance.BuildingDictionary)
                     {
                         if (kvp.Value.Title == Load[i].Name)
                         {
-                            DBC.CreateAndSpawnBuilding(Load[i].Location, kvp.Value.ID, Load[i].Team);
+                            DatabaseController.instance.CreateAndSpawnBuilding(Load[i].Location, kvp.Value.ID, Load[i].Team);
                         }
                     }
                 }
             }
 
-            foreach (var go in GameObject.FindGameObjectsWithTag(DBC.TerrainDictionary[0].Type))
+            foreach (var go in GameObject.FindGameObjectsWithTag(DatabaseController.instance.TerrainDictionary[0].Type))
             {
                 AddTilesToDictionary(go);
             }
-            foreach (var go in GameObject.FindGameObjectsWithTag(DBC.UnitDictionary[0].Type))
+            foreach (var go in GameObject.FindGameObjectsWithTag(DatabaseController.instance.UnitDictionary[0].Type))
             {
                 AddUnitsToDictionary(go);
             }
-            foreach (var go in GameObject.FindGameObjectsWithTag(DBC.BuildingDictionary[0].Type))
+            foreach (var go in GameObject.FindGameObjectsWithTag(DatabaseController.instance.BuildingDictionary[0].Type))
             {
                 AddBuildingToDictionary(go);
             }
@@ -798,13 +797,13 @@ public class GameControllerScript : MonoBehaviour {
 
             for (int i = 0; i < Load.Length; i++)
             {
-                if (Load[i].Type == DBC.TerrainDictionary[0].Type)
+                if (Load[i].Type == DatabaseController.instance.TerrainDictionary[0].Type)
                 {
-                    foreach (var kvp in DBC.TerrainDictionary)
+                    foreach (var kvp in DatabaseController.instance.TerrainDictionary)
                     {
                         if (kvp.Value.Title == Load[i].Name)
                         {
-                            DBC.CreateAdnSpawnTerrain(Load[i].Location, kvp.Value.ID);
+                            DatabaseController.instance.CreateAdnSpawnTerrain(Load[i].Location, kvp.Value.ID);
                             if (Load[i].Location.x > PlayMapSize)
                             {
                                 PlayMapSize = (int)Load[i].Location.x;
@@ -812,23 +811,23 @@ public class GameControllerScript : MonoBehaviour {
                         }
                     }
                 }
-                else if (Load[i].Type == DBC.UnitDictionary[0].Type)
+                else if (Load[i].Type == DatabaseController.instance.UnitDictionary[0].Type)
                 {
-                    foreach (var kvp in DBC.UnitDictionary)
+                    foreach (var kvp in DatabaseController.instance.UnitDictionary)
                     {
                         if (kvp.Value.Title == Load[i].Name)
                         {
-                            DBC.CreateAndSpawnUnit(Load[i].Location, kvp.Value.ID, Load[i].Team);
+                            DatabaseController.instance.CreateAndSpawnUnit(Load[i].Location, kvp.Value.ID, Load[i].Team);
                         }
                     }
                 }
-                else if (Load[i].Type == DBC.BuildingDictionary[0].Type)
+                else if (Load[i].Type == DatabaseController.instance.BuildingDictionary[0].Type)
                 {
-                    foreach (var kvp in DBC.BuildingDictionary)
+                    foreach (var kvp in DatabaseController.instance.BuildingDictionary)
                     {
                         if (kvp.Value.Title == Load[i].Name)
                         {
-                            DBC.CreateAndSpawnBuilding(Load[i].Location, kvp.Value.ID, Load[i].Team);
+                            DatabaseController.instance.CreateAndSpawnBuilding(Load[i].Location, kvp.Value.ID, Load[i].Team);
                         }
                     }
                 }
@@ -836,16 +835,15 @@ public class GameControllerScript : MonoBehaviour {
 
             TeamCount = Load[0].TeamCount;
             Debug.Log("TeamCount = " + TeamCount);
-
-            foreach (var go in GameObject.FindGameObjectsWithTag(DBC.TerrainDictionary[0].Type))
+            foreach (var go in GameObject.FindGameObjectsWithTag(DatabaseController.instance.TerrainDictionary[0].Type))
             {
                 AddTilesToDictionary(go);
             }
-            foreach (var go in GameObject.FindGameObjectsWithTag(DBC.UnitDictionary[0].Type))
+            foreach (var go in GameObject.FindGameObjectsWithTag(DatabaseController.instance.UnitDictionary[0].Type))
             {
                 AddUnitsToDictionary(go);
             }
-            foreach (var go in GameObject.FindGameObjectsWithTag(DBC.BuildingDictionary[0].Type))
+            foreach (var go in GameObject.FindGameObjectsWithTag(DatabaseController.instance.BuildingDictionary[0].Type))
             {
                 AddBuildingToDictionary(go);
             }
@@ -854,6 +852,12 @@ public class GameControllerScript : MonoBehaviour {
             SpriteUpdateActivator();
             CameraVar = GameObject.Find("MainCamera");
             CameraVar.transform.position = new Vector3(PlayMapSize / 2 - .5f, PlayMapSize / 2 - .5f, PlayMapSize * -1);
+
+            TeamGold = new Dictionary<int, int>();
+            for (int i = 0; i <= TeamCount; i++)
+            {
+                TeamGold.Add(i, 500);
+            }
         }
         catch (Exception e)
         {
@@ -901,11 +905,12 @@ public class GameControllerScript : MonoBehaviour {
     /// </summary>
     public void PlaySceneNewGameInitalizer()
     {
-        try
+        //try
         {
             System.Random rnd = new System.Random();
             CurrentTeamsTurn = rnd.Next(1, TeamCount + 1);
             PSCC.CurrentPlayerTurnText.text = CurrentTeamsTurn.ToString();
+            PSCC.GoldText.text = "Gold:" + TeamGold[CurrentTeamsTurn].ToString();
             AllRoundUpdater();
             foreach (var kvp in BuildingPos)
             {
@@ -919,10 +924,10 @@ public class GameControllerScript : MonoBehaviour {
                 }
             }
         }
-        catch (Exception e)
+        //catch (Exception e)
         {
-            LogController(e.ToString());
-            throw;
+            //LogController(e.ToString());
+            //throw;
         }
     } //sets up game for new game
 
@@ -992,7 +997,7 @@ public class GameControllerScript : MonoBehaviour {
             if (f == 1f)
             {
                 SceneManager.LoadScene("MainMenuScene");
-                DBC.Initalisation = false;
+                DatabaseController.instance.Initalisation = false;
             }
         }
         catch (Exception e)

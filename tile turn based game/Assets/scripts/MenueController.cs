@@ -11,21 +11,17 @@ public class MenueController : MonoBehaviour {
     public GameObject MapEditorMenuePanel;
     public GameObject PlayMenuePanel;
     public GameObject LoadGamePanel;
-    private GameControllerScript GCS;
     public InputField mapsizeIF;
     public Text errorTextField;
     public GameObject LoadMenueButtonPrefab;
     public GameObject ContentWindowLoad;
     public GameObject ContentWindowNewGame;
     public GameObject MainPanel;
-    private DatabaseController DBC;
 
 
     // everything in here is pretty self explanitory.
     void Start()
     {
-        DBC = GameObject.Find("GameController").GetComponent<DatabaseController>();
-        GCS = GameObject.Find("GameController").GetComponent<GameControllerScript>();
         MainPanel.SetActive(true);
         MainMenueButtonClicked();
     }
@@ -79,7 +75,7 @@ public class MenueController : MonoBehaviour {
         {
             if (tempMapSize >= 10 && tempMapSize <= 100)
             {
-                GCS.CreateNewMapForMapEditor(tempMapSize);
+                GameControllerScript.instance.CreateNewMapForMapEditor(tempMapSize);
             }
             else
             {
@@ -111,8 +107,8 @@ public class MenueController : MonoBehaviour {
 
     public void LoadSelected()
     {
-        GCS.MapNameForPlayScene = EventSystem.current.currentSelectedGameObject.name;
+        GameControllerScript.instance.MapNameForPlayScene = EventSystem.current.currentSelectedGameObject.name;
         UnityEngine.SceneManagement.SceneManager.LoadScene("PlayScene");
-        GCS.PlaySceneLoadStatus = "NewGame";
+        GameControllerScript.instance.PlaySceneLoadStatus = "NewGame";
     }
 }
