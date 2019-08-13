@@ -1,0 +1,3 @@
+System.IO.DirectoryNotFoundException: Could not find a part of the path "C:/Users/Owner/Documents/GitHub/tileGame/tile turn based game/Assets/StreamingAssets/Core/Maps/New.json".
+  at System.IO.File.Delete (System.String path) [0x00058] in <23c160f925be47d7a4fd083a3a62c920>:0 
+  at MapEditMenueCamController.LoadPanelDeleteButtonClicked () [0x00002] in C:\Users\Owner\Documents\GitHub\tileGame\tile turn based game\Assets\scripts\MapEditMenueCamController.cs:435 

@@ -1,0 +1,11 @@
+{
+  "ID": 0,
+  "Health": 10,
+  "Title": "Town",
+  "Walkable": true,
+  "Description": "A collection of huts",
+  "DefenceBonus": 1,
+  "Slug": "Town_Building",
+  "Type": "Building",
+  "Mod": "Core"
+}

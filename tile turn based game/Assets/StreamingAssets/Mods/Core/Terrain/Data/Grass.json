@@ -1,0 +1,11 @@
+{
+  "ID": 0,
+  "Title": "Grass",
+  "Walkable": true,
+  "Description": "Field of Grass",
+  "DefenceBonus": 0,
+  "Slug": "grass_tile",
+  "Type": "Terrain",
+  "Weight": 2,
+  "Mod": "Core"
+}

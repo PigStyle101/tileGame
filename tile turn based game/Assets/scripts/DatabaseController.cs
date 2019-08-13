@@ -19,6 +19,7 @@ public class DatabaseController : MonoBehaviour {
     public Dictionary<int, MouseOverlays> MouseDictionary = new Dictionary<int, MouseOverlays>();
     public Dictionary<int, Unit> UnitDictionary = new Dictionary<int, Unit>();
     public Dictionary<int, Building> BuildingDictionary = new Dictionary<int, Building>();
+    public List<string> ModsLoaded = new List<string>();
     private GameObject NewTile;
     [HideInInspector]
     public bool Initalisation = true;
@@ -27,12 +28,11 @@ public class DatabaseController : MonoBehaviour {
     public int DragSpeed;
     [HideInInspector]
     public int scrollSpeed;
-    public GameObject CanvasPrefab;
+    public GameObject UnitHealthOverlay;
+    public GameObject BuildingHealthOverlay;
 
     private void Awake()
     {
-        try
-        {
             DontDestroyOnLoad(gameObject);
             if (instance == null)
             {
@@ -42,175 +42,151 @@ public class DatabaseController : MonoBehaviour {
             {
                 Destroy(gameObject);
             }
-        }
-        catch (Exception e)
-        {
-            GameControllerScript.instance.LogController(e.ToString());
-            throw;
-        }
     }
 
     private void Start()
     {
-        try
-        {
             GetMasterJson();
             GameControllerScript.instance.LoadingUpdater(.2f);
-            GetTerrianJsons();
+            GetTerrianJsons("Core");
             GameControllerScript.instance.LoadingUpdater(.4f);
-            GetUnitJsons();
+            GetUnitJsons("Core");
             GameControllerScript.instance.LoadingUpdater(.6f);
-            GetBuildingJsons();
+            GetBuildingJsons("Core");
             GameControllerScript.instance.LoadingUpdater(.8f);
             GetMouseJson();
             GameControllerScript.instance.LoadingUpdater(1f);
-        }
-        catch (Exception e)
-        {
-            GameControllerScript.instance.LogController(e.ToString());
-            throw;
-        }
     }
 
+    /// <summary>
+    /// Gets Master Json file, this is used for any bigger settings
+    /// </summary>
     public void GetMasterJson()
     {
-        try
-        {
-
             Debug.Log("Fetching json master file");
             var grassstring = File.ReadAllText(Application.dataPath + "/StreamingAssets/MasterData/Master.json"); //temp string to hold the json data
             Master tempjson = JsonUtility.FromJson<Master>(grassstring); //this converts from json string to unity object
             scrollSpeed = tempjson.ScrollSpeed;
             DragSpeed = tempjson.DragSpeed;
             Debug.Log("Finished fetching json master file");
-        }
-        catch (Exception e)
-        {
-            GameControllerScript.instance.LogController(e.ToString());
-            throw;
-        }
     }
 
-    public void GetTerrianJsons()
+    /// <summary>
+    /// Gets Terrain Json files. Pulls from data first then searches for sprites.
+    /// </summary>
+    /// <param name="Mod">Mod folder name to look for</param>
+    public void GetTerrianJsons(string Mod)
     {
-        try
-        {
-            
-            Debug.Log("Fetching json terrain files");
-            foreach (string file in Directory.GetFiles(Application.dataPath + "/StreamingAssets/Terrain/Data/", "*.json")) //gets only json files form this path
+            if (Directory.Exists(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Terrain"))
             {
-                var grassstring = File.ReadAllText(file); //temp string to hold the json data
-                Terrain tempjson = JsonUtility.FromJson<Terrain>(grassstring); //this converts from json string to unity object
-                Debug.Log("Adding: " + tempjson.Slug + " to database");
-                if (!TerrainDictionary.ContainsKey(tempjson.ID))
+                Debug.Log("Fetching json terrain files");
+                foreach (string file in Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Terrain/Data/", "*.json")) //gets only json files form this path
                 {
-                    TerrainDictionary.Add(tempjson.ID, tempjson); //adds
-                    tempjson.GetSprites(); //details in fucntion
-                    Debug.Log("Finished adding: " + tempjson.Slug + " to database"); 
-                }else
-                {
-                    Debug.LogError("Item id number: " + tempjson.ID + " is already claimed, change " + tempjson.Title + " ID please");
-                }
+                    var Tempstring = File.ReadAllText(file); //temp string to hold the json data
+                    Terrain tempjson = JsonUtility.FromJson<Terrain>(Tempstring); //this converts from json string to unity object
+                    Debug.Log("Adding: " + tempjson.Slug + " to database");
+                    if (!TerrainDictionary.ContainsKey(tempjson.ID))
+                    {
+                        TerrainDictionary.Add(tempjson.ID, tempjson); //adds
+                        tempjson.GetSprites(); //details in fucntion
+                        Debug.Log("Finished adding: " + tempjson.Slug + " to database");
+                    }
+                    else
+                    {
+                        Debug.LogError("Item id number: " + tempjson.ID + " is already claimed, change " + tempjson.Title + " ID please");
+                    }
+                } 
             }
-        }
-        catch (Exception e)
-        {
-            GameControllerScript.instance.LogController(e.ToString());
-            throw;
-        }
     }//gets the json files from the terrain/data folder and converts them to unity object and stores tehm into dictionary
 
-    public void GetUnitJsons()
+    /// <summary>
+    /// Gets Unit Json files. Pulls from data first then searches for sprites.
+    /// </summary>
+    /// <param name="Mod">Mod folder name to look for</param>
+    public void GetUnitJsons(string Mod)
     {
-        try
-        {
-            Debug.Log("Fetching json unit files");
-            foreach (string file in Directory.GetFiles(Application.dataPath + "/StreamingAssets/Units/Data/", "*.json")) //gets only json files form this path
+            if (Directory.Exists(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Units"))
             {
-                var Tempstring = File.ReadAllText(file); //temp string to hold the json data
-                var tempjson = JsonUtility.FromJson<Unit>(Tempstring); //this converts from json string to unity object
-                Debug.Log("Adding: " + tempjson.Slug + " to database");
-                if (!UnitDictionary.ContainsKey(tempjson.ID))
+                Debug.Log("Fetching json unit files");
+                foreach (string file in Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Units/Data/", "*.json")) //gets only json files form this path
                 {
-                    UnitDictionary.Add(tempjson.ID, tempjson); //adds
-                    tempjson.GetSprites(); //details in fucntion
-                    Debug.Log("Finished adding: " + tempjson.Slug + " to database");
-                }
-                else
-                {
-                    Debug.LogError("Item id number: " + tempjson.ID + " is already claimed, change " + tempjson.Title + " ID please");
-                }
+                    var Tempstring = File.ReadAllText(file); //temp string to hold the json data
+                    var tempjson = JsonUtility.FromJson<Unit>(Tempstring); //this converts from json string to unity object
+                    Debug.Log("Adding: " + tempjson.Slug + " to database");
+                    if (!UnitDictionary.ContainsKey(tempjson.ID))
+                    {
+                        UnitDictionary.Add(tempjson.ID, tempjson); //adds
+                        tempjson.GetSprites(); //details in fucntion
+                        Debug.Log("Finished adding: " + tempjson.Slug + " to database");
+                    }
+                    else
+                    {
+                        Debug.LogError("Item id number: " + tempjson.ID + " is already claimed, change " + tempjson.Title + " ID please");
+                    }
+                } 
             }
-        }
-        catch (Exception e)
-        {
-            GameControllerScript.instance.LogController(e.ToString());
-            throw;
-        }
     }//gets the json files from the Units/data folder and converts them to unity object and stores tehm into dictionary
 
-    public void GetBuildingJsons()
+    /// <summary>
+    /// Gets Building Json files. Pulls from data first then searches for sprites.
+    /// </summary>
+    /// <param name="Mod">Mod folder name to look for</param>
+    public void GetBuildingJsons(string Mod)
     {
-        try
-        {
-            Debug.Log("Fetching json building files");
-            foreach (string file in Directory.GetFiles(Application.dataPath + "/StreamingAssets/Buildings/Data/", "*.json")) //gets only json files form this path
+            if (Directory.Exists(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Buildings"))
             {
-                var Tempstring = File.ReadAllText(file); //temp string to hold the json data
-                var tempjson = JsonUtility.FromJson<Building>(Tempstring); //this converts from json string to unity object
-                Debug.Log("Adding: " + tempjson.Slug + " to database");
-                if (!BuildingDictionary.ContainsKey(tempjson.ID))
+                Debug.Log("Fetching json building files");
+                foreach (string file in Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Buildings/Data/", "*.json")) //gets only json files form this path
                 {
-                    BuildingDictionary.Add(tempjson.ID, tempjson); //adds
-                    tempjson.GetSprites(); //details in fucntion
-                    Debug.Log("Finished adding: " + tempjson.Slug + " to database");
-                }
-                else
-                {
-                    Debug.LogError("Item id number: " + tempjson.ID + " is already claimed, change " + tempjson.Title + " ID please");
-                }
+                    var Tempstring = File.ReadAllText(file); //temp string to hold the json data
+                    var tempjson = JsonUtility.FromJson<Building>(Tempstring); //this converts from json string to unity object
+                    Debug.Log("Adding: " + tempjson.Slug + " to database");
+                    if (!BuildingDictionary.ContainsKey(tempjson.ID))
+                    {
+                        BuildingDictionary.Add(tempjson.ID, tempjson); //adds
+                        tempjson.GetSprites(); //details in fucntion
+                        Debug.Log("Finished adding: " + tempjson.Slug + " to database");
+                    }
+                    else
+                    {
+                        Debug.LogError("Item id number: " + tempjson.ID + " is already claimed, change " + tempjson.Title + " ID please");
+                    }
+                } 
             }
-        }
-        catch (Exception e)
-        {
-            GameControllerScript.instance.LogController(e.ToString());
-            throw;
-        }
     }
 
+    /// <summary>
+    /// Used to get mouse overlays for hovering over terrain tiles
+    /// </summary>
     public void GetMouseJson()
     {
-        try
-        {
             Debug.Log("Fetching json mouse overlay files");
-            foreach (string file in Directory.GetFiles(Application.dataPath + "/StreamingAssets/MouseOverlays/Data/", "*.json"))
-            {
-                var TempString = File.ReadAllText(file);
-                var tempjson = JsonUtility.FromJson<MouseOverlays>(TempString);
-                Debug.Log("Adding: " + tempjson.Slug + " to database");
-                if (!MouseDictionary.ContainsKey(tempjson.ID))
-                {
-                    MouseDictionary.Add(tempjson.ID, tempjson);
-                    tempjson.GetSprites();
-                    Debug.Log("Finished adding: " + tempjson.Slug + " to database");
-                }
-                else
-                {
-                    Debug.LogError("Item id number: " + tempjson.ID + " is already claimed" + tempjson.Title + " ID please");
-                }
-            }
-        }
-        catch (Exception e)
+        foreach (string file in Directory.GetFiles(Application.dataPath + "/StreamingAssets/MouseOverlays/Data/", "*.json"))
         {
-            GameControllerScript.instance.LogController(e.ToString());
-            throw;
+            var TempString = File.ReadAllText(file);
+            var tempjson = JsonUtility.FromJson<MouseOverlays>(TempString);
+            Debug.Log("Adding: " + tempjson.Slug + " to database");
+            if (!MouseDictionary.ContainsKey(tempjson.ID))
+            {
+                MouseDictionary.Add(tempjson.ID, tempjson);
+                tempjson.GetSprites();
+                Debug.Log("Finished adding: " + tempjson.Slug + " to database");
+            }
+            else
+            {
+                Debug.LogError("Item id number: " + tempjson.ID + " is already claimed" + tempjson.Title + " ID please");
+            }
         }
     }//same as getTerrainJson
 
+    /// <summary>
+    /// Creates a terrain tile and adds all needed components.
+    /// </summary>
+    /// <param name="location">Location to spawn terrain tile at</param>
+    /// <param name="index">Tile index in Terrain Dictionary</param>
+    /// <returns></returns>
     public GameObject CreateAdnSpawnTerrain(Vector2 location, int index)
     {
-        try
-        {
             GameObject TGO = new GameObject();                                                                                  //create gameobject
             TGO.name = TerrainDictionary[index].Title;                                                                          //change the name
             TGO.AddComponent<SpriteRenderer>();                                                                                 //add a sprite controller
@@ -233,18 +209,17 @@ public class DatabaseController : MonoBehaviour {
             TGO.GetComponent<TerrainController>().DefenceBonus = TerrainDictionary[index].DefenceBonus;
             TGO.transform.position = location;
             return TGO;
-        }
-        catch (Exception e)
-        {
-            GameControllerScript.instance.LogController(e.ToString());
-            throw;
-        }
     } //used to spawn terrian from database
 
+    /// <summary>
+    /// Creates a unit and adds all needed components.
+    /// </summary>
+    /// <param name="location">Location to spawn unit at</param>
+    /// <param name="index">Unit index in unit dictionary</param>
+    /// <param name="team">Team to assign to this unit</param>
+    /// <returns></returns>
     public GameObject CreateAndSpawnUnit(Vector2 location, int index, int team)
     {
-        try
-        {
             GameObject TGO = new GameObject();
             TGO.name = UnitDictionary[index].Title;
             TGO.AddComponent<SpriteRenderer>();
@@ -260,10 +235,15 @@ public class DatabaseController : MonoBehaviour {
             TGO.GetComponent<UnitController>().MaxHealth = UnitDictionary[index].Health;
             TGO.GetComponent<UnitController>().Health = UnitDictionary[index].Health;
             TGO.GetComponent<UnitController>().Range = UnitDictionary[index].Range;
+            TGO.GetComponent<UnitController>().CanConvert = UnitDictionary[index].CanConvert;
+            if (UnitDictionary[index].CanConvert)
+            {
+                TGO.GetComponent<UnitController>().ConversionSpeed = UnitDictionary[index].ConversionSpeed;
+            }
             TGO.tag = UnitDictionary[index].Type;
             TGO.transform.position = location;
 
-            GameObject TempCan = Instantiate(CanvasPrefab, TGO.transform);
+            GameObject TempCan = Instantiate(UnitHealthOverlay, TGO.transform);
             TempCan.transform.localPosition = new Vector3(0, 0, 0);
             TempCan.GetComponentInChildren<Text>().text = UnitDictionary[index].Health.ToString();
             TGO.GetComponent<UnitController>().UnitMovable = true;
@@ -271,18 +251,17 @@ public class DatabaseController : MonoBehaviour {
             GameControllerScript.instance.AddUnitsToDictionary(TGO);
             TGO.GetComponent<UnitController>().TeamSpriteController();
             return TGO;
-        }
-        catch (Exception e)
-        {
-            GameControllerScript.instance.LogController(e.ToString());
-            throw;
-        }
     } //used to spawn units form database
 
+    /// <summary>
+    /// Creates a building and adds all needed components.
+    /// </summary>
+    /// <param name="location">Location to spawn unit at</param>
+    /// <param name="index">Unit index in unit dictionary</param>
+    /// <param name="team">Team to assign to this unit</param>
+    /// <returns></returns>
     public GameObject CreateAndSpawnBuilding(Vector2 location, int index, int team)
     {
-        try
-        {
             GameObject TGO = new GameObject();
             TGO.name = BuildingDictionary[index].Title;
             TGO.AddComponent<SpriteRenderer>();
@@ -292,21 +271,23 @@ public class DatabaseController : MonoBehaviour {
             TGO.GetComponent<BoxCollider>().size = new Vector3(.95f, .95f, .1f);
             TGO.AddComponent<BuildingController>();
             TGO.GetComponent<BuildingController>().Team = team;
+            TGO.GetComponent<BuildingController>().Mod = BuildingDictionary[index].Mod;
+            TGO.GetComponent<BuildingController>().Health = BuildingDictionary[index].Health;
             TGO.tag = BuildingDictionary[index].Type;
             TGO.transform.position = location;
+            GameObject TempCan = Instantiate(BuildingHealthOverlay, TGO.transform);
+            TempCan.transform.localPosition = new Vector3(0, 0, 0);
+            TempCan.GetComponentInChildren<Text>().text = BuildingDictionary[index].Health.ToString();
             return TGO;
-        }
-        catch (Exception e)
-        {
-            GameControllerScript.instance.LogController(e.ToString());
-            throw;
-        }
     }
 
+    /// <summary>
+    /// Loads a sprite
+    /// </summary>
+    /// <param name="FilePath">Location to get file from</param>
+    /// <returns></returns>
     public Sprite loadSprite(string FilePath)
     {
-        try
-        {
             Texture2D Tex2D;
             Sprite TempSprite;
             byte[] FileData;
@@ -320,12 +301,6 @@ public class DatabaseController : MonoBehaviour {
                 return TempSprite;
             }
             return null;
-        }
-        catch (Exception e)
-        {
-            GameControllerScript.instance.LogController(e.ToString());
-            throw;
-        }
     }// checks for images that are to be used for artwork stuffs
 
 }
@@ -334,6 +309,7 @@ public class DatabaseController : MonoBehaviour {
 public class Terrain
 {
     public int ID;
+    public string Mod;
     public string Title;
     public bool Walkable;
     public string Description;
@@ -343,12 +319,14 @@ public class Terrain
     public int Weight;
     public List<string> ArtworkDirectory;
 
-
+    /// <summary>
+    /// Gets location of sprites and saves them to a list
+    /// </summary>
     public void GetSprites()
     {
         Debug.Log("Getting sprites for: " + Title);
         int count = new int(); //used for debug
-        foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/Terrain/Sprites/", "*.png"))) //could actaully put all png and json in same folder... idea for later
+        foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Terrain/Sprites/", "*.png"))) //could actaully put all png and json in same folder... idea for later
         {
             if (file.Contains(Title)) //checks if any of the files found contain the name of the object
             {
@@ -360,38 +338,13 @@ public class Terrain
         Debug.Log("Sprites found: " + count);
         count = 0;
     }  //checks how many sprites are in folder and adds them to the directory
-}//the json file cannot have values that are not stated here, this can have more values then the json
-
-public class MouseOverlays
-{
-    public int ID;
-    public string Title;
-    public string Slug;
-    public string Type;
-    public List<string> ArtworkDirectory;
-
-    public void GetSprites()
-    {
-        Debug.Log("Getting sprites for: " + Title);
-        int count = new int();
-        foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/MouseOverlays/Sprites", "*.png")))
-        {
-            if (file.Contains(Title))
-            {
-                ArtworkDirectory.Add(file);
-                count = count + 1;
-            }
-            //var tempname = Path.GetFileNameWithoutExtension(file);  // use this to get file name
-        }
-        Debug.Log("Sprites found: " + count);
-        count = 0;
-    }
-}//same use as terrian class
+}//the json file cannot have values that are not stated here, this can have more values then the jso
 
 [System.Serializable]
 public class Unit
 {
     public int ID;
+    public string Mod;
     public int Attack;
     public int Defence;
     public int Range;
@@ -404,12 +357,17 @@ public class Unit
     public string Type;
     public List<string> ArtworkDirectory;
     public int Team;
+    public int ConversionSpeed;
+    public bool CanConvert;
 
+    /// <summary>
+    /// Gets location of sprites and saves them to a list
+    /// </summary>
     public void GetSprites()
     {
         Debug.Log("Getting sprites for: " + Title);
         int count = new int();
-        foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/Units/Sprites", "*.png")))
+        foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Units/Sprites", "*.png")))
         {
             if (file.Contains(Title))
             {
@@ -427,21 +385,55 @@ public class Unit
 public class Building
 {
     public int ID;
-    public string BuyableUnits;
+    public string Mod;
+    public List<string> BuyableUnits;
     public string Title;
     public string Description;
     public string Slug;
     public int DefenceBonus;
-    public bool Walkable;
     public string Type;
     public List<string> ArtworkDirectory;
     public int Team;
+    public int Health;
+    public bool Capturable;
 
+    /// <summary>
+    /// Gets location of sprites and saves them to a list
+    /// </summary>
     public void GetSprites()
     {
         Debug.Log("Getting sprites for: " + Title);
         int count = new int();
-        foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/Buildings/Sprites", "*.png")))
+        foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Buildings/Sprites", "*.png")))
+        {
+            if (file.Contains(Title))
+            {
+                ArtworkDirectory.Add(file);
+                count = count + 1;
+            }
+            //var tempname = Path.GetFileNameWithoutExtension(file);  // use this to get file name
+        }
+        Debug.Log("Sprites found: " + count);
+        count = 0;
+    }
+}//same use as terrian class
+
+public class MouseOverlays
+{
+    public int ID;
+    public string Title;
+    public string Slug;
+    public string Type;
+    public List<string> ArtworkDirectory;
+
+    /// <summary>
+    /// Gets location of sprites and saves them to a list
+    /// </summary>
+    public void GetSprites()
+    {
+        Debug.Log("Getting sprites for: " + Title);
+        int count = new int();
+        foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/MouseOverlays/Sprites", "*.png")))
         {
             if (file.Contains(Title))
             {
@@ -462,5 +454,74 @@ public class Master
     public int ScrollSpeed;
 }
 
+[System.Serializable]
+public class Hero
+{
+    public string Title;
+    public int ID;
+    public string Slug;
+    public string Description;
+    public string Type;
+    public string Mod;
+    public int Level;
+    public int XP;
+    public int Intelligance;
+    public int Strenght;
+    public int Dexterity;
+    public int Charisma;
+    public int Health;
+    public int Mana;
+    public int HealthRegen;
+    public int ManaRegen;
+    public int Damage;
+}
 
+public class Spell
+{
+    public string Title;
+    public int ID;
+    public string Slug;
+    public string Description;
+    public string Type;
+    public string Mod;
+    public List<string> Effects;
+    public int ManaCost;
+    public int Range;
+    public int Damage;
+    public int Healing;
+    public bool SpawnUnit;
+    public int UnitID;
+}
+
+public class Race
+{
+    public string Title;
+    public int ID;
+    public string Slug;
+    public string Description;
+    public string Type;
+    public string Mod;
+    public List<string> UsableUnits;
+}
+
+/// Inteligence affects: 
+/// Mana Regen
+/// Mana Max
+/// Xp Gain
+/// Spellcasting Chance
+/// 
+/// Strenght affects:
+/// Damage
+/// Health Points
+/// 
+/// Dexterity affects:
+/// Move Points
+/// Moves per turn
+/// Armor
+/// Amount of capture per turn
+/// 
+/// Charisma affects:
+/// Cost of stuff
+/// Troops Attack
+/// Units in return
 

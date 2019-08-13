@@ -1,0 +1,4 @@
+System.NullReferenceException: Object reference not set to an instance of an object
+  at DatabaseController.CreateAndSpawnBuilding (UnityEngine.Vector2 location, System.Int32 index, System.Int32 team) [0x00104] in C:\Users\Owner\Documents\GitHub\tileGame\tile turn based game\Assets\scripts\DatabaseController.cs:340 
+  at GameControllerScript.LoadMapPlayScene (System.String name) [0x00449] in C:\Users\Owner\Documents\GitHub\tileGame\tile turn based game\Assets\scripts\GameControllerScript.cs:864 
+  at GameControllerScript.OnSceneLoaded (UnityEngine.SceneManagement.Scene sceneVar, UnityEngine.SceneManagement.LoadSceneMode Mode) [0x00107] in C:\Users\Owner\Documents\GitHub\tileGame\tile turn based game\Assets\scripts\GameControllerScript.cs:163 

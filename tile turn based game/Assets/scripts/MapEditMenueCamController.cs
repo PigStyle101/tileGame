@@ -1,15 +1,15 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
 using System.IO;
+using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
-using System;
+using UnityEngine.UI;
 
-public class MapEditMenueCamController : MonoBehaviour {
+public class MapEditMenueCamController : MonoBehaviour
+{
 
-    
+
     private Vector3 dragOrigin;
     private string CurrentlySelectedLoadFile;
     private GameObject CurrentlySelectedLoadGameObject;
@@ -36,12 +36,11 @@ public class MapEditMenueCamController : MonoBehaviour {
     public string SelectedButton;
     [HideInInspector]
     public int SelectedTeam;
+    private Text TeamText;
 
     // this script is currently back up to date
-    void Start ()
+    void Start()
     {
-        try
-        {
             GetObjectReferances();
             AddTerrainButtonsToContent();
             AddBuildingButtonsToContent();
@@ -53,26 +52,12 @@ public class MapEditMenueCamController : MonoBehaviour {
             SavePanel.SetActive(false);
             CurrentSelectedButtonText.text = "Currently Selected: " + DatabaseController.instance.TerrainDictionary[0].Title;
             LoadPanelBackButtonClicked();
-        }
-        catch (Exception e)
-        {
-            GameControllerScript.instance.LogController(e.ToString());
-            throw;
-        }
     }
 
-	void Update ()
+    void Update()
     {
-        try
-        {
             MoveScreenXandY();
             MoveScreenZ();
-        }
-        catch (Exception e)
-        {
-            GameControllerScript.instance.LogController(e.ToString());
-            throw;
-        }
     }
 
     private void GetObjectReferances()
@@ -87,398 +72,259 @@ public class MapEditMenueCamController : MonoBehaviour {
         SavePanel = transform.Find("Canvas").Find("Panel").Find("SaveGamePanel").gameObject;
         LoadPanel = transform.Find("Canvas").Find("Panel").Find("LoadGamePanel").gameObject;
         ContentWindowLoadButtons = transform.Find("Canvas").Find("Panel").Find("LoadGamePanel").Find("Scroll View").Find("Viewport").Find("Content").gameObject;
-        CurrentSelectedButtonText = transform.Find("Canvas").Find("Panel").Find("MainPanel").GetComponentInChildren<Text>();
-        var Temptext = transform.Find("Canvas").Find("Panel").Find("SaveGamePanel").GetComponentsInChildren<Text>();
-        SaveFeedback = Temptext[1];
-        LoadFeedback = transform.Find("Canvas").Find("Panel").Find("LoadGamePanel").GetComponentInChildren<Text>();
+        CurrentSelectedButtonText = transform.Find("Canvas").Find("Panel").Find("MainPanel").Find("CurrentlySelectedButtonText").GetComponent<Text>();
+        TeamText = transform.Find("Canvas").Find("Panel").Find("MainPanel").Find("TeamText").GetComponent<Text>();
+        SaveFeedback = transform.Find("Canvas").Find("Panel").Find("SaveGamePanel").Find("FeedbackText").GetComponent<Text>();
+        LoadFeedback = transform.Find("Canvas").Find("Panel").Find("LoadGamePanel").Find("LoadPanelFeedbackText").GetComponent<Text>();
         SaveInputField = transform.Find("Canvas").Find("Panel").Find("SaveGamePanel").GetComponentInChildren<InputField>();
     }
 
     private void MoveScreenXandY()
     {
-        try
+        if (Input.GetMouseButtonDown(1))
         {
-            if (Input.GetMouseButtonDown(1))
-            {
-                dragOrigin = Input.mousePosition;
-                return;
-            }
-
-            if (!Input.GetMouseButton(1)) return;
-
-            Vector3 pos = Camera.main.ScreenToViewportPoint(Input.mousePosition - dragOrigin);
-
-            Vector3 move = new Vector3(pos.x * DatabaseController.instance.dragSpeedOffset * DatabaseController.instance.DragSpeed * -1, pos.y * DatabaseController.instance.dragSpeedOffset * DatabaseController.instance.DragSpeed * -1, 0);
-
-            transform.Translate(move, Space.World);
-
-            if (gameObject.transform.position.x > GameControllerScript.instance.EditorMapSize) { gameObject.transform.position = new Vector3(GameControllerScript.instance.EditorMapSize, transform.position.y, transform.position.z); }
-            if (gameObject.transform.position.y > GameControllerScript.instance.EditorMapSize) { gameObject.transform.position = new Vector3(transform.position.x, GameControllerScript.instance.EditorMapSize, transform.position.z); }
-            if (gameObject.transform.position.x < 0) { gameObject.transform.position = new Vector3(0, transform.position.y, transform.position.z); }
-            if (gameObject.transform.position.y < 0) { gameObject.transform.position = new Vector3(transform.position.x, 0, transform.position.z); }
+            dragOrigin = Input.mousePosition;
+            return;
         }
-        catch (Exception e)
-        {
-            GameControllerScript.instance.LogController(e.ToString());
-            throw;
-        }
+
+        if (!Input.GetMouseButton(1)) return;
+
+        Vector3 pos = Camera.main.ScreenToViewportPoint(Input.mousePosition - dragOrigin);
+
+        Vector3 move = new Vector3(pos.x * DatabaseController.instance.dragSpeedOffset * DatabaseController.instance.DragSpeed * -1, pos.y * DatabaseController.instance.dragSpeedOffset * DatabaseController.instance.DragSpeed * -1, 0);
+
+        transform.Translate(move, Space.World);
+
+        if (gameObject.transform.position.x > GameControllerScript.instance.EditorMapSize) { gameObject.transform.position = new Vector3(GameControllerScript.instance.EditorMapSize, transform.position.y, transform.position.z); }
+        if (gameObject.transform.position.y > GameControllerScript.instance.EditorMapSize) { gameObject.transform.position = new Vector3(transform.position.x, GameControllerScript.instance.EditorMapSize, transform.position.z); }
+        if (gameObject.transform.position.x < 0) { gameObject.transform.position = new Vector3(0, transform.position.y, transform.position.z); }
+        if (gameObject.transform.position.y < 0) { gameObject.transform.position = new Vector3(transform.position.x, 0, transform.position.z); }
+
     } //controls camera movment y and x
 
     private void MoveScreenZ()
     {
-        try
-        {
-            int z = new int();
-            if (Input.GetAxis("Mouse ScrollWheel") > 0) { z = DatabaseController.instance.scrollSpeed; }
-            if (Input.GetAxis("Mouse ScrollWheel") < 0) { z = -DatabaseController.instance.scrollSpeed; }
+        int z = new int();
+        if (Input.GetAxis("Mouse ScrollWheel") > 0) { z = DatabaseController.instance.scrollSpeed; }
+        if (Input.GetAxis("Mouse ScrollWheel") < 0) { z = -DatabaseController.instance.scrollSpeed; }
 
-            transform.Translate(new Vector3(0, 0, z), Space.World);
+        transform.Translate(new Vector3(0, 0, z), Space.World);
 
-            if (gameObject.transform.position.z > -1) { gameObject.transform.position = new Vector3(transform.position.x, transform.position.y, -1); }
-            if (gameObject.transform.position.z < -GameControllerScript.instance.EditorMapSize * 2) { gameObject.transform.position = new Vector3(transform.position.x, transform.position.y, -GameControllerScript.instance.EditorMapSize * 2); }
-        }
-        catch (Exception e)
-        {
-            GameControllerScript.instance.LogController(e.ToString());
-            throw;
-        }
+        if (gameObject.transform.position.z > -1) { gameObject.transform.position = new Vector3(transform.position.x, transform.position.y, -1); }
+        if (gameObject.transform.position.z < -GameControllerScript.instance.EditorMapSize * 2) { gameObject.transform.position = new Vector3(transform.position.x, transform.position.y, -GameControllerScript.instance.EditorMapSize * 2); }
+
     }//controls camera z movement
 
     void ChangeSelectedButton()
     {
-        try
-        {
-            SelectedButton = EventSystem.current.currentSelectedGameObject.name;
-            CurrentSelectedButtonText.text = "Currently Selected: " + EventSystem.current.currentSelectedGameObject.name;
-        }
-        catch (Exception e)
-        {
-            GameControllerScript.instance.LogController(e.ToString());
-            throw;
-        }
+        SelectedButton = EventSystem.current.currentSelectedGameObject.name;
+        CurrentSelectedButtonText.text = "Currently Selected: " + EventSystem.current.currentSelectedGameObject.name;
     } //changes to whatever button is clicked
 
     private void AddTerrainButtonsToContent()
     {
-        try
+        Debug.Log("Adding terrain buttons to content window");
+        foreach (KeyValuePair<int, Terrain> kvp in DatabaseController.instance.TerrainDictionary) //adds a button for each terrain in the database
         {
-            Debug.Log("Adding terrain buttons to content window");
-            foreach (KeyValuePair<int, Terrain> kvp in DatabaseController.instance.TerrainDictionary) //adds a button for each terrain in the database
-            {
-                GameObject tempbutton = Instantiate(MapEditorTilesButtonPrefab, ContentWindowTerrain.transform); //create button and set its parent to content
-                tempbutton.name = kvp.Value.Title; //change name
-                tempbutton.transform.GetChild(0).GetComponent<Text>().text = kvp.Value.Title; //change text on button to match sprite
-                tempbutton.GetComponent<Image>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.TerrainDictionary[kvp.Key].ArtworkDirectory[0]); //set sprite
-                tempbutton.GetComponent<Button>().onClick.AddListener(ChangeSelectedButton); //adds method to button clicked
-            }
-        }
-        catch (Exception e)
-        {
-            GameControllerScript.instance.LogController(e.ToString());
-            throw;
+            GameObject tempbutton = Instantiate(MapEditorTilesButtonPrefab, ContentWindowTerrain.transform); //create button and set its parent to content
+            tempbutton.name = kvp.Value.Title; //change name
+            tempbutton.transform.GetChild(0).GetComponent<Text>().text = kvp.Value.Title; //change text on button to match sprite
+            tempbutton.GetComponent<Image>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.TerrainDictionary[kvp.Key].ArtworkDirectory[0]); //set sprite
+            tempbutton.GetComponent<Button>().onClick.AddListener(ChangeSelectedButton); //adds method to button clicked
         }
     } //populates the tile selection bar
 
     private void AddUnitButtonsToContent()
     {
-        try
+        Debug.Log("Adding unit buttons to content window");
+        foreach (KeyValuePair<int, Unit> kvp in DatabaseController.instance.UnitDictionary) //adds a button for each terrain in the database
         {
-            Debug.Log("Adding unit buttons to content window");
-            foreach (KeyValuePair<int, Unit> kvp in DatabaseController.instance.UnitDictionary) //adds a button for each terrain in the database
-            {
-                GameObject tempbutton = Instantiate(MapEditorTilesButtonPrefab, ContentWindowUnits.transform); //create button and set its parent to content
-                tempbutton.name = kvp.Value.Title; //change name
-                tempbutton.transform.GetChild(0).GetComponent<Text>().text = kvp.Value.Title; //change text on button to match sprite
-                tempbutton.GetComponent<Image>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.UnitDictionary[kvp.Key].ArtworkDirectory[0]); //set sprite
-                tempbutton.GetComponent<Button>().onClick.AddListener(ChangeSelectedButton); //adds method to button clicked
-            }
+            GameObject tempbutton = Instantiate(MapEditorTilesButtonPrefab, ContentWindowUnits.transform); //create button and set its parent to content
+            tempbutton.name = kvp.Value.Title; //change name
+            tempbutton.transform.GetChild(0).GetComponent<Text>().text = kvp.Value.Title; //change text on button to match sprite
+            tempbutton.GetComponent<Image>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.UnitDictionary[kvp.Key].ArtworkDirectory[0]); //set sprite
+            tempbutton.GetComponent<Button>().onClick.AddListener(ChangeSelectedButton); //adds method to button clicked
+        }
 
-            GameObject temppbutton = Instantiate(MapEditorTilesButtonPrefab, ContentWindowUnits.transform);
-            temppbutton.name = "Delete Unit";
-            temppbutton.transform.GetChild(0).GetComponent<Text>().text = "Delete Unit";
-            temppbutton.GetComponent<Button>().onClick.AddListener(ChangeSelectedButton);
-        }
-        catch (Exception e)
-        {
-            GameControllerScript.instance.LogController(e.ToString());
-            throw;
-        }
+        GameObject temppbutton = Instantiate(MapEditorTilesButtonPrefab, ContentWindowUnits.transform);
+        temppbutton.name = "Delete Unit";
+        temppbutton.transform.GetChild(0).GetComponent<Text>().text = "Delete Unit";
+        temppbutton.GetComponent<Button>().onClick.AddListener(ChangeSelectedButton);
+
     } //populates the tile selection bar
 
     private void AddBuildingButtonsToContent()
     {
-        try
+        Debug.Log("Adding building buttons to content window");
+        foreach (KeyValuePair<int, Building> kvp in DatabaseController.instance.BuildingDictionary) //adds a button for each terrain in the database
         {
-            Debug.Log("Adding building buttons to content window");
-            foreach (KeyValuePair<int, Building> kvp in DatabaseController.instance.BuildingDictionary) //adds a button for each terrain in the database
-            {
-                GameObject tempbutton = Instantiate(MapEditorTilesButtonPrefab, ContentWindowBuilding.transform); //create button and set its parent to content
-                tempbutton.name = kvp.Value.Title; //change name
-                tempbutton.transform.GetChild(0).GetComponent<Text>().text = kvp.Value.Title; //change text on button to match sprite
-                tempbutton.GetComponent<Image>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.BuildingDictionary[kvp.Key].ArtworkDirectory[0]); //set sprite
-                tempbutton.GetComponent<Button>().onClick.AddListener(ChangeSelectedButton); //adds method to button clicked
-            }
+            GameObject tempbutton = Instantiate(MapEditorTilesButtonPrefab, ContentWindowBuilding.transform); //create button and set its parent to content
+            tempbutton.name = kvp.Value.Title; //change name
+            tempbutton.transform.GetChild(0).GetComponent<Text>().text = kvp.Value.Title; //change text on button to match sprite
+            tempbutton.GetComponent<Image>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.BuildingDictionary[kvp.Key].ArtworkDirectory[0]); //set sprite
+            tempbutton.GetComponent<Button>().onClick.AddListener(ChangeSelectedButton); //adds method to button clicked
+        }
 
-            GameObject temppbutton = Instantiate(MapEditorTilesButtonPrefab, ContentWindowBuilding.transform);
-            temppbutton.name = "Delete Building";
-            temppbutton.transform.GetChild(0).GetComponent<Text>().text = "Delete Building";
-            temppbutton.GetComponent<Button>().onClick.AddListener(ChangeSelectedButton);
-        }
-        catch (Exception e)
-        {
-            GameControllerScript.instance.LogController(e.ToString());
-            throw;
-        }
+        GameObject temppbutton = Instantiate(MapEditorTilesButtonPrefab, ContentWindowBuilding.transform);
+        temppbutton.name = "Delete Building";
+        temppbutton.transform.GetChild(0).GetComponent<Text>().text = "Delete Building";
+        temppbutton.GetComponent<Button>().onClick.AddListener(ChangeSelectedButton);
+
     } //populates the tile selection bar
 
     private void AddLoadButtonsToContent()
     {
-        try
+        string[] files = Directory.GetFiles(Application.dataPath + "/StreamingAssets/Maps/", "*.json");
+        foreach (string file in files)
         {
-            string[] files = Directory.GetFiles(Application.dataPath + "/StreamingAssets/Maps/", "*.json");
-            foreach (string file in files)
-            {
-                //Debug.Log(Path.GetFileNameWithoutExtension(file));
-                GameObject temploadbutton = Instantiate(LoadButtonPrefab, ContentWindowLoadButtons.transform);
-                temploadbutton.name = Path.GetFileNameWithoutExtension(file);
-                temploadbutton.transform.GetChild(0).GetComponent<Text>().text = Path.GetFileNameWithoutExtension(file);
-                temploadbutton.GetComponent<Button>().onClick.AddListener(LoadFileButtonClicked);
-            }
-        }
-        catch (Exception e)
-        {
-            GameControllerScript.instance.LogController(e.ToString());
-            throw;
+            //Debug.Log(Path.GetFileNameWithoutExtension(file));
+            GameObject temploadbutton = Instantiate(LoadButtonPrefab, ContentWindowLoadButtons.transform);
+            temploadbutton.name = Path.GetFileNameWithoutExtension(file);
+            temploadbutton.transform.GetChild(0).GetComponent<Text>().text = Path.GetFileNameWithoutExtension(file);
+            temploadbutton.GetComponent<Button>().onClick.AddListener(LoadFileButtonClicked);
         }
     } //searches saves file and adds a button for each save
 
     private void RemoveLoadButtonsFromContent()
     {
-        try
+        var childcount = ContentWindowLoadButtons.transform.childCount;
+        for (int i = 0; i < childcount; i++)
         {
-            var childcount = ContentWindowLoadButtons.transform.childCount;
-            for (int i = 0; i < childcount; i++)
-            {
-                Destroy(ContentWindowLoadButtons.transform.GetChild(i).gameObject);
-            }
-        }
-        catch (Exception e)
-        {
-            GameControllerScript.instance.LogController(e.ToString());
-            throw;
+            Destroy(ContentWindowLoadButtons.transform.GetChild(i).gameObject);
         }
     } //this is needed so that ever time the AddLoadButtonsToContent is called the buttons will be refreshed
 
     public void TerrainButtonClicked()
     {
-        try
-        {
-            ScrollWindowTerrain.SetActive(true);
-            ScrollWindowBuilding.SetActive(false);
-            ScrollWindowUnits.SetActive(false);
-            SelectedTab = "Terrain";
-            CurrentSelectedButtonText.text = "Currently Selected: " + DatabaseController.instance.TerrainDictionary[0].Title;
-            SelectedButton = DatabaseController.instance.TerrainDictionary[0].Title;
-        }
-        catch (Exception e)
-        {
-            GameControllerScript.instance.LogController(e.ToString());
-            throw;
-        }
+        ScrollWindowTerrain.SetActive(true);
+        ScrollWindowBuilding.SetActive(false);
+        ScrollWindowUnits.SetActive(false);
+        SelectedTab = "Terrain";
+        CurrentSelectedButtonText.text = "Currently Selected: " + DatabaseController.instance.TerrainDictionary[0].Title;
+        SelectedButton = DatabaseController.instance.TerrainDictionary[0].Title;
     } //sets the terrian content window as the active one
 
     public void BuildingButtonClicked()
     {
-        try
-        {
-            ScrollWindowTerrain.SetActive(false);
-            ScrollWindowBuilding.SetActive(true);
-            ScrollWindowUnits.SetActive(false);
-            SelectedTab = "Building";
-        }
-        catch (Exception e)
-        {
-            GameControllerScript.instance.LogController(e.ToString());
-            throw;
-        }
+        ScrollWindowTerrain.SetActive(false);
+        ScrollWindowBuilding.SetActive(true);
+        ScrollWindowUnits.SetActive(false);
+        SelectedTab = "Building";
     } //sets the building content window as the active one
 
     public void UnitButtonClicked()
     {
-        try
-        {
-            ScrollWindowTerrain.SetActive(false);
-            ScrollWindowBuilding.SetActive(false);
-            ScrollWindowUnits.SetActive(true);
-            SelectedTab = "Unit";
-            CurrentSelectedButtonText.text = "Currently Selected: " + DatabaseController.instance.UnitDictionary[0].Title;
-            SelectedButton = DatabaseController.instance.UnitDictionary[0].Title;
-        }
-        catch (Exception e)
-        {
-            GameControllerScript.instance.LogController(e.ToString());
-            throw;
-        }
+        ScrollWindowTerrain.SetActive(false);
+        ScrollWindowBuilding.SetActive(false);
+        ScrollWindowUnits.SetActive(true);
+        SelectedTab = "Unit";
+        CurrentSelectedButtonText.text = "Currently Selected: " + DatabaseController.instance.UnitDictionary[0].Title;
+        SelectedButton = DatabaseController.instance.UnitDictionary[0].Title;
     } //sets the unit content window as the active one
 
     public void MainSaveButtonClicked()
     {
-        try
-        {
-            SavePanel.SetActive(true);
-            MainPanel.SetActive(false);
-        }
-        catch (Exception e)
-        {
-            GameControllerScript.instance.LogController(e.ToString());
-            throw;
-        }
+        SavePanel.SetActive(true);
+        MainPanel.SetActive(false);
     } //opens save panel
 
     public void MainLoadButtonClicked()
     {
-        try
-        {
-            RemoveLoadButtonsFromContent();
-            AddLoadButtonsToContent();
-            MainPanel.SetActive(false);
-            LoadPanel.SetActive(true);
-        }
-        catch (Exception e)
-        {
-            GameControllerScript.instance.LogController(e.ToString());
-            throw;
-        }
+        RemoveLoadButtonsFromContent();
+        AddLoadButtonsToContent();
+        MainPanel.SetActive(false);
+        LoadPanel.SetActive(true);
     } //opens load panel
 
     public void LoadPanelBackButtonClicked()
     {
-        try
-        {
-            LoadPanel.SetActive(false);
-            MainPanel.SetActive(true);
-        }
-        catch (Exception e)
-        {
-            GameControllerScript.instance.LogController(e.ToString());
-            throw;
-        }
+        LoadPanel.SetActive(false);
+        MainPanel.SetActive(true);
     } //cloese load panel
 
     public void SavePanelBackButtonClicked()
     {
-        try
-        {
-            SavePanel.SetActive(false);
-            MainPanel.SetActive(true);
-        }
-        catch (Exception e)
-        {
-            GameControllerScript.instance.LogController(e.ToString());
-            throw;
-        }
+        SavePanel.SetActive(false);
+        MainPanel.SetActive(true);
     } //closes save panel
 
     public void SavePanelSaveButtonClicked()
     {
-        try
-        {
-            GameControllerScript.instance.SaveMap(GameControllerScript.instance.TilePos, GameControllerScript.instance.UnitPos, GameControllerScript.instance.BuildingPos, SaveInputField.text);
-        }
-        catch (Exception e)
-        {
-            GameControllerScript.instance.LogController(e.ToString());
-            throw;
-        }
+        GameControllerScript.instance.SaveMap(GameControllerScript.instance.TilePos, GameControllerScript.instance.UnitPos, GameControllerScript.instance.BuildingPos, SaveInputField.text);
+
     } //activates save script in GameControllerScript
 
     public void LoadButtonClicked()
     {
-        try
+        if (CurrentlySelectedLoadFile != null)
         {
-            if (CurrentlySelectedLoadFile != null)
-            {
-                GameControllerScript.instance.LoadMapMapEditor(CurrentlySelectedLoadFile);
-                LoadFeedback.text = "Loaded " + CurrentlySelectedLoadFile;
-            }
-            else
-            {
-                LoadFeedback.text = "Please select map to load";
-            }
+            GameControllerScript.instance.LoadMapMapEditor(CurrentlySelectedLoadFile);
+            LoadFeedback.text = "Loaded " + CurrentlySelectedLoadFile;
         }
-        catch (Exception e)
+        else
         {
-            GameControllerScript.instance.LogController(e.ToString());
-            throw;
+            LoadFeedback.text = "Please select map to load";
         }
     }  //checks if any load buttons ahve been selected and then runs load script form GameControllerScript
 
     public void LoadFileButtonClicked()
     {
-        try
-        {
-            CurrentlySelectedLoadFile = EventSystem.current.currentSelectedGameObject.name;
-            CurrentlySelectedLoadGameObject = EventSystem.current.currentSelectedGameObject;
-        }
-        catch (Exception e)
-        {
-            GameControllerScript.instance.LogController(e.ToString());
-            throw;
-        }
+        CurrentlySelectedLoadFile = EventSystem.current.currentSelectedGameObject.name;
+        CurrentlySelectedLoadGameObject = EventSystem.current.currentSelectedGameObject;
+
     } //sets variable to the name of whatever button was clicked
 
     public void LoadPanelDeleteButtonClicked()
     {
-        try
+        File.Delete(Application.dataPath + "/StreamingAssets/Core/Maps/" + CurrentlySelectedLoadFile + ".json");
+        Destroy(CurrentlySelectedLoadGameObject);
+    }
+
+    public void NextTeamButtonClicked()
+    {
+        if (SelectedTeam < DatabaseController.instance.UnitDictionary[0].ArtworkDirectory.Count - 1)
         {
-            File.Delete(Application.dataPath + "/StreamingAssets/Maps/" + CurrentlySelectedLoadFile + ".json");
-            Destroy(CurrentlySelectedLoadGameObject);
+            SelectedTeam = SelectedTeam + 1;
+            TeamText.text = "Team:" + SelectedTeam;
         }
-        catch (Exception e)
+        else
         {
-            GameControllerScript.instance.LogController(e.ToString());
-            throw;
+            SelectedTeam = 1;
+            TeamText.text = "Team:" + SelectedTeam;
         }
     }
 
-    public void TeamButtonClicked()
+    public void PreviousTeamButtonClicked()
     {
-        try
+        if (SelectedTeam > 1)
         {
-            SelectedTeam = int.Parse(EventSystem.current.currentSelectedGameObject.name);
+            SelectedTeam = SelectedTeam - 1;
+            TeamText.text = "Team:" + SelectedTeam;
         }
-        catch (Exception e)
+        else
         {
-            GameControllerScript.instance.LogController(e.ToString());
-            throw;
+            SelectedTeam = DatabaseController.instance.UnitDictionary[0].ArtworkDirectory.Count - 1;
+            TeamText.text = "Team:" + SelectedTeam;
         }
     }
 
     public void MainMenuButtonClicked()
     {
-        try
+        foreach (var GO in GameObject.FindGameObjectsWithTag("Terrain"))
         {
-            foreach (var GO in GameObject.FindGameObjectsWithTag("Terrain"))
-            {
-                Destroy(GO);
-            }
-            foreach (var GO in GameObject.FindGameObjectsWithTag("Unit"))
-            {
-                Destroy(GO);
-            }
-            foreach (var GO in GameObject.FindGameObjectsWithTag("Building"))
-            {
-                Destroy(GO);
-            }
-            GameControllerScript.instance.BuildingPos = new Dictionary<Vector2, GameObject>();
-            GameControllerScript.instance.TilePos = new Dictionary<Vector2, GameObject>();
-            GameControllerScript.instance.UnitPos = new Dictionary<Vector2, GameObject>();
-            SceneManager.LoadScene("MainMenuScene");
+            Destroy(GO);
         }
-        catch (Exception e)
+        foreach (var GO in GameObject.FindGameObjectsWithTag("Unit"))
         {
-            GameControllerScript.instance.LogController(e.ToString());
-            throw;
+            Destroy(GO);
         }
+        foreach (var GO in GameObject.FindGameObjectsWithTag("Building"))
+        {
+            Destroy(GO);
+        }
+        GameControllerScript.instance.BuildingPos = new Dictionary<Vector2, GameObject>();
+        GameControllerScript.instance.TilePos = new Dictionary<Vector2, GameObject>();
+        GameControllerScript.instance.UnitPos = new Dictionary<Vector2, GameObject>();
+        SceneManager.LoadScene("MainMenuScene");
     }
 }

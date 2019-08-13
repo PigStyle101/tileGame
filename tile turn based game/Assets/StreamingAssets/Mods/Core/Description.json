@@ -1,0 +1,4 @@
+Core Mod: Core data that comes with the game, use this as a template to create other mods.
+Place mod folder into streaming assets/mods/ folder.
+Mod folder name will be used as mod name in game.
+All data files are json.

@@ -13,93 +13,68 @@ public class BuildingController : MonoBehaviour
     public bool Occupied = false;
     //[HideInInspector]
     public bool CanBuild;
+    [HideInInspector]
+    public string Mod;
+    [HideInInspector]
+    public int Health;
 
     private void Awake()
     {
-        try
+        if (SceneManager.GetActiveScene().name == "MapEditorScene")
         {
-            if (SceneManager.GetActiveScene().name == "MapEditorScene")
-            {
-                MEMCC = GameObject.Find("MainCamera").GetComponent<MapEditMenueCamController>();
-                Team = MEMCC.SelectedTeam;
-            }
-        }
-        catch (Exception e)
-        {
-            GameControllerScript.instance.LogController(e.ToString());
-            throw;
+            MEMCC = GameObject.Find("MainCamera").GetComponent<MapEditMenueCamController>();
+            Team = MEMCC.SelectedTeam;
         }
     }
-    
+
     public void TeamSpriteUpdater()
     {
-        try
+
+        foreach (var kvp in DatabaseController.instance.BuildingDictionary)
         {
-            foreach (var kvp in DatabaseController.instance.BuildingDictionary)
+            if (gameObject.name == kvp.Value.Title)
             {
-                if (gameObject.name == kvp.Value.Title)
-                {
-                    gameObject.GetComponent<SpriteRenderer>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.BuildingDictionary[kvp.Value.ID].ArtworkDirectory[Team]);
-                }
+                gameObject.GetComponent<SpriteRenderer>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.BuildingDictionary[kvp.Value.ID].ArtworkDirectory[Team]);
             }
         }
-        catch (Exception e)
-        {
-            GameControllerScript.instance.LogController(e.ToString());
-            throw;
-        }
+
     }
 
     public void ChangeBuilding()
     {
-        try
+        if (MEMCC.SelectedButton == "Delete Building")
         {
-            if (MEMCC.SelectedButton == "Delete Building")
+            Debug.Log("Deleting Building");
+            Destroy(gameObject);
+        }
+        else
+        {
+            Debug.Log("ChangBuilding activated");
+            foreach (KeyValuePair<int, Building> kvp in DatabaseController.instance.BuildingDictionary)
             {
-                Debug.Log("Deleting Building");
-                Destroy(gameObject);
-            }
-            else
-            {
-                Debug.Log("ChangBuilding activated");
-                foreach (KeyValuePair<int, Building> kvp in DatabaseController.instance.BuildingDictionary)
+                if (MEMCC.SelectedButton == kvp.Value.Title) //checks through dictionary for matching tile to button name
                 {
-                    if (MEMCC.SelectedButton == kvp.Value.Title) //checks through dictionary for matching tile to button name
-                    {
-                        //Debug.Log("Changing tile to " + kvp.Value.Title);
-                        gameObject.name = kvp.Value.Title;//change name of tile
-                        gameObject.GetComponent<SpriteRenderer>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.BuildingDictionary[kvp.Key].ArtworkDirectory[0]); //change sprite of tile
-                    }
+                    //Debug.Log("Changing tile to " + kvp.Value.Title);
+                    gameObject.name = kvp.Value.Title;//change name of tile
+                    gameObject.GetComponent<SpriteRenderer>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.BuildingDictionary[kvp.Key].ArtworkDirectory[0]); //change sprite of tile
                 }
             }
-        }
-        catch (Exception e)
-        {
-            GameControllerScript.instance.LogController(e.ToString());
-            throw;
         }
     }
 
     public void BuildingRoundUpdater()
     {
-        try
+        foreach (var kvp in GameControllerScript.instance.UnitPos)
         {
-            foreach (var kvp in GameControllerScript.instance.UnitPos)
+            if (kvp.Key == (Vector2)gameObject.transform.position)
             {
-                if (kvp.Key == (Vector2)gameObject.transform.position)
-                {
-                    Occupied = true;
-                }
-                else
-                {
-                    Occupied = false;
-                }
+                Occupied = true;
+                break;
             }
-        }
-        catch (Exception e)
-        {
-            GameControllerScript.instance.LogController(e.ToString());
-            throw;
+            else
+            {
+                Occupied = false;
+            }
         }
     }
 }

@@ -1,10 +1,9 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.EventSystems;
-using System;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class PlaySceneCamController : MonoBehaviour
 {
@@ -17,6 +16,8 @@ public class PlaySceneCamController : MonoBehaviour
     public GameObject CancelButton;
     [HideInInspector]
     public GameObject WaitButton;
+    [HideInInspector]
+    public GameObject CaptureButton;
     private GameObject TerrainImage;
     private GameObject TerrainText;
     private GameObject TerrainDescription;
@@ -41,7 +42,7 @@ public class PlaySceneCamController : MonoBehaviour
     private GameObject ActionPanel;
     private GameObject BuildingPanel;
     private GameObject EndGamePanel;
-    //[HideInInspector]
+    [HideInInspector]
     public Text FeedBackText;
     [HideInInspector]
     public Text GoldText;
@@ -53,56 +54,34 @@ public class PlaySceneCamController : MonoBehaviour
 
     private void Awake()
     {
-        try
-        {
-            GetObjectReferances();
-        }
-        catch (Exception e)
-        {
-            GameControllerScript.instance.LogController(e.ToString());
-            throw;
-        }
+        GetObjectReferances();
     }
 
     private void Start()
     {
-        try
-        {
-            
-            SetActionButtonsToFalse();
-            BuildingPanel.SetActive(false);
-            AddUnitButtonsToBuildContent();
-        }
-        catch (Exception e)
-        {
-            GameControllerScript.instance.LogController(e.ToString());
-            throw;
-        }
+        SetActionButtonsToFalse();
+        BuildingPanel.SetActive(false);
     }
 
     void Update()
     {
-        try
-        {
-            MoveScreenXandY();
-            MoveScreenZ();
-            RayCasterForPlayScene();
-        }
-        catch (Exception e)
-        {
-            GameControllerScript.instance.LogController(e.ToString());
-            throw;
-        }
+        MoveScreenXandY();
+        MoveScreenZ();
+        RayCasterForPlayScene();
     }
 
+    /// <summary>
+    /// Gets objects from objects this script is attatched to
+    /// </summary>
     private void GetObjectReferances()
     {
-        EndGameText = transform.Find("Canvas").Find("Panel").Find("EndGamePanel").GetComponentInChildren<Text>();
+        EndGameText = transform.Find("Canvas").Find("Panel").Find("EndGamePanel").Find("EndGameText").GetComponent<Text>();
         CurrentPlayerTurnText = transform.Find("Canvas").Find("Panel").Find("CurrentPlayerTurnImage").Find("CurrentPlayerTurnText").GetComponent<Text>();
         GoldText = transform.Find("Canvas").Find("Panel").Find("GoldImage").Find("GoldText").GetComponent<Text>();
         FeedBackText = transform.Find("Canvas").Find("Panel").Find("FeedbackText").GetComponent<Text>();
         AttackButton = transform.Find("Canvas").Find("Panel").Find("ActionPanel").Find("AttackButton").gameObject;
         CancelButton = transform.Find("Canvas").Find("Panel").Find("ActionPanel").Find("CancelButton").gameObject;
+        CaptureButton = transform.Find("Canvas").Find("Panel").Find("ActionPanel").Find("CaptureButton").gameObject;
         WaitButton = transform.Find("Canvas").Find("Panel").Find("ActionPanel").Find("WaitButton").gameObject;
         TerrainImage = transform.Find("Canvas").Find("Panel").Find("ToolTip").Find("TerrainImage").gameObject;
         TerrainText = transform.Find("Canvas").Find("Panel").Find("ToolTip").Find("TerrainText").gameObject;
@@ -128,386 +107,350 @@ public class PlaySceneCamController : MonoBehaviour
         EndGamePanel = transform.Find("Canvas").Find("Panel").Find("EndGamePanel").gameObject;
     }
 
+    /// <summary>
+    /// Used to controll the x and y movements of teh camera
+    /// </summary>
     private void MoveScreenXandY()
     {
-        try
+        if (Input.GetMouseButtonDown(1))
         {
-            if (Input.GetMouseButtonDown(1))
-            {
-                dragOrigin = Input.mousePosition;
-                return;
-            }
-
-            if (!Input.GetMouseButton(1)) return;
-
-            Vector3 pos = Camera.main.ScreenToViewportPoint(Input.mousePosition - dragOrigin);
-
-            Vector3 move = new Vector3(pos.x * DatabaseController.instance.dragSpeedOffset * DatabaseController.instance.DragSpeed * -1, pos.y * DatabaseController.instance.dragSpeedOffset * DatabaseController.instance.DragSpeed * -1, 0);
-
-            transform.Translate(move, Space.World);
-
-            if (gameObject.transform.position.x > GameControllerScript.instance.PlayMapSize) { gameObject.transform.position = new Vector3(GameControllerScript.instance.PlayMapSize, transform.position.y, transform.position.z); }
-            if (gameObject.transform.position.y > GameControllerScript.instance.PlayMapSize) { gameObject.transform.position = new Vector3(transform.position.x, GameControllerScript.instance.PlayMapSize, transform.position.z); }
-            if (gameObject.transform.position.x < 0) { gameObject.transform.position = new Vector3(0, transform.position.y, transform.position.z); }
-            if (gameObject.transform.position.y < 0) { gameObject.transform.position = new Vector3(transform.position.x, 0, transform.position.z); }
+            dragOrigin = Input.mousePosition;
+            return;
         }
-        catch (Exception e)
-        {
-            GameControllerScript.instance.LogController(e.ToString());
-            throw;
-        }
+
+        if (!Input.GetMouseButton(1)) return;
+
+        Vector3 pos = Camera.main.ScreenToViewportPoint(Input.mousePosition - dragOrigin);
+
+        Vector3 move = new Vector3(pos.x * DatabaseController.instance.dragSpeedOffset * DatabaseController.instance.DragSpeed * -1, pos.y * DatabaseController.instance.dragSpeedOffset * DatabaseController.instance.DragSpeed * -1, 0);
+
+        transform.Translate(move, Space.World);
+
+        if (gameObject.transform.position.x > GameControllerScript.instance.PlayMapSize) { gameObject.transform.position = new Vector3(GameControllerScript.instance.PlayMapSize, transform.position.y, transform.position.z); }
+        if (gameObject.transform.position.y > GameControllerScript.instance.PlayMapSize) { gameObject.transform.position = new Vector3(transform.position.x, GameControllerScript.instance.PlayMapSize, transform.position.z); }
+        if (gameObject.transform.position.x < 0) { gameObject.transform.position = new Vector3(0, transform.position.y, transform.position.z); }
+        if (gameObject.transform.position.y < 0) { gameObject.transform.position = new Vector3(transform.position.x, 0, transform.position.z); }
+
     } //controls camera movment y and x
 
+    /// <summary>
+    /// Used to control the z movement of the camera
+    /// </summary>
     private void MoveScreenZ()
     {
-        try
-        {
-            int z = new int();
-            if (Input.GetAxis("Mouse ScrollWheel") > 0) { z = DatabaseController.instance.scrollSpeed; }
-            if (Input.GetAxis("Mouse ScrollWheel") < 0) { z = -DatabaseController.instance.scrollSpeed; }
+        int z = new int();
+        if (Input.GetAxis("Mouse ScrollWheel") > 0) { z = DatabaseController.instance.scrollSpeed; }
+        if (Input.GetAxis("Mouse ScrollWheel") < 0) { z = -DatabaseController.instance.scrollSpeed; }
 
-            transform.Translate(new Vector3(0, 0, z), Space.World);
+        transform.Translate(new Vector3(0, 0, z), Space.World);
 
-            if (gameObject.transform.position.z > -1) { gameObject.transform.position = new Vector3(transform.position.x, transform.position.y, -1); }
-            if (gameObject.transform.position.z < -GameControllerScript.instance.PlayMapSize * 2) { gameObject.transform.position = new Vector3(transform.position.x, transform.position.y, -GameControllerScript.instance.PlayMapSize * 2); }
-        }
-        catch (Exception e)
-        {
-            GameControllerScript.instance.LogController(e.ToString());
-            throw;
-        }
+        if (gameObject.transform.position.z > -1) { gameObject.transform.position = new Vector3(transform.position.x, transform.position.y, -1); }
+        if (gameObject.transform.position.z < -GameControllerScript.instance.PlayMapSize * 2) { gameObject.transform.position = new Vector3(transform.position.x, transform.position.y, -GameControllerScript.instance.PlayMapSize * 2); }
+
     }//controls camera z movement
 
+    /// <summary>
+    /// When a player clicks end of turn button this runs
+    /// </summary>
     public void EndTurnButtonClicked()
     {
-        try
-        {
-            GameControllerScript.instance.PlaySceneTurnChanger();
-            BuildingPanel.SetActive(false);
-            if (GameControllerScript.instance.SelectedUnitPlayScene != null)
-            {
-                GameControllerScript.instance.WaitActionPlayScene();
-            }
-        }
-        catch (Exception e)
-        {
-            GameControllerScript.instance.LogController(e.ToString());
-            throw;
-        }
-    }
-
-    public void AttackButtonController(int enemyCount)
-    {
-        try
-        {
-            if (enemyCount >= 1)
-            {
-                AttackButton.SetActive(true);
-            }
-            else
-            {
-                AttackButton.SetActive(false);
-            }
-            WaitButton.SetActive(true);
-            CancelButton.SetActive(true);
-        }
-        catch (Exception e)
-        {
-            GameControllerScript.instance.LogController(e.ToString());
-            throw;
-        }
-    }
-
-    public void WaitButtonClicked()
-    {
-        try
+        GameControllerScript.instance.PlaySceneTurnChanger();
+        BuildingPanel.SetActive(false);
+        if (GameControllerScript.instance.SelectedUnitPlayScene != null)
         {
             GameControllerScript.instance.WaitActionPlayScene();
         }
-        catch (Exception e)
-        {
-            GameControllerScript.instance.LogController(e.ToString());
-            throw;
-        }
     }
 
-    public void AttackButtonClicked()
+    /// <summary>
+    /// Displays or hides attack button.
+    /// </summary>
+    /// <param name="enemyCount">Number of units in range</param>
+    public void AttackButtonController(int enemyCount)
     {
-        try
+        if (enemyCount >= 1)
         {
-            GameControllerScript.instance.AttackActionPlayScene();
-            AttackButtonSelected = true;
+            AttackButton.SetActive(true);
         }
-        catch (Exception e)
-        {
-            GameControllerScript.instance.LogController(e.ToString());
-            throw;
-        }
-    }
-
-    public void CancelButtonClicked()
-    {
-        try
-        {
-            GameControllerScript.instance.CancelActionPlayScene();
-        }
-        catch (Exception e)
-        {
-            GameControllerScript.instance.LogController(e.ToString());
-            throw;
-        }
-    }
-
-    public void SetActionButtonsToFalse()
-    {
-        try
+        else
         {
             AttackButton.SetActive(false);
-            WaitButton.SetActive(false);
-            CancelButton.SetActive(false);
         }
-        catch (Exception e)
-        {
-            GameControllerScript.instance.LogController(e.ToString());
-            throw;
-        }
+        WaitButton.SetActive(true);
+        CancelButton.SetActive(true);
     }
 
+    /// <summary>
+    /// Runs when the wait button is clicked
+    /// </summary>
+    public void WaitButtonClicked()
+    {
+        GameControllerScript.instance.WaitActionPlayScene();
+    }
+
+    /// <summary>
+    /// Runs when attack button is clicked
+    /// </summary>
+    public void AttackButtonClicked()
+    {
+        GameControllerScript.instance.AttackActionPlayScene();
+        AttackButtonSelected = true;
+
+    }
+
+    /// <summary>
+    /// Runs when the cancel button is clicked
+    /// </summary>
+    public void CancelButtonClicked()
+    {
+        GameControllerScript.instance.CancelActionPlayScene();
+        AttackButtonSelected = false;
+
+    }
+
+    public void CaptureButtonClicked()
+    {
+        GameControllerScript.instance.CaptureActionPlayScene();
+    }
+
+    /// <summary>
+    /// Hides all the action buttons
+    /// </summary>
+    public void SetActionButtonsToFalse()
+    {
+        AttackButton.SetActive(false);
+        WaitButton.SetActive(false);
+        CancelButton.SetActive(false);
+        CaptureButton.SetActive(false);
+
+    }
+
+    /// <summary>
+    /// Used to update tooltip data
+    /// </summary>
     public void RayCasterForPlayScene()
     {
-        try
+        if (Input.GetMouseButtonDown(0))
         {
-            if (Input.GetMouseButtonDown(0))
+            if (!EventSystem.current.IsPointerOverGameObject()) //dont want to click through menus
             {
-                if (!EventSystem.current.IsPointerOverGameObject()) //dont want to click through menus
+                //Debug.Log("RayHitStarted");
+                Ray ray = GameObject.Find("MainCamera").GetComponent<Camera>().ScreenPointToRay(Input.mousePosition); //GET THEM RAYS
+                RaycastHit[] hits;
+                hits = Physics.RaycastAll(ray);
+                BuildingRayBool = false;
+                //Debug.Log("Starting play scene ray hits");
+                for (int i = 0; i < hits.Length; i++) // GO THROUGH THEM RAYS
                 {
-                    //Debug.Log("RayHitStarted");
-                    Ray ray = GameObject.Find("MainCamera").GetComponent<Camera>().ScreenPointToRay(Input.mousePosition); //GET THEM RAYS
-                    RaycastHit[] hits;
-                    hits = Physics.RaycastAll(ray);
-                    BuildingRayBool = false;
-                    //Debug.Log("Starting play scene ray hits");
-                    for (int i = 0; i < hits.Length; i++) // GO THROUGH THEM RAYS
+                    RaycastHit hit = hits[i];
+                    if (hit.transform.tag == DatabaseController.instance.TerrainDictionary[0].Type) //did we hit a terrain?
                     {
-                        RaycastHit hit = hits[i];
-                        if (hit.transform.tag == DatabaseController.instance.TerrainDictionary[0].Type) //did we hit a terrain?
+                        foreach (var kvp in DatabaseController.instance.TerrainDictionary)
                         {
-                            foreach (var kvp in DatabaseController.instance.TerrainDictionary)
+                            if (kvp.Value.Title == hit.transform.name)
                             {
-                                if (kvp.Value.Title == hit.transform.name)
-                                {
-                                    TerrainImage.GetComponent<Image>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.TerrainDictionary[kvp.Key].ArtworkDirectory[0]);
-                                    TerrainText.GetComponent<Text>().text = kvp.Value.Title;
-                                    TerrainDescription.GetComponent<Text>().text = kvp.Value.Description;
-                                    TerrainToolTipData.GetComponent<Text>().text = kvp.Value.DefenceBonus.ToString() + Environment.NewLine + kvp.Value.Walkable.ToString() + Environment.NewLine + kvp.Value.Weight.ToString();
-                                }
+                                TerrainImage.GetComponent<Image>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.TerrainDictionary[kvp.Key].ArtworkDirectory[0]);
+                                TerrainText.GetComponent<Text>().text = kvp.Value.Title;
+                                TerrainDescription.GetComponent<Text>().text = kvp.Value.Description;
+                                TerrainToolTipData.GetComponent<Text>().text = kvp.Value.DefenceBonus.ToString() + Environment.NewLine + kvp.Value.Walkable.ToString() + Environment.NewLine + kvp.Value.Weight.ToString();
                             }
-                        }
-                        if (hit.transform.tag == DatabaseController.instance.UnitDictionary[0].Type) //did we hit a unit?
-                        {
-                            foreach (var kvp in DatabaseController.instance.UnitDictionary)
-                            {
-                                if (kvp.Value.Title == hit.transform.name)
-                                {
-                                    UnitImage.GetComponent<Image>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.UnitDictionary[kvp.Key].ArtworkDirectory[0]);
-                                    UnitText.GetComponent<Text>().text = kvp.Value.Title;
-                                    UnitDescription.GetComponent<Text>().text = kvp.Value.Description;
-                                    UnitToolTipData.GetComponent<Text>().text = kvp.Value.Attack.ToString() + Environment.NewLine + kvp.Value.Defence.ToString() + Environment.NewLine + kvp.Value.Range.ToString() + Environment.NewLine + kvp.Value.MovePoints.ToString();
-                                }
-                            }
-                        }
-                        if (hit.transform.tag == DatabaseController.instance.BuildingDictionary[0].Type) //did we hit a building?
-                        {
-                            foreach (var kvp in DatabaseController.instance.BuildingDictionary)
-                            {
-                                if (kvp.Value.Title == hit.transform.name)
-                                {
-                                    BuildingImage.GetComponent<Image>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.BuildingDictionary[kvp.Key].ArtworkDirectory[0]);
-                                    BuildingText.GetComponent<Text>().text = kvp.Value.Title;
-                                    BuildingDescription.GetComponent<Text>().text = kvp.Value.Description;
-                                    BuildingToolTipData.GetComponent<Text>().text = kvp.Value.DefenceBonus.ToString();
-                                }
-                            }
-                        }
-                        if (hit.transform.tag == DatabaseController.instance.BuildingDictionary[0].Type)
-                        {
-                            if (!BuildingRayBool)
-                            {
-                                BuildingRayBool = true;
-                                Debug.Log("1");
-                                if (!hit.transform.GetComponent<BuildingController>().Occupied && hit.transform.GetComponent<BuildingController>().CanBuild && hit.transform.GetComponent<BuildingController>().Team == GameControllerScript.instance.CurrentTeamsTurn)
-                                {
-                                    if (GameControllerScript.instance.SelectedUnitPlayScene == null)
-                                    {
-                                        Debug.Log("1.1");
-                                        BuildingPanel.SetActive(true);
-                                        CurrentlySelectedBuilding = hit.transform.position; 
-                                    }
-                                }
-                                else
-                                {
-                                    Debug.Log("1.2");
-                                    BuildingPanel.SetActive(false);
-                                }
-                            }
-                        }
-                        else if (hit.transform.tag != DatabaseController.instance.BuildingDictionary[0].Type && !BuildingRayBool)
-                        {
-                            Debug.Log("2");
-                            BuildingPanel.SetActive(false);
                         }
                     }
-                    BuildingRayBool = false;
-                    FeedBackText.text = "";
+                    if (hit.transform.tag == DatabaseController.instance.UnitDictionary[0].Type) //did we hit a unit?
+                    {
+                        foreach (var kvp in DatabaseController.instance.UnitDictionary)
+                        {
+                            if (kvp.Value.Title == hit.transform.name)
+                            {
+                                UnitImage.GetComponent<Image>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.UnitDictionary[kvp.Key].ArtworkDirectory[0]);
+                                UnitText.GetComponent<Text>().text = kvp.Value.Title;
+                                UnitDescription.GetComponent<Text>().text = kvp.Value.Description;
+                                UnitToolTipData.GetComponent<Text>().text = kvp.Value.Attack.ToString() + Environment.NewLine + kvp.Value.Defence.ToString() + Environment.NewLine + kvp.Value.Range.ToString() + Environment.NewLine + kvp.Value.MovePoints.ToString();
+                            }
+                        }
+                    }
+                    if (hit.transform.tag == DatabaseController.instance.BuildingDictionary[0].Type) //did we hit a building?
+                    {
+                        foreach (var kvp in DatabaseController.instance.BuildingDictionary)
+                        {
+                            if (kvp.Value.Title == hit.transform.name)
+                            {
+                                BuildingImage.GetComponent<Image>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.BuildingDictionary[kvp.Key].ArtworkDirectory[0]);
+                                BuildingText.GetComponent<Text>().text = kvp.Value.Title;
+                                BuildingDescription.GetComponent<Text>().text = kvp.Value.Description;
+                                BuildingToolTipData.GetComponent<Text>().text = kvp.Value.DefenceBonus.ToString();
+                            }
+                        }
+                    }
+                    if (hit.transform.tag == DatabaseController.instance.BuildingDictionary[0].Type)
+                    {
+                        if (!BuildingRayBool)
+                        {
+                            BuildingRayBool = true;
+                            Debug.Log("1");
+                            if (!hit.transform.GetComponent<BuildingController>().Occupied && hit.transform.GetComponent<BuildingController>().CanBuild && hit.transform.GetComponent<BuildingController>().Team == GameControllerScript.instance.CurrentTeamsTurn)
+                            {
+                                if (GameControllerScript.instance.SelectedUnitPlayScene == null)
+                                {
+                                    Debug.Log("1.1");
+                                    AddUnitButtonsToBuildContent(hit.transform.GetComponent<BuildingController>().Mod);
+                                    BuildingPanel.SetActive(true);
+                                    CurrentlySelectedBuilding = hit.transform.position;
+                                }
+                            }
+                            else
+                            {
+                                Debug.Log("1.2");
+                                BuildingPanel.SetActive(false);
+                            }
+                        }
+                    }
+                    else if (hit.transform.tag != DatabaseController.instance.BuildingDictionary[0].Type && !BuildingRayBool)
+                    {
+                        Debug.Log("2");
+                        BuildingPanel.SetActive(false);
+                    }
                 }
+                BuildingRayBool = false;
+                FeedBackText.text = "";
             }
         }
-        catch (Exception e)
-        {
-            GameControllerScript.instance.LogController(e.ToString());
-            throw;
-        }
+
     }
 
-    private void AddUnitButtonsToBuildContent()
+    /// <summary>
+    /// Adds all units found to building window
+    /// </summary>
+    private void AddUnitButtonsToBuildContent(string BuildingMod)
     {
-        try
+        var childcount = ContentWindowBuilding.transform.childCount;
+        for (int i = 0; i < childcount; i++)
         {
-            Debug.Log("Adding terrain buttons to content window");
-            foreach (KeyValuePair<int, Unit> kvp in DatabaseController.instance.UnitDictionary) //adds a button for each Unit in the database
+            Destroy(ContentWindowBuilding.transform.GetChild(i).gameObject);
+        }
+        Debug.Log("Adding Unit buttons to content window");
+        foreach (KeyValuePair<int, Unit> kvp in DatabaseController.instance.UnitDictionary) //adds a button for each Unit in the database
+        {
+            if (kvp.Value.Mod == BuildingMod)
             {
                 GameObject tempbutton = Instantiate(BuildingButtonPrefab, ContentWindowBuilding.transform); //create button and set its parent to content
                 tempbutton.name = kvp.Value.Title; //change name
                 tempbutton.transform.GetChild(0).GetComponent<Text>().text = kvp.Value.Title; //change text on button to match sprite
                 tempbutton.GetComponent<Image>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.UnitDictionary[kvp.Key].ArtworkDirectory[0]); //set sprite
-                tempbutton.GetComponent<Button>().onClick.AddListener(CreateUnitController); //adds method to button clicked
+                tempbutton.GetComponent<Button>().onClick.AddListener(CreateUnitController); //adds method to button clicked 
             }
         }
-        catch (Exception e)
-        {
-            GameControllerScript.instance.LogController(e.ToString());
-            throw;
-        }
+
     } //populates the tile selection bar
 
+    /// <summary>
+    /// Creates unit, sets building var buildable to false, removes gold
+    /// </summary>
     public void CreateUnitController()
     {
-        try
+        foreach (var kvp in DatabaseController.instance.UnitDictionary)
         {
-            foreach (var kvp in DatabaseController.instance.UnitDictionary)
+            if (kvp.Value.Title == EventSystem.current.currentSelectedGameObject.name)
             {
-                if (kvp.Value.Title == EventSystem.current.currentSelectedGameObject.name)
+                if (GameControllerScript.instance.TeamGold[GameControllerScript.instance.CurrentTeamsTurn] >= kvp.Value.Cost)
                 {
-                    if (GameControllerScript.instance.TeamGold[GameControllerScript.instance.CurrentTeamsTurn] >= kvp.Value.Cost)
+                    DatabaseController.instance.CreateAndSpawnUnit(CurrentlySelectedBuilding, kvp.Value.ID, GameControllerScript.instance.CurrentTeamsTurn);
+                    foreach (var unit in GameControllerScript.instance.UnitPos)
                     {
-                        DatabaseController.instance.CreateAndSpawnUnit(CurrentlySelectedBuilding, kvp.Value.ID, GameControllerScript.instance.CurrentTeamsTurn);
-                        GameControllerScript.instance.AllRoundUpdater();
-                        BuildingPanel.SetActive(false);
-                        foreach (var b in GameControllerScript.instance.BuildingPos)
+                        unit.Value.GetComponent<UnitController>().GetTileValues();
+                    }
+                    BuildingPanel.SetActive(false);
+                    foreach (var b in GameControllerScript.instance.BuildingPos)
+                    {
+                        if ((Vector2)b.Value.transform.position == CurrentlySelectedBuilding)
                         {
-                            if ((Vector2)b.Value.transform.position == CurrentlySelectedBuilding)
-                            {
-                                b.Value.GetComponent<BuildingController>().CanBuild = false;
-                            }
+                            b.Value.GetComponent<BuildingController>().CanBuild = false;
                         }
-                        GameControllerScript.instance.TeamGold[GameControllerScript.instance.CurrentTeamsTurn] = GameControllerScript.instance.TeamGold[GameControllerScript.instance.CurrentTeamsTurn] - kvp.Value.Cost;
-                        UpdateGoldThings();
                     }
-                    else
-                    {
-                        FeedBackText.text = "Not enough gold to buy that unit";
-                    }
+                    GameControllerScript.instance.TeamGold[GameControllerScript.instance.CurrentTeamsTurn] = GameControllerScript.instance.TeamGold[GameControllerScript.instance.CurrentTeamsTurn] - kvp.Value.Cost;
+                    UpdateGoldThings();
+                }
+                else
+                {
+                    FeedBackText.text = "Not enough gold to buy that unit";
                 }
             }
         }
-        catch (Exception e)
-        {
-            GameControllerScript.instance.LogController(e.ToString());
-            throw;
-        }
     }
 
+    /// <summary>
+    /// Sets requred panles to false and displayes winning message
+    /// </summary>
+    /// <param name="Team"></param>
     public void GameEndController(int Team)
     {
-        try
-        {
-            CurrentPlayerTurnImage.SetActive(false);
-            EndTurnButton.SetActive(false);
-            TooltipPanel.SetActive(false);
-            ActionPanel.SetActive(false);
-            BuildingPanel.SetActive(false);
-            EndGamePanel.SetActive(true);
-            EndGameText.text = "Team: " + Team.ToString() + " has won the game.";
-        }
-        catch (Exception e)
-        {
-            GameControllerScript.instance.LogController(e.ToString());
-            throw;
-        }
+        CurrentPlayerTurnImage.SetActive(false);
+        EndTurnButton.SetActive(false);
+        TooltipPanel.SetActive(false);
+        ActionPanel.SetActive(false);
+        BuildingPanel.SetActive(false);
+        EndGamePanel.SetActive(true);
+        EndGameText.text = "Team: " + Team.ToString() + " has won the game.";
+
     }
 
+    /// <summary>
+    /// Clears scene and then goes back to main menue
+    /// </summary>
     public void MainMenuButtonClicked()
     {
-        try
+        foreach (var GO in GameObject.FindGameObjectsWithTag("Terrain"))
         {
-            foreach (var GO in GameObject.FindGameObjectsWithTag("Terrain"))
-            {
-                Destroy(GO);
-            }
-            foreach (var GO in GameObject.FindGameObjectsWithTag("Unit"))
-            {
-                Destroy(GO);
-            }
-            foreach (var GO in GameObject.FindGameObjectsWithTag("Building"))
-            {
-                Destroy(GO);
-            }
-            GameControllerScript.instance.BuildingPos = new Dictionary<Vector2, GameObject>();
-            GameControllerScript.instance.TilePos = new Dictionary<Vector2, GameObject>();
-            GameControllerScript.instance.UnitPos = new Dictionary<Vector2, GameObject>();
-            SceneManager.LoadScene("MainMenuScene");
+            Destroy(GO);
         }
-        catch (Exception e)
+        foreach (var GO in GameObject.FindGameObjectsWithTag("Unit"))
         {
-            GameControllerScript.instance.LogController(e.ToString());
-            throw;
+            Destroy(GO);
         }
+        foreach (var GO in GameObject.FindGameObjectsWithTag("Building"))
+        {
+            Destroy(GO);
+        }
+        GameControllerScript.instance.BuildingPos = new Dictionary<Vector2, GameObject>();
+        GameControllerScript.instance.TilePos = new Dictionary<Vector2, GameObject>();
+        GameControllerScript.instance.UnitPos = new Dictionary<Vector2, GameObject>();
+        SceneManager.LoadScene("MainMenuScene");
+
     }
 
+    /// <summary>
+    /// Clears scene and reinitalizes the current map
+    /// </summary>
     public void ReplayButtonClicked()
     {
-        try
+        foreach (var GO in GameObject.FindGameObjectsWithTag("Terrain"))
         {
-            foreach (var GO in GameObject.FindGameObjectsWithTag("Terrain"))
-            {
-                Destroy(GO);
-            }
-            foreach (var GO in GameObject.FindGameObjectsWithTag("Unit"))
-            {
-                Destroy(GO);
-            }
-            foreach (var GO in GameObject.FindGameObjectsWithTag("Building"))
-            {
-                Destroy(GO);
-            }
-            GameControllerScript.instance.BuildingPos = new Dictionary<Vector2, GameObject>();
-            GameControllerScript.instance.TilePos = new Dictionary<Vector2, GameObject>();
-            GameControllerScript.instance.UnitPos = new Dictionary<Vector2, GameObject>();
-            GameControllerScript.instance.LoadMapPlayScene(GameControllerScript.instance.MapNameForPlayScene);
-            GameControllerScript.instance.PlaySceneNewGameInitalizer();
-            CurrentPlayerTurnImage.SetActive(true);
-            EndTurnButton.SetActive(true);
-            TooltipPanel.SetActive(true);
-            ActionPanel.SetActive(true);
-            EndGamePanel.SetActive(false);
+            Destroy(GO);
         }
-        catch (Exception e)
+        foreach (var GO in GameObject.FindGameObjectsWithTag("Unit"))
         {
-            GameControllerScript.instance.LogController(e.ToString());
-            throw;
+            Destroy(GO);
         }
+        foreach (var GO in GameObject.FindGameObjectsWithTag("Building"))
+        {
+            Destroy(GO);
+        }
+        GameControllerScript.instance.BuildingPos = new Dictionary<Vector2, GameObject>();
+        GameControllerScript.instance.TilePos = new Dictionary<Vector2, GameObject>();
+        GameControllerScript.instance.UnitPos = new Dictionary<Vector2, GameObject>();
+        GameControllerScript.instance.LoadMapPlayScene(GameControllerScript.instance.MapNameForPlayScene);
+        GameControllerScript.instance.PlaySceneNewGameInitalizer();
+        CurrentPlayerTurnImage.SetActive(true);
+        EndTurnButton.SetActive(true);
+        TooltipPanel.SetActive(true);
+        ActionPanel.SetActive(true);
+        EndGamePanel.SetActive(false);
+
     }
 
+    /// <summary>
+    /// Used to update gold related things
+    /// </summary>
     public void UpdateGoldThings()
     {
         GoldText.text = "Gold:" + GameControllerScript.instance.TeamGold[GameControllerScript.instance.CurrentTeamsTurn].ToString();

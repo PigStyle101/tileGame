@@ -11,18 +11,25 @@ public class MenueController : MonoBehaviour {
     public GameObject MapEditorMenuePanel;
     public GameObject PlayMenuePanel;
     public GameObject LoadGamePanel;
+    public GameObject MainPanel;
+    public GameObject ModPanel;
+    public GameObject HeroPanel;
     public InputField mapsizeIF;
+    public InputField TeamCountIF;
     public Text errorTextField;
+    public Text ModDescriptionText;
     public GameObject LoadMenueButtonPrefab;
+    public GameObject ModsButtonPrefab;
     public GameObject ContentWindowLoad;
     public GameObject ContentWindowNewGame;
-    public GameObject MainPanel;
-
+    public GameObject ContentWindowMods;
+    private List<string> ModsList = new List<string>();
+    private string CurrentlySellectedMod;
+    private List<GameObject> ModsInModContentWindow = new List<GameObject>();
 
     // everything in here is pretty self explanitory.
     void Start()
     {
-        MainPanel.SetActive(true);
         MainMenueButtonClicked();
     }
 
@@ -32,14 +39,39 @@ public class MenueController : MonoBehaviour {
         MapEditorMenuePanel.SetActive(true);
         PlayMenuePanel.SetActive(false);
         LoadGamePanel.SetActive(false);
+        ModPanel.SetActive(false);
+        HeroPanel.SetActive(false);
     }
 
-    public void MainMenueButtonClicked ()
+    public void MainMenueButtonClicked()
     {
         MainMenuePanel.SetActive(true);
         MapEditorMenuePanel.SetActive(false);
         PlayMenuePanel.SetActive(false);
         LoadGamePanel.SetActive(false);
+        ModPanel.SetActive(false);
+        HeroPanel.SetActive(false);
+    }
+
+    public void MainMenueButtonClickedFromModScreen()
+    {
+        DatabaseController.instance.UnitDictionary.Clear();
+        DatabaseController.instance.BuildingDictionary.Clear();
+        DatabaseController.instance.TerrainDictionary.Clear();
+        DatabaseController.instance.ModsLoaded.Clear();
+        foreach(string Mod in ModsList)
+        {
+            DatabaseController.instance.GetTerrianJsons(Mod);
+            DatabaseController.instance.GetUnitJsons(Mod);
+            DatabaseController.instance.GetBuildingJsons(Mod);
+            DatabaseController.instance.ModsLoaded.Add(Mod);
+        }
+        MainMenuePanel.SetActive(true);
+        MapEditorMenuePanel.SetActive(false);
+        PlayMenuePanel.SetActive(false);
+        LoadGamePanel.SetActive(false);
+        ModPanel.SetActive(false);
+        HeroPanel.SetActive(false);
     }
 
     public void NewGameButtonClicked ()
@@ -48,6 +80,8 @@ public class MenueController : MonoBehaviour {
         MapEditorMenuePanel.SetActive(false);
         PlayMenuePanel.SetActive(true);
         LoadGamePanel.SetActive(false);
+        ModPanel.SetActive(false);
+        HeroPanel.SetActive(false);
         GetMaps();
     }
 
@@ -57,6 +91,19 @@ public class MenueController : MonoBehaviour {
         MapEditorMenuePanel.SetActive(false);
         PlayMenuePanel.SetActive(false);
         LoadGamePanel.SetActive(true);
+        ModPanel.SetActive(false);
+        HeroPanel.SetActive(false);
+    }
+
+    public void ModButtonClicked()
+    {
+        MainMenuePanel.SetActive(false);
+        MapEditorMenuePanel.SetActive(false);
+        PlayMenuePanel.SetActive(false);
+        LoadGamePanel.SetActive(false);
+        ModPanel.SetActive(true);
+        HeroPanel.SetActive(false);
+        GetMods();
     }
 
     public void QuitGameButtonClicked ()
@@ -110,5 +157,74 @@ public class MenueController : MonoBehaviour {
         GameControllerScript.instance.MapNameForPlayScene = EventSystem.current.currentSelectedGameObject.name;
         UnityEngine.SceneManagement.SceneManager.LoadScene("PlayScene");
         GameControllerScript.instance.PlaySceneLoadStatus = "NewGame";
+    }
+
+    public void GetMods()
+    {
+        var childcount = ContentWindowMods.transform.childCount;
+        for (int i = 0; i < childcount; i++)
+        {
+            Destroy(ContentWindowMods.transform.GetChild(i).gameObject);
+        }
+        foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/")))
+        {
+            GameObject tempbutton = Instantiate(ModsButtonPrefab, ContentWindowMods.transform); //create button and set its parent to content
+            tempbutton.name = Path.GetFileNameWithoutExtension(file); //change name
+            tempbutton.transform.GetChild(0).GetComponent<Text>().text = Path.GetFileNameWithoutExtension(file);
+            tempbutton.GetComponent<Button>().onClick.AddListener(ModSelected); //adds method to button clicked
+            ModsInModContentWindow.Add(tempbutton);
+        }
+    }
+
+    public void ModSelected()
+    {
+        CurrentlySellectedMod = EventSystem.current.currentSelectedGameObject.name;
+        ModDescriptionText.text = File.ReadAllText(Application.dataPath + "/StreamingAssets/Mods/" + EventSystem.current.currentSelectedGameObject.name + "/Description.json");
+    }
+
+    public void AddModButtonClicked()
+    {
+        if (ModsList.Contains(CurrentlySellectedMod))
+        {
+            ModDescriptionText.text = "Mod " + CurrentlySellectedMod + "is already added.";
+        }
+        else
+        {
+            ModsList.Add(CurrentlySellectedMod);
+        }
+        foreach (GameObject Button in ModsInModContentWindow)
+        {
+            if (ModsList.Contains(Button.name))
+            {
+                Button.GetComponent<Image>().color = new Color(0, 0.5f, 0);
+            }
+            else
+            {
+                Button.GetComponent<Image>().color = new Color(1, 1, 1);
+            }
+        }
+    }
+
+    public void RemoveModButtonClicked()
+    {
+        if (ModsList.Contains(CurrentlySellectedMod))
+        {
+            ModsList.Remove(CurrentlySellectedMod);
+        }
+        else
+        {
+            ModDescriptionText.text = "Mod " + CurrentlySellectedMod + " cannot be romoved as it is not on the list";
+        }
+        foreach (GameObject Button in ModsInModContentWindow)
+        {
+            if (ModsList.Contains(Button.name))
+            {
+                Button.GetComponent<Image>().color = new Color(0, 0.5f, 0);
+            }
+            else
+            {
+                Button.GetComponent<Image>().color = new Color(1, 1, 1);
+            }
+        }
     }
 }

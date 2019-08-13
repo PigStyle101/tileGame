@@ -1,0 +1,15 @@
+{
+  "ID": 1,
+  "Damage": 2,
+  "Range": 2,
+  "ManaCost": 6,
+  "Title": "Fire_Ball",
+  "Description": "Throws a fireball at target",
+  "Type": "Spell",
+  "Effects":
+  [
+  	  "Damage",
+	  "Heal"
+  ],
+  "Mod": "Core"
+}
