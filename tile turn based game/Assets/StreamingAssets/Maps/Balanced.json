@@ -283,7 +283,7 @@
                 "x": 2.0,
                 "y": 5.0
             },
-            "Name": "Forest",
+            "Name": "Road",
             "Team": 0,
             "Type": "Terrain",
             "TeamCount": [],
@@ -382,7 +382,7 @@
                 "x": 3.0,
                 "y": 4.0
             },
-            "Name": "Road",
+            "Name": "Water",
             "Team": 0,
             "Type": "Terrain",
             "TeamCount": [],
@@ -393,7 +393,7 @@
                 "x": 3.0,
                 "y": 5.0
             },
-            "Name": "Forest",
+            "Name": "Road",
             "Team": 0,
             "Type": "Terrain",
             "TeamCount": [],
@@ -404,7 +404,7 @@
                 "x": 3.0,
                 "y": 6.0
             },
-            "Name": "Forest",
+            "Name": "Road",
             "Team": 0,
             "Type": "Terrain",
             "TeamCount": [],
@@ -481,7 +481,7 @@
                 "x": 4.0,
                 "y": 3.0
             },
-            "Name": "Road",
+            "Name": "Water",
             "Team": 0,
             "Type": "Terrain",
             "TeamCount": [],
@@ -492,7 +492,7 @@
                 "x": 4.0,
                 "y": 4.0
             },
-            "Name": "Road",
+            "Name": "Water",
             "Team": 0,
             "Type": "Terrain",
             "TeamCount": [],
@@ -503,7 +503,7 @@
                 "x": 4.0,
                 "y": 5.0
             },
-            "Name": "Road",
+            "Name": "Water",
             "Team": 0,
             "Type": "Terrain",
             "TeamCount": [],
@@ -536,7 +536,7 @@
                 "x": 4.0,
                 "y": 8.0
             },
-            "Name": "Road",
+            "Name": "Forest",
             "Team": 0,
             "Type": "Terrain",
             "TeamCount": [],
@@ -580,7 +580,7 @@
                 "x": 5.0,
                 "y": 2.0
             },
-            "Name": "Forest",
+            "Name": "Road",
             "Team": 0,
             "Type": "Terrain",
             "TeamCount": [],
@@ -591,7 +591,7 @@
                 "x": 5.0,
                 "y": 3.0
             },
-            "Name": "Forest",
+            "Name": "Road",
             "Team": 0,
             "Type": "Terrain",
             "TeamCount": [],
@@ -602,7 +602,7 @@
                 "x": 5.0,
                 "y": 4.0
             },
-            "Name": "Road",
+            "Name": "Water",
             "Team": 0,
             "Type": "Terrain",
             "TeamCount": [],
@@ -635,7 +635,7 @@
                 "x": 5.0,
                 "y": 7.0
             },
-            "Name": "Water",
+            "Name": "Road",
             "Team": 0,
             "Type": "Terrain",
             "TeamCount": [],
@@ -646,7 +646,7 @@
                 "x": 5.0,
                 "y": 8.0
             },
-            "Name": "Water",
+            "Name": "Road",
             "Team": 0,
             "Type": "Terrain",
             "TeamCount": [],
@@ -701,7 +701,7 @@
                 "x": 6.0,
                 "y": 3.0
             },
-            "Name": "Forest",
+            "Name": "Road",
             "Team": 0,
             "Type": "Terrain",
             "TeamCount": [],
@@ -833,7 +833,7 @@
                 "x": 7.0,
                 "y": 5.0
             },
-            "Name": "Water",
+            "Name": "Road",
             "Team": 0,
             "Type": "Terrain",
             "TeamCount": [],
@@ -932,7 +932,7 @@
                 "x": 8.0,
                 "y": 4.0
             },
-            "Name": "Road",
+            "Name": "Forest",
             "Team": 0,
             "Type": "Terrain",
             "TeamCount": [],
@@ -943,7 +943,7 @@
                 "x": 8.0,
                 "y": 5.0
             },
-            "Name": "Water",
+            "Name": "Road",
             "Team": 0,
             "Type": "Terrain",
             "TeamCount": [],
@@ -1149,18 +1149,18 @@
         },
         {
             "Location": {
-                "x": 3.0,
-                "y": 5.0
+                "x": 6.0,
+                "y": 3.0
             },
             "Name": "Town",
-            "Team": 1,
+            "Team": 2,
             "Type": "Building",
             "TeamCount": [],
             "Mods": []
         },
         {
             "Location": {
-                "x": 4.0,
+                "x": 5.0,
                 "y": 9.0
             },
             "Name": "Town",
@@ -1182,11 +1182,11 @@
         },
         {
             "Location": {
-                "x": 5.0,
-                "y": 3.0
+                "x": 3.0,
+                "y": 6.0
             },
             "Name": "Town",
-            "Team": 2,
+            "Team": 1,
             "Type": "Building",
             "TeamCount": [],
             "Mods": []
@@ -1194,7 +1194,7 @@
         {
             "Location": {
                 "x": 9.0,
-                "y": 4.0
+                "y": 5.0
             },
             "Name": "Town",
             "Team": 2,

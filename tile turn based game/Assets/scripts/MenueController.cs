@@ -55,23 +55,30 @@ public class MenueController : MonoBehaviour {
 
     public void MainMenueButtonClickedFromModScreen()
     {
-        DatabaseController.instance.UnitDictionary.Clear();
-        DatabaseController.instance.BuildingDictionary.Clear();
-        DatabaseController.instance.TerrainDictionary.Clear();
-        DatabaseController.instance.ModsLoaded.Clear();
-        foreach(string Mod in ModsList)
+        if (ModsList.Count >=1)
         {
-            DatabaseController.instance.GetTerrianJsons(Mod);
-            DatabaseController.instance.GetUnitJsons(Mod);
-            DatabaseController.instance.GetBuildingJsons(Mod);
-            DatabaseController.instance.ModsLoaded.Add(Mod);
+            DatabaseController.instance.UnitDictionary.Clear();
+            DatabaseController.instance.BuildingDictionary.Clear();
+            DatabaseController.instance.TerrainDictionary.Clear();
+            DatabaseController.instance.ModsLoaded.Clear();
+            foreach (string Mod in ModsList)
+            {
+                DatabaseController.instance.GetTerrianJsons(Mod);
+                DatabaseController.instance.GetUnitJsons(Mod);
+                DatabaseController.instance.GetBuildingJsons(Mod);
+                DatabaseController.instance.ModsLoaded.Add(Mod);
+            }
+            MainMenuePanel.SetActive(true);
+            MapEditorMenuePanel.SetActive(false);
+            PlayMenuePanel.SetActive(false);
+            LoadGamePanel.SetActive(false);
+            ModPanel.SetActive(false);
+            HeroPanel.SetActive(false); 
         }
-        MainMenuePanel.SetActive(true);
-        MapEditorMenuePanel.SetActive(false);
-        PlayMenuePanel.SetActive(false);
-        LoadGamePanel.SetActive(false);
-        ModPanel.SetActive(false);
-        HeroPanel.SetActive(false);
+        else
+        {
+            ModDescriptionText.text = "Must have at least one mod loaded!";
+        }
     }
 
     public void NewGameButtonClicked ()

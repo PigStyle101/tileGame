@@ -1,0 +1,17 @@
+{
+  "ID": 1,
+  "Title": "Soldier",
+  "Description": "Tanky unit with good damage but low movement",
+  "Slug": "soldier",
+  "Type": "Unit",
+  "Mod": "Core",
+  "Attack": 4,
+  "Defence": 3,
+  "Range": 1,
+  "Health": 10,
+  "MovePoints": 4,
+  "Cost": 300,
+  "ConversionSpeed": 4,
+  "CanConvert": true,
+  "CanMoveAndAttack": true
+}

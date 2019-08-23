@@ -31,6 +31,8 @@ public class UnitController : MonoBehaviour
     public int ConversionSpeed;
     [HideInInspector]
     public bool CanConvert;
+    [HideInInspector]
+    public bool CanMoveAndAttack;
     public Dictionary<Vector2, int> TilesWeights = new Dictionary<Vector2, int>();
     public Dictionary<Vector2, int> TilesChecked = new Dictionary<Vector2, int>();
     public Dictionary<Vector2, int> EnemyUnitsInRange = new Dictionary<Vector2, int>();

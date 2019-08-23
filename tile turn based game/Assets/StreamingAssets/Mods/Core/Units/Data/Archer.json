@@ -1,0 +1,17 @@
+{
+  "ID": 2,
+  "Title": "Archer",
+  "Description": "Ranged unit with decent movement but low defence",
+  "Slug": "archer",
+  "Type": "Unit",
+  "Mod": "Core",
+  "Attack": 4,
+  "Defence": 1,
+  "Range": 3,
+  "Health": 5,
+  "MovePoints": 5,
+  "Cost": 200,
+  "ConversionSpeed": 3,
+  "CanConvert": true,
+  "CanMoveAndAttack": true
+}

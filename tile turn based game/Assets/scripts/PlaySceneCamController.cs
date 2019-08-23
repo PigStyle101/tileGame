@@ -11,7 +11,8 @@ public class PlaySceneCamController : MonoBehaviour
     [HideInInspector]
     public Text CurrentPlayerTurnText;
     public bool AttackButtonSelected = false;
-    private GameObject AttackButton;
+    [HideInInspector]
+    public GameObject AttackButton;
     [HideInInspector]
     public GameObject CancelButton;
     [HideInInspector]
@@ -335,7 +336,7 @@ public class PlaySceneCamController : MonoBehaviour
             {
                 GameObject tempbutton = Instantiate(BuildingButtonPrefab, ContentWindowBuilding.transform); //create button and set its parent to content
                 tempbutton.name = kvp.Value.Title; //change name
-                tempbutton.transform.GetChild(0).GetComponent<Text>().text = kvp.Value.Title; //change text on button to match sprite
+                tempbutton.transform.GetChild(0).GetComponent<Text>().text = kvp.Value.Title + System.Environment.NewLine + kvp.Value.Cost; //change text on button to match sprite and create new line and add cost
                 tempbutton.GetComponent<Image>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.UnitDictionary[kvp.Key].ArtworkDirectory[0]); //set sprite
                 tempbutton.GetComponent<Button>().onClick.AddListener(CreateUnitController); //adds method to button clicked 
             }
@@ -354,7 +355,8 @@ public class PlaySceneCamController : MonoBehaviour
             {
                 if (GameControllerScript.instance.TeamGold[GameControllerScript.instance.CurrentTeamsTurn] >= kvp.Value.Cost)
                 {
-                    DatabaseController.instance.CreateAndSpawnUnit(CurrentlySelectedBuilding, kvp.Value.ID, GameControllerScript.instance.CurrentTeamsTurn);
+                    GameObject GO = DatabaseController.instance.CreateAndSpawnUnit(CurrentlySelectedBuilding, kvp.Value.ID, GameControllerScript.instance.CurrentTeamsTurn);
+                    GO.GetComponent<UnitController>().UnitMovable = false;
                     foreach (var unit in GameControllerScript.instance.UnitPos)
                     {
                         unit.Value.GetComponent<UnitController>().GetTileValues();

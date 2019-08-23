@@ -276,7 +276,7 @@ public class MapEditMenueCamController : MonoBehaviour
 
     public void LoadPanelDeleteButtonClicked()
     {
-        File.Delete(Application.dataPath + "/StreamingAssets/Core/Maps/" + CurrentlySelectedLoadFile + ".json");
+        File.Delete(Application.dataPath + "/StreamingAssets/Maps/" + CurrentlySelectedLoadFile + ".json");
         Destroy(CurrentlySelectedLoadGameObject);
     }
 

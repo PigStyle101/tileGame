@@ -1,0 +1,17 @@
+{
+  "ID": 0,
+  "Title": "Militia",
+  "Description": "Weak unit, but cheap",
+  "Slug": "militia",
+  "Type": "Unit",
+  "Mod": "Core",
+  "Attack": 2,
+  "Defence": 2,
+  "Range": 1,
+  "Health": 4,
+  "MovePoints": 6,
+  "Cost": 200,
+  "ConversionSpeed": 2,
+  "CanConvert": true,
+  "CanMoveAndAttack": true
+}
