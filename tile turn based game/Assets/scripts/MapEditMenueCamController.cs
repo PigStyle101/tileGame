@@ -25,7 +25,8 @@ public class MapEditMenueCamController : MonoBehaviour
     private GameObject SavePanel;
     public GameObject LoadButtonPrefab;
     private GameObject ContentWindowLoadButtons;
-    private Text CurrentSelectedButtonText;
+    [HideInInspector]
+    public Text CurrentSelectedButtonText;
     [HideInInspector]
     public Text SaveFeedback;
     private Text LoadFeedback;
@@ -289,14 +290,14 @@ public class MapEditMenueCamController : MonoBehaviour
         }
         else
         {
-            SelectedTeam = 1;
+            SelectedTeam = 0;
             TeamText.text = "Team:" + SelectedTeam;
         }
     }
 
     public void PreviousTeamButtonClicked()
     {
-        if (SelectedTeam > 1)
+        if (SelectedTeam > 0)
         {
             SelectedTeam = SelectedTeam - 1;
             TeamText.text = "Team:" + SelectedTeam;

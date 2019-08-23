@@ -265,11 +265,19 @@ public class GameControllerScript : MonoBehaviour
                                 {
                                     UnitPos.Remove(hit.transform.position);
                                 }
-                                UC.ChangeUnit(); //change to new unit
-                                if (MEMCC.SelectedButton != "Delete Unit")
+                                if (MEMCC.SelectedTeam != 0)
                                 {
-                                    AddUnitsToDictionary(hit.transform.gameObject);
+                                    UC.ChangeUnit(); //change to new unit 
                                 }
+                                else
+                                {
+                                    MEMCC.CurrentSelectedButtonText.text = "Cannot change unit team to 0";
+                                }
+                                //if (MEMCC.SelectedButton != "Delete Unit")
+                                //{
+                                //    AddUnitsToDictionary(hit.transform.gameObject);
+                                //}
+
                                 SpriteUpdateActivator();
                             }
                             else if (hit.transform.GetComponent<UnitController>().Team != MEMCC.SelectedTeam)
@@ -278,7 +286,7 @@ public class GameControllerScript : MonoBehaviour
                                 SpriteUpdateActivator();
                             }
                         }
-                        else if (hit.transform.tag == DatabaseController.instance.BuildingDictionary[0].Type)
+                        else if (hit.transform.tag == DatabaseController.instance.BuildingDictionary[0].Type) //is the hit a building?
                         {
                             BuildingController BC = hit.transform.GetComponent<BuildingController>();
                             if (hit.transform.name != MEMCC.SelectedButton) //are we changing the building to something new?
@@ -320,11 +328,18 @@ public class GameControllerScript : MonoBehaviour
                                     }
                                     if (tempbool)
                                     {
-                                        GameObject tgo = DatabaseController.instance.CreateAndSpawnUnit(hit.transform.position, kvp.Key, MEMCC.SelectedTeam); //creat new unit at position on tile we clicked on.
-                                        tgo.GetComponent<UnitController>().Team = MEMCC.SelectedTeam;
-                                        AddUnitsToDictionary(tgo);
-                                        Debug.Log("Creating " + MEMCC.SelectedButton + " at " + hit.transform.position);
-                                        SpriteUpdateActivator();
+                                        if (MEMCC.SelectedTeam != 0)
+                                        {
+                                            GameObject tgo = DatabaseController.instance.CreateAndSpawnUnit(hit.transform.position, kvp.Key, MEMCC.SelectedTeam); //creat new unit at position on tile we clicked on.
+                                            tgo.GetComponent<UnitController>().Team = MEMCC.SelectedTeam;
+                                            AddUnitsToDictionary(tgo);
+                                            Debug.Log("Creating " + MEMCC.SelectedButton + " at " + hit.transform.position);
+                                            SpriteUpdateActivator(); 
+                                        }
+                                        else
+                                        {
+                                            MEMCC.CurrentSelectedButtonText.text = "Cant place unit for team 0";
+                                        }
                                     }
                                 }
                             }
@@ -482,7 +497,8 @@ public class GameControllerScript : MonoBehaviour
                     {
                         if (SelectedUnitPlayScene.GetComponent<UnitController>().EnemyUnitsInRange.ContainsKey(hit.transform.position) && hit.transform.tag == DatabaseController.instance.UnitDictionary[0].Type)
                         {
-                            int attack = SelectedUnitPlayScene.GetComponent<UnitController>().Attack;
+                            //int attack = SelectedUnitPlayScene.GetComponent<UnitController>().Attack;
+                            int attack = CombatCalculator(SelectedUnitPlayScene, UnitPos[hit.transform.position]);
                             UnitPos[hit.transform.position].GetComponent<UnitController>().Health = UnitPos[hit.transform.position].GetComponent<UnitController>().Health - attack;
                             foreach (var kvp in UnitPos)
                             {
@@ -1095,6 +1111,14 @@ public class GameControllerScript : MonoBehaviour
         {
             kvp.Value.GetComponent<BuildingController>().BuildingRoundUpdater();
         }
+    }
+
+    public int CombatCalculator(GameObject Attacker, GameObject Defender)
+    {
+        int tempAttack = Attacker.GetComponent<UnitController>().Attack;
+        int tempDefence = TilePos[Defender.transform.position].GetComponent<TerrainController>().DefenceBonus + Defender.GetComponent<UnitController>().Defence;
+        int AttackReturn = tempAttack - tempDefence;
+        return AttackReturn;
     }
 }
 

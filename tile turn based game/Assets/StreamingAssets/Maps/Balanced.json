@@ -1153,7 +1153,7 @@
                 "y": 3.0
             },
             "Name": "Town",
-            "Team": 2,
+            "Team": 0,
             "Type": "Building",
             "TeamCount": [],
             "Mods": []
@@ -1164,7 +1164,7 @@
                 "y": 9.0
             },
             "Name": "Town",
-            "Team": 1,
+            "Team": 0,
             "Type": "Building",
             "TeamCount": [],
             "Mods": []
@@ -1175,7 +1175,7 @@
                 "y": 4.0
             },
             "Name": "Town",
-            "Team": 1,
+            "Team": 0,
             "Type": "Building",
             "TeamCount": [],
             "Mods": []
@@ -1186,18 +1186,7 @@
                 "y": 6.0
             },
             "Name": "Town",
-            "Team": 1,
-            "Type": "Building",
-            "TeamCount": [],
-            "Mods": []
-        },
-        {
-            "Location": {
-                "x": 9.0,
-                "y": 5.0
-            },
-            "Name": "Town",
-            "Team": 2,
+            "Team": 0,
             "Type": "Building",
             "TeamCount": [],
             "Mods": []
@@ -1208,7 +1197,18 @@
                 "y": 0.0
             },
             "Name": "Town",
-            "Team": 2,
+            "Team": 0,
+            "Type": "Building",
+            "TeamCount": [],
+            "Mods": []
+        },
+        {
+            "Location": {
+                "x": 9.0,
+                "y": 5.0
+            },
+            "Name": "Town",
+            "Team": 0,
             "Type": "Building",
             "TeamCount": [],
             "Mods": []

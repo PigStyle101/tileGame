@@ -87,21 +87,29 @@ public class UnitController : MonoBehaviour
 
     public void GetTileValues()
     {
-            //Debug.Log("MP = " + MovePoints);
-            List<Vector2> Directions = new List<Vector2>();  //list for holding north,south,east,west
-            Vector2 Position = gameObject.transform.position; //need original position of unit
-            Directions.Add(new Vector2(0, 1));
-            Directions.Add(new Vector2(1, 0));
-            Directions.Add(new Vector2(0, -1));
-            Directions.Add(new Vector2(-1, 0));
-            int count = 1; //using this to make the algorith go more rounds then needed, as the most any unit should need is 6 rounds
-            TilesWeights = new Dictionary<Vector2, int>();
+        //Debug.Log("MP = " + MovePoints);
+        List<Vector2> Directions = new List<Vector2>();  //list for holding north,south,east,west
+        Vector2 Position = gameObject.transform.position; //need original position of unit
+        Directions.Add(new Vector2(0, 1));
+        Directions.Add(new Vector2(1, 0));
+        Directions.Add(new Vector2(0, -1));
+        Directions.Add(new Vector2(-1, 0));
+        int count = 1; //using this to make the algorith go more rounds then needed, as the most any unit should need is 6 rounds
+        TilesWeights = new Dictionary<Vector2, int>();
 
-            foreach (var dir in Directions)
+        foreach (var dir in Directions)
+        {
+            if (GameControllerScript.instance.TilePos.ContainsKey(Position + dir) && !TilesWeights.ContainsKey(Position + dir) && GameControllerScript.instance.TilePos[Position + dir].GetComponent<TerrainController>().Walkable) //tile there?  already added to tilewhieght? can the tile be walked on?
             {
-                if (GameControllerScript.instance.TilePos.ContainsKey(Position + dir) && !TilesWeights.ContainsKey(Position + dir) && GameControllerScript.instance.TilePos[Position + dir].GetComponent<TerrainController>().Walkable) //tile there?  already added to tilewhieght? can the tile be walked on?
+                if (GameControllerScript.instance.TilePos[Position + dir].GetComponent<TerrainController>().Weight <= MovePoints) //is the wheight less then the total movement points?
                 {
-                    if (GameControllerScript.instance.TilePos[Position + dir].GetComponent<TerrainController>().Weight <= MovePoints && !GameControllerScript.instance.TilePos[Position + dir].GetComponent<TerrainController>().Occupied) //is the wheight less then the total movement points? is there already a unit there?
+                    if (!GameControllerScript.instance.TilePos[Position + dir].GetComponent<TerrainController>().Occupied)//is there already a unit there?
+                    {
+                        int temp; //array to store count and mp used to get to that tile, the count will be needed later for when a ai is added.
+                        temp = GameControllerScript.instance.TilePos[Position + dir].GetComponent<TerrainController>().Weight; //this is the movement points used so far
+                        TilesWeights.Add(Position + dir, temp);
+                    }
+                    else if (GameControllerScript.instance.UnitPos[Position +dir].GetComponent<UnitController>().Team == Team)
                     {
                         int temp; //array to store count and mp used to get to that tile, the count will be needed later for when a ai is added.
                         temp = GameControllerScript.instance.TilePos[Position + dir].GetComponent<TerrainController>().Weight; //this is the movement points used so far
@@ -109,6 +117,7 @@ public class UnitController : MonoBehaviour
                     }
                 }
             }
+        }
         while (count <= MovePoints)
         {
             int tempInt;
@@ -121,9 +130,14 @@ public class UnitController : MonoBehaviour
                     {
                         if (!Temp.ContainsKey(kvp.Key + dir)) //does the temp already contain the tile?
                         {
-                            if (kvp.Value + GameControllerScript.instance.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Weight <= MovePoints && !GameControllerScript.instance.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Occupied) //is the wegiht of the tile + move points used already < move points total? unit there?
+                            if (kvp.Value + GameControllerScript.instance.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Weight <= MovePoints && GameControllerScript.instance.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Walkable) //is the wegiht of the tile + move points used already < move points total? unit there?
                             {
-                                if (GameControllerScript.instance.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Walkable) // can the tile be walked on?
+                                if (!GameControllerScript.instance.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Occupied) // can the tile be walked on?
+                                {
+                                    tempInt = GameControllerScript.instance.TilePos[kvp.Key + dir].transform.GetComponent<TerrainController>().Weight + kvp.Value; //sets this to mp used so far + weight of tile.
+                                    Temp.Add(kvp.Key + dir, tempInt);
+                                }
+                                else if (GameControllerScript.instance.UnitPos[kvp.Key + dir].GetComponent<UnitController>().Team == Team)
                                 {
                                     tempInt = GameControllerScript.instance.TilePos[kvp.Key + dir].transform.GetComponent<TerrainController>().Weight + kvp.Value; //sets this to mp used so far + weight of tile.
                                     Temp.Add(kvp.Key + dir, tempInt);
@@ -132,9 +146,16 @@ public class UnitController : MonoBehaviour
                         }
                         else //if temp already contains a key for this tile but more mp were used to get there then we want to replace the second value of the array with the lower number
                         {
-                            if (kvp.Value + GameControllerScript.instance.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Weight <= MovePoints && !GameControllerScript.instance.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Occupied)
+                            if (kvp.Value + GameControllerScript.instance.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Weight <= MovePoints && GameControllerScript.instance.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Walkable)
                             {
-                                if (GameControllerScript.instance.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Walkable)
+                                if (!GameControllerScript.instance.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Occupied)
+                                {
+                                    if (kvp.Value + GameControllerScript.instance.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Weight < Temp[kvp.Key + dir])
+                                    {
+                                        Temp[kvp.Key + dir] = kvp.Value + GameControllerScript.instance.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Weight;
+                                    }
+                                }
+                                else if (GameControllerScript.instance.UnitPos[kvp.Key + dir].GetComponent<UnitController>().Team == Team)
                                 {
                                     if (kvp.Value + GameControllerScript.instance.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Weight < Temp[kvp.Key + dir])
                                     {
@@ -167,7 +188,21 @@ public class UnitController : MonoBehaviour
             }
             count = count + 1;
         }
-
+        Dictionary<Vector2,int> tempTW = new Dictionary<Vector2, int>();
+        foreach (var tile in TilesWeights)
+        {
+            tempTW.Add(tile.Key, tile.Value);
+        }
+        foreach(var tile in tempTW)
+        {
+            foreach(var unit in GameControllerScript.instance.UnitPos)
+            {
+                if (tile.Key == unit.Key)
+                {
+                    TilesWeights.Remove(tile.Key);
+                }
+            }
+        }
     }
 
     public void ChangeUnit()
