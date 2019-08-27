@@ -17,6 +17,8 @@ public class BuildingController : MonoBehaviour
     public string Mod;
     [HideInInspector]
     public int Health;
+    [HideInInspector]
+    public int DefenceBonus;
 
     private void Awake()
     {

@@ -49,6 +49,8 @@ public class GameControllerScript : MonoBehaviour
     public List<int> TeamCount;
     [HideInInspector]
     public int CurrentTeamsTurn;
+    [HideInInspector]
+    public int CurrentTeamsTurnIndex;
     private Vector2 originalPositionOfUnit;
     private Vector2 MoveToPosition;
     public AudioClip BattleAudio;
@@ -59,6 +61,7 @@ public class GameControllerScript : MonoBehaviour
     public bool EchoToConsole = true;
     public bool AddTimeStamp = true;
     public Dictionary<int, int> TeamGold; //Team,Gold
+    public Dictionary<int, int> AiOrPlayerDictionary; //team,0 = player, 1 =ai
 
     private void Awake()
     {
@@ -196,6 +199,34 @@ public class GameControllerScript : MonoBehaviour
     }
 
     /// <summary>
+    /// Removes a unit from UnitPos
+    /// </summary>
+    /// <param name="newUnit">Unit to add</param>
+    /// <param name="oldPos">Old key that needs removed</param>
+    public void MoveUnitPositionInDictionary(GameObject newUnit, Vector2 oldPos)
+    {
+        if (UnitPos.ContainsKey(oldPos))
+        {
+            UnitPos.Remove(oldPos);
+            if (UnitPos.ContainsKey(oldPos))
+            {
+                throw new Exception("Key was not removed");
+            }
+            UnitPos.Add(newUnit.transform.position, newUnit); 
+        }
+    }
+
+    public void KillUnitPlayScene(GameObject Dead)
+    {
+        UnitPos.Remove(Dead.transform.position);
+        if (UnitPos.ContainsKey(Dead.transform.position))
+        {
+            throw new Exception("Key was not removed");
+        }
+        Destroy(Dead);
+    }
+
+    /// <summary>
     /// Checks if BuildingPos contains building and replaces or adds it.
     /// </summary>
     /// <param name="tgo">Building to check dictionary for.</param>
@@ -277,7 +308,6 @@ public class GameControllerScript : MonoBehaviour
                                 //{
                                 //    AddUnitsToDictionary(hit.transform.gameObject);
                                 //}
-
                                 SpriteUpdateActivator();
                             }
                             else if (hit.transform.GetComponent<UnitController>().Team != MEMCC.SelectedTeam)
@@ -506,8 +536,7 @@ public class GameControllerScript : MonoBehaviour
                             }
                             if (UnitPos[hit.transform.position].GetComponent<UnitController>().Health <= 0)
                             {
-                                UnitPos.Remove(hit.transform.position);
-                                Destroy(hit.transform.gameObject);
+                                KillUnitPlayScene(hit.transform.gameObject);
                             }
                             else
                             {
@@ -546,9 +575,6 @@ public class GameControllerScript : MonoBehaviour
                     int count = 0;
                     TeamCount = new List<int>();
                     Map[] save = new Map[TP.Count + UP.Count + BP.Count];
-                    bool team1 = false;
-                    bool team2 = false;
-                    bool team3 = false;
                     foreach (KeyValuePair<Vector2, GameObject> kvp in TP)
                     {
                         if (kvp.Value != null)
@@ -570,17 +596,9 @@ public class GameControllerScript : MonoBehaviour
                             save[count].Type = DatabaseController.instance.UnitDictionary[0].Type;
                             save[count].Team = kvp.Value.GetComponent<UnitController>().Team;
                             count = count + 1;
-                            if (kvp.Value.GetComponent<UnitController>().Team == 1)
+                            if (!TeamCount.Contains(kvp.Value.GetComponent<UnitController>().Team))
                             {
-                                team1 = true;
-                            }
-                            if (kvp.Value.GetComponent<UnitController>().Team == 2)
-                            {
-                                team2 = true;
-                            }
-                            if (kvp.Value.GetComponent<UnitController>().Team == 3)
-                            {
-                                team3 = true;
+                                TeamCount.Add(kvp.Value.GetComponent<UnitController>().Team);
                             }
                         }
                     }
@@ -588,28 +606,17 @@ public class GameControllerScript : MonoBehaviour
                     {
                         if (kvp.Value != null)
                         {
-                            if (kvp.Value != null)
+                            save[count] = new Map();
+                            save[count].Location = kvp.Key;
+                            save[count].Name = kvp.Value.name;
+                            save[count].Type = DatabaseController.instance.BuildingDictionary[0].Type;
+                            save[count].Team = kvp.Value.GetComponent<BuildingController>().Team;
+                            count = count + 1;
+                            if (!TeamCount.Contains(kvp.Value.GetComponent<BuildingController>().Team))
                             {
-                                save[count] = new Map();
-                                save[count].Location = kvp.Key;
-                                save[count].Name = kvp.Value.name;
-                                save[count].Type = DatabaseController.instance.BuildingDictionary[0].Type;
-                                save[count].Team = kvp.Value.GetComponent<BuildingController>().Team;
-                                count = count + 1;
+                                TeamCount.Add(kvp.Value.GetComponent<BuildingController>().Team);
                             }
                         }
-                    }
-                    if (team1)
-                    {
-                        TeamCount.Add(1);
-                    }
-                    if (team2)
-                    {
-                        TeamCount.Add(2);
-                    }
-                    if (team3)
-                    {
-                        TeamCount.Add(3);
                     }
                     if (TeamCount.Count >= 2)
                     {
@@ -737,6 +744,9 @@ public class GameControllerScript : MonoBehaviour
         StreamReader SR = new StreamReader(Application.dataPath + "/StreamingAssets/Maps/" + name + ".json");
         string tempstring = SR.ReadToEnd();
         Map[] Load = JsonHelper.FromJson<Map>(tempstring);
+        UnitPos = new Dictionary<Vector2, GameObject>();
+        BuildingPos = new Dictionary<Vector2, GameObject>();
+        TilePos = new Dictionary<Vector2, GameObject>();
 
         for (int i = 0; i < Load.Length; i++)
         {
@@ -760,7 +770,8 @@ public class GameControllerScript : MonoBehaviour
                 {
                     if (kvp.Value.Title == Load[i].Name)
                     {
-                        DatabaseController.instance.CreateAndSpawnUnit(Load[i].Location, kvp.Value.ID, Load[i].Team);
+                        GameObject GO = DatabaseController.instance.CreateAndSpawnUnit(Load[i].Location, kvp.Value.ID, Load[i].Team);
+                        AddUnitsToDictionary(GO);
                     }
                 }
             }
@@ -780,10 +791,6 @@ public class GameControllerScript : MonoBehaviour
         foreach (var go in GameObject.FindGameObjectsWithTag(DatabaseController.instance.TerrainDictionary[0].Type))
         {
             AddTilesToDictionary(go);
-        }
-        foreach (var go in GameObject.FindGameObjectsWithTag(DatabaseController.instance.UnitDictionary[0].Type))
-        {
-            AddUnitsToDictionary(go);
         }
         foreach (var go in GameObject.FindGameObjectsWithTag(DatabaseController.instance.BuildingDictionary[0].Type))
         {
@@ -834,8 +841,9 @@ public class GameControllerScript : MonoBehaviour
     public void PlaySceneNewGameInitalizer()
     {
         System.Random rnd = new System.Random();
-        CurrentTeamsTurn = rnd.Next(1, TeamCount.Count + 1);
-        PSCC.CurrentPlayerTurnText.text = CurrentTeamsTurn.ToString();
+        CurrentTeamsTurnIndex = rnd.Next(0, TeamCount.Count);
+        CurrentTeamsTurn = TeamCount[CurrentTeamsTurnIndex];
+        PSCC.CurrentPlayerTurnText.text = "Team turn";
         PSCC.GoldText.text = "Gold:" + TeamGold[CurrentTeamsTurn].ToString();
         AllRoundUpdater();
         foreach (var kvp in BuildingPos)
@@ -860,6 +868,8 @@ public class GameControllerScript : MonoBehaviour
         TempInt = TempInt * 100;
         TeamGold[CurrentTeamsTurn] = TeamGold[CurrentTeamsTurn] + TempInt;
         PSCC.UpdateGoldThings();
+        PSCC.UpdateTurnImageColor(CurrentTeamsTurn);
+        AiController();
     } //sets up game for new game
 
     /// <summary>
@@ -897,38 +907,44 @@ public class GameControllerScript : MonoBehaviour
         {
             PSCC.GameEndController(TeamCount[0]);
         }
-        if (CurrentTeamsTurn != TeamCount[TeamCount.Count - 1])
-        {
-            CurrentTeamsTurn = TeamCount[TeamCount.IndexOf(CurrentTeamsTurn) + 1];
-        }
         else
         {
-            CurrentTeamsTurn = TeamCount[0];
-        }
-        PSCC.CurrentPlayerTurnText.text = CurrentTeamsTurn.ToString();
-        AllRoundUpdater();
-        foreach (var kvp in BuildingPos)
-        {
-            if (kvp.Value.GetComponent<BuildingController>().Team == CurrentTeamsTurn)
+            if (CurrentTeamsTurnIndex != TeamCount.Count - 1)
             {
-                kvp.Value.GetComponent<BuildingController>().CanBuild = true;
+                CurrentTeamsTurnIndex = CurrentTeamsTurnIndex + 1;
+                CurrentTeamsTurn = TeamCount[CurrentTeamsTurnIndex];
             }
             else
             {
-                kvp.Value.GetComponent<BuildingController>().CanBuild = false;
+                CurrentTeamsTurnIndex = 0;
+                CurrentTeamsTurn = TeamCount[CurrentTeamsTurnIndex];
             }
-        }
-        int TempInt = 0;
-        foreach (var kvp in BuildingPos)
-        {
-            if (kvp.Value.GetComponent<BuildingController>().Team == CurrentTeamsTurn)
+            PSCC.CurrentPlayerTurnText.text = "Team turn";
+            AllRoundUpdater();
+            foreach (var kvp in BuildingPos)
             {
-                TempInt = TempInt + 1;
+                if (kvp.Value.GetComponent<BuildingController>().Team == CurrentTeamsTurn)
+                {
+                    kvp.Value.GetComponent<BuildingController>().CanBuild = true;
+                }
+                else
+                {
+                    kvp.Value.GetComponent<BuildingController>().CanBuild = false;
+                }
             }
+            int TempInt = 0;
+            foreach (var kvp in BuildingPos)
+            {
+                if (kvp.Value.GetComponent<BuildingController>().Team == CurrentTeamsTurn)
+                {
+                    TempInt = TempInt + 1;
+                }
+            }
+            TempInt = TempInt * 100;
+            TeamGold[CurrentTeamsTurn] = TeamGold[CurrentTeamsTurn] + TempInt;
+            PSCC.UpdateGoldThings();
+            AiController(); 
         }
-        TempInt = TempInt * 100;
-        TeamGold[CurrentTeamsTurn] = TeamGold[CurrentTeamsTurn] + TempInt;
-        PSCC.UpdateGoldThings();
     }
 
     /// <summary>
@@ -976,16 +992,11 @@ public class GameControllerScript : MonoBehaviour
     {
         if (MoveToPosition != new Vector2(-1, -1))
         {
-            UnitPos.Remove(originalPositionOfUnit);
-            if (UnitPos.ContainsKey(originalPositionOfUnit))
-            {
-                Debug.Log("Key was not deleted");
-            }
-            UnitPos.Add(MoveToPosition, SelectedUnitPlayScene);
+            MoveUnitPositionInDictionary(SelectedUnitPlayScene, originalPositionOfUnit);
             MoveToPosition = new Vector2(-1, -1);
         }
         SelectedUnitPlayScene.GetComponent<UnitController>().UnitMovable = false; //set unit movable to false
-        SelectedUnitPlayScene.GetComponent<UnitController>().UnitMoved = true;
+        SelectedUnitPlayScene.GetComponent<UnitController>().UnitMoved = true; // why do i have both moveable and moved??????? fix later
         SelectedUnitPlayScene = null;
         foreach (var kvp in TilePos)
         {
@@ -1007,12 +1018,7 @@ public class GameControllerScript : MonoBehaviour
     {
         if (MoveToPosition != new Vector2(-1, -1))
         {
-            UnitPos.Remove(originalPositionOfUnit);
-            if (UnitPos.ContainsKey(originalPositionOfUnit))
-            {
-                Debug.Log("Key was not deleted");
-            }
-            UnitPos.Add(MoveToPosition, SelectedUnitPlayScene);
+            MoveUnitPositionInDictionary(SelectedUnitPlayScene,originalPositionOfUnit);
             MoveToPosition = new Vector2(-1, -1);
         }
         SelectedUnitPlayScene.GetComponent<UnitController>().UnitMovable = false; //set unit movable to false
@@ -1116,9 +1122,37 @@ public class GameControllerScript : MonoBehaviour
     public int CombatCalculator(GameObject Attacker, GameObject Defender)
     {
         int tempAttack = Attacker.GetComponent<UnitController>().Attack;
-        int tempDefence = TilePos[Defender.transform.position].GetComponent<TerrainController>().DefenceBonus + Defender.GetComponent<UnitController>().Defence;
+        int tempDefence;
+        if (BuildingPos.ContainsKey(Defender.transform.position))
+        {
+            tempDefence = TilePos[Defender.transform.position].GetComponent<TerrainController>().DefenceBonus + Defender.GetComponent<UnitController>().Defence + BuildingPos[Defender.transform.position].GetComponent<BuildingController>().DefenceBonus;
+        }
+        else
+        {
+            tempDefence = TilePos[Defender.transform.position].GetComponent<TerrainController>().DefenceBonus + Defender.GetComponent<UnitController>().Defence;
+        }
         int AttackReturn = tempAttack - tempDefence;
         return AttackReturn;
+    }
+
+    public void AiController()
+    {
+        if (AiOrPlayerDictionary[CurrentTeamsTurn] == 1) // if team is ai do something
+        {
+            Dictionary<Vector2, GameObject> TempDict = new Dictionary<Vector2, GameObject>();
+            foreach(var kvp in UnitPos)
+            {
+                TempDict.Add(kvp.Key, kvp.Value);
+            }
+            foreach(var kvp in TempDict)
+            {
+                if (kvp.Value.GetComponent<UnitController>().Team == CurrentTeamsTurn)
+                {
+                    kvp.Value.GetComponent<UnitController>().UnitAi(); 
+                }
+            }
+            PSCC.EndTurnButtonClicked();
+        }
     }
 }
 

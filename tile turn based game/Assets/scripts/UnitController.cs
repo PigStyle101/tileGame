@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System;
+using UnityEngine.UI;
 
 public class UnitController : MonoBehaviour
 {
@@ -36,6 +37,8 @@ public class UnitController : MonoBehaviour
     public Dictionary<Vector2, int> TilesWeights = new Dictionary<Vector2, int>();
     public Dictionary<Vector2, int> TilesChecked = new Dictionary<Vector2, int>();
     public Dictionary<Vector2, int> EnemyUnitsInRange = new Dictionary<Vector2, int>();
+    [HideInInspector]
+    public List<Vector2> Directions = new List<Vector2>();//list for holding north,south,east,west
 
     private void Awake()
     {
@@ -44,6 +47,10 @@ public class UnitController : MonoBehaviour
             MEMCC = GameObject.Find("MainCamera").GetComponent<MapEditMenueCamController>();
             Team = MEMCC.SelectedTeam;
         }
+        Directions.Add(new Vector2(0, 1));
+        Directions.Add(new Vector2(1, 0));
+        Directions.Add(new Vector2(0, -1));
+        Directions.Add(new Vector2(-1, 0));
     }
 
     public void UnitRoundUpdater()
@@ -83,20 +90,53 @@ public class UnitController : MonoBehaviour
                 gameObject.GetComponent<SpriteRenderer>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.UnitDictionary[kvp.Value.ID].ArtworkDirectory[Team]);
             }
         }
+        switch (Team)
+        {
+            case 1:
+                gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").GetComponent<Image>().color = Color.black;
+                gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").Find("Text").GetComponent<Text>().color = Color.white;
+                break;
+            case 2:
+                gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").GetComponent<Image>().color = Color.blue;
+                gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").Find("Text").GetComponent<Text>().color = Color.black;
+                break;
+            case 3:
+                gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").GetComponent<Image>().color = Color.cyan;
+                gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").Find("Text").GetComponent<Text>().color = Color.black;
+                break;
+            case 4:
+                gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").GetComponent<Image>().color = Color.gray;
+                gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").Find("Text").GetComponent<Text>().color = Color.black;
+                break;
+            case 5:
+                gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").GetComponent<Image>().color = Color.green;
+                gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").Find("Text").GetComponent<Text>().color = Color.black;
+                break;
+            case 6:
+                gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").GetComponent<Image>().color = Color.magenta;
+                gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").Find("Text").GetComponent<Text>().color = Color.black;
+                break;
+            case 7:
+                gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").GetComponent<Image>().color = Color.red;
+                gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").Find("Text").GetComponent<Text>().color = Color.black;
+                break;
+            case 8:
+                gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").GetComponent<Image>().color = Color.white;
+                gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").Find("Text").GetComponent<Text>().color = Color.black;
+                break;
+            case 9:
+                gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").GetComponent<Image>().color = Color.yellow;
+                gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").Find("Text").GetComponent<Text>().color = Color.black;
+                break;
+        }
     }
 
     public void GetTileValues()
     {
         //Debug.Log("MP = " + MovePoints);
-        List<Vector2> Directions = new List<Vector2>();  //list for holding north,south,east,west
         Vector2 Position = gameObject.transform.position; //need original position of unit
-        Directions.Add(new Vector2(0, 1));
-        Directions.Add(new Vector2(1, 0));
-        Directions.Add(new Vector2(0, -1));
-        Directions.Add(new Vector2(-1, 0));
         int count = 1; //using this to make the algorith go more rounds then needed, as the most any unit should need is 6 rounds
         TilesWeights = new Dictionary<Vector2, int>();
-
         foreach (var dir in Directions)
         {
             if (GameControllerScript.instance.TilePos.ContainsKey(Position + dir) && !TilesWeights.ContainsKey(Position + dir) && GameControllerScript.instance.TilePos[Position + dir].GetComponent<TerrainController>().Walkable) //tile there?  already added to tilewhieght? can the tile be walked on?
@@ -288,5 +328,77 @@ public class UnitController : MonoBehaviour
         }
         Debug.Log("Enemys in range:" + EnemyUnitsInRange.Count);
         return EnemyUnitsInRange.Count;
+    }
+
+    public void UnitAi()
+    {
+        Debug.Log("1");
+        Vector2 OriginalPositionOfUnit = gameObject.transform.position;
+        Vector2 MoveToPosition;
+        Vector2 Target;
+        foreach(var kvp in TilesWeights)
+        {
+            foreach (var dir in Directions)
+            {
+                if (GameControllerScript.instance.UnitPos.ContainsKey(kvp.Key + dir) && GameControllerScript.instance.UnitPos[kvp.Key + dir].GetComponent<UnitController>().Team != Team)
+                {
+                    if (UnitMoved == false)
+                    {
+                        Debug.Log("2"); //attacking enemy unit
+                        Target = kvp.Key + dir;
+                        MoveToPosition = kvp.Key;
+                        gameObject.transform.position = MoveToPosition;
+                        int attack = GameControllerScript.instance.CombatCalculator(gameObject, GameControllerScript.instance.UnitPos[Target]);
+                        GameControllerScript.instance.UnitPos[Target].GetComponent<UnitController>().Health = GameControllerScript.instance.UnitPos[Target].GetComponent<UnitController>().Health - attack;
+                        if (GameControllerScript.instance.UnitPos[Target].GetComponent<UnitController>().Health <= 0)
+                        {
+                            GameControllerScript.instance.KillUnitPlayScene(GameControllerScript.instance.UnitPos[Target]);
+                        }
+                        else
+                        {
+                            GameControllerScript.instance.UnitPos[Target].GetComponentInChildren<Text>().text = GameControllerScript.instance.UnitPos[Target].GetComponent<UnitController>().Health.ToString();
+                        }
+                        GameControllerScript.instance.MoveUnitPositionInDictionary(gameObject, OriginalPositionOfUnit);
+                        foreach (var kvvp in GameControllerScript.instance.TilePos)
+                        {
+                            kvvp.Value.GetComponent<TerrainController>().TerrainRoundUpdater();
+                        }
+                        foreach (var kvpp in GameControllerScript.instance.UnitPos)
+                        {
+                            kvpp.Value.GetComponent<UnitController>().GetTileValues();
+                        }
+                        UnitMovable = false;
+                        UnitMoved = true;
+                    }
+                } 
+            }
+        }
+        if (UnitMoved == false)
+        {
+            Debug.Log("3"); //picks radnom spot at max movement range and moves there.
+            Debug.Log(TilesWeights.Count);
+            foreach (var kvp in TilesWeights)
+            {
+                System.Random r = new System.Random();
+                int rand = r.Next(0, MovePoints);
+                if (kvp.Value == MovePoints - rand)
+                {
+                    Debug.Log("3.1");
+                    gameObject.transform.position = kvp.Key;
+                    GameControllerScript.instance.MoveUnitPositionInDictionary(gameObject, OriginalPositionOfUnit);
+                    foreach (var kvvp in GameControllerScript.instance.TilePos)
+                    {
+                        kvvp.Value.GetComponent<TerrainController>().TerrainRoundUpdater();
+                    }
+                    foreach (var kvpp in GameControllerScript.instance.UnitPos)
+                    {
+                        kvpp.Value.GetComponent<UnitController>().GetTileValues();
+                    }
+                    UnitMovable = false;
+                    UnitMoved = true;
+                    break;
+                }
+            }
+        }
     }
 }

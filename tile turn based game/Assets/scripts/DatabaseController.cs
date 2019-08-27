@@ -248,10 +248,51 @@ public class DatabaseController : MonoBehaviour
         TempCan.transform.localPosition = new Vector3(0, 0, 0);
         TempCan.GetComponentInChildren<Text>().text = UnitDictionary[index].Health.ToString();
         TempCan.GetComponent<Canvas>().sortingLayerName = UnitDictionary[index].Type;
+        int CaseInt = TGO.GetComponent<UnitController>().Team;
+        switch (CaseInt)
+        {
+            case 1:
+                TempCan.transform.Find("Image").GetComponent<Image>().color = Color.black;
+                TempCan.transform.Find("Image").Find("Text").GetComponent<Text>().color = Color.white;
+                break;
+            case 2:
+                TempCan.transform.Find("Image").GetComponent<Image>().color = Color.blue;
+                TempCan.transform.Find("Image").Find("Text").GetComponent<Text>().color = Color.black;
+                break;
+            case 3:
+                TempCan.transform.Find("Image").GetComponent<Image>().color = Color.cyan;
+                TempCan.transform.Find("Image").Find("Text").GetComponent<Text>().color = Color.black;
+                break;
+            case 4:
+                TempCan.transform.Find("Image").GetComponent<Image>().color = Color.gray;
+                TempCan.transform.Find("Image").Find("Text").GetComponent<Text>().color = Color.black;
+                break;
+            case 5:
+                TempCan.transform.Find("Image").GetComponent<Image>().color = Color.green;
+                TempCan.transform.Find("Image").Find("Text").GetComponent<Text>().color = Color.black;
+                break;
+            case 6:
+                TempCan.transform.Find("Image").GetComponent<Image>().color = Color.magenta;
+                TempCan.transform.Find("Image").Find("Text").GetComponent<Text>().color = Color.black;
+                break;
+            case 7:
+                TempCan.transform.Find("Image").GetComponent<Image>().color = Color.red;
+                TempCan.transform.Find("Image").Find("Text").GetComponent<Text>().color = Color.black;
+                break;
+            case 8:
+                TempCan.transform.Find("Image").GetComponent<Image>().color = Color.white;
+                TempCan.transform.Find("Image").Find("Text").GetComponent<Text>().color = Color.black;
+                break;
+            case 9:
+                TempCan.transform.Find("Image").GetComponent<Image>().color = Color.yellow;
+                TempCan.transform.Find("Image").Find("Text").GetComponent<Text>().color = Color.black;
+                break;
+        }
+        
         TGO.GetComponent<UnitController>().UnitMovable = true;
         TGO.GetComponent<UnitController>().UnitMoved = false;
         TGO.GetComponent<UnitController>().CanMoveAndAttack = UnitDictionary[index].CanMoveAndAttack;
-        GameControllerScript.instance.AddUnitsToDictionary(TGO);
+        //GameControllerScript.instance.AddUnitsToDictionary(TGO);
         TGO.GetComponent<UnitController>().TeamSpriteController();
         return TGO;
     } //used to spawn units form database
@@ -306,7 +347,6 @@ public class DatabaseController : MonoBehaviour
         }
         return null;
     }// checks for images that are to be used for artwork stuffs
-
 }
 
 [System.Serializable]

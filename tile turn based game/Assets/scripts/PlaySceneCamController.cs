@@ -36,13 +36,15 @@ public class PlaySceneCamController : MonoBehaviour
     private GameObject BuildingToolTipData;
     public GameObject BuildingButtonPrefab;
     private GameObject ContentWindowBuilding;
-    private GameObject CurrentPlayerTurnImage;
+    [HideInInspector]
+    public GameObject CurrentPlayerTurnImage;
     private GameObject CurrentPlayerGoldImage;
     private GameObject EndTurnButton;
     private GameObject TooltipPanel;
     private GameObject ActionPanel;
     private GameObject BuildingPanel;
     private GameObject EndGamePanel;
+    private GameObject InfoPanel;
     [HideInInspector]
     public Text FeedBackText;
     [HideInInspector]
@@ -62,6 +64,7 @@ public class PlaySceneCamController : MonoBehaviour
     {
         SetActionButtonsToFalse();
         BuildingPanel.SetActive(false);
+        InfoPanel.SetActive(true);
     }
 
     void Update()
@@ -106,6 +109,7 @@ public class PlaySceneCamController : MonoBehaviour
         ActionPanel = transform.Find("Canvas").Find("Panel").Find("ActionPanel").gameObject;
         BuildingPanel = transform.Find("Canvas").Find("Panel").Find("BuildingPanel").gameObject;
         EndGamePanel = transform.Find("Canvas").Find("Panel").Find("EndGamePanel").gameObject;
+        InfoPanel = transform.Find("Canvas").Find("InfoPanel").gameObject;
     }
 
     /// <summary>
@@ -161,6 +165,7 @@ public class PlaySceneCamController : MonoBehaviour
         {
             GameControllerScript.instance.WaitActionPlayScene();
         }
+        UpdateTurnImageColor(GameControllerScript.instance.CurrentTeamsTurn);
     }
 
     /// <summary>
@@ -356,6 +361,7 @@ public class PlaySceneCamController : MonoBehaviour
                 if (GameControllerScript.instance.TeamGold[GameControllerScript.instance.CurrentTeamsTurn] >= kvp.Value.Cost)
                 {
                     GameObject GO = DatabaseController.instance.CreateAndSpawnUnit(CurrentlySelectedBuilding, kvp.Value.ID, GameControllerScript.instance.CurrentTeamsTurn);
+                    GameControllerScript.instance.AddUnitsToDictionary(GO);
                     GO.GetComponent<UnitController>().UnitMovable = false;
                     foreach (var unit in GameControllerScript.instance.UnitPos)
                     {
@@ -456,5 +462,56 @@ public class PlaySceneCamController : MonoBehaviour
     public void UpdateGoldThings()
     {
         GoldText.text = "Gold:" + GameControllerScript.instance.TeamGold[GameControllerScript.instance.CurrentTeamsTurn].ToString();
+    }
+
+    public void UpdateMoveableUnits()
+    {
+
+    }
+
+    public void UpdateTurnImageColor(int team)
+    {
+        //Black,Blue,Cyan,Gray,Green,Magenta,Red,White,Yellow
+        if (team == 1)
+        {
+            CurrentPlayerTurnImage.GetComponent<Image>().color = Color.black;
+        }
+        else if (team == 2)
+        {
+            CurrentPlayerTurnImage.GetComponent<Image>().color = Color.blue;
+        }
+        else if (team == 3)
+        {
+            CurrentPlayerTurnImage.GetComponent<Image>().color = Color.cyan;
+        }
+        else if (team == 4)
+        {
+            CurrentPlayerTurnImage.GetComponent<Image>().color = Color.gray;
+        }
+        else if (team == 5)
+        {
+            CurrentPlayerTurnImage.GetComponent<Image>().color = Color.green;
+        }
+        else if (team == 6)
+        {
+            CurrentPlayerTurnImage.GetComponent<Image>().color = Color.magenta;
+        }
+        else if (team == 7)
+        {
+            CurrentPlayerTurnImage.GetComponent<Image>().color = Color.red;
+        }
+        else if (team == 8)
+        {
+            CurrentPlayerTurnImage.GetComponent<Image>().color = Color.white;
+        }
+        else if (team == 9)
+        {
+            CurrentPlayerTurnImage.GetComponent<Image>().color = Color.yellow;
+        }
+    }
+
+    public void HideInfoPanel()
+    {
+        InfoPanel.SetActive(false);
     }
 }

@@ -1,0 +1,22 @@
+Things that need done:
+
+-finish changing color of block health to team color of unit
+-Add modifiers to damage based on current health
+-Add a barracks building and Main base or other buildings as needed, make towns not able to produce units
+-Add save and load functinality
+-Add load function to map editor mainmenuscene
+-change building capture so that if you have your own unit on a currently owned building it will regen 2 health per round
+-add counters for how many unmoved units you have on the board
+-add something to indicate what units are unmoved
+-add settings menu
+-Add hero stuff
+
+-Multiplayer?
+--What to do here?
+option are:
+-Set up server.
+-look into steam api for fighting friends
+--think i need both. or need to add a friend system to the server?
+--Or see if steam has a all users online thingy
+
+-Look into steam stuff that would be needed, like workshop and stuff.
