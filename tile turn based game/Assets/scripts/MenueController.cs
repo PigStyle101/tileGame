@@ -41,6 +41,8 @@ public class MenueController : MonoBehaviour {
     private GameObject Team7Dropdown;
     private GameObject Team8Dropdown;
     private GameObject Team9Dropdown;
+    private string SaveGameSelectedString;
+    private GameObject CurrentlySellectedLoadObject;
     private List<string> ModsList = new List<string>();
     private string CurrentlySellectedMod;
     private List<GameObject> ModsInModContentWindow = new List<GameObject>();
@@ -176,6 +178,7 @@ public class MenueController : MonoBehaviour {
         LoadGamePanel.SetActive(true);
         ModPanel.SetActive(false);
         HeroPanel.SetActive(false);
+        GetSaves();
     }
 
     public void ModButtonClicked()
@@ -235,17 +238,62 @@ public class MenueController : MonoBehaviour {
         }
     }
 
-    public void LoadSelectedNewGame()
+    public void GetSaves()
+    {
+        var childcount = ContentWindowLoad.transform.childCount;
+        for (int i = 0; i < childcount; i++)
+        {
+            Destroy(ContentWindowLoad.transform.GetChild(i).gameObject);
+        }
+        foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/Saves", "*.json")))
+        {
+            GameObject tempbutton = Instantiate(LoadMenueButtonPrefab, ContentWindowLoad.transform); //create button and set its parent to content
+            tempbutton.name = Path.GetFileNameWithoutExtension(file); //change name
+            tempbutton.transform.GetChild(0).GetComponent<Text>().text = Path.GetFileNameWithoutExtension(file);
+            tempbutton.GetComponent<Button>().onClick.AddListener(SaveGameSelected); //adds method to button clicked
+        }
+    }
+
+    public void SaveGameSelected()
+    {
+        SaveGameSelectedString = EventSystem.current.currentSelectedGameObject.name;
+        CurrentlySellectedLoadObject = EventSystem.current.currentSelectedGameObject;
+    }
+
+    public void DeleteButtonClickedLoadPanel()
+    {
+        File.Delete(Application.dataPath + "/StreamingAssets/Saves/" + SaveGameSelectedString + ".json");
+        Destroy(CurrentlySellectedLoadObject);
+        SaveGameSelectedString = null;
+        CurrentlySellectedLoadObject = null;
+    }
+
+    public void LoadGameButtonClickedLoadPanel()
+    {
+        if (SaveGameSelectedString != null)
+        {
+            GameControllerScript.instance.PlaySceneLoadStatus = "SavedGame";
+            GameControllerScript.instance.MapNameForPlayScene = SaveGameSelectedString;
+            UnityEngine.SceneManagement.SceneManager.LoadScene("PlayScene");
+            Debug.Log("Loading");
+        }
+        else
+        {
+            Debug.Log("== to null");
+        }
+    }
+
+    public void StartGameButtonClickedNewGamePanel()
     {
         int aiCount = 0;
-        foreach(var kvp in GameControllerScript.instance.AiOrPlayerDictionary)
+        foreach(var item in GameControllerScript.instance.AiOrPlayerList)
         {
-            if (kvp.Value == 1)
+            if (item == 1)
             {
                 aiCount = aiCount + 1;
             }
         }
-        if (aiCount == GameControllerScript.instance.AiOrPlayerDictionary.Count)
+        if (aiCount == GameControllerScript.instance.AiOrPlayerList.Count)
         {
             FeedBackNewGame.text = "Cannot start a game with all ai";
         }
@@ -333,12 +381,12 @@ public class MenueController : MonoBehaviour {
         Map[] Load = JsonHelper.FromJson<Map>(tempstring);
         List<int> TempTeamCount = new List<int>();
         TempTeamCount = Load[0].TeamCount;
-        GameControllerScript.instance.AiOrPlayerDictionary = new Dictionary<int, int>();
+        GameControllerScript.instance.AiOrPlayerList = new List<int>();
         if (TempTeamCount.Contains(1))
         {
             Team1Image.SetActive(true);
             Team1Dropdown.SetActive(true);
-            GameControllerScript.instance.AiOrPlayerDictionary.Add(1, 0);
+            GameControllerScript.instance.AiOrPlayerList.Add(0);
         }
         else
         {
@@ -349,7 +397,7 @@ public class MenueController : MonoBehaviour {
         {
             Team2Image.SetActive(true);
             Team2Dropdown.SetActive(true);
-            GameControllerScript.instance.AiOrPlayerDictionary.Add(2, 0);
+            GameControllerScript.instance.AiOrPlayerList.Add(0);
         }
         else
         {
@@ -360,7 +408,7 @@ public class MenueController : MonoBehaviour {
         {
             Team3Image.SetActive(true);
             Team3Dropdown.SetActive(true);
-            GameControllerScript.instance.AiOrPlayerDictionary.Add(3, 0);
+            GameControllerScript.instance.AiOrPlayerList.Add(0);
         }
         else
         {
@@ -371,7 +419,7 @@ public class MenueController : MonoBehaviour {
         {
             Team4Image.SetActive(true);
             Team4Dropdown.SetActive(true);
-            GameControllerScript.instance.AiOrPlayerDictionary.Add(4, 0);
+            GameControllerScript.instance.AiOrPlayerList.Add(0);
         }
         else
         {
@@ -382,7 +430,7 @@ public class MenueController : MonoBehaviour {
         {
             Team5Image.SetActive(true);
             Team5Dropdown.SetActive(true);
-            GameControllerScript.instance.AiOrPlayerDictionary.Add(5, 0);
+            GameControllerScript.instance.AiOrPlayerList.Add(0);
         }
         else
         {
@@ -393,7 +441,7 @@ public class MenueController : MonoBehaviour {
         {
             Team6Image.SetActive(true);
             Team6Dropdown.SetActive(true);
-            GameControllerScript.instance.AiOrPlayerDictionary.Add(6, 0);
+            GameControllerScript.instance.AiOrPlayerList.Add(0);
         }
         else
         {
@@ -404,7 +452,7 @@ public class MenueController : MonoBehaviour {
         {
             Team7Image.SetActive(true);
             Team7Dropdown.SetActive(true);
-            GameControllerScript.instance.AiOrPlayerDictionary.Add(7, 0);
+            GameControllerScript.instance.AiOrPlayerList.Add(0);
         }
         else
         {
@@ -415,7 +463,7 @@ public class MenueController : MonoBehaviour {
         {
             Team8Image.SetActive(true);
             Team8Dropdown.SetActive(true);
-            GameControllerScript.instance.AiOrPlayerDictionary.Add(8, 0);
+            GameControllerScript.instance.AiOrPlayerList.Add(0);
         }
         else
         {
@@ -426,7 +474,7 @@ public class MenueController : MonoBehaviour {
         {
             Team9Image.SetActive(true);
             Team9Dropdown.SetActive(true);
-            GameControllerScript.instance.AiOrPlayerDictionary.Add(9, 0);
+            GameControllerScript.instance.AiOrPlayerList.Add(0);
         }
         else
         {
@@ -437,46 +485,46 @@ public class MenueController : MonoBehaviour {
 
     public void DropdownTeam1Controller(int index)
     {
-        GameControllerScript.instance.AiOrPlayerDictionary[1] = index;
+        GameControllerScript.instance.AiOrPlayerList[0] = index;
     }
 
     public void DropdownTeam2Controller(int index)
     {
-        GameControllerScript.instance.AiOrPlayerDictionary[2] = index;
+        GameControllerScript.instance.AiOrPlayerList[1] = index;
     }
 
     public void DropdownTeam3Controller(int index)
     {
-        GameControllerScript.instance.AiOrPlayerDictionary[3] = index;
+        GameControllerScript.instance.AiOrPlayerList[2] = index;
     }
 
     public void DropdownTeam4Controller(int index)
     {
-        GameControllerScript.instance.AiOrPlayerDictionary[4] = index;
+        GameControllerScript.instance.AiOrPlayerList[3] = index;
     }
 
     public void DropdownTeam5Controller(int index)
     {
-        GameControllerScript.instance.AiOrPlayerDictionary[5] = index;
+        GameControllerScript.instance.AiOrPlayerList[4] = index;
     }
 
     public void DropdownTeam6Controller(int index)
     {
-        GameControllerScript.instance.AiOrPlayerDictionary[6] = index;
+        GameControllerScript.instance.AiOrPlayerList[5] = index;
     }
 
     public void DropdownTeam7Controller(int index)
     {
-        GameControllerScript.instance.AiOrPlayerDictionary[7] = index;
+        GameControllerScript.instance.AiOrPlayerList[6] = index;
     }
 
     public void DropdownTeam8Controller(int index)
     {
-        GameControllerScript.instance.AiOrPlayerDictionary[8] = index;
+        GameControllerScript.instance.AiOrPlayerList[7] = index;
     }
 
     public void DropdownTeam9Controller(int index)
     {
-        GameControllerScript.instance.AiOrPlayerDictionary[9] = index;
+        GameControllerScript.instance.AiOrPlayerList[8] = index;
     }
 }

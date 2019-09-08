@@ -3,7 +3,7 @@
   "Title": "Forest",
   "Walkable": true,
   "Description": "Forest with lots of trees",
-  "DefenceBonus": 1,
+  "DefenceBonus": 10,
   "Slug": "forest_tile",
   "Type": "Terrain",
   "Weight": 3,

@@ -60,8 +60,8 @@ public class GameControllerScript : MonoBehaviour
     public string LogFile = "log.txt";
     public bool EchoToConsole = true;
     public bool AddTimeStamp = true;
-    public Dictionary<int, int> TeamGold; //Team,Gold
-    public Dictionary<int, int> AiOrPlayerDictionary; //team,0 = player, 1 =ai
+    public List<int> TeamGold; //Team,Gold
+    public List<int> AiOrPlayerList; //0 = player, 1 =ai
 
     private void Awake()
     {
@@ -116,7 +116,7 @@ public class GameControllerScript : MonoBehaviour
     /// <param name="Mode">Not even sure this is needed</param>
     private void OnSceneLoaded(Scene sceneVar, LoadSceneMode Mode) //do i need LoadSceneMode here?
     {
-        Debug.Log("OnSceneLoaded: " + sceneVar.name);//debug thing
+        //Debug.log("OnSceneLoaded: " + sceneVar.name);//debug thing
         CurrentScene = sceneVar.name;
         if (sceneVar.name == "MapEditorScene")
         {
@@ -127,7 +127,7 @@ public class GameControllerScript : MonoBehaviour
                 {
                     //creates a map in data to use for drawing later
                     MapDictionary.Add(new Vector2(i, o), DatabaseController.instance.TerrainDictionary[0].Title);
-                    //UnityEngine.Debug.Log("Added Key: " + i + o);
+                    //UnityEngine.//Debug.log("Added Key: " + i + o);
                 }
             }
             DrawNewMapForMapEditor();
@@ -140,6 +140,11 @@ public class GameControllerScript : MonoBehaviour
             {
                 LoadMapPlayScene(MapNameForPlayScene);
                 PlaySceneNewGameInitalizer();
+            }
+            else if (PlaySceneLoadStatus == "SavedGame")
+            {
+                LoadSavedGamePlayScene(MapNameForPlayScene);
+                PlaySceneLoadGameInitalizer(CurrentTeamsTurnIndex);
             }
         }
         else if (sceneVar.name == "MainMenuScene")
@@ -212,7 +217,7 @@ public class GameControllerScript : MonoBehaviour
             {
                 throw new Exception("Key was not removed");
             }
-            UnitPos.Add(newUnit.transform.position, newUnit); 
+            UnitPos.Add(newUnit.transform.position, newUnit);
         }
     }
 
@@ -265,11 +270,11 @@ public class GameControllerScript : MonoBehaviour
         {
             if (!EventSystem.current.IsPointerOverGameObject())
             {
-                //Debug.Log("Raycast activated");
+                ////Debug.log("Raycast activated");
                 Ray ray = GameObject.Find("MainCamera").GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
                 RaycastHit[] hits;
                 hits = Physics.RaycastAll(ray);
-                //Debug.Log(hits.Length);
+                ////Debug.log(hits.Length);
                 for (int i = 0; i < hits.Length; i++)
                 {
                     RaycastHit hit = hits[i];
@@ -280,7 +285,7 @@ public class GameControllerScript : MonoBehaviour
                             TerrainController TC = hit.transform.GetComponent<TerrainController>();
                             if (hit.transform.name != MEMCC.SelectedButton) //are we changing the tile to something new?
                             {
-                                Debug.Log("Changing terrain to " + MEMCC.SelectedButton);
+                                //Debug.log("Changing terrain to " + MEMCC.SelectedButton);
                                 TC.ChangeTile(); //change tile to new terrain tile
                                 AddTilesToDictionary(hit.transform.gameObject);
                                 SpriteUpdateActivator();
@@ -291,7 +296,7 @@ public class GameControllerScript : MonoBehaviour
                             UnitController UC = hit.transform.GetComponent<UnitController>();
                             if (hit.transform.name != MEMCC.SelectedButton) //are we changing the unit to something new?
                             {
-                                Debug.Log("Changing unit to " + MEMCC.SelectedButton);
+                                //Debug.log("Changing unit to " + MEMCC.SelectedButton);
                                 if (MEMCC.SelectedButton == "Delete Unit")
                                 {
                                     UnitPos.Remove(hit.transform.position);
@@ -321,7 +326,7 @@ public class GameControllerScript : MonoBehaviour
                             BuildingController BC = hit.transform.GetComponent<BuildingController>();
                             if (hit.transform.name != MEMCC.SelectedButton) //are we changing the building to something new?
                             {
-                                Debug.Log("Changing building to " + MEMCC.SelectedButton);
+                                //Debug.log("Changing building to " + MEMCC.SelectedButton);
                                 if (MEMCC.SelectedButton == "Delete Building")
                                 {
                                     BuildingPos.Remove(hit.transform.position);
@@ -363,8 +368,8 @@ public class GameControllerScript : MonoBehaviour
                                             GameObject tgo = DatabaseController.instance.CreateAndSpawnUnit(hit.transform.position, kvp.Key, MEMCC.SelectedTeam); //creat new unit at position on tile we clicked on.
                                             tgo.GetComponent<UnitController>().Team = MEMCC.SelectedTeam;
                                             AddUnitsToDictionary(tgo);
-                                            Debug.Log("Creating " + MEMCC.SelectedButton + " at " + hit.transform.position);
-                                            SpriteUpdateActivator(); 
+                                            //Debug.log("Creating " + MEMCC.SelectedButton + " at " + hit.transform.position);
+                                            SpriteUpdateActivator();
                                         }
                                         else
                                         {
@@ -396,7 +401,7 @@ public class GameControllerScript : MonoBehaviour
                                         GameObject tgo = DatabaseController.instance.CreateAndSpawnBuilding(hit.transform.position, kvp.Key, MEMCC.SelectedTeam); //creat new building at position on tile we clicked on.
                                         tgo.GetComponent<BuildingController>().Team = MEMCC.SelectedTeam;
                                         AddBuildingToDictionary(tgo);
-                                        Debug.Log("Creating " + MEMCC.SelectedButton + " at " + hit.transform.position);
+                                        //Debug.log("Creating " + MEMCC.SelectedButton + " at " + hit.transform.position);
                                         SpriteUpdateActivator();
                                     }
                                 }
@@ -421,7 +426,7 @@ public class GameControllerScript : MonoBehaviour
                 Ray ray = GameObject.Find("MainCamera").GetComponent<Camera>().ScreenPointToRay(Input.mousePosition); //GET THEM RAYS
                 RaycastHit[] hits;
                 hits = Physics.RaycastAll(ray);
-                //Debug.Log("Starting play scene ray hits");
+                ////Debug.log("Starting play scene ray hits");
                 for (int i = 0; i < hits.Length; i++) // GO THROUGH THEM RAYS
                 {
                     RaycastHit hit = hits[i];
@@ -461,7 +466,7 @@ public class GameControllerScript : MonoBehaviour
                         else if (hit.transform.tag == DatabaseController.instance.UnitDictionary[0].Type && SelectedUnitPlayScene == hit.transform.gameObject && (Vector2)hit.transform.position == originalPositionOfUnit) //is the hit a unit? is the unit selected already?
                         {
                             SelectedUnitPlayScene = null; //clear selected unit variable
-                                                          //Debug.Log("Selected unit set to null");
+                                                          ////Debug.log("Selected unit set to null");
                             foreach (var kvp in TilePos)
                             {
                                 kvp.Value.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1);
@@ -472,7 +477,7 @@ public class GameControllerScript : MonoBehaviour
                         }
                         else if (hit.transform.tag == DatabaseController.instance.TerrainDictionary[0].Type || hit.transform.tag == DatabaseController.instance.BuildingDictionary[0].Type) //is the hit a terrain or building?
                         {
-                            //Debug.Log("Building or terrain hit");
+                            ////Debug.log("Building or terrain hit");
                             if (SelectedUnitPlayScene != null)
                             {
                                 if (hit.transform.position != SelectedUnitPlayScene.transform.position) //is the building or terrain not the one the unit is standing on?
@@ -482,7 +487,7 @@ public class GameControllerScript : MonoBehaviour
                                         MoveToPosition = hit.transform.position; //get position we want to move to
                                         if (SelectedUnitPlayScene.GetComponent<UnitController>().TilesWeights.ContainsKey(MoveToPosition)) //does the unit have enough move points?
                                         {
-                                            Debug.Log("Moving Unit");
+                                            //Debug.log("Moving Unit");
                                             SelectedUnitPlayScene.transform.position = hit.transform.position; //move unit
                                             int tempint = SelectedUnitPlayScene.GetComponent<UnitController>().GetEnemyUnitsInRange();
                                             if (SelectedUnitPlayScene.GetComponent<UnitController>().CanMoveAndAttack)
@@ -508,19 +513,19 @@ public class GameControllerScript : MonoBehaviour
                                         }
                                         else
                                         {
-                                            Debug.Log("Not enough move points");
+                                            //Debug.log("Not enough move points");
                                         }
                                     }
                                     else
                                     {
-                                        Debug.Log("Unit in the way");
+                                        //Debug.log("Unit in the way");
                                     }
                                 }
                             }
                         }
                         else
                         {
-                            Debug.Log("Nothing hit");
+                            //Debug.log("Nothing hit");
                         }
                     }
                     else //attack button is selected actions
@@ -549,6 +554,7 @@ public class GameControllerScript : MonoBehaviour
                             WaitActionPlayScene();
                             PSCC.AttackButtonSelected = false;
                             PSCC.SetActionButtonsToFalse();
+                            PSCC.HideOrShowSaveButton(false);
                             break;
                         }
                     }
@@ -787,7 +793,7 @@ public class GameControllerScript : MonoBehaviour
             }
         }
         TeamCount = Load[0].TeamCount;
-        Debug.Log("TeamCount = " + TeamCount);
+        //Debug.log("TeamCount = " + TeamCount);
         foreach (var go in GameObject.FindGameObjectsWithTag(DatabaseController.instance.TerrainDictionary[0].Type))
         {
             AddTilesToDictionary(go);
@@ -802,10 +808,10 @@ public class GameControllerScript : MonoBehaviour
         CameraVar = GameObject.Find("MainCamera");
         CameraVar.transform.position = new Vector3(PlayMapSize / 2 - .5f, PlayMapSize / 2 - .5f, PlayMapSize * -1);
 
-        TeamGold = new Dictionary<int, int>();
+        TeamGold = new List<int>();
         foreach (var t in TeamCount)
         {
-            TeamGold.Add(t, 0);
+            TeamGold.Add(0);
         }
     }
 
@@ -844,7 +850,7 @@ public class GameControllerScript : MonoBehaviour
         CurrentTeamsTurnIndex = rnd.Next(0, TeamCount.Count);
         CurrentTeamsTurn = TeamCount[CurrentTeamsTurnIndex];
         PSCC.CurrentPlayerTurnText.text = "Team turn";
-        PSCC.GoldText.text = "Gold:" + TeamGold[CurrentTeamsTurn].ToString();
+        PSCC.GoldText.text = "Gold:" + TeamGold[CurrentTeamsTurnIndex].ToString();
         AllRoundUpdater();
         foreach (var kvp in BuildingPos)
         {
@@ -866,11 +872,36 @@ public class GameControllerScript : MonoBehaviour
             }
         }
         TempInt = TempInt * 100;
-        TeamGold[CurrentTeamsTurn] = TeamGold[CurrentTeamsTurn] + TempInt;
+        TeamGold[CurrentTeamsTurnIndex] = TeamGold[CurrentTeamsTurnIndex] + TempInt;
         PSCC.UpdateGoldThings();
         PSCC.UpdateTurnImageColor(CurrentTeamsTurn);
         AiController();
+        PSCC.HideOrShowSaveButton(true);
     } //sets up game for new game
+
+    public void PlaySceneLoadGameInitalizer(int TTindex)
+    {
+        CurrentTeamsTurnIndex = TTindex;
+        CurrentTeamsTurn = TeamCount[TTindex];
+        PSCC.CurrentPlayerTurnText.text = "Team turn";
+        PSCC.GoldText.text = "Gold:" + TeamGold[CurrentTeamsTurnIndex].ToString();
+        AllRoundUpdater();
+        foreach (var kvp in BuildingPos)
+        {
+            if (kvp.Value.GetComponent<BuildingController>().Team == CurrentTeamsTurn)
+            {
+                kvp.Value.GetComponent<BuildingController>().CanBuild = true;
+            }
+            else
+            {
+                kvp.Value.GetComponent<BuildingController>().CanBuild = false;
+            }
+        }
+        PSCC.UpdateGoldThings();
+        PSCC.UpdateTurnImageColor(CurrentTeamsTurn);
+        AiController();
+        PSCC.HideOrShowSaveButton(true);
+    }
 
     /// <summary>
     /// Used to controll variables for when the turn changes
@@ -901,6 +932,8 @@ public class GameControllerScript : MonoBehaviour
             if (kvp.Value == 0)
             {
                 TeamCount.Remove(kvp.Key);
+                TeamGold.Remove(kvp.Key);
+                AiOrPlayerList.Remove(kvp.Key);
             }
         }
         if (TeamCount.Count == 1)
@@ -909,7 +942,7 @@ public class GameControllerScript : MonoBehaviour
         }
         else
         {
-            if (CurrentTeamsTurnIndex != TeamCount.Count - 1)
+            if (CurrentTeamsTurnIndex < TeamCount.Count - 1)
             {
                 CurrentTeamsTurnIndex = CurrentTeamsTurnIndex + 1;
                 CurrentTeamsTurn = TeamCount[CurrentTeamsTurnIndex];
@@ -941,9 +974,10 @@ public class GameControllerScript : MonoBehaviour
                 }
             }
             TempInt = TempInt * 100;
-            TeamGold[CurrentTeamsTurn] = TeamGold[CurrentTeamsTurn] + TempInt;
+            TeamGold[CurrentTeamsTurnIndex] = TeamGold[CurrentTeamsTurnIndex] + TempInt;
             PSCC.UpdateGoldThings();
-            AiController(); 
+            AiController();
+            PSCC.HideOrShowSaveButton(true);
         }
     }
 
@@ -1012,13 +1046,14 @@ public class GameControllerScript : MonoBehaviour
             kvp.Value.GetComponent<BuildingController>().BuildingRoundUpdater();
         }
         PSCC.SetActionButtonsToFalse();
+        PSCC.HideOrShowSaveButton(false);
     }
 
     public void CaptureActionPlayScene()
     {
         if (MoveToPosition != new Vector2(-1, -1))
         {
-            MoveUnitPositionInDictionary(SelectedUnitPlayScene,originalPositionOfUnit);
+            MoveUnitPositionInDictionary(SelectedUnitPlayScene, originalPositionOfUnit);
             MoveToPosition = new Vector2(-1, -1);
         }
         SelectedUnitPlayScene.GetComponent<UnitController>().UnitMovable = false; //set unit movable to false
@@ -1056,6 +1091,7 @@ public class GameControllerScript : MonoBehaviour
             kvp.Value.GetComponent<BuildingController>().BuildingRoundUpdater();
         }
         SelectedUnitPlayScene = null;
+        PSCC.HideOrShowSaveButton(false);
     }
 
     /// <summary>
@@ -1121,38 +1157,149 @@ public class GameControllerScript : MonoBehaviour
 
     public int CombatCalculator(GameObject Attacker, GameObject Defender)
     {
-        int tempAttack = Attacker.GetComponent<UnitController>().Attack;
-        int tempDefence;
+        Debug.Log("Health:" + Attacker.GetComponent<UnitController>().Health);
+        Debug.Log("MaxHealth:" + Attacker.GetComponent<UnitController>().MaxHealth);
+        double HealthModifier = (double)Attacker.GetComponent<UnitController>().Health / Attacker.GetComponent<UnitController>().MaxHealth;
+        Debug.Log("HealthMod:" + HealthModifier);
+        double AttackDouble = Math.Ceiling(HealthModifier * Attacker.GetComponent<UnitController>().Attack);
+        Debug.Log("Rounded:" + AttackDouble);
+        int Attack = (int)AttackDouble;
+        Debug.Log("Attack:" + Attack);
+        int AttackAfterDefence;
         if (BuildingPos.ContainsKey(Defender.transform.position))
         {
-            tempDefence = TilePos[Defender.transform.position].GetComponent<TerrainController>().DefenceBonus + Defender.GetComponent<UnitController>().Defence + BuildingPos[Defender.transform.position].GetComponent<BuildingController>().DefenceBonus;
+            double DefencePercent = (Defender.GetComponent<UnitController>().Defence + TilePos[Defender.transform.position].GetComponent<TerrainController>().DefenceBonus + BuildingPos[Defender.transform.position].GetComponent<BuildingController>().DefenceBonus) / 100d;
+            Debug.Log("BuildingDefencePercent:" + DefencePercent);
+            double DefenceReduction = DefencePercent * Attack;
+            Debug.Log("DefenceReduction:" + DefenceReduction);
+            AttackAfterDefence = (int)Math.Round(Attack - DefenceReduction);
+            Debug.Log("AttackAfterDefence:" + AttackAfterDefence);
         }
         else
         {
-            tempDefence = TilePos[Defender.transform.position].GetComponent<TerrainController>().DefenceBonus + Defender.GetComponent<UnitController>().Defence;
+            double DefencePercent = (Defender.GetComponent<UnitController>().Defence + TilePos[Defender.transform.position].GetComponent<TerrainController>().DefenceBonus) / 100d;
+            Debug.Log("DefencePercent:" + DefencePercent);
+            double DefenceReduction = DefencePercent * Attack;
+            Debug.Log("DefenceReduction:" + DefenceReduction);
+            AttackAfterDefence = (int)Math.Round(Attack - DefenceReduction);
+            Debug.Log("AttackAfterDefence:" + AttackAfterDefence);
         }
-        int AttackReturn = tempAttack - tempDefence;
-        return AttackReturn;
+        return AttackAfterDefence;
     }
 
     public void AiController()
     {
-        if (AiOrPlayerDictionary[CurrentTeamsTurn] == 1) // if team is ai do something
+        if (AiOrPlayerList[CurrentTeamsTurnIndex] == 1) // if team is ai do something
         {
             Dictionary<Vector2, GameObject> TempDict = new Dictionary<Vector2, GameObject>();
-            foreach(var kvp in UnitPos)
+            foreach (var kvp in UnitPos)
             {
                 TempDict.Add(kvp.Key, kvp.Value);
             }
-            foreach(var kvp in TempDict)
+            foreach (var kvp in TempDict)
             {
                 if (kvp.Value.GetComponent<UnitController>().Team == CurrentTeamsTurn)
                 {
-                    kvp.Value.GetComponent<UnitController>().UnitAi(); 
+                    kvp.Value.GetComponent<UnitController>().UnitAi();
+                }
+            }
+            foreach (var kvp in BuildingPos)
+            {
+                if (kvp.Value.GetComponent<BuildingController>().Team == CurrentTeamsTurn)
+                {
+                    kvp.Value.GetComponent<BuildingController>().BuildingAiController();
                 }
             }
             PSCC.EndTurnButtonClicked();
         }
+    }
+
+    public void SaveGame(string SaveName)
+    {
+
+        Save SF = new Save();
+        SF.TeamGold = TeamGold;
+        SF.AiOrPlayerList = AiOrPlayerList;
+        SF.TeamCount = TeamCount;
+        SF.CurrentTeamsTurnIndex = CurrentTeamsTurnIndex;
+        SF.UnitList = new List<SaveableUnit>();
+        SF.TerrainList = new List<SaveableTile>();
+        SF.BuildingList = new List<SaveableBuilding>();
+        foreach (var kvp in UnitPos)
+        {
+            SaveableUnit SU = new SaveableUnit();
+            SU.Health = kvp.Value.GetComponent<UnitController>().Health;
+            SU.Team = kvp.Value.GetComponent<UnitController>().Team;
+            SU.ID = kvp.Value.GetComponent<UnitController>().ID;
+            SU.Location = kvp.Key;
+            SF.UnitList.Add(SU);
+        }
+        foreach (var kvp in TilePos)
+        {
+            SaveableTile ST = new SaveableTile();
+            ST.ID = kvp.Value.GetComponent<TerrainController>().ID;
+            ST.Location = kvp.Key;
+            SF.TerrainList.Add(ST);
+        }
+        foreach (var kvp in BuildingPos)
+        {
+            SaveableBuilding SB = new SaveableBuilding();
+            SB.Health = kvp.Value.GetComponent<BuildingController>().Health;
+            SB.Team = kvp.Value.GetComponent<BuildingController>().Team;
+            SB.ID = kvp.Value.GetComponent<BuildingController>().ID;
+            SB.Location = kvp.Key;
+            SF.BuildingList.Add(SB);
+        }
+        string tempjson = UnityEngine.JsonUtility.ToJson(SF);
+        FileStream fs = File.Create(Application.dataPath + "/StreamingAssets/Saves/" + SaveName + ".json");
+        StreamWriter sr = new StreamWriter(fs);
+        sr.Write(tempjson);
+        sr.Close();
+        sr.Dispose();
+        fs.Close();
+        fs.Dispose();
+    }
+
+    public void LoadSavedGamePlayScene(string name)
+    {
+        StreamReader SR = new StreamReader(Application.dataPath + "/StreamingAssets/Saves/" + name + ".json");
+        string tempstring = SR.ReadToEnd();
+        Save LoadingFile = UnityEngine.JsonUtility.FromJson<Save>(tempstring);
+        TeamGold.Clear();
+        AiOrPlayerList.Clear();
+        TeamCount.Clear();
+        TilePos.Clear();
+        UnitPos.Clear();
+        BuildingPos.Clear();
+        TeamCount = LoadingFile.TeamCount;
+        TeamGold = LoadingFile.TeamGold;
+        AiOrPlayerList = LoadingFile.AiOrPlayerList;
+        foreach(var item in LoadingFile.TerrainList)
+        {
+            GameObject TGO = DatabaseController.instance.CreateAdnSpawnTerrain(item.Location, item.ID);
+            TilePos.Add(item.Location,TGO);
+            if (item.Location.x > PlayMapSize)
+            {
+                PlayMapSize = (int)item.Location.x;
+            }
+        }
+        foreach(var item in LoadingFile.UnitList)
+        {
+            GameObject TGO = DatabaseController.instance.CreateAndSpawnUnit(item.Location, item.ID,item.Team);
+            TGO.GetComponent<UnitController>().Health = item.Health;
+            UnitPos.Add(item.Location, TGO);
+        }
+        foreach(var item in LoadingFile.BuildingList)
+        {
+            GameObject TGO = DatabaseController.instance.CreateAndSpawnBuilding(item.Location, item.ID, item.Team);
+            TGO.GetComponent<BuildingController>().Health = item.Health;
+            BuildingPos.Add(item.Location, TGO);
+        }
+        CurrentTeamsTurnIndex = LoadingFile.CurrentTeamsTurnIndex;
+        CurrentTeamsTurn = TeamCount[CurrentTeamsTurnIndex];
+        CameraVar = GameObject.Find("MainCamera");
+        CameraVar.transform.position = new Vector3(PlayMapSize / 2 - .5f, PlayMapSize / 2 - .5f, PlayMapSize * -1);
+        SpriteUpdateActivator();
     }
 }
 
@@ -1167,7 +1314,20 @@ public class Map
     public int Team;
     public string Type;
     public List<int> TeamCount;
+    public List<int> AiList; // 0 = player, 1= ai
     public List<string> Mods;
+}
+
+[Serializable]
+public class Save
+{
+    public List<int> AiOrPlayerList; //0 = player, 1 =ai
+    public List<int> TeamCount;
+    public int CurrentTeamsTurnIndex;
+    public List<SaveableUnit> UnitList;
+    public List<SaveableBuilding> BuildingList;
+    public List<SaveableTile> TerrainList;
+    public List<int> TeamGold;
 }
 
 [Serializable]
@@ -1221,4 +1381,29 @@ public static class JsonHelper
     {
         public T[] Items;
     }
+}
+
+[Serializable]
+public class SaveableUnit
+{
+    public int ID;
+    public int Team;
+    public int Health;
+    public SeralizableVector2 Location;
+}
+
+[Serializable]
+public class SaveableBuilding
+{
+    public int Team;
+    public int Health;
+    public int ID;
+    public SeralizableVector2 Location;
+}
+
+[Serializable]
+public class SaveableTile
+{
+    public int ID;
+    public SeralizableVector2 Location;
 }

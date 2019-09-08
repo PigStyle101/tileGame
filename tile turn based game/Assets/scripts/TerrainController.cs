@@ -34,6 +34,8 @@ public class TerrainController : MonoBehaviour
     public bool Walkable;
     [HideInInspector]
     public int DefenceBonus;
+    [HideInInspector]
+    public int ID;
 
     private void Awake()
     {

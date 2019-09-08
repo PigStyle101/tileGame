@@ -1,15 +1,13 @@
 Things that need done:
-
--finish changing color of block health to team color of unit
--Add modifiers to damage based on current health
 -Add a barracks building and Main base or other buildings as needed, make towns not able to produce units
--Add save and load functinality
 -Add load function to map editor mainmenuscene
 -change building capture so that if you have your own unit on a currently owned building it will regen 2 health per round
 -add counters for how many unmoved units you have on the board
 -add something to indicate what units are unmoved
 -add settings menu
 -Add hero stuff
+-add converting buildings to units ai
+-Change the way the maps are saved, use list instead of enormuse array(referance saves json(almost 5 times smaller of a file))
 
 -Multiplayer?
 --What to do here?

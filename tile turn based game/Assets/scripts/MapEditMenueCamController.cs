@@ -124,7 +124,7 @@ public class MapEditMenueCamController : MonoBehaviour
 
     private void AddTerrainButtonsToContent()
     {
-        Debug.Log("Adding terrain buttons to content window");
+        //Debug.log("Adding terrain buttons to content window");
         foreach (KeyValuePair<int, Terrain> kvp in DatabaseController.instance.TerrainDictionary) //adds a button for each terrain in the database
         {
             GameObject tempbutton = Instantiate(MapEditorTilesButtonPrefab, ContentWindowTerrain.transform); //create button and set its parent to content
@@ -137,7 +137,7 @@ public class MapEditMenueCamController : MonoBehaviour
 
     private void AddUnitButtonsToContent()
     {
-        Debug.Log("Adding unit buttons to content window");
+        //Debug.log("Adding unit buttons to content window");
         foreach (KeyValuePair<int, Unit> kvp in DatabaseController.instance.UnitDictionary) //adds a button for each terrain in the database
         {
             GameObject tempbutton = Instantiate(MapEditorTilesButtonPrefab, ContentWindowUnits.transform); //create button and set its parent to content
@@ -156,7 +156,7 @@ public class MapEditMenueCamController : MonoBehaviour
 
     private void AddBuildingButtonsToContent()
     {
-        Debug.Log("Adding building buttons to content window");
+        //Debug.log("Adding building buttons to content window");
         foreach (KeyValuePair<int, Building> kvp in DatabaseController.instance.BuildingDictionary) //adds a button for each terrain in the database
         {
             GameObject tempbutton = Instantiate(MapEditorTilesButtonPrefab, ContentWindowBuilding.transform); //create button and set its parent to content
@@ -178,7 +178,7 @@ public class MapEditMenueCamController : MonoBehaviour
         string[] files = Directory.GetFiles(Application.dataPath + "/StreamingAssets/Maps/", "*.json");
         foreach (string file in files)
         {
-            //Debug.Log(Path.GetFileNameWithoutExtension(file));
+            ////Debug.log(Path.GetFileNameWithoutExtension(file));
             GameObject temploadbutton = Instantiate(LoadButtonPrefab, ContentWindowLoadButtons.transform);
             temploadbutton.name = Path.GetFileNameWithoutExtension(file);
             temploadbutton.transform.GetChild(0).GetComponent<Text>().text = Path.GetFileNameWithoutExtension(file);

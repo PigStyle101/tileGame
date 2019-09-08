@@ -11,6 +11,8 @@ public class UnitController : MonoBehaviour
     //[HideInInspector]
     public int Team;
     [HideInInspector]
+    public int ID;
+    [HideInInspector]
     public bool UnitMovable;
     [HideInInspector]
     public bool UnitMoved = false;
@@ -65,13 +67,13 @@ public class UnitController : MonoBehaviour
             {
                 UnitMovable = false;
             }
-            foreach (var kvp in DatabaseController.instance.UnitDictionary)
-            {
-                if (gameObject.transform.name == kvp.Value.Title)
-                {
+            //foreach (var kvp in DatabaseController.instance.UnitDictionary)
+            //{
+            //    if (gameObject.transform.name == kvp.Value.Title)
+            //    {
                     GetTileValues();
-                }
-            }
+            //    }
+            //}
             UnitMoved = false;
         }
         else
@@ -133,7 +135,7 @@ public class UnitController : MonoBehaviour
 
     public void GetTileValues()
     {
-        //Debug.Log("MP = " + MovePoints);
+        ////Debug.log("MP = " + MovePoints);
         Vector2 Position = gameObject.transform.position; //need original position of unit
         int count = 1; //using this to make the algorith go more rounds then needed, as the most any unit should need is 6 rounds
         TilesWeights = new Dictionary<Vector2, int>();
@@ -223,7 +225,7 @@ public class UnitController : MonoBehaviour
             }
             if (count == MovePoints)
             {
-                Debug.Log("Broke, count at:" + count); //used to make sure while loop dont get stuck some how, wierdly it does with out this.....
+                //Debug.log("Broke, count at:" + count); //used to make sure while loop dont get stuck some how, wierdly it does with out this.....
                 break;
             }
             count = count + 1;
@@ -249,17 +251,17 @@ public class UnitController : MonoBehaviour
     {
         if (MEMCC.SelectedButton == "Delete Unit")
         {
-            Debug.Log("Deleting Unit");
+            //Debug.log("Deleting Unit");
             Destroy(gameObject);
         }
         else
         {
-            Debug.Log("ChangUnit activated");
+            //Debug.log("ChangUnit activated");
             foreach (KeyValuePair<int, Unit> kvp in DatabaseController.instance.UnitDictionary)
             {
                 if (MEMCC.SelectedButton == kvp.Value.Title) //checks through dictionary for matching tile to button name
                 {
-                    //Debug.Log("Changing tile to " + kvp.Value.Title);
+                    ////Debug.log("Changing tile to " + kvp.Value.Title);
                     gameObject.name = kvp.Value.Title;//change name of tile
                     gameObject.GetComponent<SpriteRenderer>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.UnitDictionary[kvp.Key].ArtworkDirectory[0]); //change sprite of tile
                 }
@@ -321,69 +323,126 @@ public class UnitController : MonoBehaviour
             }
             if (count == 15)
             {
-                Debug.Log("Broke, count at:" + count);
+                //Debug.log("Broke, count at:" + count);
                 break;
             }
             count = count + 1;
         }
-        Debug.Log("Enemys in range:" + EnemyUnitsInRange.Count);
+        //Debug.log("Enemys in range:" + EnemyUnitsInRange.Count);
         return EnemyUnitsInRange.Count;
     }
 
     public void UnitAi()
     {
-        Debug.Log("1");
+        GetEnemyUnitsInRange();
+        //Debug.log("1");
         Vector2 OriginalPositionOfUnit = gameObject.transform.position;
         Vector2 MoveToPosition;
         Vector2 Target;
-        foreach(var kvp in TilesWeights)
+        if (EnemyUnitsInRange.Count < 1)
         {
-            foreach (var dir in Directions)
+            foreach (var kvp in TilesWeights)
             {
-                if (GameControllerScript.instance.UnitPos.ContainsKey(kvp.Key + dir) && GameControllerScript.instance.UnitPos[kvp.Key + dir].GetComponent<UnitController>().Team != Team)
+                foreach (var dir in Directions)
                 {
-                    if (UnitMoved == false)
+                    if (GameControllerScript.instance.UnitPos.ContainsKey(kvp.Key + dir) && GameControllerScript.instance.UnitPos[kvp.Key + dir].GetComponent<UnitController>().Team != Team)
                     {
-                        Debug.Log("2"); //attacking enemy unit
-                        Target = kvp.Key + dir;
-                        MoveToPosition = kvp.Key;
-                        gameObject.transform.position = MoveToPosition;
-                        int attack = GameControllerScript.instance.CombatCalculator(gameObject, GameControllerScript.instance.UnitPos[Target]);
-                        GameControllerScript.instance.UnitPos[Target].GetComponent<UnitController>().Health = GameControllerScript.instance.UnitPos[Target].GetComponent<UnitController>().Health - attack;
-                        if (GameControllerScript.instance.UnitPos[Target].GetComponent<UnitController>().Health <= 0)
+                        if (UnitMoved == false)
                         {
-                            GameControllerScript.instance.KillUnitPlayScene(GameControllerScript.instance.UnitPos[Target]);
+                            //Debug.log("2"); //attacking enemy unit
+                            Target = kvp.Key + dir;
+                            MoveToPosition = kvp.Key;
+                            gameObject.transform.position = MoveToPosition;
+                            int attack = GameControllerScript.instance.CombatCalculator(gameObject, GameControllerScript.instance.UnitPos[Target]);
+                            GameControllerScript.instance.UnitPos[Target].GetComponent<UnitController>().Health = GameControllerScript.instance.UnitPos[Target].GetComponent<UnitController>().Health - attack;
+                            if (GameControllerScript.instance.UnitPos[Target].GetComponent<UnitController>().Health <= 0)
+                            {
+                                GameControllerScript.instance.KillUnitPlayScene(GameControllerScript.instance.UnitPos[Target]);
+                            }
+                            else
+                            {
+                                GameControllerScript.instance.UnitPos[Target].GetComponentInChildren<Text>().text = GameControllerScript.instance.UnitPos[Target].GetComponent<UnitController>().Health.ToString();
+                            }
+                            GameControllerScript.instance.MoveUnitPositionInDictionary(gameObject, OriginalPositionOfUnit);
+                            foreach (var kvvp in GameControllerScript.instance.TilePos)
+                            {
+                                kvvp.Value.GetComponent<TerrainController>().TerrainRoundUpdater();
+                            }
+                            foreach (var kvpp in GameControllerScript.instance.UnitPos)
+                            {
+                                kvpp.Value.GetComponent<UnitController>().GetTileValues();
+                            }
+                            UnitMovable = false;
+                            UnitMoved = true;
                         }
-                        else
-                        {
-                            GameControllerScript.instance.UnitPos[Target].GetComponentInChildren<Text>().text = GameControllerScript.instance.UnitPos[Target].GetComponent<UnitController>().Health.ToString();
-                        }
-                        GameControllerScript.instance.MoveUnitPositionInDictionary(gameObject, OriginalPositionOfUnit);
-                        foreach (var kvvp in GameControllerScript.instance.TilePos)
-                        {
-                            kvvp.Value.GetComponent<TerrainController>().TerrainRoundUpdater();
-                        }
-                        foreach (var kvpp in GameControllerScript.instance.UnitPos)
-                        {
-                            kvpp.Value.GetComponent<UnitController>().GetTileValues();
-                        }
-                        UnitMovable = false;
-                        UnitMoved = true;
                     }
-                } 
+                }
+            } 
+        }
+        else
+        {
+            foreach(var enemy in EnemyUnitsInRange)
+            {
+                if (!UnitMoved)
+                {
+                    //Debug.log("3");
+                    Target = enemy.Key;
+                    int attack = GameControllerScript.instance.CombatCalculator(gameObject, GameControllerScript.instance.UnitPos[Target]);
+                    GameControllerScript.instance.UnitPos[Target].GetComponent<UnitController>().Health = GameControllerScript.instance.UnitPos[Target].GetComponent<UnitController>().Health - attack;
+                    if (GameControllerScript.instance.UnitPos[Target].GetComponent<UnitController>().Health <= 0)
+                    {
+                        GameControllerScript.instance.KillUnitPlayScene(GameControllerScript.instance.UnitPos[Target]);
+                    }
+                    else
+                    {
+                        GameControllerScript.instance.UnitPos[Target].GetComponentInChildren<Text>().text = GameControllerScript.instance.UnitPos[Target].GetComponent<UnitController>().Health.ToString();
+                    }
+                    GameControllerScript.instance.MoveUnitPositionInDictionary(gameObject, OriginalPositionOfUnit);
+                    foreach (var kvvp in GameControllerScript.instance.TilePos)
+                    {
+                        kvvp.Value.GetComponent<TerrainController>().TerrainRoundUpdater();
+                    }
+                    foreach (var kvpp in GameControllerScript.instance.UnitPos)
+                    {
+                        kvpp.Value.GetComponent<UnitController>().GetTileValues();
+                    }
+                    UnitMovable = false;
+                    UnitMoved = true;
+                }
             }
         }
         if (UnitMoved == false)
         {
-            Debug.Log("3"); //picks radnom spot at max movement range and moves there.
-            Debug.Log(TilesWeights.Count);
-            foreach (var kvp in TilesWeights)
+            //Debug.log("4"); //picks radnom spot at max movement range and moves there.
+            //Debug.log(TilesWeights.Count);
+            List<Vector2> TemplistForward = new List<Vector2>();
+            List<Vector2> TemplistBackward = new List<Vector2>();
+
+            List<Vector2> Keylist = new List<Vector2>(TilesWeights.Keys);
+            System.Random rand = new System.Random();
+            Vector2 randkey = Keylist[rand.Next(Keylist.Count)];
+
+            //Debug.log("4.1");
+            gameObject.transform.position = randkey;
+            GameControllerScript.instance.MoveUnitPositionInDictionary(gameObject, OriginalPositionOfUnit);
+            foreach (var kvvp in GameControllerScript.instance.TilePos)
+            {
+                kvvp.Value.GetComponent<TerrainController>().TerrainRoundUpdater();
+            }
+            foreach (var kvpp in GameControllerScript.instance.UnitPos)
+            {
+                kvpp.Value.GetComponent<UnitController>().GetTileValues();
+            }
+            UnitMovable = false;
+            UnitMoved = true;
+
+            /*foreach (var kvp in TilesWeights)
             {
                 System.Random r = new System.Random();
                 int rand = r.Next(0, MovePoints);
                 if (kvp.Value == MovePoints - rand)
                 {
-                    Debug.Log("3.1");
+                    //Debug.log("4.1");
                     gameObject.transform.position = kvp.Key;
                     GameControllerScript.instance.MoveUnitPositionInDictionary(gameObject, OriginalPositionOfUnit);
                     foreach (var kvvp in GameControllerScript.instance.TilePos)
@@ -398,7 +457,7 @@ public class UnitController : MonoBehaviour
                     UnitMoved = true;
                     break;
                 }
-            }
+            }*/
         }
     }
 }

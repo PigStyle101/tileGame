@@ -4,7 +4,7 @@
   "Title": "Town",
   "Walkable": true,
   "Description": "A collection of huts",
-  "DefenceBonus": 1,
+  "DefenceBonus": 10,
   "Slug": "Town_Building",
   "Type": "Building",
   "Mod": "Core"

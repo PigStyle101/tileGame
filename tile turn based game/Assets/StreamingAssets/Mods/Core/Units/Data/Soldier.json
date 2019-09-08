@@ -6,7 +6,7 @@
   "Type": "Unit",
   "Mod": "Core",
   "Attack": 5,
-  "Defence": 2,
+  "Defence": 20,
   "Range": 1,
   "Health": 10,
   "MovePoints": 4,

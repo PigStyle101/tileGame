@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System.Text.RegularExpressions;
 
 public class PlaySceneCamController : MonoBehaviour
 {
@@ -45,6 +46,10 @@ public class PlaySceneCamController : MonoBehaviour
     private GameObject BuildingPanel;
     private GameObject EndGamePanel;
     private GameObject InfoPanel;
+    private Text FeedbackSaveMenu;
+    private InputField InputFieldSaveMenu;
+    private GameObject SavePanel;
+    private GameObject SaveButton;
     [HideInInspector]
     public Text FeedBackText;
     [HideInInspector]
@@ -110,6 +115,10 @@ public class PlaySceneCamController : MonoBehaviour
         BuildingPanel = transform.Find("Canvas").Find("Panel").Find("BuildingPanel").gameObject;
         EndGamePanel = transform.Find("Canvas").Find("Panel").Find("EndGamePanel").gameObject;
         InfoPanel = transform.Find("Canvas").Find("InfoPanel").gameObject;
+        SaveButton = transform.Find("Canvas").Find("Panel").Find("SaveButton").gameObject;
+        FeedbackSaveMenu = transform.Find("Canvas").Find("SavePanel").Find("FeedBackText").GetComponent<Text>();
+        InputFieldSaveMenu = transform.Find("Canvas").Find("SavePanel").Find("InputField").GetComponent<InputField>();
+        SavePanel = transform.Find("Canvas").Find("SavePanel").gameObject;
     }
 
     /// <summary>
@@ -159,12 +168,12 @@ public class PlaySceneCamController : MonoBehaviour
     /// </summary>
     public void EndTurnButtonClicked()
     {
-        GameControllerScript.instance.PlaySceneTurnChanger();
         BuildingPanel.SetActive(false);
         if (GameControllerScript.instance.SelectedUnitPlayScene != null)
         {
             GameControllerScript.instance.WaitActionPlayScene();
         }
+        GameControllerScript.instance.PlaySceneTurnChanger();
         UpdateTurnImageColor(GameControllerScript.instance.CurrentTeamsTurn);
     }
 
@@ -240,12 +249,12 @@ public class PlaySceneCamController : MonoBehaviour
         {
             if (!EventSystem.current.IsPointerOverGameObject()) //dont want to click through menus
             {
-                //Debug.Log("RayHitStarted");
+                ////Debug.log("RayHitStarted");
                 Ray ray = GameObject.Find("MainCamera").GetComponent<Camera>().ScreenPointToRay(Input.mousePosition); //GET THEM RAYS
                 RaycastHit[] hits;
                 hits = Physics.RaycastAll(ray);
                 BuildingRayBool = false;
-                //Debug.Log("Starting play scene ray hits");
+                ////Debug.log("Starting play scene ray hits");
                 for (int i = 0; i < hits.Length; i++) // GO THROUGH THEM RAYS
                 {
                     RaycastHit hit = hits[i];
@@ -293,12 +302,12 @@ public class PlaySceneCamController : MonoBehaviour
                         if (!BuildingRayBool)
                         {
                             BuildingRayBool = true;
-                            Debug.Log("1");
+                            //Debug.log("1");
                             if (!hit.transform.GetComponent<BuildingController>().Occupied && hit.transform.GetComponent<BuildingController>().CanBuild && hit.transform.GetComponent<BuildingController>().Team == GameControllerScript.instance.CurrentTeamsTurn)
                             {
                                 if (GameControllerScript.instance.SelectedUnitPlayScene == null)
                                 {
-                                    Debug.Log("1.1");
+                                    //Debug.log("1.1");
                                     AddUnitButtonsToBuildContent(hit.transform.GetComponent<BuildingController>().Mod);
                                     BuildingPanel.SetActive(true);
                                     CurrentlySelectedBuilding = hit.transform.position;
@@ -306,14 +315,14 @@ public class PlaySceneCamController : MonoBehaviour
                             }
                             else
                             {
-                                Debug.Log("1.2");
+                                //Debug.log("1.2");
                                 BuildingPanel.SetActive(false);
                             }
                         }
                     }
                     else if (hit.transform.tag != DatabaseController.instance.BuildingDictionary[0].Type && !BuildingRayBool)
                     {
-                        Debug.Log("2");
+                        //Debug.log("2");
                         BuildingPanel.SetActive(false);
                     }
                 }
@@ -334,7 +343,7 @@ public class PlaySceneCamController : MonoBehaviour
         {
             Destroy(ContentWindowBuilding.transform.GetChild(i).gameObject);
         }
-        Debug.Log("Adding Unit buttons to content window");
+        //Debug.log("Adding Unit buttons to content window");
         foreach (KeyValuePair<int, Unit> kvp in DatabaseController.instance.UnitDictionary) //adds a button for each Unit in the database
         {
             if (kvp.Value.Mod == BuildingMod)
@@ -461,7 +470,7 @@ public class PlaySceneCamController : MonoBehaviour
     /// </summary>
     public void UpdateGoldThings()
     {
-        GoldText.text = "Gold:" + GameControllerScript.instance.TeamGold[GameControllerScript.instance.CurrentTeamsTurn].ToString();
+        GoldText.text = "Gold:" + GameControllerScript.instance.TeamGold[GameControllerScript.instance.CurrentTeamsTurnIndex].ToString();
     }
 
     public void UpdateMoveableUnits()
@@ -513,5 +522,53 @@ public class PlaySceneCamController : MonoBehaviour
     public void HideInfoPanel()
     {
         InfoPanel.SetActive(false);
+    }
+
+    public void HideOrShowSaveButton(bool Show)
+    {
+        if (Show)
+        {
+            SaveButton.SetActive(true);
+        }
+        else
+        {
+            SaveButton.SetActive(false);
+        }
+    }
+
+    public void SaveButtonMainPanelController()
+    {
+        SavePanel.SetActive(true);
+    }
+
+    public void BackToGameController()
+    {
+        SavePanel.SetActive(false);
+    }
+
+    public void SaveButtonSavePanelController()
+    {
+        string SaveGameName = InputFieldSaveMenu.text;
+        if (!System.IO.File.Exists(Application.dataPath + "/StreamingAssets/Saves/" + SaveGameName + ".json"))
+        {
+            if (SaveGameName != "")
+            {
+                if (!Regex.IsMatch(SaveGameName, @"^[a-z][A-Z]+$"))
+                {
+                    GameControllerScript.instance.SaveGame(SaveGameName);
+                    FeedbackSaveMenu.text = "Saveing Game.";
+                }
+                else
+                {
+                    FeedbackSaveMenu.text = "Use only letters please.";
+                }
+            }else
+            {
+                FeedbackSaveMenu.text = "Must enter a name.";
+            }
+        }else
+        {
+            FeedbackSaveMenu.text = "A save file with that name already exist, pick a new one or delete old one.";
+        }
     }
 }
