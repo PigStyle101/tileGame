@@ -46,11 +46,11 @@ public class GameControllerScript : MonoBehaviour
     [HideInInspector]
     public string PlaySceneLoadStatus;
     [HideInInspector]
-    public List<int> TeamCount;
+    public List<TeamStuff> TeamList; //contains team, ai bool, gold, unitcount, and building count
     [HideInInspector]
-    public int CurrentTeamsTurn;
-    [HideInInspector]
-    public int CurrentTeamsTurnIndex;
+    public TeamStuff CurrentTeamsTurn = new TeamStuff();
+    //[HideInInspector]
+    //public int CurrentTeamsTurnIndex;
     private Vector2 originalPositionOfUnit;
     private Vector2 MoveToPosition;
     public AudioClip BattleAudio;
@@ -60,8 +60,10 @@ public class GameControllerScript : MonoBehaviour
     public string LogFile = "log.txt";
     public bool EchoToConsole = true;
     public bool AddTimeStamp = true;
-    public List<int> TeamGold; //Team,Gold
-    public List<int> AiOrPlayerList; //0 = player, 1 =ai
+    //public List<int> TeamGold; //Team,Gold
+    //public List<AiOrNot> AiOrPlayerList; //0 = player, 1 =ai
+    private string MapToLoadForMapEditor;
+    private bool MapEditorNewMapBool;
 
     private void Awake()
     {
@@ -106,7 +108,15 @@ public class GameControllerScript : MonoBehaviour
     public void CreateNewMapForMapEditor(int MapSize)
     {
         EditorMapSize = MapSize;
+        MapEditorNewMapBool = true;
         SceneManager.LoadScene("MapEditorScene");//notes and stuff
+    }
+
+    public void LoadMapForMapEditorFromMainMenu(string map)
+    {
+        MapToLoadForMapEditor = map;
+        MapEditorNewMapBool = false;
+        SceneManager.LoadScene("MapEditorScene");
     }
 
     /// <summary>
@@ -120,18 +130,25 @@ public class GameControllerScript : MonoBehaviour
         CurrentScene = sceneVar.name;
         if (sceneVar.name == "MapEditorScene")
         {
-            MEMCC = GameObject.Find("MainCamera").GetComponent<MapEditMenueCamController>();
-            for (int i = 0; i < EditorMapSize; i++)
+            if (MapEditorNewMapBool)
             {
-                for (int o = 0; o < EditorMapSize; o++)
+                MEMCC = GameObject.Find("MainCamera").GetComponent<MapEditMenueCamController>();
+                for (int i = 0; i < EditorMapSize; i++)
                 {
-                    //creates a map in data to use for drawing later
-                    MapDictionary.Add(new Vector2(i, o), DatabaseController.instance.TerrainDictionary[0].Title);
-                    //UnityEngine.//Debug.log("Added Key: " + i + o);
+                    for (int o = 0; o < EditorMapSize; o++)
+                    {
+                        //creates a map in data to use for drawing later
+                        MapDictionary.Add(new Vector2(i, o), DatabaseController.instance.TerrainDictionary[0].Title);
+                        //UnityEngine.//Debug.log("Added Key: " + i + o);
+                    }
                 }
+                DrawNewMapForMapEditor();
+                MapDictionary = new Dictionary<Vector2, string>(); //clear dictionary for good measure 
             }
-            DrawNewMapForMapEditor();
-            MapDictionary = new Dictionary<Vector2, string>(); //clear dictionary for good measure
+            else
+            {
+                LoadMapMapEditor(MapToLoadForMapEditor);
+            }
         }
         else if (sceneVar.name == "PlayScene")
         {
@@ -144,12 +161,12 @@ public class GameControllerScript : MonoBehaviour
             else if (PlaySceneLoadStatus == "SavedGame")
             {
                 LoadSavedGamePlayScene(MapNameForPlayScene);
-                PlaySceneLoadGameInitalizer(CurrentTeamsTurnIndex);
+                PlaySceneLoadGameInitalizer();
             }
         }
         else if (sceneVar.name == "MainMenuScene")
         {
-
+            
         }
         //AudioController(sceneVar.name);
     }
@@ -578,56 +595,62 @@ public class GameControllerScript : MonoBehaviour
             {
                 if (!Regex.IsMatch(SaveName, @"^[a-z][A-Z]+$"))
                 {
-                    int count = 0;
-                    TeamCount = new List<int>();
-                    Map[] save = new Map[TP.Count + UP.Count + BP.Count];
-                    foreach (KeyValuePair<Vector2, GameObject> kvp in TP)
+                    Map MF = new Map();
+                    TeamList = FillTeamList();
+                    MF.UnitList = new List<SaveableUnit>();
+                    MF.TerrainList = new List<SaveableTile>();
+                    MF.BuildingList = new List<SaveableBuilding>();
+                    foreach (var kvp in UnitPos)
                     {
-                        if (kvp.Value != null)
+                        SaveableUnit SU = new SaveableUnit();
+                        SU.Health = kvp.Value.GetComponent<UnitController>().Health;
+                        SU.Team = kvp.Value.GetComponent<UnitController>().Team;
+                        SU.ID = kvp.Value.GetComponent<UnitController>().ID;
+                        SU.Location = kvp.Key;
+                        MF.UnitList.Add(SU);
+                        foreach (var t in TeamList)
                         {
-                            save[count] = new Map();
-                            save[count].Location = kvp.Key;
-                            save[count].Name = kvp.Value.name;
-                            save[count].Type = DatabaseController.instance.TerrainDictionary[0].Type;
-                            count = count + 1;
+                            if (t.Team == kvp.Value.GetComponent<UnitController>().Team && t.Active == false && t.Team != 0)
+                            {
+                                t.Active = true;
+                            } 
                         }
                     }
-                    foreach (KeyValuePair<Vector2, GameObject> kvp in UP)
+                    foreach (var kvp in TilePos)
                     {
-                        if (kvp.Value != null)
+                        SaveableTile ST = new SaveableTile();
+                        ST.ID = kvp.Value.GetComponent<TerrainController>().ID;
+                        ST.Location = kvp.Key;
+                        MF.TerrainList.Add(ST);
+                    }
+                    foreach (var kvp in BuildingPos)
+                    {
+                        SaveableBuilding SB = new SaveableBuilding();
+                        SB.Health = kvp.Value.GetComponent<BuildingController>().Health;
+                        SB.Team = kvp.Value.GetComponent<BuildingController>().Team;
+                        SB.ID = kvp.Value.GetComponent<BuildingController>().ID;
+                        SB.Location = kvp.Key;
+                        MF.BuildingList.Add(SB);
+                        foreach (var t in TeamList)
                         {
-                            save[count] = new Map();
-                            save[count].Location = kvp.Key;
-                            save[count].Name = kvp.Value.name;
-                            save[count].Type = DatabaseController.instance.UnitDictionary[0].Type;
-                            save[count].Team = kvp.Value.GetComponent<UnitController>().Team;
-                            count = count + 1;
-                            if (!TeamCount.Contains(kvp.Value.GetComponent<UnitController>().Team))
+                            if (t.Team == kvp.Value.GetComponent<BuildingController>().Team && t.Active == false&& t.Team !=0)
                             {
-                                TeamCount.Add(kvp.Value.GetComponent<UnitController>().Team);
+                                t.Active = true;
                             }
                         }
                     }
-                    foreach (KeyValuePair<Vector2, GameObject> kvp in BP)
+                    int tempteamcount = new int();
+                    foreach(var t in TeamList)
                     {
-                        if (kvp.Value != null)
+                        if (t.Active)
                         {
-                            save[count] = new Map();
-                            save[count].Location = kvp.Key;
-                            save[count].Name = kvp.Value.name;
-                            save[count].Type = DatabaseController.instance.BuildingDictionary[0].Type;
-                            save[count].Team = kvp.Value.GetComponent<BuildingController>().Team;
-                            count = count + 1;
-                            if (!TeamCount.Contains(kvp.Value.GetComponent<BuildingController>().Team))
-                            {
-                                TeamCount.Add(kvp.Value.GetComponent<BuildingController>().Team);
-                            }
+                            tempteamcount = tempteamcount + 1;
                         }
                     }
-                    if (TeamCount.Count >= 2)
+                    if (tempteamcount >= 2)
                     {
-                        save[0].TeamCount = TeamCount;
-                        string tempjson = JsonHelper.ToJson(save, true);
+                        MF.Teamlist = TeamList;
+                        string tempjson = JsonUtility.ToJson(MF,true);
                         FileStream fs = File.Create(Application.dataPath + "/StreamingAssets/Maps/" + SaveName + ".json");
                         StreamWriter sr = new StreamWriter(fs);
                         sr.Write(tempjson);
@@ -664,11 +687,6 @@ public class GameControllerScript : MonoBehaviour
     /// <param name="name">Name of map to load</param>
     public void LoadMapMapEditor(string name)
     {
-        StreamReader SR = new StreamReader(Application.dataPath + "/StreamingAssets/Maps/" + name + ".json");
-        string tempstring = SR.ReadToEnd();
-        Map[] Load = JsonHelper.FromJson<Map>(tempstring);
-
-
         var TilesToDelete = GameObject.FindGameObjectsWithTag(DatabaseController.instance.TerrainDictionary[0].Type);
         var UnitsToDelete = GameObject.FindGameObjectsWithTag(DatabaseController.instance.UnitDictionary[0].Type);
         var BuildingsToDelete = GameObject.FindGameObjectsWithTag(DatabaseController.instance.BuildingDictionary[0].Type);
@@ -688,56 +706,35 @@ public class GameControllerScript : MonoBehaviour
             Destroy(BGO);
         }
 
-        for (int i = 0; i < Load.Length; i++)
+        StreamReader SR = new StreamReader(Application.dataPath + "/StreamingAssets/Maps/" + name + ".json");
+        string tempstring = SR.ReadToEnd();
+        Map LoadingFile = JsonUtility.FromJson<Map>(tempstring);
+        TeamList.Clear();
+        TilePos.Clear();
+        UnitPos.Clear();
+        BuildingPos.Clear();
+        TeamList = LoadingFile.Teamlist;
+        foreach (var item in LoadingFile.TerrainList)
         {
-            if (Load[i].Type == DatabaseController.instance.TerrainDictionary[0].Type)
+            GameObject TGO = DatabaseController.instance.CreateAdnSpawnTerrain(item.Location, item.ID);
+            TilePos.Add(item.Location, TGO);
+            if (item.Location.x > EditorMapSize)
             {
-                foreach (var kvp in DatabaseController.instance.TerrainDictionary)
-                {
-                    if (kvp.Value.Title == Load[i].Name)
-                    {
-                        GameObject GO = DatabaseController.instance.CreateAdnSpawnTerrain(Load[i].Location, kvp.Value.ID);
-                        AddTilesToDictionary(GO);
-                    }
-                }
-            }
-            else if (Load[i].Type == DatabaseController.instance.UnitDictionary[0].Type)
-            {
-                foreach (var kvp in DatabaseController.instance.UnitDictionary)
-                {
-                    if (kvp.Value.Title == Load[i].Name)
-                    {
-                        GameObject GO = DatabaseController.instance.CreateAndSpawnUnit(Load[i].Location, kvp.Value.ID, Load[i].Team);
-                        AddUnitsToDictionary(GO);
-                    }
-                }
-            }
-            else if (Load[i].Type == DatabaseController.instance.BuildingDictionary[0].Type)
-            {
-                foreach (var kvp in DatabaseController.instance.BuildingDictionary)
-                {
-                    if (kvp.Value.Title == Load[i].Name)
-                    {
-                        GameObject GO = DatabaseController.instance.CreateAndSpawnBuilding(Load[i].Location, kvp.Value.ID, Load[i].Team);
-                        AddBuildingToDictionary(GO);
-                    }
-                }
+                EditorMapSize = (int)item.Location.x;
             }
         }
-        //foreach (var go in GameObject.FindGameObjectsWithTag(DatabaseController.instance.TerrainDictionary[0].Type))
-        //{
-        //    AddTilesToDictionary(go);
-        //}
-        //foreach (var go in GameObject.FindGameObjectsWithTag(DatabaseController.instance.UnitDictionary[0].Type))
-        //{
-        //    AddUnitsToDictionary(go);
-        //}
-        //foreach (var go in GameObject.FindGameObjectsWithTag(DatabaseController.instance.BuildingDictionary[0].Type))
-        //{
-        //    AddBuildingToDictionary(go);
-        //}
-        SR.Close();
-        SR.Dispose();
+        foreach (var item in LoadingFile.UnitList)
+        {
+            GameObject TGO = DatabaseController.instance.CreateAndSpawnUnit(item.Location, item.ID, item.Team);
+            UnitPos.Add(item.Location, TGO);
+        }
+        foreach (var item in LoadingFile.BuildingList)
+        {
+            GameObject TGO = DatabaseController.instance.CreateAndSpawnBuilding(item.Location, item.ID, item.Team);
+            BuildingPos.Add(item.Location, TGO);
+        }
+        CameraVar = GameObject.Find("MainCamera");
+        CameraVar.transform.position = new Vector3(EditorMapSize / 2 - .5f, EditorMapSize / 2 - .5f, EditorMapSize * -1);
         SpriteUpdateActivator();
     }
 
@@ -749,70 +746,34 @@ public class GameControllerScript : MonoBehaviour
     {
         StreamReader SR = new StreamReader(Application.dataPath + "/StreamingAssets/Maps/" + name + ".json");
         string tempstring = SR.ReadToEnd();
-        Map[] Load = JsonHelper.FromJson<Map>(tempstring);
-        UnitPos = new Dictionary<Vector2, GameObject>();
-        BuildingPos = new Dictionary<Vector2, GameObject>();
-        TilePos = new Dictionary<Vector2, GameObject>();
-
-        for (int i = 0; i < Load.Length; i++)
+        Map LoadingFile = UnityEngine.JsonUtility.FromJson<Map>(tempstring);
+        //TeamList.Clear();
+        TilePos.Clear();
+        UnitPos.Clear();
+        BuildingPos.Clear();
+        //TeamList = LoadingFile.Teamlist;
+        foreach (var item in LoadingFile.TerrainList)
         {
-            if (Load[i].Type == DatabaseController.instance.TerrainDictionary[0].Type)
+            GameObject TGO = DatabaseController.instance.CreateAdnSpawnTerrain(item.Location, item.ID);
+            TilePos.Add(item.Location, TGO);
+            if (item.Location.x > PlayMapSize)
             {
-                foreach (var kvp in DatabaseController.instance.TerrainDictionary)
-                {
-                    if (kvp.Value.Title == Load[i].Name)
-                    {
-                        DatabaseController.instance.CreateAdnSpawnTerrain(Load[i].Location, kvp.Value.ID);
-                        if (Load[i].Location.x > PlayMapSize)
-                        {
-                            PlayMapSize = (int)Load[i].Location.x;
-                        }
-                    }
-                }
-            }
-            else if (Load[i].Type == DatabaseController.instance.UnitDictionary[0].Type)
-            {
-                foreach (var kvp in DatabaseController.instance.UnitDictionary)
-                {
-                    if (kvp.Value.Title == Load[i].Name)
-                    {
-                        GameObject GO = DatabaseController.instance.CreateAndSpawnUnit(Load[i].Location, kvp.Value.ID, Load[i].Team);
-                        AddUnitsToDictionary(GO);
-                    }
-                }
-            }
-            else if (Load[i].Type == DatabaseController.instance.BuildingDictionary[0].Type)
-            {
-                foreach (var kvp in DatabaseController.instance.BuildingDictionary)
-                {
-                    if (kvp.Value.Title == Load[i].Name)
-                    {
-                        DatabaseController.instance.CreateAndSpawnBuilding(Load[i].Location, kvp.Value.ID, Load[i].Team);
-                    }
-                }
+                PlayMapSize = (int)item.Location.x;
             }
         }
-        TeamCount = Load[0].TeamCount;
-        //Debug.log("TeamCount = " + TeamCount);
-        foreach (var go in GameObject.FindGameObjectsWithTag(DatabaseController.instance.TerrainDictionary[0].Type))
+        foreach (var item in LoadingFile.UnitList)
         {
-            AddTilesToDictionary(go);
+            GameObject TGO = DatabaseController.instance.CreateAndSpawnUnit(item.Location, item.ID, item.Team);
+            UnitPos.Add(item.Location, TGO);
         }
-        foreach (var go in GameObject.FindGameObjectsWithTag(DatabaseController.instance.BuildingDictionary[0].Type))
+        foreach (var item in LoadingFile.BuildingList)
         {
-            AddBuildingToDictionary(go);
+            GameObject TGO = DatabaseController.instance.CreateAndSpawnBuilding(item.Location, item.ID, item.Team);
+            BuildingPos.Add(item.Location, TGO);
         }
-        SR.Close();
-        SR.Dispose();
-        SpriteUpdateActivator();
         CameraVar = GameObject.Find("MainCamera");
         CameraVar.transform.position = new Vector3(PlayMapSize / 2 - .5f, PlayMapSize / 2 - .5f, PlayMapSize * -1);
-
-        TeamGold = new List<int>();
-        foreach (var t in TeamCount)
-        {
-            TeamGold.Add(0);
-        }
+        SpriteUpdateActivator();
     }
 
     /// <summary>
@@ -846,15 +807,21 @@ public class GameControllerScript : MonoBehaviour
     /// </summary>
     public void PlaySceneNewGameInitalizer()
     {
-        System.Random rnd = new System.Random();
-        CurrentTeamsTurnIndex = rnd.Next(0, TeamCount.Count);
-        CurrentTeamsTurn = TeamCount[CurrentTeamsTurnIndex];
+        List<TeamStuff> tempteamlist = new List<TeamStuff>(); //temp list of teamstuff
+        foreach(var t in TeamList)
+        {
+            tempteamlist.Add(t);
+        }
+        tempteamlist.RemoveAll(TeamIsActive);
+        System.Random rnnd = new System.Random();
+        int tempRandom = rnnd.Next(0, tempteamlist.Count); //get random number based on how many are on list
+        CurrentTeamsTurn = TeamList[TeamList.IndexOf(tempteamlist[tempRandom])]; //set team turn number to team of random picked number
         PSCC.CurrentPlayerTurnText.text = "Team turn";
-        PSCC.GoldText.text = "Gold:" + TeamGold[CurrentTeamsTurnIndex].ToString();
+        PSCC.GoldText.text = "Gold:" + TeamList[CurrentTeamsTurn.Team].Gold.ToString();
         AllRoundUpdater();
         foreach (var kvp in BuildingPos)
         {
-            if (kvp.Value.GetComponent<BuildingController>().Team == CurrentTeamsTurn)
+            if (kvp.Value.GetComponent<BuildingController>().Team == CurrentTeamsTurn.Team)
             {
                 kvp.Value.GetComponent<BuildingController>().CanBuild = true;
             }
@@ -866,29 +833,27 @@ public class GameControllerScript : MonoBehaviour
         int TempInt = 0;
         foreach (var kvp in BuildingPos)
         {
-            if (kvp.Value.GetComponent<BuildingController>().Team == CurrentTeamsTurn)
+            if (kvp.Value.GetComponent<BuildingController>().Team == CurrentTeamsTurn.Team)
             {
                 TempInt = TempInt + 1;
             }
         }
         TempInt = TempInt * 100;
-        TeamGold[CurrentTeamsTurnIndex] = TeamGold[CurrentTeamsTurnIndex] + TempInt;
+        TeamList[CurrentTeamsTurn.Team].Gold = TeamList[CurrentTeamsTurn.Team].Gold + TempInt;
         PSCC.UpdateGoldThings();
-        PSCC.UpdateTurnImageColor(CurrentTeamsTurn);
+        PSCC.UpdateTurnImageColor(CurrentTeamsTurn.Team);
         AiController();
         PSCC.HideOrShowSaveButton(true);
     } //sets up game for new game
 
-    public void PlaySceneLoadGameInitalizer(int TTindex)
+    public void PlaySceneLoadGameInitalizer()
     {
-        CurrentTeamsTurnIndex = TTindex;
-        CurrentTeamsTurn = TeamCount[TTindex];
         PSCC.CurrentPlayerTurnText.text = "Team turn";
-        PSCC.GoldText.text = "Gold:" + TeamGold[CurrentTeamsTurnIndex].ToString();
+        PSCC.GoldText.text = "Gold:" + TeamList[CurrentTeamsTurn.Team].Gold.ToString();
         AllRoundUpdater();
         foreach (var kvp in BuildingPos)
         {
-            if (kvp.Value.GetComponent<BuildingController>().Team == CurrentTeamsTurn)
+            if (kvp.Value.GetComponent<BuildingController>().Team == CurrentTeamsTurn.Team)
             {
                 kvp.Value.GetComponent<BuildingController>().CanBuild = true;
             }
@@ -898,7 +863,7 @@ public class GameControllerScript : MonoBehaviour
             }
         }
         PSCC.UpdateGoldThings();
-        PSCC.UpdateTurnImageColor(CurrentTeamsTurn);
+        PSCC.UpdateTurnImageColor(CurrentTeamsTurn.Team);
         AiController();
         PSCC.HideOrShowSaveButton(true);
     }
@@ -908,57 +873,54 @@ public class GameControllerScript : MonoBehaviour
     /// </summary>
     public void PlaySceneTurnChanger()
     {
-        Dictionary<int, int> TempTeamsUnits = new Dictionary<int, int>();
-        foreach (var item in TeamCount)
+        foreach(var t in TeamList)
         {
-            TempTeamsUnits.Add(item, 0);
+            t.UnitCount = 0;
+            t.BuildingCount = 0;
         }
         foreach (var kvp in UnitPos) //check through units to make sure there is still enough players to play the game
         {
-            if (TempTeamsUnits.ContainsKey(kvp.Value.GetComponent<UnitController>().Team))
-            {
-                TempTeamsUnits[kvp.Value.GetComponent<UnitController>().Team] = TempTeamsUnits[kvp.Value.GetComponent<UnitController>().Team] + 1;
-            }
+            TeamList[kvp.Value.GetComponent<UnitController>().Team].UnitCount++; 
         }
         foreach (var kvp in BuildingPos)
         {
-            if (TempTeamsUnits.ContainsKey(kvp.Value.GetComponent<BuildingController>().Team))
+            TeamList[kvp.Value.GetComponent<BuildingController>().Team].BuildingCount++;
+        }
+        foreach (var t in TeamList)
+        {
+            if (t.UnitCount + t.BuildingCount == 0)
             {
-                TempTeamsUnits[kvp.Value.GetComponent<BuildingController>().Team] = TempTeamsUnits[kvp.Value.GetComponent<BuildingController>().Team] + 1;
+                t.Defeated = true;
             }
         }
-        foreach (var kvp in TempTeamsUnits)
+        List<TeamStuff> TempTeamList = new List<TeamStuff>();
+        foreach(var t in TeamList)
         {
-            if (kvp.Value == 0)
-            {
-                TeamCount.Remove(kvp.Key);
-                TeamGold.Remove(kvp.Key);
-                AiOrPlayerList.Remove(kvp.Key);
-            }
+            TempTeamList.Add(t);
         }
-        if (TeamCount.Count == 1)
+        TempTeamList.RemoveAll(TeamIsActive);
+        if (TempTeamList.Count == 1)
         {
-            PSCC.GameEndController(TeamCount[0]);
+            PSCC.GameEndController(TempTeamList[0].Team);
         }
         else
         {
-            if (CurrentTeamsTurnIndex < TeamCount.Count - 1)
+            if (CurrentTeamsTurn.Team < TempTeamList[TempTeamList.Count - 1].Team) //if index is not at max
             {
-                CurrentTeamsTurnIndex = CurrentTeamsTurnIndex + 1;
-                CurrentTeamsTurn = TeamCount[CurrentTeamsTurnIndex];
+                CurrentTeamsTurn = TeamList[TeamList.IndexOf(CurrentTeamsTurn)+1];
             }
             else
             {
-                CurrentTeamsTurnIndex = 0;
-                CurrentTeamsTurn = TeamCount[CurrentTeamsTurnIndex];
+                CurrentTeamsTurn = TeamList[TeamList.IndexOf(TempTeamList[0])];
             }
             PSCC.CurrentPlayerTurnText.text = "Team turn";
             AllRoundUpdater();
             foreach (var kvp in BuildingPos)
             {
-                if (kvp.Value.GetComponent<BuildingController>().Team == CurrentTeamsTurn)
+                if (kvp.Value.GetComponent<BuildingController>().Team == CurrentTeamsTurn.Team)
                 {
                     kvp.Value.GetComponent<BuildingController>().CanBuild = true;
+                    kvp.Value.GetComponent<BuildingController>().HealIfFriendlyUnitOnBuilding();
                 }
                 else
                 {
@@ -968,13 +930,13 @@ public class GameControllerScript : MonoBehaviour
             int TempInt = 0;
             foreach (var kvp in BuildingPos)
             {
-                if (kvp.Value.GetComponent<BuildingController>().Team == CurrentTeamsTurn)
+                if (kvp.Value.GetComponent<BuildingController>().Team == CurrentTeamsTurn.Team)
                 {
                     TempInt = TempInt + 1;
                 }
             }
             TempInt = TempInt * 100;
-            TeamGold[CurrentTeamsTurnIndex] = TeamGold[CurrentTeamsTurnIndex] + TempInt;
+            TeamList[CurrentTeamsTurn.Team].Gold = TeamList[CurrentTeamsTurn.Team].Gold + TempInt;
             PSCC.UpdateGoldThings();
             AiController();
             PSCC.HideOrShowSaveButton(true);
@@ -1189,7 +1151,7 @@ public class GameControllerScript : MonoBehaviour
 
     public void AiController()
     {
-        if (AiOrPlayerList[CurrentTeamsTurnIndex] == 1) // if team is ai do something
+        if (TeamList[CurrentTeamsTurn.Team].IsAi) // if team is ai do something
         {
             Dictionary<Vector2, GameObject> TempDict = new Dictionary<Vector2, GameObject>();
             foreach (var kvp in UnitPos)
@@ -1198,14 +1160,14 @@ public class GameControllerScript : MonoBehaviour
             }
             foreach (var kvp in TempDict)
             {
-                if (kvp.Value.GetComponent<UnitController>().Team == CurrentTeamsTurn)
+                if (kvp.Value.GetComponent<UnitController>().Team == CurrentTeamsTurn.Team)
                 {
                     kvp.Value.GetComponent<UnitController>().UnitAi();
                 }
             }
             foreach (var kvp in BuildingPos)
             {
-                if (kvp.Value.GetComponent<BuildingController>().Team == CurrentTeamsTurn)
+                if (kvp.Value.GetComponent<BuildingController>().Team == CurrentTeamsTurn.Team)
                 {
                     kvp.Value.GetComponent<BuildingController>().BuildingAiController();
                 }
@@ -1218,10 +1180,8 @@ public class GameControllerScript : MonoBehaviour
     {
 
         Save SF = new Save();
-        SF.TeamGold = TeamGold;
-        SF.AiOrPlayerList = AiOrPlayerList;
-        SF.TeamCount = TeamCount;
-        SF.CurrentTeamsTurnIndex = CurrentTeamsTurnIndex;
+        SF.TeamList = TeamList;
+        SF.CurrentTeamsTurn = CurrentTeamsTurn.Team;
         SF.UnitList = new List<SaveableUnit>();
         SF.TerrainList = new List<SaveableTile>();
         SF.BuildingList = new List<SaveableBuilding>();
@@ -1250,7 +1210,7 @@ public class GameControllerScript : MonoBehaviour
             SB.Location = kvp.Key;
             SF.BuildingList.Add(SB);
         }
-        string tempjson = UnityEngine.JsonUtility.ToJson(SF);
+        string tempjson = UnityEngine.JsonUtility.ToJson(SF,true);
         FileStream fs = File.Create(Application.dataPath + "/StreamingAssets/Saves/" + SaveName + ".json");
         StreamWriter sr = new StreamWriter(fs);
         sr.Write(tempjson);
@@ -1265,15 +1225,11 @@ public class GameControllerScript : MonoBehaviour
         StreamReader SR = new StreamReader(Application.dataPath + "/StreamingAssets/Saves/" + name + ".json");
         string tempstring = SR.ReadToEnd();
         Save LoadingFile = UnityEngine.JsonUtility.FromJson<Save>(tempstring);
-        TeamGold.Clear();
-        AiOrPlayerList.Clear();
-        TeamCount.Clear();
+        TeamList.Clear();
         TilePos.Clear();
         UnitPos.Clear();
         BuildingPos.Clear();
-        TeamCount = LoadingFile.TeamCount;
-        TeamGold = LoadingFile.TeamGold;
-        AiOrPlayerList = LoadingFile.AiOrPlayerList;
+        TeamList = LoadingFile.TeamList;
         foreach(var item in LoadingFile.TerrainList)
         {
             GameObject TGO = DatabaseController.instance.CreateAdnSpawnTerrain(item.Location, item.ID);
@@ -1295,11 +1251,70 @@ public class GameControllerScript : MonoBehaviour
             TGO.GetComponent<BuildingController>().Health = item.Health;
             BuildingPos.Add(item.Location, TGO);
         }
-        CurrentTeamsTurnIndex = LoadingFile.CurrentTeamsTurnIndex;
-        CurrentTeamsTurn = TeamCount[CurrentTeamsTurnIndex];
+        CurrentTeamsTurn = TeamList[LoadingFile.CurrentTeamsTurn];
         CameraVar = GameObject.Find("MainCamera");
         CameraVar.transform.position = new Vector3(PlayMapSize / 2 - .5f, PlayMapSize / 2 - .5f, PlayMapSize * -1);
         SpriteUpdateActivator();
+    }
+
+    public List<TeamStuff> FillTeamList()
+    {
+        List<TeamStuff> L = new List<TeamStuff>();
+        TeamStuff T0 = new TeamStuff();
+        L.Add(T0);
+        TeamStuff T1 = new TeamStuff();
+        T1.Team = 1;
+        L.Add(T1);//1
+        TeamStuff T2 = new TeamStuff();
+        T2.Team = 2;
+        L.Add(T2);//2
+        TeamStuff T3 = new TeamStuff();
+        T3.Team = 3;
+        L.Add(T3);//3
+        TeamStuff T4 = new TeamStuff();
+        T4.Team = 4;
+        L.Add(T4);//4
+        TeamStuff T5 = new TeamStuff();
+        T5.Team = 5;
+        T5.IsAi = false;
+        L.Add(T5);//5
+        TeamStuff T6 = new TeamStuff();
+        T6.Team = 6;
+        L.Add(T6);//6
+        TeamStuff T7 = new TeamStuff();
+        T7.Team = 7;
+        L.Add(T7);//7
+        TeamStuff T8 = new TeamStuff();
+        T8.Team = 8;
+        L.Add(T8);//8
+        TeamStuff T9 = new TeamStuff();
+        T9.Team = 9;
+        L.Add(T9);//9
+        return L;
+    }
+
+    public bool TeamIsActive(TeamStuff t)
+    {
+        if (t.Active && !t.Defeated)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    public bool FindLastTeam(TeamStuff t)
+    {
+        if (t.Team == 9)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 }
 
@@ -1309,25 +1324,21 @@ public class GameControllerScript : MonoBehaviour
 [Serializable]
 public class Map
 {
-    public SeralizableVector2 Location;
-    public string Name;
-    public int Team;
-    public string Type;
-    public List<int> TeamCount;
-    public List<int> AiList; // 0 = player, 1= ai
+    public List<TeamStuff> Teamlist;
+    public List<SaveableUnit> UnitList;
+    public List<SaveableBuilding> BuildingList;
+    public List<SaveableTile> TerrainList;
     public List<string> Mods;
 }
 
 [Serializable]
 public class Save
 {
-    public List<int> AiOrPlayerList; //0 = player, 1 =ai
-    public List<int> TeamCount;
-    public int CurrentTeamsTurnIndex;
+    public List<TeamStuff> TeamList;
+    public int CurrentTeamsTurn;
     public List<SaveableUnit> UnitList;
     public List<SaveableBuilding> BuildingList;
     public List<SaveableTile> TerrainList;
-    public List<int> TeamGold;
 }
 
 [Serializable]
@@ -1406,4 +1417,16 @@ public class SaveableTile
 {
     public int ID;
     public SeralizableVector2 Location;
+}
+
+[Serializable]
+public class TeamStuff
+{
+    public int Team;
+    public bool Active = false;
+    public int UnitCount = 0;
+    public int BuildingCount = 0;
+    public int Gold = 0;
+    public bool IsAi = false;
+    public bool Defeated = false;
 }

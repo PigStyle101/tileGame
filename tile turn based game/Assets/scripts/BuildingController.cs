@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System;
+using UnityEngine.UI;
 
 public class BuildingController : MonoBehaviour
 {
@@ -17,6 +18,8 @@ public class BuildingController : MonoBehaviour
     public string Mod;
     [HideInInspector]
     public int Health;
+    [HideInInspector]
+    public int MaxHealth;
     [HideInInspector]
     public int DefenceBonus;
     [HideInInspector]
@@ -87,9 +90,8 @@ public class BuildingController : MonoBehaviour
     {
         foreach(var kvp in DatabaseController.instance.UnitDictionary)
         {
-            if (kvp.Value.Cost <= GameControllerScript.instance.TeamGold[GameControllerScript.instance.CurrentTeamsTurnIndex] && CanBuild && !Occupied)
+            if (kvp.Value.Cost <= GameControllerScript.instance.TeamList[GameControllerScript.instance.CurrentTeamsTurn.Team].Gold && CanBuild && !Occupied)
             {
-                int tempgold = GameControllerScript.instance.TeamGold[GameControllerScript.instance.CurrentTeamsTurnIndex];
                 GameObject GO = DatabaseController.instance.CreateAndSpawnUnit(gameObject.transform.position, kvp.Value.ID, Team);
                 GameControllerScript.instance.AddUnitsToDictionary(GO);
                 GO.GetComponent<UnitController>().UnitMovable = false;
@@ -97,10 +99,22 @@ public class BuildingController : MonoBehaviour
                 {
                     unit.Value.GetComponent<UnitController>().GetTileValues();
                 }
-                GameControllerScript.instance.TeamGold[GameControllerScript.instance.CurrentTeamsTurnIndex] = GameControllerScript.instance.TeamGold[GameControllerScript.instance.CurrentTeamsTurnIndex] - kvp.Value.Cost;
+                GameControllerScript.instance.TeamList[GameControllerScript.instance.CurrentTeamsTurn.Team].Gold = GameControllerScript.instance.TeamList[GameControllerScript.instance.CurrentTeamsTurn.Team].Gold - kvp.Value.Cost;
                 PSCC = GameObject.Find("MainCamera").GetComponent<PlaySceneCamController>();
                 PSCC.UpdateGoldThings();
                 CanBuild = false;
+            }
+        }
+    }
+
+    public void HealIfFriendlyUnitOnBuilding()
+    {
+        foreach (var u in GameControllerScript.instance.UnitPos)
+        {
+            if (Health < MaxHealth && u.Key == (Vector2)gameObject.transform.position && u.Value.GetComponent<UnitController>().Team == Team)
+            {
+                Health = Health + 1;
+                gameObject.GetComponentInChildren<Text>().text = Health.ToString();
             }
         }
     }

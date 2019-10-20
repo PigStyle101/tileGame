@@ -57,7 +57,7 @@ public class UnitController : MonoBehaviour
 
     public void UnitRoundUpdater()
     {
-        if (Team == GameControllerScript.instance.CurrentTeamsTurn) //object is on the current team
+        if (Team == GameControllerScript.instance.CurrentTeamsTurn.Team) //object is on the current team
         {
             if (!UnitMoved)
             {
@@ -67,19 +67,21 @@ public class UnitController : MonoBehaviour
             {
                 UnitMovable = false;
             }
-            //foreach (var kvp in DatabaseController.instance.UnitDictionary)
-            //{
-            //    if (gameObject.transform.name == kvp.Value.Title)
-            //    {
-                    GetTileValues();
-            //    }
-            //}
+            GetTileValues();
             UnitMoved = false;
         }
         else
         {
             UnitMovable = false;
             UnitMoved = false;
+        }
+        foreach(var b in GameControllerScript.instance.BuildingPos)
+        {
+            if (b.Key == (Vector2)gameObject.transform.position && b.Value.GetComponent<BuildingController>().Team == Team && Health < MaxHealth &&GameControllerScript.instance.CurrentTeamsTurn.Team == Team)
+            {
+                Health = Health + 1;
+                gameObject.GetComponentInChildren<Text>().text = Health.ToString();
+            }
         }
     }
 
@@ -264,6 +266,8 @@ public class UnitController : MonoBehaviour
                     ////Debug.log("Changing tile to " + kvp.Value.Title);
                     gameObject.name = kvp.Value.Title;//change name of tile
                     gameObject.GetComponent<SpriteRenderer>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.UnitDictionary[kvp.Key].ArtworkDirectory[0]); //change sprite of tile
+                    Health = kvp.Value.Health;
+                    gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").Find("Text").GetComponent<Text>().text = Health.ToString();
                 }
             }
         }
@@ -339,17 +343,17 @@ public class UnitController : MonoBehaviour
         Vector2 OriginalPositionOfUnit = gameObject.transform.position;
         Vector2 MoveToPosition;
         Vector2 Target;
-        if (EnemyUnitsInRange.Count < 1)
+        if (EnemyUnitsInRange.Count < 1) //if no enemy in range
         {
             foreach (var kvp in TilesWeights)
             {
                 foreach (var dir in Directions)
                 {
-                    if (GameControllerScript.instance.UnitPos.ContainsKey(kvp.Key + dir) && GameControllerScript.instance.UnitPos[kvp.Key + dir].GetComponent<UnitController>().Team != Team)
+                    if (GameControllerScript.instance.UnitPos.ContainsKey(kvp.Key + dir) && GameControllerScript.instance.UnitPos[kvp.Key + dir].GetComponent<UnitController>().Team != Team) // look for enemy in movement range
                     {
                         if (UnitMoved == false)
                         {
-                            //Debug.log("2"); //attacking enemy unit
+                            //Debug.log("1.1"); //attacking enemy unit
                             Target = kvp.Key + dir;
                             MoveToPosition = kvp.Key;
                             gameObject.transform.position = MoveToPosition;
@@ -379,13 +383,13 @@ public class UnitController : MonoBehaviour
                 }
             } 
         }
-        else
+        else //there is a enemy within range
         {
             foreach(var enemy in EnemyUnitsInRange)
             {
                 if (!UnitMoved)
                 {
-                    //Debug.log("3");
+                    //Debug.log("2");
                     Target = enemy.Key;
                     int attack = GameControllerScript.instance.CombatCalculator(gameObject, GameControllerScript.instance.UnitPos[Target]);
                     GameControllerScript.instance.UnitPos[Target].GetComponent<UnitController>().Health = GameControllerScript.instance.UnitPos[Target].GetComponent<UnitController>().Health - attack;
@@ -411,12 +415,79 @@ public class UnitController : MonoBehaviour
                 }
             }
         }
-        if (UnitMoved == false)
+        if (UnitMoved == false) //if standing on a building continue converting it
         {
-            //Debug.log("4"); //picks radnom spot at max movement range and moves there.
-            //Debug.log(TilesWeights.Count);
-            List<Vector2> TemplistForward = new List<Vector2>();
-            List<Vector2> TemplistBackward = new List<Vector2>();
+            foreach(var b in GameControllerScript.instance.BuildingPos)
+            {
+                if (b.Key == (Vector2)transform.position && b.Value.GetComponent<BuildingController>().Team != Team)
+                {
+                    b.Value.transform.GetComponent<BuildingController>().Health = b.Value.transform.GetComponent<BuildingController>().Health - ConversionSpeed;
+                    if (b.Value.transform.GetComponent<BuildingController>().Health <= 0)
+                    {
+                        b.Value.transform.GetComponent<BuildingController>().Team = Team;
+                        b.Value.transform.GetComponent<BuildingController>().Health = 10; // set this to max health variable from building json
+                        b.Value.transform.GetComponent<BuildingController>().TeamSpriteUpdater();
+                        b.Value.transform.GetComponentInChildren<Text>().text = b.Value.transform.GetComponent<BuildingController>().Health.ToString();
+                    }
+                    else
+                    {
+                        b.Value.transform.GetComponentInChildren<Text>().text = b.Value.transform.GetComponent<BuildingController>().Health.ToString();
+                    }
+                    foreach (var kvvp in GameControllerScript.instance.TilePos)
+                    {
+                        kvvp.Value.GetComponent<TerrainController>().TerrainRoundUpdater();
+                    }
+                    foreach (var kvpp in GameControllerScript.instance.UnitPos)
+                    {
+                        kvpp.Value.GetComponent<UnitController>().GetTileValues();
+                    }
+                    UnitMovable = false;
+                    UnitMoved = true;
+                }
+            }
+        }
+        if (UnitMoved == false) //checks for convertable building
+        {
+            foreach (var kvp in TilesWeights)
+            {
+                foreach (var b in GameControllerScript.instance.BuildingPos)
+                {
+                    if (b.Value.GetComponent<BuildingController>().Team != Team && kvp.Key == b.Key)
+                    {
+                        if (UnitMoved == false)
+                        {
+                            gameObject.transform.position = kvp.Key;
+                            b.Value.transform.GetComponent<BuildingController>().Health = b.Value.transform.GetComponent<BuildingController>().Health - ConversionSpeed;
+                            if (b.Value.transform.GetComponent<BuildingController>().Health <= 0)
+                            {
+                                b.Value.transform.GetComponent<BuildingController>().Team = Team;
+                                b.Value.transform.GetComponent<BuildingController>().Health = 10; // set this to max health variable from building json
+                                b.Value.transform.GetComponent<BuildingController>().TeamSpriteUpdater();
+                                b.Value.transform.GetComponentInChildren<Text>().text = b.Value.transform.GetComponent<BuildingController>().Health.ToString();
+                            }
+                            else
+                            {
+                                b.Value.transform.GetComponentInChildren<Text>().text = b.Value.transform.GetComponent<BuildingController>().Health.ToString();
+                            }
+                            GameControllerScript.instance.MoveUnitPositionInDictionary(gameObject, OriginalPositionOfUnit);
+                            foreach (var kvvp in GameControllerScript.instance.TilePos)
+                            {
+                                kvvp.Value.GetComponent<TerrainController>().TerrainRoundUpdater();
+                            }
+                            foreach (var kvpp in GameControllerScript.instance.UnitPos)
+                            {
+                                kvpp.Value.GetComponent<UnitController>().GetTileValues();
+                            }
+                            UnitMovable = false;
+                            UnitMoved = true; 
+                        }
+                    }
+                }
+            } 
+        }
+        if (UnitMoved == false) // If nothing else can be done, move randomly
+        {
+            //Debug.log("3");
 
             List<Vector2> Keylist = new List<Vector2>(TilesWeights.Keys);
             System.Random rand = new System.Random();
@@ -435,29 +506,6 @@ public class UnitController : MonoBehaviour
             }
             UnitMovable = false;
             UnitMoved = true;
-
-            /*foreach (var kvp in TilesWeights)
-            {
-                System.Random r = new System.Random();
-                int rand = r.Next(0, MovePoints);
-                if (kvp.Value == MovePoints - rand)
-                {
-                    //Debug.log("4.1");
-                    gameObject.transform.position = kvp.Key;
-                    GameControllerScript.instance.MoveUnitPositionInDictionary(gameObject, OriginalPositionOfUnit);
-                    foreach (var kvvp in GameControllerScript.instance.TilePos)
-                    {
-                        kvvp.Value.GetComponent<TerrainController>().TerrainRoundUpdater();
-                    }
-                    foreach (var kvpp in GameControllerScript.instance.UnitPos)
-                    {
-                        kvpp.Value.GetComponent<UnitController>().GetTileValues();
-                    }
-                    UnitMovable = false;
-                    UnitMoved = true;
-                    break;
-                }
-            }*/
         }
     }
 }

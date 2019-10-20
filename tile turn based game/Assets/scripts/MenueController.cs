@@ -22,6 +22,7 @@ public class MenueController : MonoBehaviour {
     private GameObject ContentWindowLoad;
     private GameObject ContentWindowNewGame;
     private GameObject ContentWindowMods;
+    private GameObject ContentWindowMapEditor;
     private Text FeedBackNewGame;
     private GameObject Team1Image;
     private GameObject Team2Image;
@@ -45,6 +46,7 @@ public class MenueController : MonoBehaviour {
     private GameObject CurrentlySellectedLoadObject;
     private List<string> ModsList = new List<string>();
     private string CurrentlySellectedMod;
+    private string SelectedMapForMapEditor;
     private List<GameObject> ModsInModContentWindow = new List<GameObject>();
 
     // everything in here is pretty self explanitory.
@@ -72,6 +74,7 @@ public class MenueController : MonoBehaviour {
         ContentWindowLoad = gameObject.transform.Find("MainPanel").Find("LoadGamePanel").Find("LoadGameScrollView").Find("Viewport").Find("LoadGameContent").gameObject;
         ContentWindowNewGame = gameObject.transform.Find("MainPanel").Find("NewGamePanel").Find("NewGameScrollView").Find("Viewport").Find("NewGameContent").gameObject;
         ContentWindowMods = gameObject.transform.Find("MainPanel").Find("ModsPanel").Find("ModsScrollView").Find("ModsViewport").Find("ModsContent").gameObject;
+        ContentWindowMapEditor = gameObject.transform.Find("MainPanel").Find("MapEditorMenuePanel").Find("MapEditorScrollView").Find("Viewport").Find("MapEditorContent").gameObject;
         FeedBackNewGame = gameObject.transform.Find("MainPanel").Find("NewGamePanel").Find("FeedBackText").GetComponent<Text>();
         Team1Image = gameObject.transform.Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team1Image").gameObject;
         Team2Image = gameObject.transform.Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team2Image").gameObject;
@@ -101,6 +104,7 @@ public class MenueController : MonoBehaviour {
         LoadGamePanel.SetActive(false);
         ModPanel.SetActive(false);
         HeroPanel.SetActive(false);
+        GetMapsForMapEditorWindow();
     }
 
     public void MainMenueButtonClicked()
@@ -149,7 +153,7 @@ public class MenueController : MonoBehaviour {
         LoadGamePanel.SetActive(false);
         ModPanel.SetActive(false);
         HeroPanel.SetActive(false);
-        GetMaps();
+        GetMapsForLoadGameWindow();
         Team1Image.SetActive(false);
         Team2Image.SetActive(false);
         Team3Image.SetActive(false);
@@ -222,7 +226,7 @@ public class MenueController : MonoBehaviour {
 
     }
 
-    public void GetMaps()
+    public void GetMapsForLoadGameWindow()
     {
         var childcount = ContentWindowNewGame.transform.childCount;
         for (int i = 0; i < childcount; i++)
@@ -235,6 +239,22 @@ public class MenueController : MonoBehaviour {
             tempbutton.name = Path.GetFileNameWithoutExtension(file); //change name
             tempbutton.transform.GetChild(0).GetComponent<Text>().text = Path.GetFileNameWithoutExtension(file);
             tempbutton.GetComponent<Button>().onClick.AddListener(MapSelectedNewGame); //adds method to button clicked
+        }
+    }
+
+    public void GetMapsForMapEditorWindow()
+    {
+        var childcount = ContentWindowMapEditor.transform.childCount;
+        for (int i = 0; i < childcount; i++)
+        {
+            Destroy(ContentWindowMapEditor.transform.GetChild(i).gameObject);
+        }
+        foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/Maps", "*.json")))
+        {
+            GameObject tempbutton = Instantiate(LoadMenueButtonPrefab, ContentWindowMapEditor.transform); //create button and set its parent to content
+            tempbutton.name = Path.GetFileNameWithoutExtension(file); //change name
+            tempbutton.transform.GetChild(0).GetComponent<Text>().text = Path.GetFileNameWithoutExtension(file);
+            tempbutton.GetComponent<Button>().onClick.AddListener(MapSelectedEditor); //adds method to button clicked
         }
     }
 
@@ -286,14 +306,23 @@ public class MenueController : MonoBehaviour {
     public void StartGameButtonClickedNewGamePanel()
     {
         int aiCount = 0;
-        foreach(var item in GameControllerScript.instance.AiOrPlayerList)
+        foreach(var t in GameControllerScript.instance.TeamList)
         {
-            if (item == 1)
+            if (t.IsAi)
             {
                 aiCount = aiCount + 1;
             }
         }
-        if (aiCount == GameControllerScript.instance.AiOrPlayerList.Count)
+        List<TeamStuff> TempTeamList = new List<TeamStuff>();
+        foreach(var t in GameControllerScript.instance.TeamList)
+        {
+            if (t.Active)
+            {
+                TempTeamList.Add(t);
+            }
+        }
+        TempTeamList.RemoveAll(GameControllerScript.instance.TeamIsActive);
+        if (aiCount == TempTeamList.Count)
         {
             FeedBackNewGame.text = "Cannot start a game with all ai";
         }
@@ -378,103 +407,92 @@ public class MenueController : MonoBehaviour {
         GameControllerScript.instance.MapNameForPlayScene = EventSystem.current.currentSelectedGameObject.name;
         StreamReader SR = new StreamReader(Application.dataPath + "/StreamingAssets/Maps/" + GameControllerScript.instance.MapNameForPlayScene + ".json");
         string tempstring = SR.ReadToEnd();
-        Map[] Load = JsonHelper.FromJson<Map>(tempstring);
-        List<int> TempTeamCount = new List<int>();
-        TempTeamCount = Load[0].TeamCount;
-        GameControllerScript.instance.AiOrPlayerList = new List<int>();
-        if (TempTeamCount.Contains(1))
+        Map Load = JsonUtility.FromJson<Map>(tempstring);
+        GameControllerScript.instance.TeamList = Load.Teamlist;
+        if (GameControllerScript.instance.TeamList[1].Active)
         {
             Team1Image.SetActive(true);
             Team1Dropdown.SetActive(true);
-            GameControllerScript.instance.AiOrPlayerList.Add(0);
         }
         else
         {
             Team1Image.SetActive(false);
             Team1Dropdown.SetActive(false);
         }
-        if (TempTeamCount.Contains(2))
+        if (GameControllerScript.instance.TeamList[2].Active)
         {
             Team2Image.SetActive(true);
             Team2Dropdown.SetActive(true);
-            GameControllerScript.instance.AiOrPlayerList.Add(0);
         }
         else
         {
             Team2Image.SetActive(false);
             Team2Dropdown.SetActive(false);
         }
-        if (TempTeamCount.Contains(3))
+        if (GameControllerScript.instance.TeamList[3].Active)
         {
             Team3Image.SetActive(true);
             Team3Dropdown.SetActive(true);
-            GameControllerScript.instance.AiOrPlayerList.Add(0);
         }
         else
         {
             Team3Image.SetActive(false);
             Team3Dropdown.SetActive(false);
         }
-        if (TempTeamCount.Contains(4))
+        if (GameControllerScript.instance.TeamList[4].Active)
         {
             Team4Image.SetActive(true);
             Team4Dropdown.SetActive(true);
-            GameControllerScript.instance.AiOrPlayerList.Add(0);
         }
         else
         {
             Team4Image.SetActive(false);
             Team4Dropdown.SetActive(false);
         }
-        if (TempTeamCount.Contains(5))
+        if (GameControllerScript.instance.TeamList[5].Active)
         {
             Team5Image.SetActive(true);
             Team5Dropdown.SetActive(true);
-            GameControllerScript.instance.AiOrPlayerList.Add(0);
         }
         else
         {
             Team5Image.SetActive(false);
             Team5Dropdown.SetActive(false);
         }
-        if (TempTeamCount.Contains(6))
+        if (GameControllerScript.instance.TeamList[6].Active)
         {
             Team6Image.SetActive(true);
             Team6Dropdown.SetActive(true);
-            GameControllerScript.instance.AiOrPlayerList.Add(0);
         }
         else
         {
             Team6Image.SetActive(false);
             Team6Dropdown.SetActive(false);
         }
-        if (TempTeamCount.Contains(7))
+        if (GameControllerScript.instance.TeamList[7].Active)
         {
             Team7Image.SetActive(true);
             Team7Dropdown.SetActive(true);
-            GameControllerScript.instance.AiOrPlayerList.Add(0);
         }
         else
         {
             Team7Image.SetActive(false);
             Team7Dropdown.SetActive(false);
         }
-        if (TempTeamCount.Contains(8))
+        if (GameControllerScript.instance.TeamList[8].Active)
         {
             Team8Image.SetActive(true);
             Team8Dropdown.SetActive(true);
-            GameControllerScript.instance.AiOrPlayerList.Add(0);
         }
         else
         {
             Team8Image.SetActive(false);
             Team8Dropdown.SetActive(false);
         }
-        if (TempTeamCount.Contains(9))
+        if (GameControllerScript.instance.TeamList[9].Active)
         {
             Team9Image.SetActive(true);
             Team9Dropdown.SetActive(true);
-            GameControllerScript.instance.AiOrPlayerList.Add(0);
         }
         else
         {
@@ -483,48 +501,121 @@ public class MenueController : MonoBehaviour {
         }
     }
 
+    public void MapSelectedEditor()
+    {
+        SelectedMapForMapEditor = EventSystem.current.currentSelectedGameObject.name;
+    }
+
+    public void LoadMapMapEditor()
+    {
+        GameControllerScript.instance.LoadMapForMapEditorFromMainMenu(SelectedMapForMapEditor);
+    }
+
     public void DropdownTeam1Controller(int index)
     {
-        GameControllerScript.instance.AiOrPlayerList[0] = index;
+        if (index == 1)
+        {
+            GameControllerScript.instance.TeamList[1].IsAi = true;
+        }
+        else
+        {
+            GameControllerScript.instance.TeamList[1].IsAi = false;
+        }
     }
 
     public void DropdownTeam2Controller(int index)
     {
-        GameControllerScript.instance.AiOrPlayerList[1] = index;
+        if (index == 1)
+        {
+            GameControllerScript.instance.TeamList[2].IsAi = true;
+        }
+        else
+        {
+            GameControllerScript.instance.TeamList[2].IsAi = false;
+        }
     }
 
     public void DropdownTeam3Controller(int index)
     {
-        GameControllerScript.instance.AiOrPlayerList[2] = index;
+        if (index == 1)
+        {
+            GameControllerScript.instance.TeamList[3].IsAi = true;
+        }
+        else
+        {
+            GameControllerScript.instance.TeamList[3].IsAi = false;
+        }
     }
 
     public void DropdownTeam4Controller(int index)
     {
-        GameControllerScript.instance.AiOrPlayerList[3] = index;
+        if (index == 1)
+        {
+            GameControllerScript.instance.TeamList[4].IsAi = true;
+        }
+        else
+        {
+            GameControllerScript.instance.TeamList[4].IsAi = false;
+        }
     }
 
     public void DropdownTeam5Controller(int index)
     {
-        GameControllerScript.instance.AiOrPlayerList[4] = index;
+        if (index == 1)
+        {
+            GameControllerScript.instance.TeamList[5].IsAi = true;
+        }
+        else
+        {
+            GameControllerScript.instance.TeamList[5].IsAi = false;
+        }
     }
 
     public void DropdownTeam6Controller(int index)
     {
-        GameControllerScript.instance.AiOrPlayerList[5] = index;
+        if (index == 1)
+        {
+            GameControllerScript.instance.TeamList[6].IsAi = true;
+        }
+        else
+        {
+            GameControllerScript.instance.TeamList[6].IsAi = false;
+        }
     }
 
     public void DropdownTeam7Controller(int index)
     {
-        GameControllerScript.instance.AiOrPlayerList[6] = index;
+        if (index == 1)
+        {
+            GameControllerScript.instance.TeamList[7].IsAi = true;
+        }
+        else
+        {
+            GameControllerScript.instance.TeamList[7].IsAi = false;
+        }
     }
 
     public void DropdownTeam8Controller(int index)
     {
-        GameControllerScript.instance.AiOrPlayerList[7] = index;
+        if (index == 1)
+        {
+            GameControllerScript.instance.TeamList[8].IsAi = true;
+        }
+        else
+        {
+            GameControllerScript.instance.TeamList[8].IsAi = false;
+        }
     }
 
     public void DropdownTeam9Controller(int index)
     {
-        GameControllerScript.instance.AiOrPlayerList[8] = index;
+        if (index == 1)
+        {
+            GameControllerScript.instance.TeamList[9].IsAi = true;
+        }
+        else
+        {
+            GameControllerScript.instance.TeamList[9].IsAi = false;
+        }
     }
 }

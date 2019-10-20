@@ -319,6 +319,7 @@ public class DatabaseController : MonoBehaviour
         TGO.GetComponent<BuildingController>().Team = team;
         TGO.GetComponent<BuildingController>().Mod = BuildingDictionary[index].Mod;
         TGO.GetComponent<BuildingController>().Health = BuildingDictionary[index].Health;
+        TGO.GetComponent<BuildingController>().MaxHealth = BuildingDictionary[index].Health;
         TGO.GetComponent<BuildingController>().DefenceBonus = BuildingDictionary[index].DefenceBonus;
         TGO.GetComponent<BuildingController>().ID = index;
         TGO.tag = BuildingDictionary[index].Type;

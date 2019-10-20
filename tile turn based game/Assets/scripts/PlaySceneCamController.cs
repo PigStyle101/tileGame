@@ -174,7 +174,7 @@ public class PlaySceneCamController : MonoBehaviour
             GameControllerScript.instance.WaitActionPlayScene();
         }
         GameControllerScript.instance.PlaySceneTurnChanger();
-        UpdateTurnImageColor(GameControllerScript.instance.CurrentTeamsTurn);
+        UpdateTurnImageColor(GameControllerScript.instance.CurrentTeamsTurn.Team);
     }
 
     /// <summary>
@@ -303,7 +303,7 @@ public class PlaySceneCamController : MonoBehaviour
                         {
                             BuildingRayBool = true;
                             //Debug.log("1");
-                            if (!hit.transform.GetComponent<BuildingController>().Occupied && hit.transform.GetComponent<BuildingController>().CanBuild && hit.transform.GetComponent<BuildingController>().Team == GameControllerScript.instance.CurrentTeamsTurn)
+                            if (!hit.transform.GetComponent<BuildingController>().Occupied && hit.transform.GetComponent<BuildingController>().CanBuild && hit.transform.GetComponent<BuildingController>().Team == GameControllerScript.instance.CurrentTeamsTurn.Team)
                             {
                                 if (GameControllerScript.instance.SelectedUnitPlayScene == null)
                                 {
@@ -367,9 +367,9 @@ public class PlaySceneCamController : MonoBehaviour
         {
             if (kvp.Value.Title == EventSystem.current.currentSelectedGameObject.name)
             {
-                if (GameControllerScript.instance.TeamGold[GameControllerScript.instance.CurrentTeamsTurn] >= kvp.Value.Cost)
+                if (GameControllerScript.instance.TeamList[GameControllerScript.instance.CurrentTeamsTurn.Team].Gold >= kvp.Value.Cost)
                 {
-                    GameObject GO = DatabaseController.instance.CreateAndSpawnUnit(CurrentlySelectedBuilding, kvp.Value.ID, GameControllerScript.instance.CurrentTeamsTurn);
+                    GameObject GO = DatabaseController.instance.CreateAndSpawnUnit(CurrentlySelectedBuilding, kvp.Value.ID, GameControllerScript.instance.CurrentTeamsTurn.Team);
                     GameControllerScript.instance.AddUnitsToDictionary(GO);
                     GO.GetComponent<UnitController>().UnitMovable = false;
                     foreach (var unit in GameControllerScript.instance.UnitPos)
@@ -384,7 +384,7 @@ public class PlaySceneCamController : MonoBehaviour
                             b.Value.GetComponent<BuildingController>().CanBuild = false;
                         }
                     }
-                    GameControllerScript.instance.TeamGold[GameControllerScript.instance.CurrentTeamsTurn] = GameControllerScript.instance.TeamGold[GameControllerScript.instance.CurrentTeamsTurn] - kvp.Value.Cost;
+                    GameControllerScript.instance.TeamList[GameControllerScript.instance.CurrentTeamsTurn.Team].Gold = GameControllerScript.instance.TeamList[GameControllerScript.instance.CurrentTeamsTurn.Team].Gold - kvp.Value.Cost;
                     UpdateGoldThings();
                 }
                 else
@@ -407,6 +407,7 @@ public class PlaySceneCamController : MonoBehaviour
         ActionPanel.SetActive(false);
         BuildingPanel.SetActive(false);
         EndGamePanel.SetActive(true);
+        SaveButton.SetActive(false);
         EndGameText.text = "Team: " + Team.ToString() + " has won the game.";
 
     }
@@ -440,6 +441,14 @@ public class PlaySceneCamController : MonoBehaviour
     /// </summary>
     public void ReplayButtonClicked()
     {
+        foreach(var t in GameControllerScript.instance.TeamList)
+        {
+            if (t.Active)
+            {
+                t.Defeated = false;
+                t.Gold = 0;
+            }
+        }
         foreach (var GO in GameObject.FindGameObjectsWithTag("Terrain"))
         {
             Destroy(GO);
@@ -462,7 +471,6 @@ public class PlaySceneCamController : MonoBehaviour
         TooltipPanel.SetActive(true);
         ActionPanel.SetActive(true);
         EndGamePanel.SetActive(false);
-
     }
 
     /// <summary>
@@ -470,7 +478,7 @@ public class PlaySceneCamController : MonoBehaviour
     /// </summary>
     public void UpdateGoldThings()
     {
-        GoldText.text = "Gold:" + GameControllerScript.instance.TeamGold[GameControllerScript.instance.CurrentTeamsTurnIndex].ToString();
+        GoldText.text = "Gold:" + GameControllerScript.instance.TeamList[GameControllerScript.instance.CurrentTeamsTurn.Team].Gold.ToString();
     }
 
     public void UpdateMoveableUnits()

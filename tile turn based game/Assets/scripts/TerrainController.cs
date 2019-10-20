@@ -80,6 +80,7 @@ public class TerrainController : MonoBehaviour
                 gameObject.name = kvp.Value.Title;//change name of tile
                 gameObject.GetComponent<SpriteRenderer>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.TerrainDictionary[kvp.Key].ArtworkDirectory[0]); //change sprite of tile
                 gameObject.transform.eulerAngles = new Vector3(0, 0, 0);
+                ID = kvp.Value.ID;
                 if (GameControllerScript.instance.UnitPos.ContainsKey(gameObject.transform.position) && DatabaseController.instance.TerrainDictionary[kvp.Key].Walkable == false)
                 {
                     Destroy(GameControllerScript.instance.UnitPos[gameObject.transform.position]);
