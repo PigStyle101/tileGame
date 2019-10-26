@@ -9,9 +9,10 @@
   "Defence": 10,
   "Range": 3,
   "Health": 5,
-  "MovePoints": 6,
+  "MovePoints": 5,
   "Cost": 200,
-  "ConversionSpeed": 3,
+  "ConversionSpeed": 2,
+  "SightRange": 5,
   "CanConvert": true,
   "CanMoveAndAttack": true
 }

@@ -7,5 +7,6 @@
   "Slug": "grass_tile",
   "Type": "Terrain",
   "Weight": 2,
+  "BlocksSight": false,
   "Mod": "Core"
 }

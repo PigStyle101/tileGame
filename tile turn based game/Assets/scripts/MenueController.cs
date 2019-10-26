@@ -321,7 +321,7 @@ public class MenueController : MonoBehaviour {
                 TempTeamList.Add(t);
             }
         }
-        TempTeamList.RemoveAll(GameControllerScript.instance.TeamIsActive);
+        TempTeamList.RemoveAll(GameControllerScript.instance.TeamIsNotActive);
         if (aiCount == TempTeamList.Count)
         {
             FeedBackNewGame.text = "Cannot start a game with all ai";

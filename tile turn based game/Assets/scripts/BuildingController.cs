@@ -24,6 +24,10 @@ public class BuildingController : MonoBehaviour
     public int DefenceBonus;
     [HideInInspector]
     public int ID;
+    [HideInInspector]
+    public List<string> BuildableUnits;
+    [HideInInspector]
+    public bool CanBuildUnits;
     private PlaySceneCamController PSCC;
 
     private void Awake()
@@ -64,6 +68,10 @@ public class BuildingController : MonoBehaviour
                 {
                     ////Debug.log("Changing tile to " + kvp.Value.Title);
                     gameObject.name = kvp.Value.Title;//change name of tile
+                    Team = MEMCC.SelectedTeam;
+                    CanBuildUnits = kvp.Value.CanBuildUnits;
+                    BuildableUnits = kvp.Value.BuildableUnits;
+                    ID = kvp.Value.ID;
                     gameObject.GetComponent<SpriteRenderer>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.BuildingDictionary[kvp.Key].ArtworkDirectory[0]); //change sprite of tile
                 }
             }
@@ -90,7 +98,7 @@ public class BuildingController : MonoBehaviour
     {
         foreach(var kvp in DatabaseController.instance.UnitDictionary)
         {
-            if (kvp.Value.Cost <= GameControllerScript.instance.TeamList[GameControllerScript.instance.CurrentTeamsTurn.Team].Gold && CanBuild && !Occupied)
+            if (kvp.Value.Cost <= GameControllerScript.instance.TeamList[GameControllerScript.instance.CurrentTeamsTurn.Team].Gold && CanBuild && !Occupied && CanBuildUnits)
             {
                 GameObject GO = DatabaseController.instance.CreateAndSpawnUnit(gameObject.transform.position, kvp.Value.ID, Team);
                 GameControllerScript.instance.AddUnitsToDictionary(GO);

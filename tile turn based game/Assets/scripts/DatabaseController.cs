@@ -20,6 +20,7 @@ public class DatabaseController : MonoBehaviour
     public Dictionary<int, MouseOverlays> MouseDictionary = new Dictionary<int, MouseOverlays>();
     public Dictionary<int, Unit> UnitDictionary = new Dictionary<int, Unit>();
     public Dictionary<int, Building> BuildingDictionary = new Dictionary<int, Building>();
+    public Dictionary<int, FogOfWar> FogOfWarDictionary = new Dictionary<int, FogOfWar>();
     public List<string> ModsLoaded = new List<string>();
     private GameObject NewTile;
     [HideInInspector]
@@ -56,6 +57,7 @@ public class DatabaseController : MonoBehaviour
         GetBuildingJsons("Core");
         GameControllerScript.instance.LoadingUpdater(.8f);
         GetMouseJson();
+        GetFogOfWarJson();
         GameControllerScript.instance.LoadingUpdater(1f);
     }
 
@@ -180,6 +182,27 @@ public class DatabaseController : MonoBehaviour
         }
     }//same as getTerrainJson
 
+    public void GetFogOfWarJson()
+    {
+        //Debug.log("Fetching json mouse overlay files");
+        foreach (string file in Directory.GetFiles(Application.dataPath + "/StreamingAssets/FogOfWar/Data/", "*.json"))
+        {
+            var TempString = File.ReadAllText(file);
+            var tempjson = JsonUtility.FromJson<FogOfWar>(TempString);
+            //Debug.log("Adding: " + tempjson.Slug + " to database");
+            if (!FogOfWarDictionary.ContainsKey(tempjson.ID))
+            {
+                FogOfWarDictionary.Add(tempjson.ID, tempjson);
+                tempjson.GetSprites();
+                //Debug.log("Finished adding: " + tempjson.Slug + " to database");
+            }
+            else
+            {
+                //Debug.logError("Item id number: " + tempjson.ID + " is already claimed" + tempjson.Title + " ID please");
+            }
+        }
+    }
+
     /// <summary>
     /// Creates a terrain tile and adds all needed components.
     /// </summary>
@@ -200,14 +223,30 @@ public class DatabaseController : MonoBehaviour
 
         GameObject MouseOverlayGO = new GameObject();                                                                       //creating the child object for mouse overlay
         MouseOverlayGO.AddComponent<SpriteRenderer>().sprite = loadSprite(MouseDictionary[0].ArtworkDirectory[0]);          //adding it to sprite
-        MouseOverlayGO.GetComponent<SpriteRenderer>().sortingLayerName = TerrainDictionary[index].Type;
-        MouseOverlayGO.GetComponent<SpriteRenderer>().sortingOrder = 3;                                                     //making it so its on top of the default sprite
+        MouseOverlayGO.GetComponent<SpriteRenderer>().sortingLayerName = UnitDictionary[index].Type;
+        MouseOverlayGO.GetComponent<SpriteRenderer>().sortingOrder = 4;                                                     //making it so its on top of the default sprite
         MouseOverlayGO.transform.parent = TGO.transform;                                                                    //setting its parent to the main game object
         MouseOverlayGO.name = "MouseOverlay";                                                                               //changing the name
+
+        GameObject FogOverlay = new GameObject();
+        FogOverlay.AddComponent<SpriteRenderer>().sprite = loadSprite(FogOfWarDictionary[0].ArtworkDirectory[0]);
+        FogOverlay.GetComponent<SpriteRenderer>().sortingLayerName = UnitDictionary[index].Type;
+        FogOverlay.GetComponent<SpriteRenderer>().sortingOrder = 3;
+        FogOverlay.transform.parent = TGO.transform;
+        FogOverlay.name = "FogOfWar";
+
+        GameObject MouseOverlaySelected = new GameObject();
+        MouseOverlaySelected.AddComponent<SpriteRenderer>().sprite = loadSprite(MouseDictionary[1].ArtworkDirectory[0]);
+        MouseOverlaySelected.GetComponent<SpriteRenderer>().sortingLayerName = UnitDictionary[index].Type;
+        MouseOverlaySelected.GetComponent<SpriteRenderer>().sortingOrder = 5;
+        MouseOverlaySelected.transform.parent = TGO.transform;
+        MouseOverlaySelected.name = "MouseOverlaySelected";
+
         TGO.AddComponent<TerrainController>();                                                                               //adding the sprite controller script to it
         TGO.GetComponent<TerrainController>().Weight = TerrainDictionary[index].Weight;
         TGO.GetComponent<TerrainController>().Walkable = TerrainDictionary[index].Walkable;
         TGO.GetComponent<TerrainController>().DefenceBonus = TerrainDictionary[index].DefenceBonus;
+        TGO.GetComponent<TerrainController>().BlocksSight = TerrainDictionary[index].BlocksSight;
         TGO.GetComponent<TerrainController>().ID = index;
         TGO.transform.position = location;
         return TGO;
@@ -238,6 +277,7 @@ public class DatabaseController : MonoBehaviour
         TGO.GetComponent<UnitController>().Health = UnitDictionary[index].Health;
         TGO.GetComponent<UnitController>().Range = UnitDictionary[index].Range;
         TGO.GetComponent<UnitController>().CanConvert = UnitDictionary[index].CanConvert;
+        TGO.GetComponent<UnitController>().SightRange = UnitDictionary[index].SightRange;
         TGO.GetComponent<UnitController>().ID = index;
         if (UnitDictionary[index].CanConvert)
         {
@@ -291,8 +331,8 @@ public class DatabaseController : MonoBehaviour
                 break;
         }
         
-        TGO.GetComponent<UnitController>().UnitMovable = true;
-        TGO.GetComponent<UnitController>().UnitMoved = false;
+        TGO.GetComponent<UnitController>().UnitMovable = false;
+        TGO.GetComponent<UnitController>().UnitMoved = true;
         TGO.GetComponent<UnitController>().CanMoveAndAttack = UnitDictionary[index].CanMoveAndAttack;
         //GameControllerScript.instance.AddUnitsToDictionary(TGO);
         TGO.GetComponent<UnitController>().TeamSpriteController();
@@ -322,6 +362,8 @@ public class DatabaseController : MonoBehaviour
         TGO.GetComponent<BuildingController>().MaxHealth = BuildingDictionary[index].Health;
         TGO.GetComponent<BuildingController>().DefenceBonus = BuildingDictionary[index].DefenceBonus;
         TGO.GetComponent<BuildingController>().ID = index;
+        TGO.GetComponent<BuildingController>().CanBuildUnits = BuildingDictionary[index].CanBuildUnits;
+        TGO.GetComponent<BuildingController>().BuildableUnits = BuildingDictionary[index].BuildableUnits;
         TGO.tag = BuildingDictionary[index].Type;
         TGO.transform.position = location;
         GameObject TempCan = Instantiate(BuildingHealthOverlay, TGO.transform);
@@ -366,6 +408,7 @@ public class Terrain
     public string Slug;
     public string Type;
     public int Weight;
+    public bool BlocksSight;
     public List<string> ArtworkDirectory;
 
     /// <summary>
@@ -409,6 +452,7 @@ public class Unit
     public int ConversionSpeed;
     public bool CanConvert;
     public bool CanMoveAndAttack;
+    public int SightRange;
 
     /// <summary>
     /// Gets location of sprites and saves them to a list
@@ -436,7 +480,7 @@ public class Building
 {
     public int ID;
     public string Mod;
-    public List<string> BuyableUnits;
+    public List<string> BuildableUnits;
     public string Title;
     public string Description;
     public string Slug;
@@ -446,6 +490,8 @@ public class Building
     public int Team;
     public int Health;
     public bool Capturable;
+    public bool CanBuildUnits;
+    public bool BlocksSight;
 
     /// <summary>
     /// Gets location of sprites and saves them to a list
@@ -484,6 +530,34 @@ public class MouseOverlays
         //Debug.log("Getting sprites for: " + Title);
         int count = new int();
         foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/MouseOverlays/Sprites", "*.png")))
+        {
+            if (file.Contains(Title))
+            {
+                ArtworkDirectory.Add(file);
+                count = count + 1;
+            }
+            //var tempname = Path.GetFileNameWithoutExtension(file);  // use this to get file name
+        }
+        //Debug.log("Sprites found: " + count);
+        count = 0;
+    }
+}//same use as terrian class
+
+public class FogOfWar
+{
+    public int ID;
+    public string Title;
+    public string Slug;
+    public List<string> ArtworkDirectory;
+
+    /// <summary>
+    /// Gets location of sprites and saves them to a list
+    /// </summary>
+    public void GetSprites()
+    {
+        //Debug.log("Getting sprites for: " + Title);
+        int count = new int();
+        foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/FogOfWar/Sprites", "*.png")))
         {
             if (file.Contains(Title))
             {

@@ -7,5 +7,6 @@
   "Slug": "forest_tile",
   "Type": "Terrain",
   "Weight": 3,
+  "BlocksSight": true,
   "Mod": "Core"
 }

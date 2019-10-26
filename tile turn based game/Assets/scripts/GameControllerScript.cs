@@ -147,6 +147,7 @@ public class GameControllerScript : MonoBehaviour
             }
             else
             {
+                MEMCC = GameObject.Find("MainCamera").GetComponent<MapEditMenueCamController>();
                 LoadMapMapEditor(MapToLoadForMapEditor);
             }
         }
@@ -183,6 +184,10 @@ public class GameControllerScript : MonoBehaviour
         }
         CameraVar = GameObject.Find("MainCamera");
         CameraVar.transform.position = new Vector3(EditorMapSize / 2 - .5f, EditorMapSize / 2 - .5f, EditorMapSize * -1);
+        foreach(var kvp in TilePos)
+        {
+            kvp.Value.GetComponent<TerrainController>().FogOfWarController();
+        }
     }
 
     /// <summary>
@@ -326,10 +331,6 @@ public class GameControllerScript : MonoBehaviour
                                 {
                                     MEMCC.CurrentSelectedButtonText.text = "Cannot change unit team to 0";
                                 }
-                                //if (MEMCC.SelectedButton != "Delete Unit")
-                                //{
-                                //    AddUnitsToDictionary(hit.transform.gameObject);
-                                //}
                                 SpriteUpdateActivator();
                             }
                             else if (hit.transform.GetComponent<UnitController>().Team != MEMCC.SelectedTeam)
@@ -450,27 +451,25 @@ public class GameControllerScript : MonoBehaviour
                     if (!PSCC.AttackButtonSelected)
                     {
                         if (hit.transform.tag == DatabaseController.instance.UnitDictionary[0].Type && SelectedUnitPlayScene == null && hit.transform.GetComponent<UnitController>().UnitMovable)
-                        {//is the hit a unit? is the unit movable? is the unit not selected?
+                        {//is the hit a unit? is the unit movable? is there no unit selected?
                             SelectedUnitPlayScene = hit.transform.gameObject; //set unit to selected unit
                             originalPositionOfUnit = SelectedUnitPlayScene.transform.position; //get unit position
-                            MoveToPosition = hit.transform.position;
+                            PSCC.CancelButton.SetActive(true);
                             foreach (var kvp in SelectedUnitPlayScene.GetComponent<UnitController>().TilesWeights)
                             {
-                                foreach (var t in TilePos)
+                                if (TilePos[kvp.Key].GetComponent<TerrainController>().FogOfWarBool)
                                 {
-                                    if (kvp.Key == (Vector2)t.Value.transform.position)
-                                    {
-                                        t.Value.transform.GetComponent<SpriteRenderer>().color = new Color(.5F, .5F, .5F); //sets dark tint to tiles that the unit can move too
-                                    }
+                                    TilePos[kvp.Key].transform.GetChild(1).GetComponent<SpriteRenderer>().color = new Color(.5f, .5f, .5f); //sets fog of war that unit can move to to darker tint.
+                                }
+                                else if (!TilePos[kvp.Key].GetComponent<TerrainController>().Occupied)
+                                {
+                                    TilePos[kvp.Key].transform.GetComponent<SpriteRenderer>().color = new Color(.5F, .5F, .5F); //sets dark tint to tiles that the unit can move too
                                 }
                             }
-                            int tempint = SelectedUnitPlayScene.GetComponent<UnitController>().GetEnemyUnitsInRange();
-                            PSCC.AttackButtonController(tempint);
-                            PSCC.WaitButton.SetActive(true);
                             foreach (var b in BuildingPos)
                             {
-                                if (hit.transform.position == b.Value.transform.position && hit.transform.GetComponent<UnitController>().Team != b.Value.GetComponent<BuildingController>().Team && hit.transform.GetComponent<UnitController>().CanConvert)
-                                {
+                                if (originalPositionOfUnit == (Vector2)b.Value.transform.position && SelectedUnitPlayScene.GetComponent<UnitController>().Team != b.Value.GetComponent<BuildingController>().Team && SelectedUnitPlayScene.GetComponent<UnitController>().CanConvert)
+                                {//are we on a building? is the building not on are team? can this unit convert?
                                     PSCC.CaptureButton.SetActive(true);
                                     break;
                                 }
@@ -479,6 +478,7 @@ public class GameControllerScript : MonoBehaviour
                                     PSCC.CaptureButton.SetActive(false);
                                 }
                             }
+                            PSCC.AttackButtonController(SelectedUnitPlayScene.GetComponent<UnitController>().GetEnemyUnitsInRange()); //set attakc button to active if there is any enemy units in range
                         }
                         else if (hit.transform.tag == DatabaseController.instance.UnitDictionary[0].Type && SelectedUnitPlayScene == hit.transform.gameObject && (Vector2)hit.transform.position == originalPositionOfUnit) //is the hit a unit? is the unit selected already?
                         {
@@ -499,39 +499,10 @@ public class GameControllerScript : MonoBehaviour
                             {
                                 if (hit.transform.position != SelectedUnitPlayScene.transform.position) //is the building or terrain not the one the unit is standing on?
                                 {
-                                    if (!UnitPos.ContainsKey(hit.transform.position)) //there a unit there already?
+                                    if (!UnitPos.ContainsKey(hit.transform.position) && SelectedUnitPlayScene.transform.GetComponent<UnitController>().TilesWeights.ContainsKey(hit.transform.position)) //there a unit there already?
                                     {
                                         MoveToPosition = hit.transform.position; //get position we want to move to
-                                        if (SelectedUnitPlayScene.GetComponent<UnitController>().TilesWeights.ContainsKey(MoveToPosition)) //does the unit have enough move points?
-                                        {
-                                            //Debug.log("Moving Unit");
-                                            SelectedUnitPlayScene.transform.position = hit.transform.position; //move unit
-                                            int tempint = SelectedUnitPlayScene.GetComponent<UnitController>().GetEnemyUnitsInRange();
-                                            if (SelectedUnitPlayScene.GetComponent<UnitController>().CanMoveAndAttack)
-                                            {
-                                                PSCC.AttackButtonController(tempint);
-                                            }
-                                            else
-                                            {
-                                                PSCC.AttackButton.SetActive(false);
-                                            }
-                                            foreach (var b in BuildingPos)
-                                            {
-                                                if (hit.transform.position == b.Value.transform.position && SelectedUnitPlayScene.GetComponent<UnitController>().Team != b.Value.GetComponent<BuildingController>().Team && SelectedUnitPlayScene.GetComponent<UnitController>().CanConvert)
-                                                {
-                                                    PSCC.CaptureButton.SetActive(true);
-                                                    break;
-                                                }
-                                                else
-                                                {
-                                                    PSCC.CaptureButton.SetActive(false);
-                                                }
-                                            }
-                                        }
-                                        else
-                                        {
-                                            //Debug.log("Not enough move points");
-                                        }
+                                        PSCC.MoveButton.SetActive(true);
                                     }
                                     else
                                     {
@@ -540,9 +511,13 @@ public class GameControllerScript : MonoBehaviour
                                 }
                             }
                         }
-                        else
+                        else if(hit.transform.tag == DatabaseController.instance.UnitDictionary[0].Type && SelectedUnitPlayScene != null)
                         {
-                            //Debug.log("Nothing hit");
+                            if (SelectedUnitPlayScene.GetComponent<UnitController>().TilesWeights.ContainsKey(hit.transform.position))
+                            {
+                                MoveToPosition = hit.transform.position; //get position we want to move to
+                                PSCC.MoveButton.SetActive(true); 
+                            }
                         }
                     }
                     else //attack button is selected actions
@@ -552,10 +527,6 @@ public class GameControllerScript : MonoBehaviour
                             //int attack = SelectedUnitPlayScene.GetComponent<UnitController>().Attack;
                             int attack = CombatCalculator(SelectedUnitPlayScene, UnitPos[hit.transform.position]);
                             UnitPos[hit.transform.position].GetComponent<UnitController>().Health = UnitPos[hit.transform.position].GetComponent<UnitController>().Health - attack;
-                            foreach (var kvp in UnitPos)
-                            {
-                                kvp.Value.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1);
-                            }
                             if (UnitPos[hit.transform.position].GetComponent<UnitController>().Health <= 0)
                             {
                                 KillUnitPlayScene(hit.transform.gameObject);
@@ -564,9 +535,9 @@ public class GameControllerScript : MonoBehaviour
                             {
                                 UnitPos[hit.transform.position].GetComponentInChildren<Text>().text = UnitPos[hit.transform.position].GetComponent<UnitController>().Health.ToString();
                             }
-                            foreach (var kvp in TilePos)
+                            foreach(var u in UnitPos)
                             {
-                                kvp.Value.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1);
+                                u.Value.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1);
                             }
                             WaitActionPlayScene();
                             PSCC.AttackButtonSelected = false;
@@ -733,6 +704,10 @@ public class GameControllerScript : MonoBehaviour
             GameObject TGO = DatabaseController.instance.CreateAndSpawnBuilding(item.Location, item.ID, item.Team);
             BuildingPos.Add(item.Location, TGO);
         }
+        foreach(var t in TilePos)
+        {
+            t.Value.GetComponent<TerrainController>().FogOfWarController();
+        }
         CameraVar = GameObject.Find("MainCamera");
         CameraVar.transform.position = new Vector3(EditorMapSize / 2 - .5f, EditorMapSize / 2 - .5f, EditorMapSize * -1);
         SpriteUpdateActivator();
@@ -812,7 +787,7 @@ public class GameControllerScript : MonoBehaviour
         {
             tempteamlist.Add(t);
         }
-        tempteamlist.RemoveAll(TeamIsActive);
+        tempteamlist.RemoveAll(TeamIsNotActive);
         System.Random rnnd = new System.Random();
         int tempRandom = rnnd.Next(0, tempteamlist.Count); //get random number based on how many are on list
         CurrentTeamsTurn = TeamList[TeamList.IndexOf(tempteamlist[tempRandom])]; //set team turn number to team of random picked number
@@ -898,16 +873,18 @@ public class GameControllerScript : MonoBehaviour
         {
             TempTeamList.Add(t);
         }
-        TempTeamList.RemoveAll(TeamIsActive);
+        TempTeamList.RemoveAll(TeamIsNotActive);
         if (TempTeamList.Count == 1)
         {
             PSCC.GameEndController(TempTeamList[0].Team);
         }
         else
         {
-            if (CurrentTeamsTurn.Team < TempTeamList[TempTeamList.Count - 1].Team) //if index is not at max
+            if (CurrentTeamsTurn.Team != TempTeamList[TempTeamList.Count - 1].Team) //if index is not at max
             {
-                CurrentTeamsTurn = TeamList[TeamList.IndexOf(CurrentTeamsTurn)+1];
+                int tempind = TeamList.IndexOf(CurrentTeamsTurn);
+                int tempint = TeamList.FindIndex(tempind+1, TeamIsActive);
+                CurrentTeamsTurn = TeamList[tempint];
             }
             else
             {
@@ -968,14 +945,18 @@ public class GameControllerScript : MonoBehaviour
             SelectedUnitPlayScene.transform.position = originalPositionOfUnit;
             originalPositionOfUnit = new Vector2(-1, -1);
         }
-        foreach (var kvp in TilePos)
-        {
-            kvp.Value.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1);
-        }
         SelectedUnitPlayScene.GetComponent<UnitController>().UnitMovable = true;
         foreach (var kvp in UnitPos)
         {
             kvp.Value.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1);
+            kvp.Value.GetComponent<UnitController>().MovementController();
+            kvp.Value.GetComponent<UnitController>().GetSightTiles();
+        }
+        foreach (var kvp in TilePos)
+        {
+            kvp.Value.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1);
+            kvp.Value.transform.GetChild(1).GetComponent<SpriteRenderer>().color = new Color(1, 1, 1);
+            kvp.Value.GetComponent<TerrainController>().FogOfWarController();
         }
         SelectedUnitPlayScene = null; //clear selected unit variable
         PSCC.SetActionButtonsToFalse();
@@ -991,17 +972,24 @@ public class GameControllerScript : MonoBehaviour
             MoveUnitPositionInDictionary(SelectedUnitPlayScene, originalPositionOfUnit);
             MoveToPosition = new Vector2(-1, -1);
         }
-        SelectedUnitPlayScene.GetComponent<UnitController>().UnitMovable = false; //set unit movable to false
-        SelectedUnitPlayScene.GetComponent<UnitController>().UnitMoved = true; // why do i have both moveable and moved??????? fix later
+        SelectedUnitPlayScene.GetComponent<UnitController>().UnitMovable = false;
+        SelectedUnitPlayScene.GetComponent<UnitController>().UnitMoved = true; 
         SelectedUnitPlayScene = null;
         foreach (var kvp in TilePos)
         {
             kvp.Value.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1);
+            kvp.Value.transform.GetChild(1).GetComponent<SpriteRenderer>().color = new Color(1, 1, 1);
             kvp.Value.GetComponent<TerrainController>().TerrainRoundUpdater();
         }
         foreach (var kvp in UnitPos)
         {
             kvp.Value.GetComponent<UnitController>().GetTileValues();
+            kvp.Value.GetComponent<UnitController>().MovementController();
+            kvp.Value.GetComponent<UnitController>().GetSightTiles();
+        }
+        foreach (var kvp in TilePos)
+        {
+            kvp.Value.GetComponent<TerrainController>().FogOfWarController();
         }
         foreach (var kvp in BuildingPos)
         {
@@ -1042,11 +1030,18 @@ public class GameControllerScript : MonoBehaviour
         foreach (var kvp in TilePos)
         {
             kvp.Value.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1);
+            kvp.Value.transform.GetChild(1).GetComponent<SpriteRenderer>().color = new Color(1, 1, 1);
             kvp.Value.GetComponent<TerrainController>().TerrainRoundUpdater();
         }
         foreach (var kvp in UnitPos)
         {
             kvp.Value.GetComponent<UnitController>().GetTileValues();
+            kvp.Value.GetComponent<UnitController>().MovementController();
+            kvp.Value.GetComponent<UnitController>().GetSightTiles();
+        }
+        foreach (var kvp in TilePos)
+        {
+            kvp.Value.GetComponent<TerrainController>().FogOfWarController();
         }
         foreach (var kvp in BuildingPos)
         {
@@ -1054,6 +1049,116 @@ public class GameControllerScript : MonoBehaviour
         }
         SelectedUnitPlayScene = null;
         PSCC.HideOrShowSaveButton(false);
+    }
+
+    public void MoveActionPlayScene()
+    {
+        //check if unit between were we are moveing from to were we are moving
+
+        //for each var in tilewheight starting from position clicked find position with one less whieght tell we are back at unit position
+
+        //stop unit in front of unit we hit
+        //run wait script
+        PSCC.MoveButton.SetActive(false);
+        int tempweight = SelectedUnitPlayScene.GetComponent<UnitController>().TilesWeights[MoveToPosition];
+        int ForLoopTimesToRun = SelectedUnitPlayScene.GetComponent<UnitController>().TilesWeights[MoveToPosition];
+        bool EnemyUnitFound = false;
+        List<Vector2> vectorlist = new List<Vector2>();
+        vectorlist.Add(MoveToPosition);
+        Dictionary<Vector2, int> TempTileWeights = SelectedUnitPlayScene.GetComponent<UnitController>().TilesWeights;
+        bool ForLoopBreaker = false;
+        for (int i = 0; i < ForLoopTimesToRun; i++) //need to run this so many times
+        {
+            foreach (var d in SelectedUnitPlayScene.GetComponent<UnitController>().Directions)
+            {
+                if (TempTileWeights.ContainsKey(vectorlist[i] + d)) //find tile that is one away from position we are moving to and has less wheight
+                {
+                    if (!vectorlist.Contains(vectorlist[i] + d))
+                    {
+                        if (TempTileWeights[vectorlist[i] + d] < tempweight)
+                        {
+                            vectorlist.Add(vectorlist[i] + d);
+                            tempweight = TempTileWeights[vectorlist[i] + d];
+                            break;
+                        } 
+                    }
+                }
+                else if ((Vector2)SelectedUnitPlayScene.transform.position == vectorlist[i] +d)
+                {
+                    ForLoopBreaker = true;
+                    break;
+                }
+            }
+            if (ForLoopBreaker)
+            {
+                break;
+            }
+        }
+        vectorlist.Reverse(); //revers list so we cna move the unit in that order, looking for enemy units       x=right    y=up 
+        for (int i = 0; i < vectorlist.Count; i++)
+        {
+            if (UnitPos.ContainsKey(vectorlist[i])) //if there is a unit there and he is enemy
+            {
+                if (UnitPos[vectorlist[i]].GetComponent<UnitController>().Team != SelectedUnitPlayScene.GetComponent<UnitController>().Team)
+                {
+                    MoveToPosition = vectorlist[i - 1];
+                    SelectedUnitPlayScene.transform.position = MoveToPosition;
+                    MoveUnitPositionInDictionary(SelectedUnitPlayScene, originalPositionOfUnit);
+                    MoveToPosition = new Vector2(-1, -1);
+                    SelectedUnitPlayScene.GetComponent<UnitController>().UnitMovable = false; //set unit movable to false
+                    SelectedUnitPlayScene.GetComponent<UnitController>().UnitMoved = true;
+                    WaitActionPlayScene();
+                    EnemyUnitFound = true;
+                    break;
+                }
+            }
+        }
+        if (!EnemyUnitFound) // if no enemy found
+        {
+            PSCC.SetActionButtonsToFalse();
+            SelectedUnitPlayScene.transform.position = MoveToPosition;
+            MoveUnitPositionInDictionary(SelectedUnitPlayScene, originalPositionOfUnit);
+            MoveToPosition = new Vector2(-1, -1);
+            SelectedUnitPlayScene.GetComponent<UnitController>().UnitMovable = false; //set unit movable to false
+            SelectedUnitPlayScene.GetComponent<UnitController>().UnitMoved = true;
+            foreach (var kvp in TilePos)
+            {
+                kvp.Value.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1);
+                kvp.Value.transform.GetChild(1).GetComponent<SpriteRenderer>().color = new Color(1, 1, 1);
+                kvp.Value.GetComponent<TerrainController>().TerrainRoundUpdater();
+            }
+            foreach (var kvp in UnitPos)
+            {
+                kvp.Value.GetComponent<UnitController>().GetTileValues();
+                kvp.Value.GetComponent<UnitController>().MovementController();
+                kvp.Value.GetComponent<UnitController>().GetSightTiles();
+            }
+            foreach (var kvp in TilePos)
+            {
+                kvp.Value.GetComponent<TerrainController>().FogOfWarController();
+            }
+            //Debug.log("Moving Unit");
+            PSCC.WaitButton.SetActive(true);
+            if (BuildingPos.ContainsKey(SelectedUnitPlayScene.transform.position))
+            {
+                if (SelectedUnitPlayScene.GetComponent<UnitController>().Team != BuildingPos[SelectedUnitPlayScene.transform.position].GetComponent<BuildingController>().Team && SelectedUnitPlayScene.GetComponent<UnitController>().CanConvert)
+                {//are we landing on a building? is the building not on are team? can this unit convert?
+                    PSCC.CaptureButton.SetActive(true);
+                }
+                else
+                {
+                    PSCC.CaptureButton.SetActive(false);
+                }
+            }
+            if (SelectedUnitPlayScene.GetComponent<UnitController>().CanMoveAndAttack) //can teh unit attack after it has moved?
+            {
+                PSCC.AttackButtonController(SelectedUnitPlayScene.GetComponent<UnitController>().GetEnemyUnitsInRange()); //set attakc button to active if there is any enemy units in range
+            }
+            else
+            {
+                PSCC.AttackButton.SetActive(false); //else set it to false
+            }
+        }
     }
 
     /// <summary>
@@ -1103,17 +1208,20 @@ public class GameControllerScript : MonoBehaviour
     /// </summary>
     public void AllRoundUpdater()
     {
-        foreach (var kvp in TilePos)
-        {
-            kvp.Value.GetComponent<TerrainController>().TerrainRoundUpdater();
-        }
+        
         foreach (var kvp in UnitPos)
         {
             kvp.Value.GetComponent<UnitController>().UnitRoundUpdater();
+            kvp.Value.GetComponent<UnitController>().HealUnitIfOnFriendlyBuilding();
         }
         foreach (var kvp in BuildingPos)
         {
             kvp.Value.GetComponent<BuildingController>().BuildingRoundUpdater();
+        }
+        foreach (var kvp in TilePos)
+        {
+            kvp.Value.GetComponent<TerrainController>().TerrainRoundUpdater();
+            kvp.Value.GetComponent<TerrainController>().FogOfWarController();
         }
     }
 
@@ -1293,7 +1401,7 @@ public class GameControllerScript : MonoBehaviour
         return L;
     }
 
-    public bool TeamIsActive(TeamStuff t)
+    public bool TeamIsNotActive(TeamStuff t)
     {
         if (t.Active && !t.Defeated)
         {
@@ -1302,6 +1410,18 @@ public class GameControllerScript : MonoBehaviour
         else
         {
             return true;
+        }
+    }
+
+    public bool TeamIsActive(TeamStuff t)
+    {
+        if (t.Active && !t.Defeated)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
         }
     }
 

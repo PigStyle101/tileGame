@@ -7,5 +7,6 @@
   "Slug": "water_tile",
   "Type": "Terrain",
   "Weight": 1,
+  "BlocksSight":  false,
   "Mod": "Core"
 }

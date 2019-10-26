@@ -1,9 +1,9 @@
 Things that need done:
--Add a barracks building and Main base or other buildings as needed, make towns not able to produce units
+-add Main base or other buildings as needed
 -add counters for how many unmoved units you have on the board
--add something to indicate what units are unmoved
 -add settings menu
 -Add hero stuff
+-Fog of war, do some adjustments to movement and attack range, add building sight
 
 -Multiplayer?
 --What to do here?

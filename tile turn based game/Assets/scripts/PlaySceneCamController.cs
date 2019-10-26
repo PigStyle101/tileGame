@@ -12,14 +12,16 @@ public class PlaySceneCamController : MonoBehaviour
     [HideInInspector]
     public Text CurrentPlayerTurnText;
     public bool AttackButtonSelected = false;
-    [HideInInspector]
+    //[HideInInspector]
     public GameObject AttackButton;
-    [HideInInspector]
+    //[HideInInspector]
     public GameObject CancelButton;
-    [HideInInspector]
+    //[HideInInspector]
     public GameObject WaitButton;
-    [HideInInspector]
+    //[HideInInspector]
     public GameObject CaptureButton;
+    //[HideInInspector]
+    public GameObject MoveButton;
     private GameObject TerrainImage;
     private GameObject TerrainText;
     private GameObject TerrainDescription;
@@ -91,6 +93,7 @@ public class PlaySceneCamController : MonoBehaviour
         AttackButton = transform.Find("Canvas").Find("Panel").Find("ActionPanel").Find("AttackButton").gameObject;
         CancelButton = transform.Find("Canvas").Find("Panel").Find("ActionPanel").Find("CancelButton").gameObject;
         CaptureButton = transform.Find("Canvas").Find("Panel").Find("ActionPanel").Find("CaptureButton").gameObject;
+        MoveButton = transform.Find("Canvas").Find("Panel").Find("ActionPanel").Find("MoveButton").gameObject;
         WaitButton = transform.Find("Canvas").Find("Panel").Find("ActionPanel").Find("WaitButton").gameObject;
         TerrainImage = transform.Find("Canvas").Find("Panel").Find("ToolTip").Find("TerrainImage").gameObject;
         TerrainText = transform.Find("Canvas").Find("Panel").Find("ToolTip").Find("TerrainText").gameObject;
@@ -192,7 +195,6 @@ public class PlaySceneCamController : MonoBehaviour
             AttackButton.SetActive(false);
         }
         WaitButton.SetActive(true);
-        CancelButton.SetActive(true);
     }
 
     /// <summary>
@@ -237,7 +239,7 @@ public class PlaySceneCamController : MonoBehaviour
         WaitButton.SetActive(false);
         CancelButton.SetActive(false);
         CaptureButton.SetActive(false);
-
+        MoveButton.SetActive(false);
     }
 
     /// <summary>
@@ -305,10 +307,10 @@ public class PlaySceneCamController : MonoBehaviour
                             //Debug.log("1");
                             if (!hit.transform.GetComponent<BuildingController>().Occupied && hit.transform.GetComponent<BuildingController>().CanBuild && hit.transform.GetComponent<BuildingController>().Team == GameControllerScript.instance.CurrentTeamsTurn.Team)
                             {
-                                if (GameControllerScript.instance.SelectedUnitPlayScene == null)
+                                if (GameControllerScript.instance.SelectedUnitPlayScene == null && hit.transform.GetComponent<BuildingController>().CanBuildUnits)
                                 {
                                     //Debug.log("1.1");
-                                    AddUnitButtonsToBuildContent(hit.transform.GetComponent<BuildingController>().Mod);
+                                    AddUnitButtonsToBuildContent(hit.transform.GetComponent<BuildingController>());
                                     BuildingPanel.SetActive(true);
                                     CurrentlySelectedBuilding = hit.transform.position;
                                 }
@@ -336,7 +338,7 @@ public class PlaySceneCamController : MonoBehaviour
     /// <summary>
     /// Adds all units found to building window
     /// </summary>
-    private void AddUnitButtonsToBuildContent(string BuildingMod)
+    private void AddUnitButtonsToBuildContent(BuildingController BuildingHit)
     {
         var childcount = ContentWindowBuilding.transform.childCount;
         for (int i = 0; i < childcount; i++)
@@ -346,7 +348,7 @@ public class PlaySceneCamController : MonoBehaviour
         //Debug.log("Adding Unit buttons to content window");
         foreach (KeyValuePair<int, Unit> kvp in DatabaseController.instance.UnitDictionary) //adds a button for each Unit in the database
         {
-            if (kvp.Value.Mod == BuildingMod)
+            if (kvp.Value.Mod == BuildingHit.Mod && BuildingHit.BuildableUnits.Contains(kvp.Value.Title))
             {
                 GameObject tempbutton = Instantiate(BuildingButtonPrefab, ContentWindowBuilding.transform); //create button and set its parent to content
                 tempbutton.name = kvp.Value.Title; //change name
@@ -375,6 +377,7 @@ public class PlaySceneCamController : MonoBehaviour
                     foreach (var unit in GameControllerScript.instance.UnitPos)
                     {
                         unit.Value.GetComponent<UnitController>().GetTileValues();
+                        unit.Value.GetComponent<UnitController>().GetSightTiles();
                     }
                     BuildingPanel.SetActive(false);
                     foreach (var b in GameControllerScript.instance.BuildingPos)
@@ -383,6 +386,10 @@ public class PlaySceneCamController : MonoBehaviour
                         {
                             b.Value.GetComponent<BuildingController>().CanBuild = false;
                         }
+                    }
+                    foreach(var t in GameControllerScript.instance.TilePos)
+                    {
+                        t.Value.GetComponent<TerrainController>().FogOfWarController();
                     }
                     GameControllerScript.instance.TeamList[GameControllerScript.instance.CurrentTeamsTurn.Team].Gold = GameControllerScript.instance.TeamList[GameControllerScript.instance.CurrentTeamsTurn.Team].Gold - kvp.Value.Cost;
                     UpdateGoldThings();
@@ -578,5 +585,10 @@ public class PlaySceneCamController : MonoBehaviour
         {
             FeedbackSaveMenu.text = "A save file with that name already exist, pick a new one or delete old one.";
         }
+    }
+
+    public void MoveButtonController()
+    {
+        GameControllerScript.instance.MoveActionPlayScene();
     }
 }

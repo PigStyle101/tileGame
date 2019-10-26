@@ -31,9 +31,9 @@ public class MapEditMenueCamController : MonoBehaviour
     public Text SaveFeedback;
     private Text LoadFeedback;
     private InputField SaveInputField;
-    [HideInInspector]
+    //[HideInInspector]
     public string SelectedTab;
-    [HideInInspector]
+    //[HideInInspector]
     public string SelectedButton;
     [HideInInspector]
     public int SelectedTeam;
@@ -57,8 +57,9 @@ public class MapEditMenueCamController : MonoBehaviour
 
     void Update()
     {
-            MoveScreenXandY();
-            MoveScreenZ();
+        MoveScreenXandY();
+        MoveScreenZ();
+        KeyBoardShortCuts();
     }
 
     private void GetObjectReferances()
@@ -327,5 +328,59 @@ public class MapEditMenueCamController : MonoBehaviour
         GameControllerScript.instance.TilePos = new Dictionary<Vector2, GameObject>();
         GameControllerScript.instance.UnitPos = new Dictionary<Vector2, GameObject>();
         SceneManager.LoadScene("MainMenuScene");
+    }
+
+    public void KeyBoardShortCuts()
+    {
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            SelectedTeam = 1;
+            TeamText.text = "Team:" + SelectedTeam;
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            SelectedTeam = 2;
+            TeamText.text = "Team:" + SelectedTeam;
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            SelectedTeam = 3;
+            TeamText.text = "Team:" + SelectedTeam;
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha4))
+        {
+            SelectedTeam = 4;
+            TeamText.text = "Team:" + SelectedTeam;
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha5))
+        {
+            SelectedTeam = 5;
+            TeamText.text = "Team:" + SelectedTeam;
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha6))
+        {
+            SelectedTeam = 6;
+            TeamText.text = "Team:" + SelectedTeam;
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha7))
+        {
+            SelectedTeam = 7;
+            TeamText.text = "Team:" + SelectedTeam;
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha8))
+        {
+            SelectedTeam = 8;
+            TeamText.text = "Team:" + SelectedTeam;
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha9))
+        {
+            SelectedTeam = 9;
+            TeamText.text = "Team:" + SelectedTeam;
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha0))
+        {
+            SelectedTeam = 0;
+            TeamText.text = "Team:" + SelectedTeam;
+        }
     }
 }

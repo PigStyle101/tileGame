@@ -1,9 +1,4 @@
 {
   "DragSpeed": 1,
-  "ScrollSpeed": 2,
-  "TeamColors": [
-    "Blue",
-    "Red",
-    "Green"
-  ]
+  "ScrollSpeed": 2
 }

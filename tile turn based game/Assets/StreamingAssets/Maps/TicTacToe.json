@@ -6,7 +6,8 @@
             "UnitCount": 0,
             "BuildingCount": 0,
             "Gold": 0,
-            "IsAi": false
+            "IsAi": false,
+            "Defeated": false
         },
         {
             "Team": 1,
@@ -14,7 +15,8 @@
             "UnitCount": 0,
             "BuildingCount": 0,
             "Gold": 0,
-            "IsAi": false
+            "IsAi": false,
+            "Defeated": false
         },
         {
             "Team": 2,
@@ -22,7 +24,8 @@
             "UnitCount": 0,
             "BuildingCount": 0,
             "Gold": 0,
-            "IsAi": false
+            "IsAi": false,
+            "Defeated": false
         },
         {
             "Team": 3,
@@ -30,7 +33,8 @@
             "UnitCount": 0,
             "BuildingCount": 0,
             "Gold": 0,
-            "IsAi": false
+            "IsAi": false,
+            "Defeated": false
         },
         {
             "Team": 4,
@@ -38,7 +42,8 @@
             "UnitCount": 0,
             "BuildingCount": 0,
             "Gold": 0,
-            "IsAi": false
+            "IsAi": false,
+            "Defeated": false
         },
         {
             "Team": 5,
@@ -46,7 +51,8 @@
             "UnitCount": 0,
             "BuildingCount": 0,
             "Gold": 0,
-            "IsAi": false
+            "IsAi": false,
+            "Defeated": false
         },
         {
             "Team": 6,
@@ -54,7 +60,8 @@
             "UnitCount": 0,
             "BuildingCount": 0,
             "Gold": 0,
-            "IsAi": false
+            "IsAi": false,
+            "Defeated": false
         },
         {
             "Team": 7,
@@ -62,7 +69,8 @@
             "UnitCount": 0,
             "BuildingCount": 0,
             "Gold": 0,
-            "IsAi": false
+            "IsAi": false,
+            "Defeated": false
         },
         {
             "Team": 8,
@@ -70,7 +78,8 @@
             "UnitCount": 0,
             "BuildingCount": 0,
             "Gold": 0,
-            "IsAi": false
+            "IsAi": false,
+            "Defeated": false
         },
         {
             "Team": 9,
@@ -78,15 +87,53 @@
             "UnitCount": 0,
             "BuildingCount": 0,
             "Gold": 0,
-            "IsAi": false
+            "IsAi": false,
+            "Defeated": false
         }
     ],
-    "UnitList": [],
+    "UnitList": [
+        {
+            "ID": 0,
+            "Team": 1,
+            "Health": 4,
+            "Location": {
+                "x": 0.0,
+                "y": 10.0
+            }
+        },
+        {
+            "ID": 0,
+            "Team": 2,
+            "Health": 4,
+            "Location": {
+                "x": 10.0,
+                "y": 10.0
+            }
+        },
+        {
+            "ID": 0,
+            "Team": 3,
+            "Health": 4,
+            "Location": {
+                "x": 10.0,
+                "y": 0.0
+            }
+        },
+        {
+            "ID": 0,
+            "Team": 4,
+            "Health": 4,
+            "Location": {
+                "x": 0.0,
+                "y": 0.0
+            }
+        }
+    ],
     "BuildingList": [
         {
             "Team": 1,
             "Health": 10,
-            "ID": 0,
+            "ID": 1,
             "Location": {
                 "x": 0.0,
                 "y": 10.0
@@ -95,27 +142,72 @@
         {
             "Team": 2,
             "Health": 10,
-            "ID": 0,
+            "ID": 1,
             "Location": {
                 "x": 10.0,
                 "y": 10.0
-            }
-        },
-        {
-            "Team": 3,
-            "Health": 10,
-            "ID": 0,
-            "Location": {
-                "x": 10.0,
-                "y": 0.0
             }
         },
         {
             "Team": 4,
             "Health": 10,
-            "ID": 0,
+            "ID": 1,
             "Location": {
                 "x": 0.0,
+                "y": 0.0
+            }
+        },
+        {
+            "Team": 3,
+            "Health": 10,
+            "ID": 1,
+            "Location": {
+                "x": 10.0,
+                "y": 0.0
+            }
+        },
+        {
+            "Team": 0,
+            "Health": 10,
+            "ID": 1,
+            "Location": {
+                "x": 2.0,
+                "y": 8.0
+            }
+        },
+        {
+            "Team": 0,
+            "Health": 10,
+            "ID": 1,
+            "Location": {
+                "x": 8.0,
+                "y": 8.0
+            }
+        },
+        {
+            "Team": 0,
+            "Health": 10,
+            "ID": 1,
+            "Location": {
+                "x": 2.0,
+                "y": 2.0
+            }
+        },
+        {
+            "Team": 0,
+            "Health": 10,
+            "ID": 1,
+            "Location": {
+                "x": 8.0,
+                "y": 2.0
+            }
+        },
+        {
+            "Team": 0,
+            "Health": 10,
+            "ID": 0,
+            "Location": {
+                "x": 5.0,
                 "y": 0.0
             }
         },
@@ -126,24 +218,6 @@
             "Location": {
                 "x": 0.0,
                 "y": 5.0
-            }
-        },
-        {
-            "Team": 0,
-            "Health": 10,
-            "ID": 0,
-            "Location": {
-                "x": 5.0,
-                "y": 5.0
-            }
-        },
-        {
-            "Team": 0,
-            "Health": 10,
-            "ID": 0,
-            "Location": {
-                "x": 5.0,
-                "y": 10.0
             }
         },
         {
@@ -161,43 +235,16 @@
             "ID": 0,
             "Location": {
                 "x": 5.0,
-                "y": 0.0
+                "y": 10.0
             }
         },
         {
             "Team": 0,
             "Health": 10,
-            "ID": 0,
+            "ID": 1,
             "Location": {
-                "x": 2.0,
-                "y": 2.0
-            }
-        },
-        {
-            "Team": 0,
-            "Health": 10,
-            "ID": 0,
-            "Location": {
-                "x": 8.0,
-                "y": 2.0
-            }
-        },
-        {
-            "Team": 0,
-            "Health": 10,
-            "ID": 0,
-            "Location": {
-                "x": 8.0,
-                "y": 8.0
-            }
-        },
-        {
-            "Team": 0,
-            "Health": 10,
-            "ID": 0,
-            "Location": {
-                "x": 2.0,
-                "y": 8.0
+                "x": 5.0,
+                "y": 5.0
             }
         }
     ],
@@ -294,7 +341,7 @@
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 1.0,
                 "y": 2.0
@@ -336,7 +383,7 @@
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 1.0,
                 "y": 8.0
@@ -364,14 +411,14 @@
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 2.0,
                 "y": 1.0
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 2.0,
                 "y": 2.0
@@ -413,14 +460,14 @@
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 2.0,
                 "y": 8.0
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 2.0,
                 "y": 9.0
@@ -826,14 +873,14 @@
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 8.0,
                 "y": 1.0
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 8.0,
                 "y": 2.0
@@ -875,14 +922,14 @@
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 8.0,
                 "y": 8.0
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 8.0,
                 "y": 9.0
@@ -910,7 +957,7 @@
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 9.0,
                 "y": 2.0
@@ -952,7 +999,7 @@
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 9.0,
                 "y": 8.0

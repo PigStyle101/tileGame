@@ -10,8 +10,9 @@
   "Range": 1,
   "Health": 4,
   "MovePoints": 6,
-  "Cost": 200,
-  "ConversionSpeed": 2,
+  "Cost": 100,
+  "ConversionSpeed": 4,
+  "SightRange": 6,
   "CanConvert": true,
   "CanMoveAndAttack": true
 }

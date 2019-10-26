@@ -1,0 +1,19 @@
+{
+  "ID": 1,
+  "Health": 10,
+  "Title": "Barracks",
+  "Walkable": true,
+  "Description": "A unit production building",
+  "DefenceBonus": 20,
+  "Slug": "Barracks_Building",
+  "Type": "Building",
+  "CanBuildUnits": true,
+  "BlocksSight": false,
+  "BuildableUnits": [
+    "Archer",
+    "Militia",
+    "Catapult",
+    "Soldier"
+  ],
+  "Mod": "Core"
+}

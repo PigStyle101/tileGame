@@ -27,15 +27,22 @@ public class TerrainController : MonoBehaviour
     private Vector3 OriginalRot;
     [HideInInspector]
     public SpriteRenderer MouseOverlaySpriteRender;
+    public SpriteRenderer MouseOverlaySelectedSpriteRender;
+    public SpriteRenderer FogOfWar;
     public bool Occupied;
     [HideInInspector]
     public int Weight;
     [HideInInspector]
     public bool Walkable;
     [HideInInspector]
+    public bool BlocksSight;
+    [HideInInspector]
     public int DefenceBonus;
     [HideInInspector]
     public int ID;
+    [HideInInspector]
+    public bool FogOfWarBool;
+    private bool LastHitThis = false;
 
     private void Awake()
     {
@@ -43,17 +50,28 @@ public class TerrainController : MonoBehaviour
         {
             MEMCC = GameObject.Find("MainCamera").GetComponent<MapEditMenueCamController>();
         }
+        MouseOverlaySpriteRender = gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>();
+        MouseOverlaySelectedSpriteRender = gameObject.transform.GetChild(2).GetComponent<SpriteRenderer>();
+        MouseOverlaySpriteRender.enabled = false;
+        FogOfWar = gameObject.transform.GetChild(1).GetComponent<SpriteRenderer>();
     }
 
     void Start()
     {
-        MouseOverlaySpriteRender = gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>();
-        MouseOverlaySpriteRender.enabled = false;
+        
     }
 
     void Update()
     {
         MouseOverlayRayCaster();
+        if (LastHitThis)
+        {
+            MouseOverlaySelectedSpriteRender.enabled = true;
+        }
+        else
+        {
+            MouseOverlaySelectedSpriteRender.enabled = false;
+        }
     }
 
     public void TerrainRoundUpdater()
@@ -106,9 +124,13 @@ public class TerrainController : MonoBehaviour
                 hits = Physics.RaycastAll(ray); //add them to array
                 foreach (var hit in hits)
                 {
-                    if (hit.transform == this.transform) //was last hit a unit? or this?
+                    if (hit.transform == transform) //was last hit this?
                     {
                         MouseOverlaySpriteRender.enabled = true;
+                        if (Input.GetMouseButtonDown(0))
+                        {
+                            LastHitThis = true;
+                        }
                     }
                     else if (hit.transform.tag == DatabaseController.instance.UnitDictionary[0].Type || hit.transform.tag == DatabaseController.instance.BuildingDictionary[0].Type)
                     {
@@ -117,6 +139,10 @@ public class TerrainController : MonoBehaviour
                     else //else disable overlay
                     {
                         MouseOverlaySpriteRender.enabled = false;
+                        if (Input.GetMouseButtonDown(0))
+                        {
+                            LastHitThis = false;
+                        }
                     }
                 }
             }
@@ -567,4 +593,38 @@ public class TerrainController : MonoBehaviour
             counter = 0;
         }
     } //makes the roads attatch to each other
+
+    public void FogOfWarController()
+    {
+        if (GameControllerScript.instance.CurrentScene == "MapEditorScene")
+        {
+            FogOfWar.enabled = false;
+            FogOfWarBool = false;
+        }
+        else if (GameControllerScript.instance.CurrentScene == "PlayScene")
+        {
+            bool UnitOnMe = false;
+            foreach(var kvp in GameControllerScript.instance.UnitPos)
+            {
+                if (kvp.Value.GetComponent<UnitController>().SightTiles.ContainsKey((Vector2)gameObject.transform.position) && kvp.Value.GetComponent<UnitController>().Team == GameControllerScript.instance.CurrentTeamsTurn.Team)
+                {
+                    FogOfWar.enabled = false;
+                    FogOfWarBool = false;
+                    break;
+                }
+                else if (!UnitOnMe)
+                {
+                    FogOfWar.enabled = true;
+                    FogOfWarBool = true;
+                }
+                if (kvp.Key == (Vector2)gameObject.transform.position && kvp.Value.GetComponent<UnitController>().Team == GameControllerScript.instance.CurrentTeamsTurn.Team)
+                {
+                    FogOfWar.enabled = false;
+                    FogOfWarBool = false;
+                    UnitOnMe = true;
+                    break;
+                }
+            }
+        }
+    }
 }
