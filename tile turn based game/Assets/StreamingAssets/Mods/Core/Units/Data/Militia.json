@@ -1,5 +1,5 @@
 {
-  "ID": 0,
+  "ID": 2,
   "Title": "Militia",
   "Description": "Weak unit, but cheap",
   "Slug": "militia",
@@ -12,7 +12,7 @@
   "MovePoints": 6,
   "Cost": 100,
   "ConversionSpeed": 4,
-  "SightRange": 6,
+  "SightRange": 5,
   "CanConvert": true,
   "CanMoveAndAttack": true
 }

@@ -1,5 +1,5 @@
 {
-  "ID": 1,
+  "ID": 3,
   "Title": "Water",
   "Walkable": false,
   "Description": "Deep water",
@@ -7,6 +7,7 @@
   "Slug": "water_tile",
   "Type": "Terrain",
   "Weight": 1,
-  "BlocksSight":  false,
+  "BlocksSight": false,
+  "Overlays": true,
   "Mod": "Core"
 }

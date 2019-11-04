@@ -61,6 +61,7 @@ public class PlaySceneCamController : MonoBehaviour
     public Vector2 CurrentlySelectedBuilding;
     [HideInInspector]
     public bool BuildingRayBool;
+    private string UnitSelectedForBuildingFromKeyboardShortcuts = "NONE";
 
     private void Awake()
     {
@@ -79,6 +80,7 @@ public class PlaySceneCamController : MonoBehaviour
         MoveScreenXandY();
         MoveScreenZ();
         RayCasterForPlayScene();
+        KeyBoardShortcuts();
     }
 
     /// <summary>
@@ -358,45 +360,86 @@ public class PlaySceneCamController : MonoBehaviour
             }
         }
 
-    } //populates the tile selection bar
+    }
 
     /// <summary>
     /// Creates unit, sets building var buildable to false, removes gold
     /// </summary>
     public void CreateUnitController()
     {
-        foreach (var kvp in DatabaseController.instance.UnitDictionary)
+        foreach (var kvp in DatabaseController.instance.UnitDictionary) //check though dictionary to see what unit to spawn
         {
-            if (kvp.Value.Title == EventSystem.current.currentSelectedGameObject.name)
+            if (EventSystem.current.currentSelectedGameObject != null) //make sure player clicked on the unit button and did not use keyboard shortcut
             {
-                if (GameControllerScript.instance.TeamList[GameControllerScript.instance.CurrentTeamsTurn.Team].Gold >= kvp.Value.Cost)
+                if (kvp.Value.Title == EventSystem.current.currentSelectedGameObject.name)
                 {
-                    GameObject GO = DatabaseController.instance.CreateAndSpawnUnit(CurrentlySelectedBuilding, kvp.Value.ID, GameControllerScript.instance.CurrentTeamsTurn.Team);
-                    GameControllerScript.instance.AddUnitsToDictionary(GO);
-                    GO.GetComponent<UnitController>().UnitMovable = false;
-                    foreach (var unit in GameControllerScript.instance.UnitPos)
+                    if (GameControllerScript.instance.TeamList[GameControllerScript.instance.CurrentTeamsTurn.Team].Gold >= kvp.Value.Cost) //can they afford this unit?
                     {
-                        unit.Value.GetComponent<UnitController>().GetTileValues();
-                        unit.Value.GetComponent<UnitController>().GetSightTiles();
-                    }
-                    BuildingPanel.SetActive(false);
-                    foreach (var b in GameControllerScript.instance.BuildingPos)
-                    {
-                        if ((Vector2)b.Value.transform.position == CurrentlySelectedBuilding)
+                        GameObject GO = DatabaseController.instance.CreateAndSpawnUnit(CurrentlySelectedBuilding, kvp.Value.ID, GameControllerScript.instance.CurrentTeamsTurn.Team);
+                        GameControllerScript.instance.AddUnitsToDictionary(GO);
+                        GO.GetComponent<UnitController>().UnitMovable = false;
+                        foreach (var unit in GameControllerScript.instance.UnitPos)
                         {
-                            b.Value.GetComponent<BuildingController>().CanBuild = false;
+                            unit.Value.GetComponent<UnitController>().GetTileValues();
+                            unit.Value.GetComponent<UnitController>().GetSightTiles();
                         }
+                        BuildingPanel.SetActive(false);
+                        foreach (var b in GameControllerScript.instance.BuildingPos)
+                        {
+                            if ((Vector2)b.Value.transform.position == CurrentlySelectedBuilding)
+                            {
+                                b.Value.GetComponent<BuildingController>().CanBuild = false;
+                            }
+                        }
+                        foreach (var t in GameControllerScript.instance.TilePos)
+                        {
+                            t.Value.GetComponent<TerrainController>().FogOfWarController();
+                        }
+                        GameControllerScript.instance.TeamList[GameControllerScript.instance.CurrentTeamsTurn.Team].Gold = GameControllerScript.instance.TeamList[GameControllerScript.instance.CurrentTeamsTurn.Team].Gold - kvp.Value.Cost;
+                        UpdateGoldThings();
+                        FeedBackText.text = "";
                     }
-                    foreach(var t in GameControllerScript.instance.TilePos)
+                    else
                     {
-                        t.Value.GetComponent<TerrainController>().FogOfWarController();
+                        FeedBackText.text = "Not enough gold to buy that unit";
                     }
-                    GameControllerScript.instance.TeamList[GameControllerScript.instance.CurrentTeamsTurn.Team].Gold = GameControllerScript.instance.TeamList[GameControllerScript.instance.CurrentTeamsTurn.Team].Gold - kvp.Value.Cost;
-                    UpdateGoldThings();
-                }
-                else
+                } 
+            }
+            else //keyboard shortcut was used
+            {
+                if (kvp.Value.Title == UnitSelectedForBuildingFromKeyboardShortcuts)
                 {
-                    FeedBackText.text = "Not enough gold to buy that unit";
+                    if (GameControllerScript.instance.TeamList[GameControllerScript.instance.CurrentTeamsTurn.Team].Gold >= kvp.Value.Cost)
+                    {
+                        GameObject GO = DatabaseController.instance.CreateAndSpawnUnit(CurrentlySelectedBuilding, kvp.Value.ID, GameControllerScript.instance.CurrentTeamsTurn.Team);
+                        GameControllerScript.instance.AddUnitsToDictionary(GO);
+                        GO.GetComponent<UnitController>().UnitMovable = false;
+                        foreach (var unit in GameControllerScript.instance.UnitPos)
+                        {
+                            unit.Value.GetComponent<UnitController>().GetTileValues();
+                            unit.Value.GetComponent<UnitController>().GetSightTiles();
+                        }
+                        BuildingPanel.SetActive(false);
+                        foreach (var b in GameControllerScript.instance.BuildingPos)
+                        {
+                            if ((Vector2)b.Value.transform.position == CurrentlySelectedBuilding)
+                            {
+                                b.Value.GetComponent<BuildingController>().CanBuild = false;
+                            }
+                        }
+                        foreach (var t in GameControllerScript.instance.TilePos)
+                        {
+                            t.Value.GetComponent<TerrainController>().FogOfWarController();
+                        }
+                        GameControllerScript.instance.TeamList[GameControllerScript.instance.CurrentTeamsTurn.Team].Gold = GameControllerScript.instance.TeamList[GameControllerScript.instance.CurrentTeamsTurn.Team].Gold - kvp.Value.Cost;
+                        UpdateGoldThings();
+                        UnitSelectedForBuildingFromKeyboardShortcuts = "NONE";
+                        FeedBackText.text = "";
+                    }
+                    else
+                    {
+                        FeedBackText.text = "Not enough gold to buy that unit";
+                    }
                 }
             }
         }
@@ -587,8 +630,74 @@ public class PlaySceneCamController : MonoBehaviour
         }
     }
 
-    public void MoveButtonController()
+    public void MoveButtonClicked()
     {
         GameControllerScript.instance.MoveActionPlayScene();
+    }
+
+    /// <summary>
+    /// Used to controll what happens when keyboard shortcuts are used
+    /// </summary>
+    public void KeyBoardShortcuts()
+    {
+        if (Input.GetKeyDown(KeyCode.Q) && AttackButton.activeSelf)
+        {
+            AttackButtonClicked();
+        }
+        if (Input.GetKeyDown(KeyCode.Q) && MoveButton.activeSelf)
+        {
+            MoveButtonClicked();
+        }
+        if (Input.GetKeyDown(KeyCode.W) && CaptureButton.activeSelf)
+        {
+            CaptureButtonClicked();
+        }
+        if (Input.GetKeyDown(KeyCode.E) && WaitButton.activeSelf)
+        {
+            WaitButtonClicked();
+        }
+        if (Input.GetKeyDown(KeyCode.R) && CancelButton.activeSelf)
+        {
+            CancelButtonClicked();
+        }
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            EndTurnButtonClicked();
+        }
+        if (BuildingPanel.activeSelf)
+        {
+            if (Input.GetKeyDown(KeyCode.Q))
+            {
+                if (ContentWindowBuilding.transform.childCount > 0)
+                {
+                    UnitSelectedForBuildingFromKeyboardShortcuts = ContentWindowBuilding.transform.GetChild(0).name;
+                    CreateUnitController();
+                }
+            }
+            if (Input.GetKeyDown(KeyCode.W))
+            {
+                if (ContentWindowBuilding.transform.childCount > 1)
+                {
+                    UnitSelectedForBuildingFromKeyboardShortcuts = ContentWindowBuilding.transform.GetChild(1).name;
+                    CreateUnitController();
+                }
+            }
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                if (ContentWindowBuilding.transform.childCount > 2)
+                {
+                    UnitSelectedForBuildingFromKeyboardShortcuts = ContentWindowBuilding.transform.GetChild(2).name;
+                    CreateUnitController();
+                }
+            }
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                if (ContentWindowBuilding.transform.childCount > 3)
+                {
+                    UnitSelectedForBuildingFromKeyboardShortcuts = ContentWindowBuilding.transform.GetChild(3).name;
+                    CreateUnitController();
+                }
+            }
+        }
     }
 }

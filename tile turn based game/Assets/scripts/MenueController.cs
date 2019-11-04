@@ -508,7 +508,14 @@ public class MenueController : MonoBehaviour {
 
     public void LoadMapMapEditor()
     {
-        GameControllerScript.instance.LoadMapForMapEditorFromMainMenu(SelectedMapForMapEditor);
+        if (SelectedMapForMapEditor != null)
+        {
+            GameControllerScript.instance.LoadMapForMapEditorFromMainMenu(SelectedMapForMapEditor); 
+        }
+        else
+        {
+            errorTextField.text = "Must select a map to load";
+        }
     }
 
     public void DropdownTeam1Controller(int index)

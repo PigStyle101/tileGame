@@ -487,6 +487,7 @@ public class GameControllerScript : MonoBehaviour
                             foreach (var kvp in TilePos)
                             {
                                 kvp.Value.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1);
+                                TilePos[kvp.Key].transform.GetChild(1).GetComponent<SpriteRenderer>().color = new Color(1, 1, 1);
                             }
                             originalPositionOfUnit = new Vector2(-1, -1); //set unit position to -1, other methods will ignore anything negative
                             MoveToPosition = new Vector2(-1, -1);
@@ -501,8 +502,11 @@ public class GameControllerScript : MonoBehaviour
                                 {
                                     if (!UnitPos.ContainsKey(hit.transform.position) && SelectedUnitPlayScene.transform.GetComponent<UnitController>().TilesWeights.ContainsKey(hit.transform.position)) //there a unit there already?
                                     {
-                                        MoveToPosition = hit.transform.position; //get position we want to move to
-                                        PSCC.MoveButton.SetActive(true);
+                                        if (SelectedUnitPlayScene.GetComponent<UnitController>().UnitMovable) //has unit been moved yet?
+                                        {
+                                            MoveToPosition = hit.transform.position; //get position we want to move to
+                                            PSCC.MoveButton.SetActive(true); 
+                                        }
                                     }
                                     else
                                     {
@@ -513,10 +517,17 @@ public class GameControllerScript : MonoBehaviour
                         }
                         else if(hit.transform.tag == DatabaseController.instance.UnitDictionary[0].Type && SelectedUnitPlayScene != null)
                         {
-                            if (SelectedUnitPlayScene.GetComponent<UnitController>().TilesWeights.ContainsKey(hit.transform.position))
+                            if (SelectedUnitPlayScene.GetComponent<UnitController>().TilesWeights.ContainsKey(hit.transform.position)) 
                             {
-                                MoveToPosition = hit.transform.position; //get position we want to move to
-                                PSCC.MoveButton.SetActive(true); 
+                                if (SelectedUnitPlayScene.GetComponent<UnitController>().UnitMovable && TilePos[(Vector2)hit.transform.position].GetComponent<TerrainController>().FogOfWarBool) //has unit been moved yet?
+                                {
+                                    MoveToPosition = hit.transform.position; //get position we want to move to
+                                    PSCC.MoveButton.SetActive(true); 
+                                }
+                                else
+                                {
+                                    PSCC.MoveButton.SetActive(false);
+                                }
                             }
                         }
                     }
@@ -959,6 +970,7 @@ public class GameControllerScript : MonoBehaviour
             kvp.Value.GetComponent<TerrainController>().FogOfWarController();
         }
         SelectedUnitPlayScene = null; //clear selected unit variable
+        PSCC.AttackButtonSelected = false;
         PSCC.SetActionButtonsToFalse();
     }
 
@@ -995,6 +1007,7 @@ public class GameControllerScript : MonoBehaviour
         {
             kvp.Value.GetComponent<BuildingController>().BuildingRoundUpdater();
         }
+        PSCC.AttackButtonSelected = false;
         PSCC.SetActionButtonsToFalse();
         PSCC.HideOrShowSaveButton(false);
     }
@@ -1047,6 +1060,7 @@ public class GameControllerScript : MonoBehaviour
         {
             kvp.Value.GetComponent<BuildingController>().BuildingRoundUpdater();
         }
+        PSCC.AttackButtonSelected = false;
         SelectedUnitPlayScene = null;
         PSCC.HideOrShowSaveButton(false);
     }
@@ -1099,7 +1113,7 @@ public class GameControllerScript : MonoBehaviour
         {
             if (UnitPos.ContainsKey(vectorlist[i])) //if there is a unit there and he is enemy
             {
-                if (UnitPos[vectorlist[i]].GetComponent<UnitController>().Team != SelectedUnitPlayScene.GetComponent<UnitController>().Team)
+                if (UnitPos[vectorlist[i]].GetComponent<UnitController>().Team != SelectedUnitPlayScene.GetComponent<UnitController>().Team && TilePos[vectorlist[i]].GetComponent<TerrainController>().FogOfWarBool)
                 {
                     MoveToPosition = vectorlist[i - 1];
                     SelectedUnitPlayScene.transform.position = MoveToPosition;
@@ -1270,7 +1284,7 @@ public class GameControllerScript : MonoBehaviour
             {
                 if (kvp.Value.GetComponent<UnitController>().Team == CurrentTeamsTurn.Team)
                 {
-                    kvp.Value.GetComponent<UnitController>().UnitAi();
+                    //kvp.Value.GetComponent<UnitController>().UnitAi();
                 }
             }
             foreach (var kvp in BuildingPos)

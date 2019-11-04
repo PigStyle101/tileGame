@@ -20,7 +20,7 @@
         },
         {
             "Team": 2,
-            "Active": true,
+            "Active": false,
             "UnitCount": 0,
             "BuildingCount": 0,
             "Gold": 0,
@@ -38,7 +38,7 @@
         },
         {
             "Team": 4,
-            "Active": true,
+            "Active": false,
             "UnitCount": 0,
             "BuildingCount": 0,
             "Gold": 0,
@@ -95,36 +95,18 @@
         {
             "ID": 0,
             "Team": 1,
-            "Health": 4,
+            "Health": 5,
             "Location": {
                 "x": 0.0,
-                "y": 10.0
-            }
-        },
-        {
-            "ID": 0,
-            "Team": 2,
-            "Health": 4,
-            "Location": {
-                "x": 10.0,
                 "y": 10.0
             }
         },
         {
             "ID": 0,
             "Team": 3,
-            "Health": 4,
+            "Health": 5,
             "Location": {
                 "x": 10.0,
-                "y": 0.0
-            }
-        },
-        {
-            "ID": 0,
-            "Team": 4,
-            "Health": 4,
-            "Location": {
-                "x": 0.0,
                 "y": 0.0
             }
         }
@@ -133,25 +115,25 @@
         {
             "Team": 1,
             "Health": 10,
-            "ID": 1,
+            "ID": 0,
             "Location": {
                 "x": 0.0,
                 "y": 10.0
             }
         },
         {
-            "Team": 2,
+            "Team": 0,
             "Health": 10,
-            "ID": 1,
+            "ID": 0,
             "Location": {
                 "x": 10.0,
                 "y": 10.0
             }
         },
         {
-            "Team": 4,
+            "Team": 0,
             "Health": 10,
-            "ID": 1,
+            "ID": 0,
             "Location": {
                 "x": 0.0,
                 "y": 0.0
@@ -160,7 +142,7 @@
         {
             "Team": 3,
             "Health": 10,
-            "ID": 1,
+            "ID": 0,
             "Location": {
                 "x": 10.0,
                 "y": 0.0
@@ -169,7 +151,7 @@
         {
             "Team": 0,
             "Health": 10,
-            "ID": 1,
+            "ID": 0,
             "Location": {
                 "x": 2.0,
                 "y": 8.0
@@ -178,7 +160,7 @@
         {
             "Team": 0,
             "Health": 10,
-            "ID": 1,
+            "ID": 0,
             "Location": {
                 "x": 8.0,
                 "y": 8.0
@@ -187,18 +169,9 @@
         {
             "Team": 0,
             "Health": 10,
-            "ID": 1,
+            "ID": 0,
             "Location": {
                 "x": 2.0,
-                "y": 2.0
-            }
-        },
-        {
-            "Team": 0,
-            "Health": 10,
-            "ID": 1,
-            "Location": {
-                "x": 8.0,
                 "y": 2.0
             }
         },
@@ -206,6 +179,15 @@
             "Team": 0,
             "Health": 10,
             "ID": 0,
+            "Location": {
+                "x": 8.0,
+                "y": 2.0
+            }
+        },
+        {
+            "Team": 0,
+            "Health": 10,
+            "ID": 1,
             "Location": {
                 "x": 5.0,
                 "y": 0.0
@@ -214,7 +196,7 @@
         {
             "Team": 0,
             "Health": 10,
-            "ID": 0,
+            "ID": 1,
             "Location": {
                 "x": 0.0,
                 "y": 5.0
@@ -223,7 +205,7 @@
         {
             "Team": 0,
             "Health": 10,
-            "ID": 0,
+            "ID": 1,
             "Location": {
                 "x": 10.0,
                 "y": 5.0
@@ -232,7 +214,7 @@
         {
             "Team": 0,
             "Health": 10,
-            "ID": 0,
+            "ID": 1,
             "Location": {
                 "x": 5.0,
                 "y": 10.0
@@ -241,7 +223,7 @@
         {
             "Team": 0,
             "Health": 10,
-            "ID": 1,
+            "ID": 0,
             "Location": {
                 "x": 5.0,
                 "y": 5.0
@@ -250,847 +232,847 @@
     ],
     "TerrainList": [
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 0.0,
                 "y": 0.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 0.0,
                 "y": 1.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 0.0,
                 "y": 2.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 0.0,
                 "y": 3.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 0.0,
                 "y": 4.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 0.0,
                 "y": 5.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 0.0,
                 "y": 6.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 0.0,
                 "y": 7.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 0.0,
                 "y": 8.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 0.0,
                 "y": 9.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 0.0,
                 "y": 10.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 1.0,
                 "y": 0.0
             }
         },
         {
-            "ID": 2,
+            "ID": 0,
             "Location": {
                 "x": 1.0,
                 "y": 1.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 1.0,
                 "y": 2.0
             }
         },
         {
-            "ID": 2,
+            "ID": 0,
             "Location": {
                 "x": 1.0,
                 "y": 3.0
             }
         },
         {
-            "ID": 1,
+            "ID": 3,
             "Location": {
                 "x": 1.0,
                 "y": 4.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 1.0,
                 "y": 5.0
             }
         },
         {
-            "ID": 1,
+            "ID": 3,
             "Location": {
                 "x": 1.0,
                 "y": 6.0
             }
         },
         {
-            "ID": 2,
+            "ID": 0,
             "Location": {
                 "x": 1.0,
                 "y": 7.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 1.0,
                 "y": 8.0
             }
         },
         {
-            "ID": 2,
+            "ID": 0,
             "Location": {
                 "x": 1.0,
                 "y": 9.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 1.0,
                 "y": 10.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 2.0,
                 "y": 0.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 2.0,
                 "y": 1.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 2.0,
                 "y": 2.0
             }
         },
         {
-            "ID": 2,
+            "ID": 0,
             "Location": {
                 "x": 2.0,
                 "y": 3.0
             }
         },
         {
-            "ID": 1,
+            "ID": 3,
             "Location": {
                 "x": 2.0,
                 "y": 4.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 2.0,
                 "y": 5.0
             }
         },
         {
-            "ID": 1,
+            "ID": 3,
             "Location": {
                 "x": 2.0,
                 "y": 6.0
             }
         },
         {
-            "ID": 2,
+            "ID": 0,
             "Location": {
                 "x": 2.0,
                 "y": 7.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 2.0,
                 "y": 8.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 2.0,
                 "y": 9.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 2.0,
                 "y": 10.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 3.0,
                 "y": 0.0
             }
         },
         {
-            "ID": 2,
+            "ID": 0,
             "Location": {
                 "x": 3.0,
                 "y": 1.0
             }
         },
         {
-            "ID": 2,
+            "ID": 0,
             "Location": {
                 "x": 3.0,
                 "y": 2.0
             }
         },
         {
-            "ID": 2,
+            "ID": 0,
             "Location": {
                 "x": 3.0,
                 "y": 3.0
             }
         },
         {
-            "ID": 1,
+            "ID": 3,
             "Location": {
                 "x": 3.0,
                 "y": 4.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 3.0,
                 "y": 5.0
             }
         },
         {
-            "ID": 1,
+            "ID": 3,
             "Location": {
                 "x": 3.0,
                 "y": 6.0
             }
         },
         {
-            "ID": 2,
+            "ID": 0,
             "Location": {
                 "x": 3.0,
                 "y": 7.0
             }
         },
         {
-            "ID": 2,
+            "ID": 0,
             "Location": {
                 "x": 3.0,
                 "y": 8.0
             }
         },
         {
-            "ID": 2,
+            "ID": 0,
             "Location": {
                 "x": 3.0,
                 "y": 9.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 3.0,
                 "y": 10.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 4.0,
                 "y": 0.0
             }
         },
         {
-            "ID": 1,
+            "ID": 3,
             "Location": {
                 "x": 4.0,
                 "y": 1.0
             }
         },
         {
-            "ID": 1,
+            "ID": 3,
             "Location": {
                 "x": 4.0,
                 "y": 2.0
             }
         },
         {
-            "ID": 1,
+            "ID": 3,
             "Location": {
                 "x": 4.0,
                 "y": 3.0
             }
         },
         {
-            "ID": 1,
+            "ID": 3,
             "Location": {
                 "x": 4.0,
                 "y": 4.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 4.0,
                 "y": 5.0
             }
         },
         {
-            "ID": 1,
+            "ID": 3,
             "Location": {
                 "x": 4.0,
                 "y": 6.0
             }
         },
         {
-            "ID": 1,
+            "ID": 3,
             "Location": {
                 "x": 4.0,
                 "y": 7.0
             }
         },
         {
-            "ID": 1,
+            "ID": 3,
             "Location": {
                 "x": 4.0,
                 "y": 8.0
             }
         },
         {
-            "ID": 1,
+            "ID": 3,
             "Location": {
                 "x": 4.0,
                 "y": 9.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 4.0,
                 "y": 10.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 5.0,
                 "y": 0.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 5.0,
                 "y": 1.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 5.0,
                 "y": 2.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 5.0,
                 "y": 3.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 5.0,
                 "y": 4.0
             }
         },
         {
-            "ID": 2,
+            "ID": 0,
             "Location": {
                 "x": 5.0,
                 "y": 5.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 5.0,
                 "y": 6.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 5.0,
                 "y": 7.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 5.0,
                 "y": 8.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 5.0,
                 "y": 9.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 5.0,
                 "y": 10.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 6.0,
                 "y": 0.0
             }
         },
         {
-            "ID": 1,
+            "ID": 3,
             "Location": {
                 "x": 6.0,
                 "y": 1.0
             }
         },
         {
-            "ID": 1,
+            "ID": 3,
             "Location": {
                 "x": 6.0,
                 "y": 2.0
             }
         },
         {
-            "ID": 1,
+            "ID": 3,
             "Location": {
                 "x": 6.0,
                 "y": 3.0
             }
         },
         {
-            "ID": 1,
+            "ID": 3,
             "Location": {
                 "x": 6.0,
                 "y": 4.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 6.0,
                 "y": 5.0
             }
         },
         {
-            "ID": 1,
+            "ID": 3,
             "Location": {
                 "x": 6.0,
                 "y": 6.0
             }
         },
         {
-            "ID": 1,
+            "ID": 3,
             "Location": {
                 "x": 6.0,
                 "y": 7.0
             }
         },
         {
-            "ID": 1,
+            "ID": 3,
             "Location": {
                 "x": 6.0,
                 "y": 8.0
             }
         },
         {
-            "ID": 1,
+            "ID": 3,
             "Location": {
                 "x": 6.0,
                 "y": 9.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 6.0,
                 "y": 10.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 7.0,
                 "y": 0.0
             }
         },
         {
-            "ID": 2,
+            "ID": 0,
             "Location": {
                 "x": 7.0,
                 "y": 1.0
             }
         },
         {
-            "ID": 2,
+            "ID": 0,
             "Location": {
                 "x": 7.0,
                 "y": 2.0
             }
         },
         {
-            "ID": 2,
+            "ID": 0,
             "Location": {
                 "x": 7.0,
                 "y": 3.0
             }
         },
         {
-            "ID": 1,
+            "ID": 3,
             "Location": {
                 "x": 7.0,
                 "y": 4.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 7.0,
                 "y": 5.0
             }
         },
         {
-            "ID": 1,
+            "ID": 3,
             "Location": {
                 "x": 7.0,
                 "y": 6.0
             }
         },
         {
-            "ID": 2,
+            "ID": 0,
             "Location": {
                 "x": 7.0,
                 "y": 7.0
             }
         },
         {
-            "ID": 2,
+            "ID": 0,
             "Location": {
                 "x": 7.0,
                 "y": 8.0
             }
         },
         {
-            "ID": 2,
+            "ID": 0,
             "Location": {
                 "x": 7.0,
                 "y": 9.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 7.0,
                 "y": 10.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 8.0,
                 "y": 0.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 8.0,
                 "y": 1.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 8.0,
                 "y": 2.0
             }
         },
         {
-            "ID": 2,
+            "ID": 0,
             "Location": {
                 "x": 8.0,
                 "y": 3.0
             }
         },
         {
-            "ID": 1,
+            "ID": 3,
             "Location": {
                 "x": 8.0,
                 "y": 4.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 8.0,
                 "y": 5.0
             }
         },
         {
-            "ID": 1,
+            "ID": 3,
             "Location": {
                 "x": 8.0,
                 "y": 6.0
             }
         },
         {
-            "ID": 2,
+            "ID": 0,
             "Location": {
                 "x": 8.0,
                 "y": 7.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 8.0,
                 "y": 8.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 8.0,
                 "y": 9.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 8.0,
                 "y": 10.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 9.0,
                 "y": 0.0
             }
         },
         {
-            "ID": 2,
+            "ID": 0,
             "Location": {
                 "x": 9.0,
                 "y": 1.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 9.0,
                 "y": 2.0
             }
         },
         {
-            "ID": 2,
+            "ID": 0,
             "Location": {
                 "x": 9.0,
                 "y": 3.0
             }
         },
         {
-            "ID": 1,
+            "ID": 3,
             "Location": {
                 "x": 9.0,
                 "y": 4.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 9.0,
                 "y": 5.0
             }
         },
         {
-            "ID": 1,
+            "ID": 3,
             "Location": {
                 "x": 9.0,
                 "y": 6.0
             }
         },
         {
-            "ID": 2,
+            "ID": 0,
             "Location": {
                 "x": 9.0,
                 "y": 7.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 9.0,
                 "y": 8.0
             }
         },
         {
-            "ID": 2,
+            "ID": 0,
             "Location": {
                 "x": 9.0,
                 "y": 9.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 9.0,
                 "y": 10.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 10.0,
                 "y": 0.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 10.0,
                 "y": 1.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 10.0,
                 "y": 2.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 10.0,
                 "y": 3.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 10.0,
                 "y": 4.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 10.0,
                 "y": 5.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 10.0,
                 "y": 6.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 10.0,
                 "y": 7.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 10.0,
                 "y": 8.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 10.0,
                 "y": 9.0
             }
         },
         {
-            "ID": 3,
+            "ID": 2,
             "Location": {
                 "x": 10.0,
                 "y": 10.0

@@ -383,7 +383,7 @@ public class UnitController : MonoBehaviour
         return EnemyUnitsInRange.Count;
     }
 
-    public void UnitAi()
+    /*public void UnitAi()
     {
         GetEnemyUnitsInRange();
         //Debug.log("1");
@@ -554,7 +554,7 @@ public class UnitController : MonoBehaviour
             UnitMovable = false;
             UnitMoved = true;
         }
-    }
+    }*/   //this will need to be redone and reworked as mechanicks are added to the units. currently set up to work before fog of war was added. 
 
     public void HealUnitIfOnFriendlyBuilding()
     {
@@ -566,7 +566,7 @@ public class UnitController : MonoBehaviour
                 gameObject.GetComponentInChildren<Text>().text = Health.ToString();
             }
         }
-    }
+    } 
 
     public void MovementController()
     {

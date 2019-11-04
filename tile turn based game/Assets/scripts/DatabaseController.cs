@@ -247,6 +247,8 @@ public class DatabaseController : MonoBehaviour
         TGO.GetComponent<TerrainController>().Walkable = TerrainDictionary[index].Walkable;
         TGO.GetComponent<TerrainController>().DefenceBonus = TerrainDictionary[index].DefenceBonus;
         TGO.GetComponent<TerrainController>().BlocksSight = TerrainDictionary[index].BlocksSight;
+        TGO.GetComponent<TerrainController>().Overlays = TerrainDictionary[index].Overlays;
+        TGO.GetComponent<TerrainController>().Connectable = TerrainDictionary[index].Connectable;
         TGO.GetComponent<TerrainController>().ID = index;
         TGO.transform.position = location;
         return TGO;
@@ -409,7 +411,10 @@ public class Terrain
     public string Type;
     public int Weight;
     public bool BlocksSight;
+    public bool Overlays;
+    public bool Connectable;
     public List<string> ArtworkDirectory;
+    public List<string> OverlayArtworkDirectory;
 
     /// <summary>
     /// Gets location of sprites and saves them to a list

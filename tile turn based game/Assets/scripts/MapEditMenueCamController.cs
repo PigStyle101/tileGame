@@ -212,6 +212,8 @@ public class MapEditMenueCamController : MonoBehaviour
         ScrollWindowBuilding.SetActive(true);
         ScrollWindowUnits.SetActive(false);
         SelectedTab = "Building";
+        CurrentSelectedButtonText.text = "Currently Selected: " + DatabaseController.instance.BuildingDictionary[0].Title;
+        SelectedButton = DatabaseController.instance.BuildingDictionary[0].Title;
     } //sets the building content window as the active one
 
     public void UnitButtonClicked()
@@ -381,6 +383,80 @@ public class MapEditMenueCamController : MonoBehaviour
         {
             SelectedTeam = 0;
             TeamText.text = "Team:" + SelectedTeam;
+        }
+        if (ScrollWindowTerrain.activeSelf)
+        {
+            if (ContentWindowTerrain.transform.childCount > 0 && Input.GetKeyDown(KeyCode.Q))
+            {
+                SelectedButton = ContentWindowTerrain.transform.GetChild(0).name;
+                CurrentSelectedButtonText.text = "Currently Selected: " + SelectedButton;
+            }
+            if (ContentWindowTerrain.transform.childCount > 1 && Input.GetKeyDown(KeyCode.W))
+            {
+                SelectedButton = ContentWindowTerrain.transform.GetChild(1).name;
+                CurrentSelectedButtonText.text = "Currently Selected: " + SelectedButton;
+            }
+            if (ContentWindowTerrain.transform.childCount > 2 && Input.GetKeyDown(KeyCode.E))
+            {
+                SelectedButton = ContentWindowTerrain.transform.GetChild(2).name;
+                CurrentSelectedButtonText.text = "Currently Selected: " + SelectedButton;
+            }
+            if (ContentWindowTerrain.transform.childCount > 3 && Input.GetKeyDown(KeyCode.R))
+            {
+                SelectedButton = ContentWindowTerrain.transform.GetChild(3).name;
+                CurrentSelectedButtonText.text = "Currently Selected: " + SelectedButton;
+            }
+        }
+        if (ScrollWindowUnits.activeSelf)
+        {
+            if (ContentWindowUnits.transform.childCount > 0 && Input.GetKeyDown(KeyCode.Q))
+            {
+                SelectedButton = ContentWindowUnits.transform.GetChild(0).name;
+                CurrentSelectedButtonText.text = "Currently Selected: " + SelectedButton;
+            }
+            if (ContentWindowUnits.transform.childCount > 1 && Input.GetKeyDown(KeyCode.W))
+            {
+                SelectedButton = ContentWindowUnits.transform.GetChild(1).name;
+                CurrentSelectedButtonText.text = "Currently Selected: " + SelectedButton;
+            }
+            if (ContentWindowUnits.transform.childCount > 2 && Input.GetKeyDown(KeyCode.E))
+            {
+                SelectedButton = ContentWindowUnits.transform.GetChild(2).name;
+                CurrentSelectedButtonText.text = "Currently Selected: " + SelectedButton;
+            }
+            if (ContentWindowUnits.transform.childCount > 3 && Input.GetKeyDown(KeyCode.R))
+            {
+                SelectedButton = ContentWindowUnits.transform.GetChild(3).name;
+                CurrentSelectedButtonText.text = "Currently Selected: " + SelectedButton;
+            }
+            if (ContentWindowUnits.transform.childCount > 4 && Input.GetKeyDown(KeyCode.T))
+            {
+                SelectedButton = ContentWindowUnits.transform.GetChild(4).name;
+                CurrentSelectedButtonText.text = "Currently Selected: " + SelectedButton;
+            }
+        }
+        if (ScrollWindowBuilding.activeSelf)
+        {
+            if (ContentWindowBuilding.transform.childCount > 0 && Input.GetKeyDown(KeyCode.Q))
+            {
+                SelectedButton = ContentWindowBuilding.transform.GetChild(0).name;
+                CurrentSelectedButtonText.text = "Currently Selected: " + SelectedButton;
+            }
+            if (ContentWindowBuilding.transform.childCount > 1 && Input.GetKeyDown(KeyCode.W))
+            {
+                SelectedButton = ContentWindowBuilding.transform.GetChild(1).name;
+                CurrentSelectedButtonText.text = "Currently Selected: " + SelectedButton;
+            }
+            if (ContentWindowBuilding.transform.childCount > 2 && Input.GetKeyDown(KeyCode.E))
+            {
+                SelectedButton = ContentWindowBuilding.transform.GetChild(2).name;
+                CurrentSelectedButtonText.text = "Currently Selected: " + SelectedButton;
+            }
+            if (ContentWindowBuilding.transform.childCount > 3 && Input.GetKeyDown(KeyCode.R))
+            {
+                SelectedButton = ContentWindowBuilding.transform.GetChild(3).name;
+                CurrentSelectedButtonText.text = "Currently Selected: " + SelectedButton;
+            }
         }
     }
 }

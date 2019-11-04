@@ -42,6 +42,10 @@ public class TerrainController : MonoBehaviour
     public int ID;
     [HideInInspector]
     public bool FogOfWarBool;
+    [HideInInspector]
+    public bool Overlays;
+    [HideInInspector]
+    public bool Connectable;
     private bool LastHitThis = false;
 
     private void Awake()
@@ -99,6 +103,8 @@ public class TerrainController : MonoBehaviour
                 gameObject.GetComponent<SpriteRenderer>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.TerrainDictionary[kvp.Key].ArtworkDirectory[0]); //change sprite of tile
                 gameObject.transform.eulerAngles = new Vector3(0, 0, 0);
                 ID = kvp.Value.ID;
+                Overlays = kvp.Value.Overlays;
+                Connectable = kvp.Value.Connectable;
                 if (GameControllerScript.instance.UnitPos.ContainsKey(gameObject.transform.position) && DatabaseController.instance.TerrainDictionary[kvp.Key].Walkable == false)
                 {
                     Destroy(GameControllerScript.instance.UnitPos[gameObject.transform.position]);
@@ -148,10 +154,10 @@ public class TerrainController : MonoBehaviour
             }
         }
     } //checks if mouse is over tile, activates mouseoverlay if it is.
-
-    public void WaterSpriteController()
+    
+    public void WaterSpriteController() 
     {
-        if (gameObject.name == DatabaseController.instance.TerrainDictionary[1].Title)
+        if (Overlays) 
         {
             //UnityEngine.Debug.Log("Starting Water Sprite Controller");
             var currentPos = (Vector2)transform.position;
@@ -176,7 +182,7 @@ public class TerrainController : MonoBehaviour
             if (GameControllerScript.instance.TilePos.ContainsKey(topPos))
             {
                 //Debug.Log("tile pos contains key");
-                if (GameControllerScript.instance.TilePos[topPos].name != "Water")//is the tle above this one not water?
+                if (GameControllerScript.instance.TilePos[topPos].name != gameObject.name)//is the tle above this one not water?
                 {
                     if (WaterOverlays.ContainsKey("TopLandOverlay"))//does the dictionary contain a key for this already?
                     {
@@ -208,7 +214,7 @@ public class TerrainController : MonoBehaviour
             if (GameControllerScript.instance.TilePos.ContainsKey(topRightPos))
             {
                 //Debug.Log("tile pos contains key");
-                if (GameControllerScript.instance.TilePos[topRightPos].name != "Water")//is the tle above this one not water?
+                if (GameControllerScript.instance.TilePos[topRightPos].name != gameObject.name)//is the tle above this one not water?
                 {
                     if (WaterOverlays.ContainsKey("TopRightLandOverlay"))//does the dictionary contain a key for this already?
                     {
@@ -239,7 +245,7 @@ public class TerrainController : MonoBehaviour
             if (GameControllerScript.instance.TilePos.ContainsKey(rightPos))
             {
                 //Debug.Log("tile pos contains key");
-                if (GameControllerScript.instance.TilePos[rightPos].name != "Water")//is the tle above this one not water?
+                if (GameControllerScript.instance.TilePos[rightPos].name != gameObject.name)//is the tle above this one not water?
                 {
                     if (WaterOverlays.ContainsKey("RightLandOverlay"))//does the dictionary contain a key for this already?
                     {
@@ -270,7 +276,7 @@ public class TerrainController : MonoBehaviour
             if (GameControllerScript.instance.TilePos.ContainsKey(bottomRightPos))
             {
                 //Debug.Log("tile pos contains key");
-                if (GameControllerScript.instance.TilePos[bottomRightPos].name != "Water")//is the tle above this one not water?
+                if (GameControllerScript.instance.TilePos[bottomRightPos].name != gameObject.name)//is the tle above this one not water?
                 {
                     if (WaterOverlays.ContainsKey("BottomRightLandOverlay"))//does the dictionary contain a key for this already?
                     {
@@ -302,7 +308,7 @@ public class TerrainController : MonoBehaviour
             if (GameControllerScript.instance.TilePos.ContainsKey(bottomPos))
             {
                 //Debug.Log("tile pos contains key");
-                if (GameControllerScript.instance.TilePos[bottomPos].name != "Water")//is the tle above this one not water?
+                if (GameControllerScript.instance.TilePos[bottomPos].name != gameObject.name)//is the tle above this one not water?
                 {
                     if (WaterOverlays.ContainsKey("BottomLandOverlay"))//does the dictionary contain a key for this already?
                     {
@@ -334,7 +340,7 @@ public class TerrainController : MonoBehaviour
             if (GameControllerScript.instance.TilePos.ContainsKey(bottomLeftPos))
             {
                 //Debug.Log("tile pos contains key");
-                if (GameControllerScript.instance.TilePos[bottomLeftPos].name != "Water")//is the tle above this one not water?
+                if (GameControllerScript.instance.TilePos[bottomLeftPos].name != gameObject.name)//is the tle above this one not water?
                 {
                     if (WaterOverlays.ContainsKey("BottomLeftLandOverlay"))//does the dictionary contain a key for this already?
                     {
@@ -366,7 +372,7 @@ public class TerrainController : MonoBehaviour
             if (GameControllerScript.instance.TilePos.ContainsKey(leftPos))
             {
                 //Debug.Log("tile pos contains key");
-                if (GameControllerScript.instance.TilePos[leftPos].name != "Water")//is the tle above this one not water?
+                if (GameControllerScript.instance.TilePos[leftPos].name != gameObject.name)//is the tle above this one not water?
                 {
                     if (WaterOverlays.ContainsKey("LeftLandOverlay"))//does the dictionary contain a key for this already?
                     {
@@ -447,10 +453,10 @@ public class TerrainController : MonoBehaviour
             }
         }
     } //Controlls the overlay for adding banks to the water sprites
-
+    
     public void RoadSpriteController()
-    {
-        if (gameObject.name == DatabaseController.instance.TerrainDictionary[3].Title)
+    { //gameObject.name == DatabaseController.instance.TerrainDictionary[3].Title
+        if (Connectable)
         {
             var currentPos = (Vector2)transform.position;
             if (OriginalRot == null)
@@ -479,7 +485,7 @@ public class TerrainController : MonoBehaviour
 
             if (GameControllerScript.instance.TilePos.ContainsKey(topPos))
             {
-                if (GameControllerScript.instance.TilePos[topPos].name == "Road")
+                if (GameControllerScript.instance.TilePos[topPos].name == gameObject.name)
                 {
                     counter = counter + 1;
                     topBool = true;
@@ -487,7 +493,7 @@ public class TerrainController : MonoBehaviour
             }
             if (GameControllerScript.instance.TilePos.ContainsKey(rightPos))
             {
-                if (GameControllerScript.instance.TilePos[rightPos].name == "Road")
+                if (GameControllerScript.instance.TilePos[rightPos].name == gameObject.name)
                 {
                     counter = counter + 1;
                     rightbool = true;
@@ -495,7 +501,7 @@ public class TerrainController : MonoBehaviour
             }
             if (GameControllerScript.instance.TilePos.ContainsKey(bottomPos))
             {
-                if (GameControllerScript.instance.TilePos[bottomPos].name == "Road")
+                if (GameControllerScript.instance.TilePos[bottomPos].name == gameObject.name)
                 {
                     counter = counter + 1;
                     bottombool = true;
@@ -503,7 +509,7 @@ public class TerrainController : MonoBehaviour
             }
             if (GameControllerScript.instance.TilePos.ContainsKey(leftPos))
             {
-                if (GameControllerScript.instance.TilePos[leftPos].name == "Road")
+                if (GameControllerScript.instance.TilePos[leftPos].name == gameObject.name)
                 {
                     counter = counter + 1;
                     leftbool = true;
@@ -623,6 +629,14 @@ public class TerrainController : MonoBehaviour
                     FogOfWarBool = false;
                     UnitOnMe = true;
                     break;
+                }
+            }
+            if (GameControllerScript.instance.BuildingPos.ContainsKey((Vector2)transform.position))
+            {
+                if (GameControllerScript.instance.BuildingPos[(Vector2)transform.position].GetComponent<BuildingController>().Team == GameControllerScript.instance.CurrentTeamsTurn.Team)
+                {
+                    FogOfWar.enabled = false;
+                    FogOfWarBool = false;
                 }
             }
         }
