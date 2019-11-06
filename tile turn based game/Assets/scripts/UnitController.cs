@@ -338,9 +338,12 @@ public class UnitController : MonoBehaviour
             {
                 if (!EnemyUnitsInRange.ContainsKey(Position + dir) && GameControllerScript.instance.UnitPos.ContainsKey(Position + dir)) //is the key already claimed?
                 {
-                    if (GameControllerScript.instance.UnitPos[Position + dir].GetComponent<UnitController>().Team != gameObject.GetComponent<UnitController>().Team)
+                    if (!GameControllerScript.instance.TilePos[Position + dir].GetComponent<TerrainController>().FogOfWarBool) // if you cannot see the unit, you cannot attack it
                     {
-                        EnemyUnitsInRange.Add(Position + dir, count); //add to dictionary 
+                        if (GameControllerScript.instance.UnitPos[Position + dir].GetComponent<UnitController>().Team != gameObject.GetComponent<UnitController>().Team)
+                        {
+                            EnemyUnitsInRange.Add(Position + dir, count); //add to dictionary 
+                        } 
                     }
                 }
                 TilesChecked.Add(Position + dir, count); //add to tiles checked
@@ -358,11 +361,13 @@ public class UnitController : MonoBehaviour
                     {
                         if (GameControllerScript.instance.UnitPos.ContainsKey(kvp.Key + dir))//does tilesChecked not contain key? is there a unit there?
                         {
-                            if (GameControllerScript.instance.UnitPos[kvp.Key + dir].GetComponent<UnitController>().Team != gameObject.GetComponent<UnitController>().Team) //is it not on the same team?
+                            if (!GameControllerScript.instance.TilePos[kvp.Key + dir].GetComponent<TerrainController>().FogOfWarBool) //if we cannot see the unit, then we cannot attack it
                             {
-                                EnemyUnitsInRange.Add(kvp.Key + dir, count);
+                                if (GameControllerScript.instance.UnitPos[kvp.Key + dir].GetComponent<UnitController>().Team != gameObject.GetComponent<UnitController>().Team) //is it not on the same team?
+                                {
+                                    EnemyUnitsInRange.Add(kvp.Key + dir, count);
+                                } 
                             }
-
                         }
                         Temp.Add(kvp.Key + dir, count);
                     }

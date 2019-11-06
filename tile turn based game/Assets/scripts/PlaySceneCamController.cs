@@ -42,7 +42,7 @@ public class PlaySceneCamController : MonoBehaviour
     [HideInInspector]
     public GameObject CurrentPlayerTurnImage;
     private GameObject CurrentPlayerGoldImage;
-    private GameObject EndTurnButton;
+    public GameObject EndTurnButton;
     private GameObject TooltipPanel;
     private GameObject ActionPanel;
     private GameObject BuildingPanel;
@@ -180,6 +180,7 @@ public class PlaySceneCamController : MonoBehaviour
         }
         GameControllerScript.instance.PlaySceneTurnChanger();
         UpdateTurnImageColor(GameControllerScript.instance.CurrentTeamsTurn.Team);
+        EventSystem.current.SetSelectedGameObject(null);
     }
 
     /// <summary>
@@ -262,7 +263,7 @@ public class PlaySceneCamController : MonoBehaviour
                 for (int i = 0; i < hits.Length; i++) // GO THROUGH THEM RAYS
                 {
                     RaycastHit hit = hits[i];
-                    if (hit.transform.tag == DatabaseController.instance.TerrainDictionary[0].Type) //did we hit a terrain?
+                    if (hit.transform.tag == DatabaseController.instance.TerrainDictionary[0].Type && !hit.transform.GetComponent<TerrainController>().FogOfWarBool) //did we hit a terrain?
                     {
                         foreach (var kvp in DatabaseController.instance.TerrainDictionary)
                         {
@@ -275,7 +276,7 @@ public class PlaySceneCamController : MonoBehaviour
                             }
                         }
                     }
-                    if (hit.transform.tag == DatabaseController.instance.UnitDictionary[0].Type) //did we hit a unit?
+                    if (hit.transform.tag == DatabaseController.instance.UnitDictionary[0].Type && !GameControllerScript.instance.TilePos[(Vector2)hit.transform.position].GetComponent<TerrainController>().FogOfWarBool) //did we hit a unit?
                     {
                         foreach (var kvp in DatabaseController.instance.UnitDictionary)
                         {
@@ -288,7 +289,7 @@ public class PlaySceneCamController : MonoBehaviour
                             }
                         }
                     }
-                    if (hit.transform.tag == DatabaseController.instance.BuildingDictionary[0].Type) //did we hit a building?
+                    if (hit.transform.tag == DatabaseController.instance.BuildingDictionary[0].Type && !GameControllerScript.instance.TilePos[(Vector2)hit.transform.position].GetComponent<TerrainController>().FogOfWarBool) //did we hit a building?
                     {
                         foreach (var kvp in DatabaseController.instance.BuildingDictionary)
                         {

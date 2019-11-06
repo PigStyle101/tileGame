@@ -5,6 +5,9 @@ Things that need done:
 -Add hero stuff
 -add keyboard shortcuts
 -add xp to troops and a unit return(a list of units that you keep through battles)
+-add mountains(adds 2 to sight range, better defence then grass)
+-add ports and boats, start with carrier and attack boat?
+
 
 -Multiplayer?
 -What to do here?
@@ -15,6 +18,3 @@ option are:
 -Or see if steam has a all users online thingy
 
 -Look into steam stuff that would be needed, like workshop and stuff.
-
-
-BUG~~~When end turn button is clicked and then keyboard shortcut is used for end turn it stays on the same persons turn and keeps updating there gold

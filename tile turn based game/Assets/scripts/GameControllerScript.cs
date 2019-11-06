@@ -859,75 +859,88 @@ public class GameControllerScript : MonoBehaviour
     /// </summary>
     public void PlaySceneTurnChanger()
     {
-        foreach(var t in TeamList)
+        if (PSCC.EndTurnButton.GetComponentInChildren<Text>().text == "StartTurn")
         {
-            t.UnitCount = 0;
-            t.BuildingCount = 0;
-        }
-        foreach (var kvp in UnitPos) //check through units to make sure there is still enough players to play the game
-        {
-            TeamList[kvp.Value.GetComponent<UnitController>().Team].UnitCount++; 
-        }
-        foreach (var kvp in BuildingPos)
-        {
-            TeamList[kvp.Value.GetComponent<BuildingController>().Team].BuildingCount++;
-        }
-        foreach (var t in TeamList)
-        {
-            if (t.UnitCount + t.BuildingCount == 0)
+            foreach (var t in TeamList)
             {
-                t.Defeated = true;
+                t.UnitCount = 0;
+                t.BuildingCount = 0;
             }
-        }
-        List<TeamStuff> TempTeamList = new List<TeamStuff>();
-        foreach(var t in TeamList)
-        {
-            TempTeamList.Add(t);
-        }
-        TempTeamList.RemoveAll(TeamIsNotActive);
-        if (TempTeamList.Count == 1)
-        {
-            PSCC.GameEndController(TempTeamList[0].Team);
-        }
-        else
-        {
-            if (CurrentTeamsTurn.Team != TempTeamList[TempTeamList.Count - 1].Team) //if index is not at max
+            foreach (var kvp in UnitPos) //check through units to make sure there is still enough players to play the game
             {
-                int tempind = TeamList.IndexOf(CurrentTeamsTurn);
-                int tempint = TeamList.FindIndex(tempind+1, TeamIsActive);
-                CurrentTeamsTurn = TeamList[tempint];
+                TeamList[kvp.Value.GetComponent<UnitController>().Team].UnitCount++;
+            }
+            foreach (var kvp in BuildingPos)
+            {
+                TeamList[kvp.Value.GetComponent<BuildingController>().Team].BuildingCount++;
+            }
+            foreach (var t in TeamList)
+            {
+                if (t.UnitCount + t.BuildingCount == 0)
+                {
+                    t.Defeated = true;
+                }
+            }
+            List<TeamStuff> TempTeamList = new List<TeamStuff>();
+            foreach (var t in TeamList)
+            {
+                TempTeamList.Add(t);
+            }
+            TempTeamList.RemoveAll(TeamIsNotActive);
+            if (TempTeamList.Count == 1)
+            {
+                PSCC.GameEndController(TempTeamList[0].Team);
             }
             else
             {
-                CurrentTeamsTurn = TeamList[TeamList.IndexOf(TempTeamList[0])];
-            }
-            PSCC.CurrentPlayerTurnText.text = "Team turn";
-            AllRoundUpdater();
-            foreach (var kvp in BuildingPos)
-            {
-                if (kvp.Value.GetComponent<BuildingController>().Team == CurrentTeamsTurn.Team)
+                if (CurrentTeamsTurn.Team != TempTeamList[TempTeamList.Count - 1].Team) //if index is not at max
                 {
-                    kvp.Value.GetComponent<BuildingController>().CanBuild = true;
-                    kvp.Value.GetComponent<BuildingController>().HealIfFriendlyUnitOnBuilding();
+                    int tempind = TeamList.IndexOf(CurrentTeamsTurn);
+                    int tempint = TeamList.FindIndex(tempind + 1, TeamIsActive);
+                    CurrentTeamsTurn = TeamList[tempint];
                 }
                 else
                 {
-                    kvp.Value.GetComponent<BuildingController>().CanBuild = false;
+                    CurrentTeamsTurn = TeamList[TeamList.IndexOf(TempTeamList[0])];
                 }
-            }
-            int TempInt = 0;
-            foreach (var kvp in BuildingPos)
-            {
-                if (kvp.Value.GetComponent<BuildingController>().Team == CurrentTeamsTurn.Team)
+                PSCC.CurrentPlayerTurnText.text = "Team turn";
+                AllRoundUpdater();
+                foreach (var kvp in BuildingPos)
                 {
-                    TempInt = TempInt + 1;
+                    if (kvp.Value.GetComponent<BuildingController>().Team == CurrentTeamsTurn.Team)
+                    {
+                        kvp.Value.GetComponent<BuildingController>().CanBuild = true;
+                        kvp.Value.GetComponent<BuildingController>().HealIfFriendlyUnitOnBuilding();
+                    }
+                    else
+                    {
+                        kvp.Value.GetComponent<BuildingController>().CanBuild = false;
+                    }
                 }
+                int TempInt = 0;
+                foreach (var kvp in BuildingPos)
+                {
+                    if (kvp.Value.GetComponent<BuildingController>().Team == CurrentTeamsTurn.Team)
+                    {
+                        TempInt = TempInt + 1;
+                    }
+                }
+                TempInt = TempInt * 100;
+                TeamList[CurrentTeamsTurn.Team].Gold = TeamList[CurrentTeamsTurn.Team].Gold + TempInt;
+                PSCC.UpdateGoldThings();
+                AiController();
+                PSCC.HideOrShowSaveButton(true);
             }
-            TempInt = TempInt * 100;
-            TeamList[CurrentTeamsTurn.Team].Gold = TeamList[CurrentTeamsTurn.Team].Gold + TempInt;
-            PSCC.UpdateGoldThings();
-            AiController();
-            PSCC.HideOrShowSaveButton(true);
+            PSCC.EndTurnButton.GetComponentInChildren<Text>().text = "EndTurn";
+        }
+        else
+        {
+            foreach(var kvp in TilePos)
+            {
+                kvp.Value.GetComponent<TerrainController>().FogOfWar.enabled = true;
+                kvp.Value.GetComponent<TerrainController>().FogOfWarBool = true;
+            }
+            PSCC.EndTurnButton.GetComponentInChildren<Text>().text = "StartTurn";
         }
     }
 
@@ -1173,6 +1186,7 @@ public class GameControllerScript : MonoBehaviour
                 PSCC.AttackButton.SetActive(false); //else set it to false
             }
         }
+        PSCC.HideOrShowSaveButton(false);
     }
 
     /// <summary>
@@ -1534,6 +1548,8 @@ public class SaveableUnit
     public int ID;
     public int Team;
     public int Health;
+    public int XP;
+    public int Level;
     public SeralizableVector2 Location;
 }
 
