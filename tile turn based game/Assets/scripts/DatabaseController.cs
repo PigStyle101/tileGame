@@ -49,6 +49,7 @@ public class DatabaseController : MonoBehaviour
     private void Start()
     {
         GetMasterJson();
+        MultiplayerController.instance.Connect();
         GameControllerScript.instance.LoadingUpdater(.2f);
         GetTerrianJsons("Core");
         GameControllerScript.instance.LoadingUpdater(.4f);
