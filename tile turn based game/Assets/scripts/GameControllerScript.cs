@@ -64,6 +64,8 @@ public class GameControllerScript : MonoBehaviour
     //public List<AiOrNot> AiOrPlayerList; //0 = player, 1 =ai
     private string MapToLoadForMapEditor;
     private bool MapEditorNewMapBool;
+    private float IdleTimerFloat;
+    public int IdleState;
 
     private void Awake()
     {
@@ -87,15 +89,16 @@ public class GameControllerScript : MonoBehaviour
     {
         RayCastForMapEditor();
         RayCastForPlayScene();
+        IdleTimer();
     }
 
     /// <summary>
-    /// Saves crash info to DebugLogs file in streaming assets.
+    /// Saves crash info to //DebugLogs file in streaming assets.
     /// </summary>
     /// <param name="Problem">String to be saved to file</param>
     public void LogController(string Problem)
     {
-        StreamWriter writer = new StreamWriter(Application.dataPath + "/StreamingAssets/DebugLogs/" + DateTime.Now.Hour + "-" + DateTime.Now.Minute + "-" + DateTime.Now.Second + ".txt");
+        StreamWriter writer = new StreamWriter(Application.dataPath + "/StreamingAssets///DebugLogs/" + DateTime.Now.Hour + "-" + DateTime.Now.Minute + "-" + DateTime.Now.Second + ".txt");
         writer.WriteLine(Problem);
         writer.Close();
         writer.Dispose();
@@ -1255,32 +1258,32 @@ public class GameControllerScript : MonoBehaviour
 
     public int CombatCalculator(GameObject Attacker, GameObject Defender)
     {
-        Debug.Log("Health:" + Attacker.GetComponent<UnitController>().Health);
-        Debug.Log("MaxHealth:" + Attacker.GetComponent<UnitController>().MaxHealth);
+        //Debug.Log("Health:" + Attacker.GetComponent<UnitController>().Health);
+        //Debug.Log("MaxHealth:" + Attacker.GetComponent<UnitController>().MaxHealth);
         double HealthModifier = (double)Attacker.GetComponent<UnitController>().Health / Attacker.GetComponent<UnitController>().MaxHealth;
-        Debug.Log("HealthMod:" + HealthModifier);
+        //Debug.Log("HealthMod:" + HealthModifier);
         double AttackDouble = Math.Ceiling(HealthModifier * Attacker.GetComponent<UnitController>().Attack);
-        Debug.Log("Rounded:" + AttackDouble);
+        //Debug.Log("Rounded:" + AttackDouble);
         int Attack = (int)AttackDouble;
-        Debug.Log("Attack:" + Attack);
+        //Debug.Log("Attack:" + Attack);
         int AttackAfterDefence;
         if (BuildingPos.ContainsKey(Defender.transform.position))
         {
             double DefencePercent = (Defender.GetComponent<UnitController>().Defence + TilePos[Defender.transform.position].GetComponent<TerrainController>().DefenceBonus + BuildingPos[Defender.transform.position].GetComponent<BuildingController>().DefenceBonus) / 100d;
-            Debug.Log("BuildingDefencePercent:" + DefencePercent);
+            //Debug.Log("BuildingDefencePercent:" + DefencePercent);
             double DefenceReduction = DefencePercent * Attack;
-            Debug.Log("DefenceReduction:" + DefenceReduction);
+            //Debug.Log("DefenceReduction:" + DefenceReduction);
             AttackAfterDefence = (int)Math.Round(Attack - DefenceReduction);
-            Debug.Log("AttackAfterDefence:" + AttackAfterDefence);
+            //Debug.Log("AttackAfterDefence:" + AttackAfterDefence);
         }
         else
         {
             double DefencePercent = (Defender.GetComponent<UnitController>().Defence + TilePos[Defender.transform.position].GetComponent<TerrainController>().DefenceBonus) / 100d;
-            Debug.Log("DefencePercent:" + DefencePercent);
+            //Debug.Log("DefencePercent:" + DefencePercent);
             double DefenceReduction = DefencePercent * Attack;
-            Debug.Log("DefenceReduction:" + DefenceReduction);
+            //Debug.Log("DefenceReduction:" + DefenceReduction);
             AttackAfterDefence = (int)Math.Round(Attack - DefenceReduction);
-            Debug.Log("AttackAfterDefence:" + AttackAfterDefence);
+            //Debug.Log("AttackAfterDefence:" + AttackAfterDefence);
         }
         return AttackAfterDefence;
     }
@@ -1462,6 +1465,27 @@ public class GameControllerScript : MonoBehaviour
         else
         {
             return false;
+        }
+    }
+
+    public void IdleTimer()
+    {
+        IdleTimerFloat += Time.deltaTime;
+        if (IdleTimerFloat >= .5)
+        {
+            foreach (var kvp in TilePos)
+            {
+                kvp.Value.GetComponent<TerrainController>().IdleAnimationController();
+            }
+            if (IdleState == 1)
+            {
+                IdleState = 2;
+            }
+            else
+            {
+                IdleState = 1;
+            }
+            IdleTimerFloat = 0;
         }
     }
 }

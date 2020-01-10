@@ -64,18 +64,18 @@ public class MultiplayerController : MonoBehaviour
     {
         try
         {
-            UnityEngine.Debug.Log("Connecting.....");
+            //Debug.Log("Connecting.....");
             TcpClnt.Connect("50.83.1.113", 34000); // uses ipaddress for the server program
         }
         catch (Exception e)
         {
-            UnityEngine.Debug.Log("Could not connect to server.");
-            UnityEngine.Debug.Log(e);
+            //Debug.Log("Could not connect to server.");
+            //Debug.Log(e);
         }
         if (TcpClnt.Connected == true) // checks if connection was sucsessfull and runs connected script in main menu if it was.
         {
             //MMScript.Connected();
-            UnityEngine.Debug.Log("Connected to server.");
+            //Debug.Log("Connected to server.");
         }
     } // trys to connect the player to the server
 
@@ -93,7 +93,7 @@ public class MultiplayerController : MonoBehaviour
                 NetworkStream NtwrkStrm = TcpClnt.GetStream();
                 IFormatter MyFormatter = new BinaryFormatter();
 
-                UnityEngine.Debug.Log("Login Send Started");
+                //Debug.Log("Login Send Started");
                 string type = "Login";
                 MyFormatter.Serialize(NtwrkStrm, type);
                 NtwrkStrm.Flush();
@@ -102,11 +102,11 @@ public class MultiplayerController : MonoBehaviour
                 MyFormatter.Serialize(NtwrkStrm, Password);
                 NtwrkStrm.Flush();
             }
-            //UnityEngine.Debug.Log("Failed to send");
+            //UnityEngine.//Debug.Log("Failed to send");
         }
         catch (Exception e)
         {
-            UnityEngine.Debug.Log(e);
+            //Debug.Log(e);
         }
     } //1
 
@@ -123,7 +123,7 @@ public class MultiplayerController : MonoBehaviour
                 NetworkStream NtwrkStrm = TcpClnt.GetStream();
                 IFormatter MyFormatter = new BinaryFormatter();
 
-                UnityEngine.Debug.Log("AddUser Send Started");
+                //Debug.Log("AddUser Send Started");
                 string type = "AddUser";
                 MyFormatter.Serialize(NtwrkStrm, type);
                 NtwrkStrm.Flush();
@@ -132,11 +132,11 @@ public class MultiplayerController : MonoBehaviour
                 MyFormatter.Serialize(NtwrkStrm, password);
                 NtwrkStrm.Flush();
             }
-            //UnityEngine.Debug.Log("Failed to send");
+            //UnityEngine.//Debug.Log("Failed to send");
         }
         catch (Exception e)
         {
-            UnityEngine.Debug.Log(e);
+            //Debug.Log(e);
         }
     }
 
@@ -178,7 +178,7 @@ public class MultiplayerController : MonoBehaviour
         }
         catch (Exception e)
         {
-            UnityEngine.Debug.Log(e);
+            //Debug.Log(e);
             throw;
         }
     }
@@ -194,7 +194,7 @@ public class MultiplayerController : MonoBehaviour
         }
         catch (Exception e)
         {
-            UnityEngine.Debug.Log(e);
+            //Debug.Log(e);
         }
     } // LL1
 
@@ -222,14 +222,14 @@ public class MultiplayerController : MonoBehaviour
     {
         try
         {
-            UnityEngine.Debug.Log(list.Count);
+            //Debug.Log(list.Count);
             foreach (PlayerInfo player in list)
             {
                 if (player.SelectedHero.Name != PlayerClass.SelectedHero.Name)
                 {
                     if (!SpawnedPlayers.ContainsKey(player))
                     {
-                        UnityEngine.Debug.Log("Spawning");
+                        //Debug.Log("Spawning");
                         if (player.SelectedHero.Gender == "Male")
                         {
                             if (PlayerClass.SelectedHero.xPosition != 0 || PlayerClass.SelectedHero.yPosition != 0 || PlayerClass.SelectedHero.zPosition != 0)
@@ -287,7 +287,7 @@ public class MultiplayerController : MonoBehaviour
         }
         catch (Exception e)
         {
-            UnityEngine.Debug.Log(e);
+            //Debug.Log(e);
             throw;
         }
     }
@@ -306,7 +306,7 @@ public class MultiplayerController : MonoBehaviour
                     NtwrkStrm.Flush();
                     if (type == "Login")
                     {
-                        UnityEngine.Debug.Log("Login Info Recived");
+                        //Debug.Log("Login Info Recived");
                         string response = (string)MyFormatter.Deserialize(NtwrkStrm);
                         NtwrkStrm.Flush();
                         //MMScript.LoginResponseHandler(response);
@@ -314,7 +314,7 @@ public class MultiplayerController : MonoBehaviour
                         {
                             PlayerClass = (PlayerInfo)MyFormatter.Deserialize(NtwrkStrm);
                             NtwrkStrm.Flush();
-                            UnityEngine.Debug.Log("PlayerClass.Name = " + PlayerClass.UserName);
+                            //Debug.Log("PlayerClass.Name = " + PlayerClass.UserName);
                             LoadCCLevel();
                         }
                         return;
@@ -378,7 +378,7 @@ public class MultiplayerController : MonoBehaviour
                     }
                     else if (type == "Player Joined Starting Area")
                     {
-                        UnityEngine.Debug.Log("Player joined starting area");
+                        //Debug.Log("Player joined starting area");
                         Lisst.Add((PlayerInfo)MyFormatter.Deserialize(NtwrkStrm));
                         SpawnPlayer(Lisst);
                     }
@@ -389,7 +389,7 @@ public class MultiplayerController : MonoBehaviour
                     }
                     else if (type == "Current Position")
                     {
-                        //UnityEngine.Debug.Log("current Position recieved");
+                        //UnityEngine.//Debug.Log("current Position recieved");
                         string name = (string)MyFormatter.Deserialize(NtwrkStrm); //Recieve
                         NtwrkStrm.Flush();
                         float xin = (float)MyFormatter.Deserialize(NtwrkStrm);//Recieve
@@ -402,10 +402,10 @@ public class MultiplayerController : MonoBehaviour
                         NtwrkStrm.Flush();
                         if (LevelLoaded)
                         {
-                            //UnityEngine.Debug.Log("lvlloaded = true");
+                            //UnityEngine.//Debug.Log("lvlloaded = true");
                             if (ClientSpawned == true)
                             {
-                                //UnityEngine.Debug.Log("player spawned = true");
+                                //UnityEngine.//Debug.Log("player spawned = true");
                                 GameObject unit = GameObject.Find(name);
                                 unit.transform.SetPositionAndRotation(new Vector3(xin, yin, zin), Quaternion.Euler(0, yrot, 0));
                             }
@@ -418,7 +418,7 @@ public class MultiplayerController : MonoBehaviour
                         {
                             if (kvp.Key.UserName == DCPlayer.UserName)
                             {
-                                UnityEngine.Debug.Log("Removing Player " + kvp.Key.UserName + " from the game");
+                                //Debug.Log("Removing Player " + kvp.Key.UserName + " from the game");
                                 SpawnedPlayers.Remove(kvp.Key);
                                 Destroy(kvp.Value);
                                 Lisst.Remove(kvp.Key);
@@ -432,7 +432,7 @@ public class MultiplayerController : MonoBehaviour
                 }
                 catch (Exception e)
                 {
-                    UnityEngine.Debug.Log(e);
+                    //Debug.Log(e);
                     NtwrkStrm.Flush();
                     return;
                 }

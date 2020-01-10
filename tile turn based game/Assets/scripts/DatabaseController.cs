@@ -49,7 +49,7 @@ public class DatabaseController : MonoBehaviour
     private void Start()
     {
         GetMasterJson();
-        MultiplayerController.instance.Connect();
+        //MultiplayerController.instance.Connect();
         GameControllerScript.instance.LoadingUpdater(.2f);
         GetTerrianJsons("Core");
         GameControllerScript.instance.LoadingUpdater(.4f);
@@ -250,6 +250,11 @@ public class DatabaseController : MonoBehaviour
         TGO.GetComponent<TerrainController>().BlocksSight = TerrainDictionary[index].BlocksSight;
         TGO.GetComponent<TerrainController>().Overlays = TerrainDictionary[index].Overlays;
         TGO.GetComponent<TerrainController>().Connectable = TerrainDictionary[index].Connectable;
+        TGO.GetComponent<TerrainController>().IdleAnimations = TerrainDictionary[index].IdleAnimations;
+        if (TerrainDictionary[index].IdleAnimations)
+        {
+            TGO.GetComponent<TerrainController>().IdleAnimationsDirectory = TerrainDictionary[index].IdleAnimationDirectory;
+        }
         TGO.GetComponent<TerrainController>().ID = index;
         TGO.transform.position = location;
         return TGO;
@@ -414,26 +419,44 @@ public class Terrain
     public bool BlocksSight;
     public bool Overlays;
     public bool Connectable;
+    public bool IdleAnimations;
     public List<string> ArtworkDirectory;
     public List<string> OverlayArtworkDirectory;
+    public List<string> IdleAnimationDirectory;
 
     /// <summary>
     /// Gets location of sprites and saves them to a list
     /// </summary>
     public void GetSprites()
     {
-        //Debug.log("Getting sprites for: " + Title);
+        //Debug.Log("Getting sprites for: " + Title);
         int count = new int(); //used for debug
         foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Terrain/Sprites/", "*.png"))) //could actaully put all png and json in same folder... idea for later
         {
-            if (file.Contains(Title)) //checks if any of the files found contain the name of the object
+            if (file.Contains(Title) && file.Contains("Overlay")) //checks if any of the files found contains the right words
+            {
+                OverlayArtworkDirectory.Add(file);
+                count = count + 1;
+            }
+            else if (file.Contains(Title) && file.Contains("Idle"))
+            {
+                IdleAnimationDirectory.Add(file);
+                count = count + 1;
+            }
+            else if (file.Contains(Title))
             {
                 ArtworkDirectory.Add(file); //adds if they do
                 count = count + 1;
             }
             //var tempname = Path.GetFileNameWithoutExtension(file);  // use this to get file name
         }
-        //Debug.log("Sprites found: " + count);
+        //Debug.Log("Sprites found: " + count);
+        if (Title == "Water")
+        {
+            //Debug.Log("Overlays Contains:" + OverlayArtworkDirectory.Count);
+            //Debug.Log("Idle Contains:" + IdleAnimationDirectory.Count);
+            //Debug.Log("Artwork Contains:" + ArtworkDirectory.Count);
+        }
         count = 0;
     }  //checks how many sprites are in folder and adds them to the directory
 }//the json file cannot have values that are not stated here, this can have more values then the jso

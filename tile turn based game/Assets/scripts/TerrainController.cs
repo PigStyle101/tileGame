@@ -47,6 +47,11 @@ public class TerrainController : MonoBehaviour
     [HideInInspector]
     public bool Connectable;
     private bool LastHitThis = false;
+    //[HideInInspector]
+    public bool IdleAnimations;
+    private float Timer = 0;
+    public List<string> IdleAnimationsDirectory;
+    private int IdleState = 1;
 
     private void Awake()
     {
@@ -93,7 +98,7 @@ public class TerrainController : MonoBehaviour
 
     public void ChangeTile() 
     {
-            Debug.Log("ChangTile activated");
+            //Debug.Log("ChangTile activated");
         foreach (KeyValuePair<int, Terrain> kvp in DatabaseController.instance.TerrainDictionary)
         {
             if (MEMCC.SelectedButton == kvp.Value.Title) //checks through dictionary for matching tile to button name
@@ -105,6 +110,11 @@ public class TerrainController : MonoBehaviour
                 ID = kvp.Value.ID;
                 Overlays = kvp.Value.Overlays;
                 Connectable = kvp.Value.Connectable;
+                IdleAnimations = kvp.Value.IdleAnimations;
+                if (IdleAnimations)
+                {
+                    IdleAnimationsDirectory = kvp.Value.IdleAnimationDirectory;
+                }
                 if (GameControllerScript.instance.UnitPos.ContainsKey(gameObject.transform.position) && DatabaseController.instance.TerrainDictionary[kvp.Key].Walkable == false)
                 {
                     Destroy(GameControllerScript.instance.UnitPos[gameObject.transform.position]);
@@ -159,7 +169,7 @@ public class TerrainController : MonoBehaviour
     {
         if (Overlays) 
         {
-            //UnityEngine.Debug.Log("Starting Water Sprite Controller");
+            //UnityEngine.//Debug.Log("Starting Water Sprite Controller");
             var currentPos = (Vector2)transform.position;
             int TileId = 0;
             foreach (var kvp in DatabaseController.instance.TerrainDictionary)
@@ -178,7 +188,7 @@ public class TerrainController : MonoBehaviour
             Vector2 bottomPos = currentPos + new Vector2(0, -1);
             Vector2 bottomLeftPos = currentPos + new Vector2(-1, -1);
             Vector2 leftPos = currentPos + new Vector2(-1, 0);
-            //UnityEngine.Debug.Log("Starting if Statments");
+            //UnityEngine.//Debug.Log("Starting if Statments");
             if (GameControllerScript.instance.TilePos.ContainsKey(topPos))
             {
                 //Debug.Log("tile pos contains key");
@@ -194,7 +204,7 @@ public class TerrainController : MonoBehaviour
                         GameObject RLO = new GameObject();
                         RLO.name = "TopLandOverlay";
                         RLO.transform.position = gameObject.transform.position;
-                        RLO.AddComponent<SpriteRenderer>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.TerrainDictionary[TileId].ArtworkDirectory[2]);
+                        RLO.AddComponent<SpriteRenderer>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.TerrainDictionary[TileId].OverlayArtworkDirectory[1]);
                         RLO.GetComponent<SpriteRenderer>().sortingLayerName = "Terrain";
                         RLO.GetComponent<SpriteRenderer>().sortingOrder = 2;
                         RLO.transform.parent = gameObject.transform;
@@ -226,7 +236,7 @@ public class TerrainController : MonoBehaviour
                         GameObject RLO = new GameObject();
                         RLO.name = "TopRightLandOverlay";
                         RLO.transform.position = gameObject.transform.position;
-                        RLO.AddComponent<SpriteRenderer>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.TerrainDictionary[TileId].ArtworkDirectory[1]);
+                        RLO.AddComponent<SpriteRenderer>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.TerrainDictionary[TileId].OverlayArtworkDirectory[0]);
                         RLO.GetComponent<SpriteRenderer>().sortingLayerName = "Terrain";
                         RLO.GetComponent<SpriteRenderer>().sortingOrder = 2;
                         RLO.transform.parent = gameObject.transform;
@@ -257,7 +267,7 @@ public class TerrainController : MonoBehaviour
                         GameObject RLO = new GameObject();
                         RLO.name = "RightLandOverlay";
                         RLO.transform.position = gameObject.transform.position;
-                        RLO.AddComponent<SpriteRenderer>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.TerrainDictionary[TileId].ArtworkDirectory[2]);
+                        RLO.AddComponent<SpriteRenderer>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.TerrainDictionary[TileId].OverlayArtworkDirectory[1]);
                         RLO.GetComponent<SpriteRenderer>().sortingLayerName = "Terrain";
                         RLO.GetComponent<SpriteRenderer>().sortingOrder = 2;
                         RLO.transform.parent = gameObject.transform;
@@ -288,7 +298,7 @@ public class TerrainController : MonoBehaviour
                         GameObject RLO = new GameObject();
                         RLO.name = "BottomRightLandOverlay";
                         RLO.transform.position = gameObject.transform.position;
-                        RLO.AddComponent<SpriteRenderer>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.TerrainDictionary[TileId].ArtworkDirectory[1]);
+                        RLO.AddComponent<SpriteRenderer>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.TerrainDictionary[TileId].OverlayArtworkDirectory[0]);
                         RLO.GetComponent<SpriteRenderer>().sortingLayerName = "Terrain";
                         RLO.GetComponent<SpriteRenderer>().sortingOrder = 2;
                         RLO.transform.parent = gameObject.transform;
@@ -320,7 +330,7 @@ public class TerrainController : MonoBehaviour
                         GameObject RLO = new GameObject();
                         RLO.name = "BottomLandOverlay";
                         RLO.transform.position = gameObject.transform.position;
-                        RLO.AddComponent<SpriteRenderer>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.TerrainDictionary[TileId].ArtworkDirectory[2]);
+                        RLO.AddComponent<SpriteRenderer>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.TerrainDictionary[TileId].OverlayArtworkDirectory[1]);
                         RLO.GetComponent<SpriteRenderer>().sortingLayerName = "Terrain";
                         RLO.GetComponent<SpriteRenderer>().sortingOrder = 2;
                         RLO.transform.parent = gameObject.transform;
@@ -352,7 +362,7 @@ public class TerrainController : MonoBehaviour
                         GameObject RLO = new GameObject();
                         RLO.name = "BottomLeftLandOverlay";
                         RLO.transform.position = gameObject.transform.position;
-                        RLO.AddComponent<SpriteRenderer>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.TerrainDictionary[TileId].ArtworkDirectory[1]);
+                        RLO.AddComponent<SpriteRenderer>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.TerrainDictionary[TileId].OverlayArtworkDirectory[0]);
                         RLO.GetComponent<SpriteRenderer>().sortingLayerName = "Terrain";
                         RLO.GetComponent<SpriteRenderer>().sortingOrder = 2;
                         RLO.transform.parent = gameObject.transform;
@@ -384,7 +394,7 @@ public class TerrainController : MonoBehaviour
                         GameObject RLO = new GameObject();
                         RLO.name = "LeftLandOverlay";
                         RLO.transform.position = gameObject.transform.position;
-                        RLO.AddComponent<SpriteRenderer>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.TerrainDictionary[TileId].ArtworkDirectory[2]);
+                        RLO.AddComponent<SpriteRenderer>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.TerrainDictionary[TileId].OverlayArtworkDirectory[1]);
                         RLO.GetComponent<SpriteRenderer>().sortingLayerName = "Terrain";
                         RLO.GetComponent<SpriteRenderer>().sortingOrder = 2;
                         RLO.transform.parent = gameObject.transform;
@@ -416,7 +426,7 @@ public class TerrainController : MonoBehaviour
                         GameObject RLO = new GameObject();
                         RLO.name = "TopLeftLandOverlay";
                         RLO.transform.position = gameObject.transform.position;
-                        RLO.AddComponent<SpriteRenderer>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.TerrainDictionary[TileId].ArtworkDirectory[1]);
+                        RLO.AddComponent<SpriteRenderer>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.TerrainDictionary[TileId].OverlayArtworkDirectory[0]);
                         RLO.GetComponent<SpriteRenderer>().sortingLayerName = "Terrain";
                         RLO.GetComponent<SpriteRenderer>().sortingOrder = 2;
                         RLO.transform.parent = gameObject.transform;
@@ -641,4 +651,27 @@ public class TerrainController : MonoBehaviour
             }
         }
     }
+
+    public void IdleAnimationController()
+    {
+        if (IdleAnimations)
+        {
+            if (GameControllerScript.instance.IdleState == 1)
+            {
+                gameObject.GetComponent<SpriteRenderer>().sprite = DatabaseController.instance.loadSprite(IdleAnimationsDirectory[1]);
+                //Debug.Log("1");
+            }
+            else if (GameControllerScript.instance.IdleState == 2)
+            {
+                gameObject.GetComponent<SpriteRenderer>().sprite = DatabaseController.instance.loadSprite(IdleAnimationsDirectory[0]);
+                //Debug.Log("2");
+            }
+            else
+            {
+                gameObject.GetComponent<SpriteRenderer>().sprite = DatabaseController.instance.loadSprite(IdleAnimationsDirectory[1]);
+                //Debug.Log("3");
+            }
+            
+        }
+    } //currently used to control idle animations for water, will need polished later when other idle animations are added. can use for referance for making unit and building animations
 }

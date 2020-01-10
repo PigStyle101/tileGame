@@ -295,11 +295,11 @@ public class MenueController : MonoBehaviour {
             GameControllerScript.instance.PlaySceneLoadStatus = "SavedGame";
             GameControllerScript.instance.MapNameForPlayScene = SaveGameSelectedString;
             UnityEngine.SceneManagement.SceneManager.LoadScene("PlayScene");
-            Debug.Log("Loading");
+            //Debug.Log("Loading");
         }
         else
         {
-            Debug.Log("== to null");
+            //Debug.Log("== to null");
         }
     }
 

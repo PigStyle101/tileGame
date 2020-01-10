@@ -39,6 +39,7 @@ public class PlaySceneCamController : MonoBehaviour
     private GameObject BuildingToolTipData;
     public GameObject BuildingButtonPrefab;
     private GameObject ContentWindowBuilding;
+    private Text MovableUnitsCountText;
     [HideInInspector]
     public GameObject CurrentPlayerTurnImage;
     private GameObject CurrentPlayerGoldImage;
@@ -62,6 +63,7 @@ public class PlaySceneCamController : MonoBehaviour
     [HideInInspector]
     public bool BuildingRayBool;
     private string UnitSelectedForBuildingFromKeyboardShortcuts = "NONE";
+    private int MovableUnits;
 
     private void Awake()
     {
@@ -124,6 +126,7 @@ public class PlaySceneCamController : MonoBehaviour
         FeedbackSaveMenu = transform.Find("Canvas").Find("SavePanel").Find("FeedBackText").GetComponent<Text>();
         InputFieldSaveMenu = transform.Find("Canvas").Find("SavePanel").Find("InputField").GetComponent<InputField>();
         SavePanel = transform.Find("Canvas").Find("SavePanel").gameObject;
+        MovableUnitsCountText = transform.Find("Canvas").Find("Panel").Find("MovableUnitsImage").Find("MovableUnitsText").GetComponent<Text>();
     }
 
     /// <summary>
@@ -181,6 +184,7 @@ public class PlaySceneCamController : MonoBehaviour
         GameControllerScript.instance.PlaySceneTurnChanger();
         UpdateTurnImageColor(GameControllerScript.instance.CurrentTeamsTurn.Team);
         EventSystem.current.SetSelectedGameObject(null);
+        MoveableUnitCount();
     }
 
     /// <summary>
@@ -206,6 +210,7 @@ public class PlaySceneCamController : MonoBehaviour
     public void WaitButtonClicked()
     {
         GameControllerScript.instance.WaitActionPlayScene();
+        MoveableUnitCount();
     }
 
     /// <summary>
@@ -231,6 +236,7 @@ public class PlaySceneCamController : MonoBehaviour
     public void CaptureButtonClicked()
     {
         GameControllerScript.instance.CaptureActionPlayScene();
+        MoveableUnitCount();
     }
 
     /// <summary>
@@ -243,6 +249,7 @@ public class PlaySceneCamController : MonoBehaviour
         CancelButton.SetActive(false);
         CaptureButton.SetActive(false);
         MoveButton.SetActive(false);
+        MoveableUnitCount();
     }
 
     /// <summary>
@@ -532,11 +539,6 @@ public class PlaySceneCamController : MonoBehaviour
         GoldText.text = "Gold:" + GameControllerScript.instance.TeamList[GameControllerScript.instance.CurrentTeamsTurn.Team].Gold.ToString();
     }
 
-    public void UpdateMoveableUnits()
-    {
-
-    }
-
     public void UpdateTurnImageColor(int team)
     {
         //Black,Blue,Cyan,Gray,Green,Magenta,Red,White,Yellow
@@ -634,6 +636,7 @@ public class PlaySceneCamController : MonoBehaviour
     public void MoveButtonClicked()
     {
         GameControllerScript.instance.MoveActionPlayScene();
+        MoveableUnitCount();
     }
 
     /// <summary>
@@ -700,5 +703,21 @@ public class PlaySceneCamController : MonoBehaviour
                 }
             }
         }
+    }
+
+    public void MoveableUnitCount()
+    {
+        MovableUnits = 0;
+        foreach (var kvp in GameControllerScript.instance.UnitPos)
+        {
+            if (GameControllerScript.instance.CurrentTeamsTurn.Team == kvp.Value.GetComponent<UnitController>().Team)
+            {
+                if (kvp.Value.GetComponent<UnitController>().UnitMovable)
+                {
+                    MovableUnits = MovableUnits + 1;
+                }
+            }
+        }
+        MovableUnitsCountText.text = MovableUnits.ToString();
     }
 }
