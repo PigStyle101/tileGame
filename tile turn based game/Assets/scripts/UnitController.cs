@@ -21,7 +21,7 @@ public class UnitController : MonoBehaviour
     [HideInInspector]
     public int MovePoints;
     [HideInInspector]
-    public int Range;
+    public int AttackRange;
     [HideInInspector]
     public int SightRange;
     [HideInInspector]
@@ -44,6 +44,8 @@ public class UnitController : MonoBehaviour
     public Dictionary<Vector2, int> EnemyUnitsInRange = new Dictionary<Vector2, int>();
     [HideInInspector]
     public List<Vector2> Directions = new List<Vector2>();//list for holding north,south,east,west
+    [HideInInspector]
+    public int DictionaryReferance;
 
     private void Awake()
     {
@@ -128,7 +130,7 @@ public class UnitController : MonoBehaviour
         }
     }
 
-    public void GetTileValues() /////// HOOOOWWWW DOES THIS NOT GET TILES THAT UNITS ARE STANDING ON???????????
+    public void GetTileValues() 
     {
         ////Debug.log("MP = " + MovePoints);
         Vector2 Position = gameObject.transform.position; //need original position of unitt
@@ -228,7 +230,7 @@ public class UnitController : MonoBehaviour
     {
         ////Debug.log("MP = " + MovePoints);
         Vector2 Position = gameObject.transform.position; //need original position of unit
-        int count = 1; //using this to make the algorith go more rounds then needed, as the most any unit should need is 6 rounds
+        int count = 1; //using this to make the algorith go more rounds then needed
         SightTiles = new Dictionary<Vector2, int>();
         foreach (var dir in Directions)
         {
@@ -298,25 +300,19 @@ public class UnitController : MonoBehaviour
 
     public void ChangeUnit()
     {
-        if (MEMCC.SelectedButton == "Delete Unit")
+        if (MEMCC.SelectedButtonDR == -1)
         {
             //Debug.log("Deleting Unit");
             Destroy(gameObject);
         }
         else
         {
-            //Debug.log("ChangUnit activated");
-            foreach (KeyValuePair<int, Unit> kvp in DatabaseController.instance.UnitDictionary)
-            {
-                if (MEMCC.SelectedButton == kvp.Value.Title) //checks through dictionary for matching tile to button name
-                {
-                    ////Debug.log("Changing tile to " + kvp.Value.Title);
-                    gameObject.name = kvp.Value.Title;//change name of tile
-                    gameObject.GetComponent<SpriteRenderer>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.UnitDictionary[kvp.Key].ArtworkDirectory[0]); //change sprite of tile
-                    Health = kvp.Value.Health;
-                    gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").Find("Text").GetComponent<Text>().text = Health.ToString();
-                }
-            }
+            ////Debug.log("Changing tile to " + kvp.Value.Title);
+            gameObject.name = DatabaseController.instance.UnitDictionary[MEMCC.SelectedButtonDR].Title;//change name of tile
+            gameObject.GetComponent<SpriteRenderer>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.UnitDictionary[MEMCC.SelectedButtonDR].ArtworkDirectory[0]); //change sprite of tile
+            Health = DatabaseController.instance.UnitDictionary[MEMCC.SelectedButtonDR].Health;
+            DictionaryReferance = MEMCC.SelectedButtonDR;
+            gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").Find("Text").GetComponent<Text>().text = Health.ToString();
         }
     }
 
@@ -350,7 +346,7 @@ public class UnitController : MonoBehaviour
             }
         }
         count = count + 1;
-        while (count <= Range)
+        while (count <= AttackRange)
         {
             Dictionary<Vector2, int> Temp = new Dictionary<Vector2, int>();
             foreach (var kvp in TilesChecked)

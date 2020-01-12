@@ -52,6 +52,8 @@ public class TerrainController : MonoBehaviour
     private float Timer = 0;
     public List<string> IdleAnimationsDirectory;
     private int IdleState = 1;
+    [HideInInspector]
+    public int DictionaryReferance;
 
     private void Awake()
     {
@@ -96,36 +98,30 @@ public class TerrainController : MonoBehaviour
         }
     }
 
-    public void ChangeTile() 
+    public void ChangeTile()
     {
-            //Debug.Log("ChangTile activated");
-        foreach (KeyValuePair<int, Terrain> kvp in DatabaseController.instance.TerrainDictionary)
+        //Debug.Log("Changing tile to " + kvp.Value.Title);
+        gameObject.name = DatabaseController.instance.TerrainDictionary[MEMCC.SelectedButtonDR].Title;//change name of tile
+        gameObject.GetComponent<SpriteRenderer>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.TerrainDictionary[MEMCC.SelectedButtonDR].ArtworkDirectory[0]); //change sprite of tile
+        gameObject.transform.eulerAngles = new Vector3(0, 0, 0);
+        ID = DatabaseController.instance.TerrainDictionary[MEMCC.SelectedButtonDR].ID;
+        Overlays = DatabaseController.instance.TerrainDictionary[MEMCC.SelectedButtonDR].Overlays;
+        Connectable = DatabaseController.instance.TerrainDictionary[MEMCC.SelectedButtonDR].Connectable;
+        IdleAnimations = DatabaseController.instance.TerrainDictionary[MEMCC.SelectedButtonDR].IdleAnimations;
+        DictionaryReferance = MEMCC.SelectedButtonDR;
+        if (IdleAnimations)
         {
-            if (MEMCC.SelectedButton == kvp.Value.Title) //checks through dictionary for matching tile to button name
-            {
-                //Debug.Log("Changing tile to " + kvp.Value.Title);
-                gameObject.name = kvp.Value.Title;//change name of tile
-                gameObject.GetComponent<SpriteRenderer>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.TerrainDictionary[kvp.Key].ArtworkDirectory[0]); //change sprite of tile
-                gameObject.transform.eulerAngles = new Vector3(0, 0, 0);
-                ID = kvp.Value.ID;
-                Overlays = kvp.Value.Overlays;
-                Connectable = kvp.Value.Connectable;
-                IdleAnimations = kvp.Value.IdleAnimations;
-                if (IdleAnimations)
-                {
-                    IdleAnimationsDirectory = kvp.Value.IdleAnimationDirectory;
-                }
-                if (GameControllerScript.instance.UnitPos.ContainsKey(gameObject.transform.position) && DatabaseController.instance.TerrainDictionary[kvp.Key].Walkable == false)
-                {
-                    Destroy(GameControllerScript.instance.UnitPos[gameObject.transform.position]);
-                    GameControllerScript.instance.UnitPos.Remove(gameObject.transform.position);
-                }
-                if (GameControllerScript.instance.BuildingPos.ContainsKey(gameObject.transform.position) && DatabaseController.instance.TerrainDictionary[kvp.Key].Walkable == false)
-                {
-                    Destroy(GameControllerScript.instance.BuildingPos[gameObject.transform.position]);
-                    GameControllerScript.instance.BuildingPos.Remove(gameObject.transform.position);
-                }
-            }
+            IdleAnimationsDirectory = DatabaseController.instance.TerrainDictionary[MEMCC.SelectedButtonDR].IdleAnimationDirectory;
+        }
+        if (GameControllerScript.instance.UnitPos.ContainsKey(gameObject.transform.position) && DatabaseController.instance.TerrainDictionary[MEMCC.SelectedButtonDR].Walkable == false)
+        {
+            Destroy(GameControllerScript.instance.UnitPos[gameObject.transform.position]);
+            GameControllerScript.instance.UnitPos.Remove(gameObject.transform.position);
+        }
+        if (GameControllerScript.instance.BuildingPos.ContainsKey(gameObject.transform.position) && DatabaseController.instance.TerrainDictionary[MEMCC.SelectedButtonDR].Walkable == false)
+        {
+            Destroy(GameControllerScript.instance.BuildingPos[gameObject.transform.position]);
+            GameControllerScript.instance.BuildingPos.Remove(gameObject.transform.position);
         }
     } //if a terrain is selected and the player clicks a tile it changes the tile to the correct terrain
 

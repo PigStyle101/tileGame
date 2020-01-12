@@ -251,6 +251,7 @@ public class DatabaseController : MonoBehaviour
         TGO.GetComponent<TerrainController>().Overlays = TerrainDictionary[index].Overlays;
         TGO.GetComponent<TerrainController>().Connectable = TerrainDictionary[index].Connectable;
         TGO.GetComponent<TerrainController>().IdleAnimations = TerrainDictionary[index].IdleAnimations;
+        TGO.GetComponent<TerrainController>().DictionaryReferance = index;
         if (TerrainDictionary[index].IdleAnimations)
         {
             TGO.GetComponent<TerrainController>().IdleAnimationsDirectory = TerrainDictionary[index].IdleAnimationDirectory;
@@ -283,10 +284,11 @@ public class DatabaseController : MonoBehaviour
         TGO.GetComponent<UnitController>().Defence = UnitDictionary[index].Defence;
         TGO.GetComponent<UnitController>().MaxHealth = UnitDictionary[index].Health;
         TGO.GetComponent<UnitController>().Health = UnitDictionary[index].Health;
-        TGO.GetComponent<UnitController>().Range = UnitDictionary[index].Range;
+        TGO.GetComponent<UnitController>().AttackRange = UnitDictionary[index].AttackRange;
         TGO.GetComponent<UnitController>().CanConvert = UnitDictionary[index].CanConvert;
         TGO.GetComponent<UnitController>().SightRange = UnitDictionary[index].SightRange;
         TGO.GetComponent<UnitController>().ID = index;
+        TGO.GetComponent<UnitController>().DictionaryReferance = index;
         if (UnitDictionary[index].CanConvert)
         {
             TGO.GetComponent<UnitController>().ConversionSpeed = UnitDictionary[index].ConversionSpeed;
@@ -372,6 +374,7 @@ public class DatabaseController : MonoBehaviour
         TGO.GetComponent<BuildingController>().ID = index;
         TGO.GetComponent<BuildingController>().CanBuildUnits = BuildingDictionary[index].CanBuildUnits;
         TGO.GetComponent<BuildingController>().BuildableUnits = BuildingDictionary[index].BuildableUnits;
+        TGO.GetComponent<BuildingController>().DictionaryReferance = index;
         TGO.tag = BuildingDictionary[index].Type;
         TGO.transform.position = location;
         GameObject TempCan = Instantiate(BuildingHealthOverlay, TGO.transform);
@@ -468,7 +471,7 @@ public class Unit
     public string Mod;
     public int Attack;
     public int Defence;
-    public int Range;
+    public int AttackRange;
     public int Health;
     public int MovePoints;
     public int Cost;

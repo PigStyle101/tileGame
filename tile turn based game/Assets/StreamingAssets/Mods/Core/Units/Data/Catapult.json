@@ -7,7 +7,7 @@
   "Mod": "Core",
   "Attack": 5,
   "Defence": 10,
-  "Range": 4,
+  "AttackRange": 4,
   "Health": 5,
   "MovePoints": 2,
   "Cost": 300,

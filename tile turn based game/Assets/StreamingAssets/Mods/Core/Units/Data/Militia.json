@@ -7,12 +7,12 @@
   "Mod": "Core",
   "Attack": 2,
   "Defence": 0,
-  "Range": 1,
+  "AttackRange": 1,
   "Health": 4,
   "MovePoints": 6,
   "Cost": 100,
   "ConversionSpeed": 4,
-  "SightRange": 5,
+  "SightRange": 6,
   "CanConvert": true,
   "CanMoveAndAttack": true
 }

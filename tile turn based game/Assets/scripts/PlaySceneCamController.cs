@@ -292,7 +292,7 @@ public class PlaySceneCamController : MonoBehaviour
                                 UnitImage.GetComponent<Image>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.UnitDictionary[kvp.Key].ArtworkDirectory[0]);
                                 UnitText.GetComponent<Text>().text = kvp.Value.Title;
                                 UnitDescription.GetComponent<Text>().text = kvp.Value.Description;
-                                UnitToolTipData.GetComponent<Text>().text = kvp.Value.Attack.ToString() + Environment.NewLine + kvp.Value.Defence.ToString() + Environment.NewLine + kvp.Value.Range.ToString() + Environment.NewLine + kvp.Value.MovePoints.ToString();
+                                UnitToolTipData.GetComponent<Text>().text = kvp.Value.Attack.ToString() + Environment.NewLine + kvp.Value.Defence.ToString() + Environment.NewLine + kvp.Value.AttackRange.ToString() + Environment.NewLine + kvp.Value.MovePoints.ToString();
                             }
                         }
                     }

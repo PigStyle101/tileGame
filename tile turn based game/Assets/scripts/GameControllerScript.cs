@@ -115,6 +115,10 @@ public class GameControllerScript : MonoBehaviour
         SceneManager.LoadScene("MapEditorScene");//notes and stuff
     }
 
+    /// <summary>
+    /// Loads selected map into map editor from main screen
+    /// </summary>
+    /// <param name="map">Map file name</param>
     public void LoadMapForMapEditorFromMainMenu(string map)
     {
         MapToLoadForMapEditor = map;
@@ -196,7 +200,7 @@ public class GameControllerScript : MonoBehaviour
     /// <summary>
     /// Checks if TilePos contains terrains tile and replaces or adds it.
     /// </summary>
-    /// <param name="tgo">Object to check dictionary for.</param>
+    /// <param name="tgo">Terrain to check dictionary for.</param>
     public void AddTilesToDictionary(GameObject tgo)
     {
         if (TilePos.ContainsKey(tgo.transform.position))
@@ -246,6 +250,10 @@ public class GameControllerScript : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Called to kill unit while in play sceen
+    /// </summary>
+    /// <param name="Dead">Unit to kill</param>
     public void KillUnitPlayScene(GameObject Dead)
     {
         UnitPos.Remove(Dead.transform.position);
@@ -308,9 +316,9 @@ public class GameControllerScript : MonoBehaviour
                         if (hit.transform.tag == DatabaseController.instance.TerrainDictionary[0].Type) //is it a terrain?
                         {
                             TerrainController TC = hit.transform.GetComponent<TerrainController>();
-                            if (hit.transform.name != MEMCC.SelectedButton) //are we changing the tile to something new?
+                            if (hit.transform.GetComponent<TerrainController>().DictionaryReferance != MEMCC.SelectedButtonDR) //are we changing the tile to something new?
                             {
-                                //Debug.log("Changing terrain to " + MEMCC.SelectedButton);
+                                //Debug.Log("Changing terrain to " + MEMCC.SelectedButtonDR);
                                 TC.ChangeTile(); //change tile to new terrain tile
                                 AddTilesToDictionary(hit.transform.gameObject);
                                 SpriteUpdateActivator();
@@ -319,10 +327,10 @@ public class GameControllerScript : MonoBehaviour
                         else if (hit.transform.tag == DatabaseController.instance.UnitDictionary[0].Type) //is the hit a unit?
                         {
                             UnitController UC = hit.transform.GetComponent<UnitController>();
-                            if (hit.transform.name != MEMCC.SelectedButton) //are we changing the unit to something new?
+                            if (hit.transform.GetComponent<UnitController>().DictionaryReferance != MEMCC.SelectedButtonDR) //are we changing the unit to something new?
                             {
                                 //Debug.log("Changing unit to " + MEMCC.SelectedButton);
-                                if (MEMCC.SelectedButton == "Delete Unit")
+                                if (MEMCC.SelectedButtonDR == -1)
                                 {
                                     UnitPos.Remove(hit.transform.position);
                                 }
@@ -345,15 +353,15 @@ public class GameControllerScript : MonoBehaviour
                         else if (hit.transform.tag == DatabaseController.instance.BuildingDictionary[0].Type) //is the hit a building?
                         {
                             BuildingController BC = hit.transform.GetComponent<BuildingController>();
-                            if (hit.transform.name != MEMCC.SelectedButton) //are we changing the building to something new?
+                            if (BC.DictionaryReferance != MEMCC.SelectedButtonDR) //are we changing the building to something new?
                             {
                                 //Debug.log("Changing building to " + MEMCC.SelectedButton);
-                                if (MEMCC.SelectedButton == "Delete Building")
+                                if (MEMCC.SelectedButtonDR == -1)
                                 {
                                     BuildingPos.Remove(hit.transform.position);
                                 }
                                 BC.ChangeBuilding(); //change to new building
-                                if (MEMCC.SelectedButton != "Delete Building")
+                                if (MEMCC.SelectedButtonDR != -1)
                                 {
                                     AddBuildingToDictionary(hit.transform.gameObject);
                                 }
@@ -370,33 +378,25 @@ public class GameControllerScript : MonoBehaviour
                     {
                         if (!UnitPos.ContainsKey(hit.transform.position)) //is there a unit there already?
                         {
-                            foreach (KeyValuePair<int, Unit> kvp in DatabaseController.instance.UnitDictionary)
+                            bool tempbool = false;
+                            tempbool = hit.transform.GetComponent<TerrainController>().Walkable; //is the terrain we are trying to place on walkable?
+
+                            if (tempbool)
                             {
-                                if (kvp.Value.Title == MEMCC.SelectedButton) //need to find id for what unit we are trying to place
+                                if (MEMCC.SelectedTeam != 0)
                                 {
-                                    bool tempbool = false;
-                                    foreach (var item in DatabaseController.instance.TerrainDictionary)
+                                    if (MEMCC.SelectedButtonDR != -1)
                                     {
-                                        if (hit.transform.name == item.Value.Title)
-                                        {
-                                            tempbool = item.Value.Walkable;
-                                        }
+                                        GameObject tgo = DatabaseController.instance.CreateAndSpawnUnit(hit.transform.position, MEMCC.SelectedButtonDR, MEMCC.SelectedTeam); //creat new unit at position on tile we clicked on.
+                                        tgo.GetComponent<UnitController>().Team = MEMCC.SelectedTeam;
+                                        AddUnitsToDictionary(tgo);
+                                        //Debug.log("Creating " + MEMCC.SelectedButton + " at " + hit.transform.position);
+                                        SpriteUpdateActivator(); 
                                     }
-                                    if (tempbool)
-                                    {
-                                        if (MEMCC.SelectedTeam != 0)
-                                        {
-                                            GameObject tgo = DatabaseController.instance.CreateAndSpawnUnit(hit.transform.position, kvp.Key, MEMCC.SelectedTeam); //creat new unit at position on tile we clicked on.
-                                            tgo.GetComponent<UnitController>().Team = MEMCC.SelectedTeam;
-                                            AddUnitsToDictionary(tgo);
-                                            //Debug.log("Creating " + MEMCC.SelectedButton + " at " + hit.transform.position);
-                                            SpriteUpdateActivator();
-                                        }
-                                        else
-                                        {
-                                            MEMCC.CurrentSelectedButtonText.text = "Cant place unit for team 0";
-                                        }
-                                    }
+                                }
+                                else
+                                {
+                                    MEMCC.CurrentSelectedButtonText.text = "Cant place unit for team 0";
                                 }
                             }
                         }
@@ -405,27 +405,16 @@ public class GameControllerScript : MonoBehaviour
                     {
                         if (!BuildingPos.ContainsKey(hit.transform.position))
                         {
-                            foreach (KeyValuePair<int, Building> kvp in DatabaseController.instance.BuildingDictionary)
+                            bool tempbool = false;
+                            tempbool = hit.transform.GetComponent<TerrainController>().Walkable;
+
+                            if (tempbool && MEMCC.SelectedButtonDR != -1)
                             {
-                                if (kvp.Value.Title == MEMCC.SelectedButton) //need to find id for what unit we are trying to place
-                                {
-                                    bool tempbool = false;
-                                    foreach (var item in DatabaseController.instance.TerrainDictionary)
-                                    {
-                                        if (hit.transform.name == item.Value.Title)
-                                        {
-                                            tempbool = item.Value.Walkable;
-                                        }
-                                    }
-                                    if (tempbool)
-                                    {
-                                        GameObject tgo = DatabaseController.instance.CreateAndSpawnBuilding(hit.transform.position, kvp.Key, MEMCC.SelectedTeam); //creat new building at position on tile we clicked on.
-                                        tgo.GetComponent<BuildingController>().Team = MEMCC.SelectedTeam;
-                                        AddBuildingToDictionary(tgo);
-                                        //Debug.log("Creating " + MEMCC.SelectedButton + " at " + hit.transform.position);
-                                        SpriteUpdateActivator();
-                                    }
-                                }
+                                GameObject tgo = DatabaseController.instance.CreateAndSpawnBuilding(hit.transform.position, MEMCC.SelectedButtonDR, MEMCC.SelectedTeam); //creat new building at position on tile we clicked on.
+                                tgo.GetComponent<BuildingController>().Team = MEMCC.SelectedTeam;
+                                AddBuildingToDictionary(tgo);
+                                //Debug.log("Creating " + MEMCC.SelectedButton + " at " + hit.transform.position);
+                                SpriteUpdateActivator();
                             }
                         }
                     }
@@ -833,8 +822,11 @@ public class GameControllerScript : MonoBehaviour
         PSCC.UpdateTurnImageColor(CurrentTeamsTurn.Team);
         AiController();
         PSCC.HideOrShowSaveButton(true);
-    } //sets up game for new game
+    }
 
+    /// <summary>
+    /// Sets up varaibles for loading a game
+    /// </summary>
     public void PlaySceneLoadGameInitalizer()
     {
         PSCC.CurrentPlayerTurnText.text = "Team turn";
@@ -1028,6 +1020,9 @@ public class GameControllerScript : MonoBehaviour
         PSCC.HideOrShowSaveButton(false);
     }
 
+    /// <summary>
+    /// Runs when a unit uses the capture action
+    /// </summary>
     public void CaptureActionPlayScene()
     {
         if (MoveToPosition != new Vector2(-1, -1))
@@ -1081,6 +1076,9 @@ public class GameControllerScript : MonoBehaviour
         PSCC.HideOrShowSaveButton(false);
     }
 
+    /// <summary>
+    /// Runs when a unit uses the move action
+    /// </summary>
     public void MoveActionPlayScene()
     {
         //check if unit between were we are moveing from to were we are moving
@@ -1256,6 +1254,12 @@ public class GameControllerScript : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Used to calculate how much damage is done based on attack and defences
+    /// </summary>
+    /// <param name="Attacker">Unit that is attacking</param>
+    /// <param name="Defender">Unit that is being attacked</param>
+    /// <returns></returns>
     public int CombatCalculator(GameObject Attacker, GameObject Defender)
     {
         //Debug.Log("Health:" + Attacker.GetComponent<UnitController>().Health);
@@ -1288,6 +1292,9 @@ public class GameControllerScript : MonoBehaviour
         return AttackAfterDefence;
     }
 
+    /// <summary>
+    /// Used to control the ai behavior, currently does not work, will need to be redone when core gameplay is finished
+    /// </summary>
     public void AiController()
     {
         if (TeamList[CurrentTeamsTurn.Team].IsAi) // if team is ai do something
@@ -1315,6 +1322,10 @@ public class GameControllerScript : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Saves all the variables of a game and writes them to file
+    /// </summary>
+    /// <param name="SaveName">Name for save file</param>
     public void SaveGame(string SaveName)
     {
 
@@ -1359,6 +1370,10 @@ public class GameControllerScript : MonoBehaviour
         fs.Dispose();
     }
 
+    /// <summary>
+    /// Loads file and sets up variables
+    /// </summary>
+    /// <param name="name">Name of file to load</param>
     public void LoadSavedGamePlayScene(string name)
     {
         StreamReader SR = new StreamReader(Application.dataPath + "/StreamingAssets/Saves/" + name + ".json");
@@ -1396,6 +1411,10 @@ public class GameControllerScript : MonoBehaviour
         SpriteUpdateActivator();
     }
 
+    /// <summary>
+    /// Makes a list with 9 teams, and then sets team to active/not active
+    /// </summary>
+    /// <returns></returns>
     public List<TeamStuff> FillTeamList()
     {
         List<TeamStuff> L = new List<TeamStuff>();
@@ -1415,7 +1434,6 @@ public class GameControllerScript : MonoBehaviour
         L.Add(T4);//4
         TeamStuff T5 = new TeamStuff();
         T5.Team = 5;
-        T5.IsAi = false;
         L.Add(T5);//5
         TeamStuff T6 = new TeamStuff();
         T6.Team = 6;
@@ -1432,6 +1450,11 @@ public class GameControllerScript : MonoBehaviour
         return L;
     }
 
+    /// <summary>
+    /// Used to check if team is not active
+    /// </summary>
+    /// <param name="t">Team to check</param>
+    /// <returns>Returns true or false</returns>
     public bool TeamIsNotActive(TeamStuff t)
     {
         if (t.Active && !t.Defeated)
@@ -1444,6 +1467,11 @@ public class GameControllerScript : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Used to check if team is active
+    /// </summary>
+    /// <param name="t">Team to check</param>
+    /// <returns>Returns true or false</returns>
     public bool TeamIsActive(TeamStuff t)
     {
         if (t.Active && !t.Defeated)
@@ -1456,6 +1484,11 @@ public class GameControllerScript : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Gets last team, not used anywere, not sure if i need it
+    /// </summary>
+    /// <param name="t"></param>
+    /// <returns></returns>
     public bool FindLastTeam(TeamStuff t)
     {
         if (t.Team == 9)
@@ -1468,6 +1501,9 @@ public class GameControllerScript : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Timer that resets every half second, and then calls idle andimation controllers
+    /// </summary>
     public void IdleTimer()
     {
         IdleTimerFloat += Time.deltaTime;

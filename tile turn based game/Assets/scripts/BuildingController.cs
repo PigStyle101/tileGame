@@ -29,6 +29,8 @@ public class BuildingController : MonoBehaviour
     [HideInInspector]
     public bool CanBuildUnits;
     private PlaySceneCamController PSCC;
+    [HideInInspector]
+    public int DictionaryReferance;
 
     private void Awake()
     {
@@ -54,27 +56,21 @@ public class BuildingController : MonoBehaviour
 
     public void ChangeBuilding()
     {
-        if (MEMCC.SelectedButton == "Delete Building")
+        if (MEMCC.SelectedButtonDR == -1)
         {
             //Debug.log("Deleting Building");
             Destroy(gameObject);
         }
         else
         {
-            //Debug.log("ChangBuilding activated");
-            foreach (KeyValuePair<int, Building> kvp in DatabaseController.instance.BuildingDictionary)
-            {
-                if (MEMCC.SelectedButton == kvp.Value.Title) //checks through dictionary for matching tile to button name
-                {
-                    ////Debug.log("Changing tile to " + kvp.Value.Title);
-                    gameObject.name = kvp.Value.Title;//change name of tile
-                    Team = MEMCC.SelectedTeam;
-                    CanBuildUnits = kvp.Value.CanBuildUnits;
-                    BuildableUnits = kvp.Value.BuildableUnits;
-                    ID = kvp.Value.ID;
-                    gameObject.GetComponent<SpriteRenderer>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.BuildingDictionary[kvp.Key].ArtworkDirectory[0]); //change sprite of tile
-                }
-            }
+            ////Debug.log("Changing tile to " + kvp.Value.Title);
+            gameObject.name = DatabaseController.instance.BuildingDictionary[MEMCC.SelectedButtonDR].Title;//change name of tile
+            Team = MEMCC.SelectedTeam;
+            CanBuildUnits = DatabaseController.instance.BuildingDictionary[MEMCC.SelectedButtonDR].CanBuildUnits;
+            BuildableUnits = DatabaseController.instance.BuildingDictionary[MEMCC.SelectedButtonDR].BuildableUnits;
+            ID = DatabaseController.instance.BuildingDictionary[MEMCC.SelectedButtonDR].ID;
+            DictionaryReferance = MEMCC.SelectedButtonDR;
+            gameObject.GetComponent<SpriteRenderer>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.BuildingDictionary[MEMCC.SelectedButtonDR].ArtworkDirectory[0]); //change sprite of tile
         }
     }
 
