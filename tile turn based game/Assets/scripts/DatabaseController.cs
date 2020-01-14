@@ -21,6 +21,7 @@ public class DatabaseController : MonoBehaviour
     public Dictionary<int, Unit> UnitDictionary = new Dictionary<int, Unit>();
     public Dictionary<int, Building> BuildingDictionary = new Dictionary<int, Building>();
     public Dictionary<int, FogOfWar> FogOfWarDictionary = new Dictionary<int, FogOfWar>();
+    public Dictionary<int, Hero> HeroDictionary = new Dictionary<int, Hero>();
     public List<string> ModsLoaded = new List<string>();
     private GameObject NewTile;
     [HideInInspector]
@@ -54,6 +55,7 @@ public class DatabaseController : MonoBehaviour
         GetTerrianJsons("Core");
         GameControllerScript.instance.LoadingUpdater(.4f);
         GetUnitJsons("Core");
+        GetHeroJsons("Core");
         GameControllerScript.instance.LoadingUpdater(.6f);
         GetBuildingJsons("Core");
         GameControllerScript.instance.LoadingUpdater(.8f);
@@ -97,7 +99,7 @@ public class DatabaseController : MonoBehaviour
                 }
                 else
                 {
-                    //Debug.logError("Item id number: " + tempjson.ID + " is already claimed, change " + tempjson.Title + " ID please");
+                    Debug.LogError("Item id number: " + tempjson.ID + " is already claimed, change " + tempjson.Title + " ID please");
                 }
             }
         }
@@ -125,7 +127,35 @@ public class DatabaseController : MonoBehaviour
                 }
                 else
                 {
-                    //Debug.logError("Item id number: " + tempjson.ID + " is already claimed, change " + tempjson.Title + " ID please");
+                    Debug.LogError("Item id number: " + tempjson.ID + " is already claimed, change " + tempjson.Title + " ID please");
+                }
+            }
+        }
+    }//gets the json files from the Units/data folder and converts them to unity object and stores tehm into dictionary
+
+    /// <summary>
+    /// Gets Hero Json files. Pulls from data first then searches for sprites.
+    /// </summary>
+    /// <param name="Mod">Mod folder name to look for</param>
+    public void GetHeroJsons(string Mod)
+    {
+        if (Directory.Exists(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Heroes"))
+        {
+            //Debug.Log("Fetching json hero files");
+            foreach (string file in Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Heroes/Data/", "*.json")) //gets only json files form this path
+            {
+                var Tempstring = File.ReadAllText(file); //temp string to hold the json data
+                var tempjson = JsonUtility.FromJson<Hero>(Tempstring); //this converts from json string to unity object
+                //Debug.log("Adding: " + tempjson.Slug + " to database");
+                if (!HeroDictionary.ContainsKey(tempjson.ID))
+                {
+                    HeroDictionary.Add(tempjson.ID, tempjson); //adds
+                    tempjson.GetSprites(); //details in fucntion
+                    //Debug.log("Finished adding: " + tempjson.Slug + " to database");
+                }
+                else
+                {
+                    Debug.LogError("Item id number: " + tempjson.ID + " is already claimed, change " + tempjson.Title + " ID please");
                 }
             }
         }
@@ -153,7 +183,7 @@ public class DatabaseController : MonoBehaviour
                 }
                 else
                 {
-                    //Debug.logError("Item id number: " + tempjson.ID + " is already claimed, change " + tempjson.Title + " ID please");
+                    Debug.LogError("Item id number: " + tempjson.ID + " is already claimed, change " + tempjson.Title + " ID please");
                 }
             }
         }
@@ -178,7 +208,7 @@ public class DatabaseController : MonoBehaviour
             }
             else
             {
-                //Debug.logError("Item id number: " + tempjson.ID + " is already claimed" + tempjson.Title + " ID please");
+                Debug.LogError("Item id number: " + tempjson.ID + " is already claimed" + tempjson.Title + " ID please");
             }
         }
     }//same as getTerrainJson
@@ -199,7 +229,7 @@ public class DatabaseController : MonoBehaviour
             }
             else
             {
-                //Debug.logError("Item id number: " + tempjson.ID + " is already claimed" + tempjson.Title + " ID please");
+                Debug.LogError("Item id number: " + tempjson.ID + " is already claimed" + tempjson.Title + " ID please");
             }
         }
     }
@@ -524,6 +554,9 @@ public class Building
     public bool Capturable;
     public bool CanBuildUnits;
     public bool BlocksSight;
+    public bool OnlyOneAllowed;
+    public bool HeroSpawnPoint;
+    public bool MainBase;
 
     /// <summary>
     /// Gets location of sprites and saves them to a list
@@ -613,23 +646,49 @@ public class Master
 [System.Serializable]
 public class Hero
 {
-    public string Title;
     public int ID;
+    public string Title;
     public string Slug;
     public string Description;
     public string Type;
     public string Mod;
+    public int Attack;
+    public int Defence;
+    public int Health;
+    public int AttackRange;
+    public int MovePoints;
+    public int ConversionSpeed;
+    public int SightRange;
+    public int Mana;
+    public int HealthRegen;
+    public int ManaRegen;
     public int Level;
     public int XP;
     public int Intelligance;
     public int Strenght;
     public int Dexterity;
     public int Charisma;
-    public int Health;
-    public int Mana;
-    public int HealthRegen;
-    public int ManaRegen;
-    public int Damage;
+    public List<string> ArtworkDirectory;
+
+    /// <summary>
+    /// Gets location of sprites and saves them to a list
+    /// </summary>
+    public void GetSprites()
+    {
+        //Debug.log("Getting sprites for: " + Title);
+        int count = new int();
+        foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/Core/Heroes/Sprites", "*.png")))
+        {
+            if (file.Contains(Title))
+            {
+                ArtworkDirectory.Add(file);
+                count = count + 1;
+            }
+            //var tempname = Path.GetFileNameWithoutExtension(file);  // use this to get file name
+        }
+        //Debug.Log("Sprites found: " + count);
+        count = 0;
+    }
 }
 
 public class Spell

@@ -71,6 +71,13 @@ public class BuildingController : MonoBehaviour
             ID = DatabaseController.instance.BuildingDictionary[MEMCC.SelectedButtonDR].ID;
             DictionaryReferance = MEMCC.SelectedButtonDR;
             gameObject.GetComponent<SpriteRenderer>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.BuildingDictionary[MEMCC.SelectedButtonDR].ArtworkDirectory[0]); //change sprite of tile
+
+            if (GameControllerScript.instance.UnitPos.ContainsKey(gameObject.transform.position) && DatabaseController.instance.BuildingDictionary[DictionaryReferance].HeroSpawnPoint)
+            {
+                Destroy(GameControllerScript.instance.UnitPos[gameObject.transform.position]);
+                GameControllerScript.instance.UnitPos.Remove(gameObject.transform.position);
+                MEMCC.CurrentSelectedButtonText.text = "Cannot have unit on hero spawn point";
+            }
         }
     }
 

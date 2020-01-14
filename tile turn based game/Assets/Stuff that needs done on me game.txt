@@ -1,11 +1,10 @@
 Things that need done:
--add Main base or other buildings as needed
+-add other buildings as needed
 -add settings menu
--Add hero stuff
+-Add hero stuff (currently working on this)
 -add xp to troops and a unit return(a list of units that you keep through battles)
 -add mountains(adds 2 to sight range, better defence then grass)
 -add ports and boats, start with carrier and attack boat?
--look into using unity assets for modding
 -add more animations
 -add change all button to map editor
 

@@ -9,5 +9,6 @@
   "Type": "Building",
   "CanBuildUnits": false,
   "BlocksSight": false,
+  "OnlyOneAllowed": false,
   "Mod": "Core"
 }

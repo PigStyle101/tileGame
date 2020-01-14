@@ -1,5 +1,5 @@
 {
-  "ID": 0,
+  "ID": 2,
   "Health": 10,
   "Title": "Barracks",
   "Walkable": true,
@@ -15,5 +15,6 @@
     "Catapult",
     "Soldier"
   ],
+  "OnlyOneAllowed": false,
   "Mod": "Core"
 }

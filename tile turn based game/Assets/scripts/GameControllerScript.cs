@@ -145,7 +145,7 @@ public class GameControllerScript : MonoBehaviour
                     for (int o = 0; o < EditorMapSize; o++)
                     {
                         //creates a map in data to use for drawing later
-                        MapDictionary.Add(new Vector2(i, o), DatabaseController.instance.TerrainDictionary[0].Title);
+                        MapDictionary.Add(new Vector2(i, o), DatabaseController.instance.TerrainDictionary[1].Title);
                         //UnityEngine.//Debug.log("Added Key: " + i + o);
                     }
                 }
@@ -186,7 +186,7 @@ public class GameControllerScript : MonoBehaviour
     {
         foreach (var kvp in MapDictionary) //runs creation script for each 
         {
-            GameObject go = DatabaseController.instance.CreateAdnSpawnTerrain(kvp.Key, 0);
+            GameObject go = DatabaseController.instance.CreateAdnSpawnTerrain(kvp.Key, 1);
             AddTilesToDictionary(go);
         }
         CameraVar = GameObject.Find("MainCamera");
@@ -306,9 +306,9 @@ public class GameControllerScript : MonoBehaviour
                 ////Debug.log("Raycast activated");
                 Ray ray = GameObject.Find("MainCamera").GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
                 RaycastHit[] hits;
-                hits = Physics.RaycastAll(ray);
+                hits = Physics.RaycastAll(ray); //GET THEM RAYS!!!
                 ////Debug.log(hits.Length);
-                for (int i = 0; i < hits.Length; i++)
+                for (int i = 0; i < hits.Length; i++) //GO THROUGH THEM RAYS!!!!
                 {
                     RaycastHit hit = hits[i];
                     if (hit.transform.tag == MEMCC.SelectedTab) //is the hit tag = to what we are trying to place down?
@@ -355,32 +355,118 @@ public class GameControllerScript : MonoBehaviour
                             BuildingController BC = hit.transform.GetComponent<BuildingController>();
                             if (BC.DictionaryReferance != MEMCC.SelectedButtonDR) //are we changing the building to something new?
                             {
-                                //Debug.log("Changing building to " + MEMCC.SelectedButton);
-                                if (MEMCC.SelectedButtonDR == -1)
-                                {
-                                    BuildingPos.Remove(hit.transform.position);
-                                }
-                                BC.ChangeBuilding(); //change to new building
                                 if (MEMCC.SelectedButtonDR != -1)
                                 {
-                                    AddBuildingToDictionary(hit.transform.gameObject);
+                                    if (!DatabaseController.instance.BuildingDictionary[MEMCC.SelectedButtonDR].OnlyOneAllowed)
+                                    {
+                                        BC.ChangeBuilding(); //change to new building
+                                        if (MEMCC.SelectedButtonDR != -1)
+                                        {
+                                            AddBuildingToDictionary(hit.transform.gameObject);
+                                        }
+                                        SpriteUpdateActivator();
+                                    }
+                                    else
+                                    {
+                                        bool OneExsist = false;
+                                        Vector2 KeyToRemove = new Vector2();
+                                        foreach (var kvp in BuildingPos)
+                                        {
+                                            if (kvp.Value.GetComponent<BuildingController>().name == DatabaseController.instance.BuildingDictionary[MEMCC.SelectedButtonDR].Title && !OneExsist)
+                                            {
+                                                if (kvp.Value.GetComponent<BuildingController>().Team == MEMCC.SelectedTeam) //make sure it is on the same team
+                                                {
+                                                    OneExsist = true;
+                                                    KeyToRemove = kvp.Key; 
+                                                }
+                                            }
+                                        }
+                                        if (OneExsist)
+                                        {
+                                            Destroy(BuildingPos[KeyToRemove]);
+                                            BuildingPos.Remove(KeyToRemove);
+                                            //Debug.Log("Changing building to " + MEMCC.CurrentSelectedButtonText.text);
+                                            BC.ChangeBuilding(); //change to new building
+                                            if (MEMCC.SelectedButtonDR != -1)
+                                            {
+                                                AddBuildingToDictionary(hit.transform.gameObject);
+                                            }
+                                            SpriteUpdateActivator();
+                                        }
+                                        else
+                                        {
+                                            //Debug.Log("Changing building to " + MEMCC.CurrentSelectedButtonText.text);
+                                            BC.ChangeBuilding(); //change to new building
+                                            if (MEMCC.SelectedButtonDR != -1)
+                                            {
+                                                AddBuildingToDictionary(hit.transform.gameObject);
+                                            }
+                                            SpriteUpdateActivator();
+                                        }
+                                    } 
                                 }
-                                SpriteUpdateActivator();
+                                else
+                                {
+                                    //Debug.log("Changing building to " + MEMCC.SelectedButton);
+                                    if (MEMCC.SelectedButtonDR == -1)
+                                    {
+                                        BuildingPos.Remove(hit.transform.position);
+                                    }
+                                    BC.ChangeBuilding(); //change to new building
+                                }
                             }
-                            else if (hit.transform.GetComponent<BuildingController>().Team != MEMCC.SelectedTeam)
+                            else if (hit.transform.GetComponent<BuildingController>().Team != MEMCC.SelectedTeam) //we are changing the team of a building
                             {
-                                hit.transform.GetComponent<BuildingController>().Team = MEMCC.SelectedTeam;
-                                SpriteUpdateActivator();
+                                if (DatabaseController.instance.BuildingDictionary[MEMCC.SelectedButtonDR].OnlyOneAllowed)
+                                {
+                                    bool OneExsist = false;
+                                    Vector2 KeyToRemove = new Vector2();
+                                    foreach (var kvp in BuildingPos)
+                                    {
+                                        if (kvp.Value.GetComponent<BuildingController>().name == DatabaseController.instance.BuildingDictionary[MEMCC.SelectedButtonDR].Title && !OneExsist)
+                                        {
+                                            if (kvp.Value.GetComponent<BuildingController>().Team == MEMCC.SelectedTeam) //make sure it is on the same team
+                                            {
+                                                OneExsist = true;
+                                                KeyToRemove = kvp.Key;
+                                            }
+                                        }
+                                    }
+                                    if (OneExsist)
+                                    {
+                                        Debug.Log("1");
+                                        Destroy(BuildingPos[KeyToRemove]);
+                                        BuildingPos.Remove(KeyToRemove);
+                                        hit.transform.GetComponent<BuildingController>().Team = MEMCC.SelectedTeam;
+                                        SpriteUpdateActivator();
+                                    }
+                                    else
+                                    {
+                                        hit.transform.GetComponent<BuildingController>().Team = MEMCC.SelectedTeam;
+                                        SpriteUpdateActivator();
+                                    } 
+                                }
+                                else
+                                {
+                                    hit.transform.GetComponent<BuildingController>().Team = MEMCC.SelectedTeam;
+                                    SpriteUpdateActivator();
+                                }
                             }
                         }
                     }
                     else if (hit.transform.tag == DatabaseController.instance.TerrainDictionary[0].Type && MEMCC.SelectedTab == DatabaseController.instance.UnitDictionary[0].Type) //is the current hit not equal to what we are trying to place down. we are trying to place a unit.
                     {
-                        if (!UnitPos.ContainsKey(hit.transform.position)) //is there a unit there already?
+                        if (!UnitPos.ContainsKey(hit.transform.position)) //is there no unit there?
                         {
                             bool tempbool = false;
                             tempbool = hit.transform.GetComponent<TerrainController>().Walkable; //is the terrain we are trying to place on walkable?
-
+                            if (BuildingPos.ContainsKey(hit.transform.position))
+                            {
+                                if (DatabaseController.instance.BuildingDictionary[BuildingPos[hit.transform.position].GetComponent<BuildingController>().DictionaryReferance].HeroSpawnPoint)
+                                {
+                                    tempbool = false;
+                                }
+                            }
                             if (tempbool)
                             {
                                 if (MEMCC.SelectedTeam != 0)
@@ -399,6 +485,10 @@ public class GameControllerScript : MonoBehaviour
                                     MEMCC.CurrentSelectedButtonText.text = "Cant place unit for team 0";
                                 }
                             }
+                            else
+                            {
+                                MEMCC.CurrentSelectedButtonText.text = "Cannot place unit on unwalkable terrain or hero spawn point";
+                            }
                         }
                     }
                     else if (hit.transform.tag == DatabaseController.instance.TerrainDictionary[0].Type && MEMCC.SelectedTab == DatabaseController.instance.BuildingDictionary[0].Type)
@@ -410,11 +500,56 @@ public class GameControllerScript : MonoBehaviour
 
                             if (tempbool && MEMCC.SelectedButtonDR != -1)
                             {
-                                GameObject tgo = DatabaseController.instance.CreateAndSpawnBuilding(hit.transform.position, MEMCC.SelectedButtonDR, MEMCC.SelectedTeam); //creat new building at position on tile we clicked on.
-                                tgo.GetComponent<BuildingController>().Team = MEMCC.SelectedTeam;
-                                AddBuildingToDictionary(tgo);
-                                //Debug.log("Creating " + MEMCC.SelectedButton + " at " + hit.transform.position);
-                                SpriteUpdateActivator();
+                                if (!DatabaseController.instance.BuildingDictionary[MEMCC.SelectedButtonDR].OnlyOneAllowed)
+                                {
+                                    GameObject tgo = DatabaseController.instance.CreateAndSpawnBuilding(hit.transform.position, MEMCC.SelectedButtonDR, MEMCC.SelectedTeam); //creat new building at position on tile we clicked on.
+                                    tgo.GetComponent<BuildingController>().Team = MEMCC.SelectedTeam;
+                                    AddBuildingToDictionary(tgo);
+                                    //Debug.log("Creating " + MEMCC.SelectedButton + " at " + hit.transform.position);
+                                    SpriteUpdateActivator(); 
+                                }
+                                else
+                                {
+                                    bool OneExsist = false;
+                                    Vector2 KeyToRemove = new Vector2();
+                                    foreach (var kvp in BuildingPos)
+                                    {
+                                        if (kvp.Value.GetComponent<BuildingController>().name == DatabaseController.instance.BuildingDictionary[MEMCC.SelectedButtonDR].Title && !OneExsist)
+                                        {
+                                            if (kvp.Value.GetComponent<BuildingController>().Team == MEMCC.SelectedTeam)
+                                            {
+                                                OneExsist = true;
+                                                KeyToRemove = kvp.Key; 
+                                            }
+                                        }
+                                    }
+                                    if (OneExsist)
+                                    {
+                                        Destroy(BuildingPos[KeyToRemove]);
+                                        BuildingPos.Remove(KeyToRemove);
+                                        GameObject tgo = DatabaseController.instance.CreateAndSpawnBuilding(hit.transform.position, MEMCC.SelectedButtonDR, MEMCC.SelectedTeam); //creat new building at position on tile we clicked on.
+                                        tgo.GetComponent<BuildingController>().Team = MEMCC.SelectedTeam;
+                                        AddBuildingToDictionary(tgo);
+                                        SpriteUpdateActivator();
+                                        if (UnitPos.ContainsKey(hit.transform.position))
+                                        {
+                                            Destroy(UnitPos[hit.transform.position]);
+                                            UnitPos.Remove(hit.transform.position);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        GameObject tgo = DatabaseController.instance.CreateAndSpawnBuilding(hit.transform.position, MEMCC.SelectedButtonDR, MEMCC.SelectedTeam); //creat new building at position on tile we clicked on.
+                                        tgo.GetComponent<BuildingController>().Team = MEMCC.SelectedTeam;
+                                        AddBuildingToDictionary(tgo);
+                                        SpriteUpdateActivator();
+                                        if (UnitPos.ContainsKey(hit.transform.position))
+                                        {
+                                            Destroy(UnitPos[hit.transform.position]);
+                                            UnitPos.Remove(hit.transform.position);
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -603,36 +738,53 @@ public class GameControllerScript : MonoBehaviour
                         SB.Health = kvp.Value.GetComponent<BuildingController>().Health;
                         SB.Team = kvp.Value.GetComponent<BuildingController>().Team;
                         SB.ID = kvp.Value.GetComponent<BuildingController>().ID;
+                        SB.HeroSpawnPoint = DatabaseController.instance.BuildingDictionary[kvp.Value.GetComponent<BuildingController>().DictionaryReferance].HeroSpawnPoint;
                         SB.Location = kvp.Key;
                         MF.BuildingList.Add(SB);
                         foreach (var t in TeamList)
                         {
-                            if (t.Team == kvp.Value.GetComponent<BuildingController>().Team && t.Active == false&& t.Team !=0)
+                            if (t.Team == SB.Team && t.Active == false && t.Team !=0)
                             {
                                 t.Active = true;
+                            }
+                            if (t.Team == SB.Team && t.Active && !t.HaseMainBase && SB.HeroSpawnPoint)
+                            {
+                                t.HaseMainBase = true;
                             }
                         }
                     }
                     int tempteamcount = new int();
+                    int tempBasecount = new int();
                     foreach(var t in TeamList)
                     {
                         if (t.Active)
                         {
                             tempteamcount = tempteamcount + 1;
                         }
+                        if (t.HaseMainBase)
+                        {
+                            tempBasecount = tempBasecount + 1;
+                        }
                     }
                     if (tempteamcount >= 2)
                     {
-                        MF.Teamlist = TeamList;
-                        string tempjson = JsonUtility.ToJson(MF,true);
-                        FileStream fs = File.Create(Application.dataPath + "/StreamingAssets/Maps/" + SaveName + ".json");
-                        StreamWriter sr = new StreamWriter(fs);
-                        sr.Write(tempjson);
-                        sr.Close();
-                        sr.Dispose();
-                        fs.Close();
-                        fs.Dispose();
-                        MEMCC.SaveFeedback.text = "File saved as: " + SaveName;
+                        if (tempBasecount == tempteamcount)
+                        {
+                            MF.Teamlist = TeamList;
+                            string tempjson = JsonUtility.ToJson(MF, true);
+                            FileStream fs = File.Create(Application.dataPath + "/StreamingAssets/Maps/" + SaveName + ".json");
+                            StreamWriter sr = new StreamWriter(fs);
+                            sr.Write(tempjson);
+                            sr.Close();
+                            sr.Dispose();
+                            fs.Close();
+                            fs.Dispose();
+                            MEMCC.SaveFeedback.text = "File saved as: " + SaveName;
+                        }
+                        else
+                        {
+                            MEMCC.SaveFeedback.text = "Each team must have a main base";
+                        }
                     }
                     else
                     {
@@ -871,7 +1023,7 @@ public class GameControllerScript : MonoBehaviour
             }
             foreach (var t in TeamList)
             {
-                if (t.UnitCount + t.BuildingCount == 0)
+                if (t.UnitCount + t.BuildingCount == 0 || !t.HaseMainBase)
                 {
                     t.Defeated = true;
                 }
@@ -1035,19 +1187,24 @@ public class GameControllerScript : MonoBehaviour
         PSCC.SetActionButtonsToFalse();
         foreach (var b in BuildingPos)
         {
-            if (b.Value.transform.position == SelectedUnitPlayScene.transform.position && b.Value.transform.GetComponent<BuildingController>().Team != SelectedUnitPlayScene.GetComponent<UnitController>().Team)
+            var BC = b.Value.transform.GetComponent<BuildingController>();
+            if (b.Value.transform.position == SelectedUnitPlayScene.transform.position && BC.Team != SelectedUnitPlayScene.GetComponent<UnitController>().Team)
             {
-                b.Value.transform.GetComponent<BuildingController>().Health = b.Value.transform.GetComponent<BuildingController>().Health - SelectedUnitPlayScene.GetComponent<UnitController>().ConversionSpeed;
-                if (b.Value.transform.GetComponent<BuildingController>().Health <= 0)
+                BC.Health = BC.Health - SelectedUnitPlayScene.GetComponent<UnitController>().ConversionSpeed;
+                if (BC.Health <= 0)
                 {
-                    b.Value.transform.GetComponent<BuildingController>().Team = SelectedUnitPlayScene.GetComponent<UnitController>().Team;
-                    b.Value.transform.GetComponent<BuildingController>().Health = 10; // set this to max health variable from building json
-                    b.Value.transform.GetComponent<BuildingController>().TeamSpriteUpdater();
-                    b.Value.transform.GetComponentInChildren<Text>().text = b.Value.transform.GetComponent<BuildingController>().Health.ToString();
+                    if (DatabaseController.instance.BuildingDictionary[BC.DictionaryReferance].MainBase)
+                    {
+                        TeamList[BC.Team].Defeated = true;
+                    }
+                    BC.Team = SelectedUnitPlayScene.GetComponent<UnitController>().Team;
+                    BC.Health = DatabaseController.instance.BuildingDictionary[BC.DictionaryReferance].Health; // set this to max health variable from building json
+                    BC.TeamSpriteUpdater();
+                    b.Value.transform.GetComponentInChildren<Text>().text = BC.Health.ToString();
                 }
                 else
                 {
-                    b.Value.transform.GetComponentInChildren<Text>().text = b.Value.transform.GetComponent<BuildingController>().Health.ToString();
+                    b.Value.transform.GetComponentInChildren<Text>().text = BC.Health.ToString();
                 }
             }
         }
@@ -1618,6 +1775,7 @@ public class SaveableBuilding
 {
     public int Team;
     public int Health;
+    public bool HeroSpawnPoint;
     public int ID;
     public SeralizableVector2 Location;
 }
@@ -1639,4 +1797,5 @@ public class TeamStuff
     public int Gold = 0;
     public bool IsAi = false;
     public bool Defeated = false;
+    public bool HaseMainBase = false;
 }

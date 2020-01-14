@@ -7,7 +7,8 @@
             "BuildingCount": 0,
             "Gold": 0,
             "IsAi": false,
-            "Defeated": false
+            "Defeated": false,
+            "HaseMainBase": false
         },
         {
             "Team": 1,
@@ -16,7 +17,8 @@
             "BuildingCount": 0,
             "Gold": 0,
             "IsAi": false,
-            "Defeated": false
+            "Defeated": false,
+            "HaseMainBase": true
         },
         {
             "Team": 2,
@@ -25,235 +27,132 @@
             "BuildingCount": 0,
             "Gold": 0,
             "IsAi": false,
-            "Defeated": false
+            "Defeated": false,
+            "HaseMainBase": true
         },
         {
             "Team": 3,
-            "Active": true,
+            "Active": false,
             "UnitCount": 0,
             "BuildingCount": 0,
             "Gold": 0,
             "IsAi": false,
-            "Defeated": false
+            "Defeated": false,
+            "HaseMainBase": false
         },
         {
             "Team": 4,
-            "Active": true,
+            "Active": false,
             "UnitCount": 0,
             "BuildingCount": 0,
             "Gold": 0,
             "IsAi": false,
-            "Defeated": false
+            "Defeated": false,
+            "HaseMainBase": false
         },
         {
             "Team": 5,
-            "Active": true,
+            "Active": false,
             "UnitCount": 0,
             "BuildingCount": 0,
             "Gold": 0,
             "IsAi": false,
-            "Defeated": false
+            "Defeated": false,
+            "HaseMainBase": false
         },
         {
             "Team": 6,
-            "Active": true,
+            "Active": false,
             "UnitCount": 0,
             "BuildingCount": 0,
             "Gold": 0,
             "IsAi": false,
-            "Defeated": false
+            "Defeated": false,
+            "HaseMainBase": false
         },
         {
             "Team": 7,
-            "Active": true,
+            "Active": false,
             "UnitCount": 0,
             "BuildingCount": 0,
             "Gold": 0,
             "IsAi": false,
-            "Defeated": false
+            "Defeated": false,
+            "HaseMainBase": false
         },
         {
             "Team": 8,
-            "Active": true,
+            "Active": false,
             "UnitCount": 0,
             "BuildingCount": 0,
             "Gold": 0,
             "IsAi": false,
-            "Defeated": false
+            "Defeated": false,
+            "HaseMainBase": false
         },
         {
             "Team": 9,
-            "Active": true,
+            "Active": false,
             "UnitCount": 0,
             "BuildingCount": 0,
             "Gold": 0,
             "IsAi": false,
-            "Defeated": false
+            "Defeated": false,
+            "HaseMainBase": false
         }
     ],
     "UnitList": [
         {
-            "ID": 0,
+            "ID": 2,
             "Team": 1,
-            "Health": 5,
+            "Health": 4,
+            "XP": 0,
+            "Level": 0,
+            "Location": {
+                "x": 0.0,
+                "y": 9.0
+            }
+        }
+    ],
+    "BuildingList": [
+        {
+            "Team": 1,
+            "Health": 20,
+            "HeroSpawnPoint": true,
+            "ID": 0,
             "Location": {
                 "x": 0.0,
                 "y": 10.0
             }
         },
         {
-            "ID": 0,
             "Team": 2,
-            "Health": 5,
-            "Location": {
-                "x": 0.0,
-                "y": 5.0
-            }
-        },
-        {
+            "Health": 20,
+            "HeroSpawnPoint": true,
             "ID": 0,
-            "Team": 5,
-            "Health": 5,
-            "Location": {
-                "x": 3.0,
-                "y": 5.0
-            }
-        },
-        {
-            "ID": 0,
-            "Team": 6,
-            "Health": 5,
-            "Location": {
-                "x": 4.0,
-                "y": 5.0
-            }
-        },
-        {
-            "ID": 0,
-            "Team": 8,
-            "Health": 5,
-            "Location": {
-                "x": 6.0,
-                "y": 5.0
-            }
-        },
-        {
-            "ID": 0,
-            "Team": 9,
-            "Health": 5,
-            "Location": {
-                "x": 7.0,
-                "y": 5.0
-            }
-        },
-        {
-            "ID": 0,
-            "Team": 3,
-            "Health": 5,
             "Location": {
                 "x": 1.0,
-                "y": 5.0
+                "y": 10.0
             }
         },
         {
-            "ID": 0,
-            "Team": 4,
-            "Health": 5,
+            "Team": 2,
+            "Health": 10,
+            "HeroSpawnPoint": false,
+            "ID": 1,
             "Location": {
-                "x": 2.0,
-                "y": 5.0
+                "x": 1.0,
+                "y": 9.0
             }
         },
         {
-            "ID": 0,
-            "Team": 7,
-            "Health": 5,
-            "Location": {
-                "x": 5.0,
-                "y": 5.0
-            }
-        },
-        {
-            "ID": 0,
             "Team": 1,
-            "Health": 5,
-            "Location": {
-                "x": 3.0,
-                "y": 3.0
-            }
-        }
-    ],
-    "BuildingList": [
-        {
-            "Team": 2,
             "Health": 10,
-            "ID": 0,
+            "HeroSpawnPoint": false,
+            "ID": 1,
             "Location": {
                 "x": 0.0,
-                "y": 5.0
-            }
-        },
-        {
-            "Team": 3,
-            "Health": 10,
-            "ID": 0,
-            "Location": {
-                "x": 1.0,
-                "y": 5.0
-            }
-        },
-        {
-            "Team": 4,
-            "Health": 10,
-            "ID": 0,
-            "Location": {
-                "x": 2.0,
-                "y": 5.0
-            }
-        },
-        {
-            "Team": 5,
-            "Health": 10,
-            "ID": 0,
-            "Location": {
-                "x": 3.0,
-                "y": 5.0
-            }
-        },
-        {
-            "Team": 6,
-            "Health": 10,
-            "ID": 0,
-            "Location": {
-                "x": 4.0,
-                "y": 5.0
-            }
-        },
-        {
-            "Team": 7,
-            "Health": 10,
-            "ID": 0,
-            "Location": {
-                "x": 5.0,
-                "y": 5.0
-            }
-        },
-        {
-            "Team": 8,
-            "Health": 10,
-            "ID": 0,
-            "Location": {
-                "x": 6.0,
-                "y": 5.0
-            }
-        },
-        {
-            "Team": 9,
-            "Health": 10,
-            "ID": 0,
-            "Location": {
-                "x": 7.0,
-                "y": 5.0
+                "y": 9.0
             }
         }
     ],
@@ -294,7 +193,7 @@
             }
         },
         {
-            "ID": 0,
+            "ID": 1,
             "Location": {
                 "x": 0.0,
                 "y": 5.0
@@ -308,21 +207,21 @@
             }
         },
         {
-            "ID": 3,
+            "ID": 1,
             "Location": {
                 "x": 0.0,
                 "y": 7.0
             }
         },
         {
-            "ID": 3,
+            "ID": 1,
             "Location": {
                 "x": 0.0,
                 "y": 8.0
             }
         },
         {
-            "ID": 3,
+            "ID": 1,
             "Location": {
                 "x": 0.0,
                 "y": 9.0
@@ -371,7 +270,7 @@
             }
         },
         {
-            "ID": 0,
+            "ID": 1,
             "Location": {
                 "x": 1.0,
                 "y": 5.0
@@ -385,28 +284,28 @@
             }
         },
         {
-            "ID": 3,
+            "ID": 1,
             "Location": {
                 "x": 1.0,
                 "y": 7.0
             }
         },
         {
-            "ID": 3,
+            "ID": 1,
             "Location": {
                 "x": 1.0,
                 "y": 8.0
             }
         },
         {
-            "ID": 3,
+            "ID": 1,
             "Location": {
                 "x": 1.0,
                 "y": 9.0
             }
         },
         {
-            "ID": 3,
+            "ID": 1,
             "Location": {
                 "x": 1.0,
                 "y": 10.0
@@ -448,7 +347,7 @@
             }
         },
         {
-            "ID": 0,
+            "ID": 1,
             "Location": {
                 "x": 2.0,
                 "y": 5.0
@@ -462,28 +361,28 @@
             }
         },
         {
-            "ID": 3,
+            "ID": 1,
             "Location": {
                 "x": 2.0,
                 "y": 7.0
             }
         },
         {
-            "ID": 3,
+            "ID": 1,
             "Location": {
                 "x": 2.0,
                 "y": 8.0
             }
         },
         {
-            "ID": 3,
+            "ID": 1,
             "Location": {
                 "x": 2.0,
                 "y": 9.0
             }
         },
         {
-            "ID": 3,
+            "ID": 1,
             "Location": {
                 "x": 2.0,
                 "y": 10.0
@@ -525,7 +424,7 @@
             }
         },
         {
-            "ID": 0,
+            "ID": 1,
             "Location": {
                 "x": 3.0,
                 "y": 5.0
@@ -539,28 +438,28 @@
             }
         },
         {
-            "ID": 3,
+            "ID": 1,
             "Location": {
                 "x": 3.0,
                 "y": 7.0
             }
         },
         {
-            "ID": 3,
+            "ID": 1,
             "Location": {
                 "x": 3.0,
                 "y": 8.0
             }
         },
         {
-            "ID": 3,
+            "ID": 1,
             "Location": {
                 "x": 3.0,
                 "y": 9.0
             }
         },
         {
-            "ID": 3,
+            "ID": 1,
             "Location": {
                 "x": 3.0,
                 "y": 10.0
@@ -602,7 +501,7 @@
             }
         },
         {
-            "ID": 0,
+            "ID": 1,
             "Location": {
                 "x": 4.0,
                 "y": 5.0
@@ -679,7 +578,7 @@
             }
         },
         {
-            "ID": 0,
+            "ID": 1,
             "Location": {
                 "x": 5.0,
                 "y": 5.0
@@ -756,7 +655,7 @@
             }
         },
         {
-            "ID": 0,
+            "ID": 1,
             "Location": {
                 "x": 6.0,
                 "y": 5.0
@@ -833,7 +732,7 @@
             }
         },
         {
-            "ID": 0,
+            "ID": 1,
             "Location": {
                 "x": 7.0,
                 "y": 5.0

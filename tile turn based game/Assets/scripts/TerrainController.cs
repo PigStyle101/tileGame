@@ -32,7 +32,7 @@ public class TerrainController : MonoBehaviour
     public bool Occupied;
     [HideInInspector]
     public int Weight;
-    [HideInInspector]
+    //[HideInInspector]
     public bool Walkable;
     [HideInInspector]
     public bool BlocksSight;
@@ -108,6 +108,7 @@ public class TerrainController : MonoBehaviour
         Overlays = DatabaseController.instance.TerrainDictionary[MEMCC.SelectedButtonDR].Overlays;
         Connectable = DatabaseController.instance.TerrainDictionary[MEMCC.SelectedButtonDR].Connectable;
         IdleAnimations = DatabaseController.instance.TerrainDictionary[MEMCC.SelectedButtonDR].IdleAnimations;
+        Walkable = DatabaseController.instance.TerrainDictionary[MEMCC.SelectedButtonDR].Walkable;
         DictionaryReferance = MEMCC.SelectedButtonDR;
         if (IdleAnimations)
         {

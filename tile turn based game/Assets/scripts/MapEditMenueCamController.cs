@@ -42,17 +42,17 @@ public class MapEditMenueCamController : MonoBehaviour
     // this script is currently back up to date
     void Start()
     {
-            GetObjectReferances();
-            AddTerrainButtonsToContent();
-            AddBuildingButtonsToContent();
-            AddUnitButtonsToContent();
-            SelectedTab = DatabaseController.instance.TerrainDictionary[0].Type;
-            SelectedButtonDR = 0;
-            SelectedTeam = 1;
-            SaveFeedback.text = "Use only letters, cannot save with name that is already in use";
-            SavePanel.SetActive(false);
-            CurrentSelectedButtonText.text = "Currently Selected: " + DatabaseController.instance.TerrainDictionary[0].Title;
-            LoadPanelBackButtonClicked();
+        GetObjectReferances();
+        AddTerrainButtonsToContent();
+        AddBuildingButtonsToContent();
+        AddUnitButtonsToContent();
+        SelectedTab = DatabaseController.instance.TerrainDictionary[0].Type;
+        SelectedButtonDR = 0;
+        SelectedTeam = 1;
+        SaveFeedback.text = "Use only letters, cannot save with name that is already in use";
+        SavePanel.SetActive(false);
+        CurrentSelectedButtonText.text = "Currently Selected: " + DatabaseController.instance.TerrainDictionary[0].Title;
+        LoadPanelBackButtonClicked();
     }
 
     void Update()

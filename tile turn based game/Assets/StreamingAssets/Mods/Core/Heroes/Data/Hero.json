@@ -1,0 +1,20 @@
+{
+  "ID": 0,
+  "Title": "Hero",
+  "Slug": "hero",
+  "Description": "Elite unit",
+  "Type": "Elite",
+  "Mod": "Core",
+  "Attack": 5,
+  "Defence": 20,
+  "Health": 10,
+  "AttackRange": 1,
+  "MovePoints": 5,
+  "ConversionSpeed": 5,
+  "SightRange": 4,
+  "Mana": 5,
+  "HealthRegen": 0,
+  "ManaRegen": 1,
+  "CanConvert": true,
+  "CanMoveAndAttack": true
+}
