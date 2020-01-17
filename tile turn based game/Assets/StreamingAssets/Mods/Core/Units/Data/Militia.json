@@ -5,6 +5,7 @@
   "Slug": "militia",
   "Type": "Unit",
   "Mod": "Core",
+  "PixelsPerUnit": 64,
   "Attack": 2,
   "Defence": 0,
   "AttackRange": 1,
@@ -12,7 +13,7 @@
   "MovePoints": 6,
   "Cost": 100,
   "ConversionSpeed": 4,
-  "SightRange": 6,
+  "SightRange": 4,
   "CanConvert": true,
   "CanMoveAndAttack": true
 }

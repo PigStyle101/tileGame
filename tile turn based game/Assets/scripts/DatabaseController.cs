@@ -33,6 +33,7 @@ public class DatabaseController : MonoBehaviour
     public int scrollSpeed;
     public GameObject UnitHealthOverlay;
     public GameObject BuildingHealthOverlay;
+    private GameControllerScript GCS;
 
     private void Awake()
     {
@@ -49,19 +50,20 @@ public class DatabaseController : MonoBehaviour
 
     private void Start()
     {
+        GCS = GameControllerScript.instance;
         GetMasterJson();
         //MultiplayerController.instance.Connect();
-        GameControllerScript.instance.LoadingUpdater(.2f);
+        GCS.LoadingUpdater(.2f);
         GetTerrianJsons("Core");
-        GameControllerScript.instance.LoadingUpdater(.4f);
+        GCS.LoadingUpdater(.4f);
         GetUnitJsons("Core");
         GetHeroJsons("Core");
-        GameControllerScript.instance.LoadingUpdater(.6f);
+        GCS.LoadingUpdater(.6f);
         GetBuildingJsons("Core");
-        GameControllerScript.instance.LoadingUpdater(.8f);
+        GCS.LoadingUpdater(.8f);
         GetMouseJson();
         GetFogOfWarJson();
-        GameControllerScript.instance.LoadingUpdater(1f);
+        GCS.LoadingUpdater(1f);
     }
 
     /// <summary>
@@ -245,7 +247,7 @@ public class DatabaseController : MonoBehaviour
         GameObject TGO = new GameObject();                                                                                  //create gameobject
         TGO.name = TerrainDictionary[index].Title;                                                                          //change the name
         TGO.AddComponent<SpriteRenderer>();                                                                                 //add a sprite controller
-        TGO.GetComponent<SpriteRenderer>().sprite = loadSprite(TerrainDictionary[index].ArtworkDirectory[0]);               //set the sprite to the texture
+        TGO.GetComponent<SpriteRenderer>().sprite = loadSprite(TerrainDictionary[index].ArtworkDirectory[0], TerrainDictionary[index].PixelsPerUnit);               //set the sprite to the texture
         TGO.GetComponent<SpriteRenderer>().sortingLayerName = TerrainDictionary[index].Type;
         TGO.AddComponent<BoxCollider>();
         TGO.GetComponent<BoxCollider>().size = new Vector3(.95f, .95f, .1f);
@@ -253,21 +255,21 @@ public class DatabaseController : MonoBehaviour
         //TGO.AddComponent<RectTransform>();
 
         GameObject MouseOverlayGO = new GameObject();                                                                       //creating the child object for mouse overlay
-        MouseOverlayGO.AddComponent<SpriteRenderer>().sprite = loadSprite(MouseDictionary[0].ArtworkDirectory[0]);          //adding it to sprite
+        MouseOverlayGO.AddComponent<SpriteRenderer>().sprite = loadSprite(MouseDictionary[0].ArtworkDirectory[0], MouseDictionary[0].PixelsPerUnit);          //adding it to sprite
         MouseOverlayGO.GetComponent<SpriteRenderer>().sortingLayerName = UnitDictionary[index].Type;
         MouseOverlayGO.GetComponent<SpriteRenderer>().sortingOrder = 4;                                                     //making it so its on top of the default sprite
         MouseOverlayGO.transform.parent = TGO.transform;                                                                    //setting its parent to the main game object
         MouseOverlayGO.name = "MouseOverlay";                                                                               //changing the name
 
         GameObject FogOverlay = new GameObject();
-        FogOverlay.AddComponent<SpriteRenderer>().sprite = loadSprite(FogOfWarDictionary[0].ArtworkDirectory[0]);
+        FogOverlay.AddComponent<SpriteRenderer>().sprite = loadSprite(FogOfWarDictionary[0].ArtworkDirectory[0], FogOfWarDictionary[0].PixelsPerUnit);
         FogOverlay.GetComponent<SpriteRenderer>().sortingLayerName = UnitDictionary[index].Type;
         FogOverlay.GetComponent<SpriteRenderer>().sortingOrder = 3;
         FogOverlay.transform.parent = TGO.transform;
         FogOverlay.name = "FogOfWar";
 
         GameObject MouseOverlaySelected = new GameObject();
-        MouseOverlaySelected.AddComponent<SpriteRenderer>().sprite = loadSprite(MouseDictionary[1].ArtworkDirectory[0]);
+        MouseOverlaySelected.AddComponent<SpriteRenderer>().sprite = loadSprite(MouseDictionary[1].ArtworkDirectory[0], MouseDictionary[1].PixelsPerUnit);
         MouseOverlaySelected.GetComponent<SpriteRenderer>().sortingLayerName = UnitDictionary[index].Type;
         MouseOverlaySelected.GetComponent<SpriteRenderer>().sortingOrder = 5;
         MouseOverlaySelected.transform.parent = TGO.transform;
@@ -303,7 +305,7 @@ public class DatabaseController : MonoBehaviour
         GameObject TGO = new GameObject();
         TGO.name = UnitDictionary[index].Title;
         TGO.AddComponent<SpriteRenderer>();
-        TGO.GetComponent<SpriteRenderer>().sprite = loadSprite(UnitDictionary[index].ArtworkDirectory[0]);
+        TGO.GetComponent<SpriteRenderer>().sprite = loadSprite(UnitDictionary[index].ArtworkDirectory[0], UnitDictionary[index].PixelsPerUnit);
         TGO.GetComponent<SpriteRenderer>().sortingLayerName = UnitDictionary[index].Type;
         TGO.AddComponent<BoxCollider>();
         TGO.GetComponent<BoxCollider>().size = new Vector3(.95f, .95f, .1f);
@@ -374,7 +376,7 @@ public class DatabaseController : MonoBehaviour
         TGO.GetComponent<UnitController>().UnitMovable = false;
         TGO.GetComponent<UnitController>().UnitMoved = true;
         TGO.GetComponent<UnitController>().CanMoveAndAttack = UnitDictionary[index].CanMoveAndAttack;
-        //GameControllerScript.instance.AddUnitsToDictionary(TGO);
+        //GCS.AddUnitsToDictionary(TGO);
         TGO.GetComponent<UnitController>().TeamSpriteController();
         return TGO;
     } //used to spawn units form database
@@ -391,7 +393,7 @@ public class DatabaseController : MonoBehaviour
         GameObject TGO = new GameObject();
         TGO.name = BuildingDictionary[index].Title;
         TGO.AddComponent<SpriteRenderer>();
-        TGO.GetComponent<SpriteRenderer>().sprite = loadSprite(BuildingDictionary[index].ArtworkDirectory[0]);
+        TGO.GetComponent<SpriteRenderer>().sprite = loadSprite(BuildingDictionary[index].ArtworkDirectory[0], BuildingDictionary[index].PixelsPerUnit);
         TGO.GetComponent<SpriteRenderer>().sortingLayerName = BuildingDictionary[index].Type;
         TGO.AddComponent<BoxCollider>();
         TGO.GetComponent<BoxCollider>().size = new Vector3(.95f, .95f, .1f);
@@ -419,7 +421,7 @@ public class DatabaseController : MonoBehaviour
     /// </summary>
     /// <param name="FilePath">Location to get file from</param>
     /// <returns></returns>
-    public Sprite loadSprite(string FilePath)
+    public Sprite loadSprite(string FilePath, int PPU)
     {
         Texture2D Tex2D;
         Sprite TempSprite;
@@ -428,9 +430,9 @@ public class DatabaseController : MonoBehaviour
         if (File.Exists(FilePath))
         {
             FileData = File.ReadAllBytes(FilePath);
-            Tex2D = new Texture2D(2, 2); // Create new "empty" texture
+            Tex2D = new Texture2D(64,64); // Create new "empty" texture, this requires the size to be added, it get changed in teh next method
             Tex2D.LoadImage(FileData);         // Load the imagedata into the texture (size is set automatically)
-            TempSprite = Sprite.Create(Tex2D, new Rect(0, 0, Tex2D.width, Tex2D.height), new Vector2(0.5f, 0.5f), 64);
+            TempSprite = Sprite.Create(Tex2D, new Rect(0, 0, Tex2D.width, Tex2D.height), new Vector2(0.5f, 0.5f), PPU);
             return TempSprite;
         }
         return null;
@@ -449,6 +451,7 @@ public class Terrain
     public string Slug;
     public string Type;
     public int Weight;
+    public int PixelsPerUnit;
     public bool BlocksSight;
     public bool Overlays;
     public bool Connectable;
@@ -512,6 +515,7 @@ public class Unit
     public List<string> ArtworkDirectory;
     public int Team;
     public int ConversionSpeed;
+    public int PixelsPerUnit;
     public bool CanConvert;
     public bool CanMoveAndAttack;
     public int SightRange;
@@ -551,6 +555,7 @@ public class Building
     public List<string> ArtworkDirectory;
     public int Team;
     public int Health;
+    public int PixelsPerUnit;
     public bool Capturable;
     public bool CanBuildUnits;
     public bool BlocksSight;
@@ -585,6 +590,7 @@ public class MouseOverlays
     public string Title;
     public string Slug;
     public string Type;
+    public int PixelsPerUnit;
     public List<string> ArtworkDirectory;
 
     /// <summary>
@@ -613,6 +619,7 @@ public class FogOfWar
     public int ID;
     public string Title;
     public string Slug;
+    public int PixelsPerUnit;
     public List<string> ArtworkDirectory;
 
     /// <summary>
@@ -652,6 +659,7 @@ public class Hero
     public string Description;
     public string Type;
     public string Mod;
+    public int PixelsPerUnit;
     public int Attack;
     public int Defence;
     public int Health;
@@ -699,6 +707,7 @@ public class Spell
     public string Description;
     public string Type;
     public string Mod;
+    public int PixelsPerUnit;
     public List<string> Effects;
     public int ManaCost;
     public int Range;
@@ -716,6 +725,7 @@ public class Race
     public string Description;
     public string Type;
     public string Mod;
+    public int PixelsPerUnit;
     public List<string> UsableUnits;
 }
 

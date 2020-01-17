@@ -2,6 +2,7 @@
   "ID": 0,
   "Health": 20,
   "Title": "MainBase",
+  "PixelsPerUnit": 64,
   "Walkable": true,
   "Description": "Main base, capture this to win",
   "DefenceBonus": 30,

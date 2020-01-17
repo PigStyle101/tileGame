@@ -31,9 +31,13 @@ public class BuildingController : MonoBehaviour
     private PlaySceneCamController PSCC;
     [HideInInspector]
     public int DictionaryReferance;
+    private GameControllerScript GCS;
+    private DatabaseController DBC;
 
     private void Awake()
     {
+        DBC = DatabaseController.instance;
+        GCS = GameControllerScript.instance;
         if (SceneManager.GetActiveScene().name == "MapEditorScene")
         {
             MEMCC = GameObject.Find("MainCamera").GetComponent<MapEditMenueCamController>();
@@ -43,15 +47,7 @@ public class BuildingController : MonoBehaviour
 
     public void TeamSpriteUpdater()
     {
-
-        foreach (var kvp in DatabaseController.instance.BuildingDictionary)
-        {
-            if (gameObject.name == kvp.Value.Title)
-            {
-                gameObject.GetComponent<SpriteRenderer>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.BuildingDictionary[kvp.Value.ID].ArtworkDirectory[Team]);
-            }
-        }
-
+        gameObject.GetComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.BuildingDictionary[DictionaryReferance].ArtworkDirectory[Team], DBC.BuildingDictionary[DictionaryReferance].PixelsPerUnit);
     }
 
     public void ChangeBuilding()
@@ -64,18 +60,18 @@ public class BuildingController : MonoBehaviour
         else
         {
             ////Debug.log("Changing tile to " + kvp.Value.Title);
-            gameObject.name = DatabaseController.instance.BuildingDictionary[MEMCC.SelectedButtonDR].Title;//change name of tile
+            gameObject.name = DBC.BuildingDictionary[MEMCC.SelectedButtonDR].Title;//change name of tile
             Team = MEMCC.SelectedTeam;
-            CanBuildUnits = DatabaseController.instance.BuildingDictionary[MEMCC.SelectedButtonDR].CanBuildUnits;
-            BuildableUnits = DatabaseController.instance.BuildingDictionary[MEMCC.SelectedButtonDR].BuildableUnits;
-            ID = DatabaseController.instance.BuildingDictionary[MEMCC.SelectedButtonDR].ID;
+            CanBuildUnits = DBC.BuildingDictionary[MEMCC.SelectedButtonDR].CanBuildUnits;
+            BuildableUnits = DBC.BuildingDictionary[MEMCC.SelectedButtonDR].BuildableUnits;
+            ID = DBC.BuildingDictionary[MEMCC.SelectedButtonDR].ID;
             DictionaryReferance = MEMCC.SelectedButtonDR;
-            gameObject.GetComponent<SpriteRenderer>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.BuildingDictionary[MEMCC.SelectedButtonDR].ArtworkDirectory[0]); //change sprite of tile
+            gameObject.GetComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.BuildingDictionary[MEMCC.SelectedButtonDR].ArtworkDirectory[0], DBC.BuildingDictionary[MEMCC.SelectedButtonDR].PixelsPerUnit); //change sprite of tile
 
-            if (GameControllerScript.instance.UnitPos.ContainsKey(gameObject.transform.position) && DatabaseController.instance.BuildingDictionary[DictionaryReferance].HeroSpawnPoint)
+            if (GCS.UnitPos.ContainsKey(gameObject.transform.position) && DBC.BuildingDictionary[DictionaryReferance].HeroSpawnPoint)
             {
-                Destroy(GameControllerScript.instance.UnitPos[gameObject.transform.position]);
-                GameControllerScript.instance.UnitPos.Remove(gameObject.transform.position);
+                Destroy(GCS.UnitPos[gameObject.transform.position]);
+                GCS.UnitPos.Remove(gameObject.transform.position);
                 MEMCC.CurrentSelectedButtonText.text = "Cannot have unit on hero spawn point";
             }
         }
@@ -83,34 +79,30 @@ public class BuildingController : MonoBehaviour
 
     public void BuildingRoundUpdater()
     {
-        foreach (var kvp in GameControllerScript.instance.UnitPos)
+        if (GCS.UnitPos.ContainsKey((Vector2)gameObject.transform.position))
         {
-            if (kvp.Key == (Vector2)gameObject.transform.position)
-            {
-                Occupied = true;
-                break;
-            }
-            else
-            {
-                Occupied = false;
-            }
+            Occupied = true;
+        }
+        else
+        {
+            Occupied = false;
         }
     }
 
     public void BuildingAiController()
     {
-        foreach(var kvp in DatabaseController.instance.UnitDictionary)
+        foreach(var kvp in DBC.UnitDictionary)
         {
-            if (kvp.Value.Cost <= GameControllerScript.instance.TeamList[GameControllerScript.instance.CurrentTeamsTurn.Team].Gold && CanBuild && !Occupied && CanBuildUnits)
+            if (kvp.Value.Cost <= GCS.TeamList[GCS.CurrentTeamsTurn.Team].Gold && CanBuild && !Occupied && CanBuildUnits)
             {
-                GameObject GO = DatabaseController.instance.CreateAndSpawnUnit(gameObject.transform.position, kvp.Value.ID, Team);
-                GameControllerScript.instance.AddUnitsToDictionary(GO);
+                GameObject GO = DBC.CreateAndSpawnUnit(gameObject.transform.position, kvp.Value.ID, Team);
+                GCS.AddUnitsToDictionary(GO);
                 GO.GetComponent<UnitController>().UnitMovable = false;
-                foreach (var unit in GameControllerScript.instance.UnitPos)
+                foreach (var unit in GCS.UnitPos)
                 {
                     unit.Value.GetComponent<UnitController>().GetTileValues();
                 }
-                GameControllerScript.instance.TeamList[GameControllerScript.instance.CurrentTeamsTurn.Team].Gold = GameControllerScript.instance.TeamList[GameControllerScript.instance.CurrentTeamsTurn.Team].Gold - kvp.Value.Cost;
+                GCS.TeamList[GCS.CurrentTeamsTurn.Team].Gold = GCS.TeamList[GCS.CurrentTeamsTurn.Team].Gold - kvp.Value.Cost;
                 PSCC = GameObject.Find("MainCamera").GetComponent<PlaySceneCamController>();
                 PSCC.UpdateGoldThings();
                 CanBuild = false;
@@ -120,9 +112,9 @@ public class BuildingController : MonoBehaviour
 
     public void HealIfFriendlyUnitOnBuilding()
     {
-        foreach (var u in GameControllerScript.instance.UnitPos)
+        if (GCS.UnitPos.ContainsKey(gameObject.transform.position))
         {
-            if (Health < MaxHealth && u.Key == (Vector2)gameObject.transform.position && u.Value.GetComponent<UnitController>().Team == Team)
+            if (Health < MaxHealth && GCS.UnitPos[gameObject.transform.position].GetComponent<UnitController>().Team == Team)
             {
                 Health = Health + 1;
                 gameObject.GetComponentInChildren<Text>().text = Health.ToString();

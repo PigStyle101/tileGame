@@ -64,9 +64,14 @@ public class PlaySceneCamController : MonoBehaviour
     public bool BuildingRayBool;
     private string UnitSelectedForBuildingFromKeyboardShortcuts = "NONE";
     private int MovableUnits;
+    private int SelectedUnitDR;
+    private GameControllerScript GCS;
+    private DatabaseController DBC;
 
     private void Awake()
     {
+        DBC = DatabaseController.instance;
+        GCS = GameControllerScript.instance;
         GetObjectReferances();
     }
 
@@ -144,12 +149,12 @@ public class PlaySceneCamController : MonoBehaviour
 
         Vector3 pos = Camera.main.ScreenToViewportPoint(Input.mousePosition - dragOrigin);
 
-        Vector3 move = new Vector3(pos.x * DatabaseController.instance.dragSpeedOffset * DatabaseController.instance.DragSpeed * -1, pos.y * DatabaseController.instance.dragSpeedOffset * DatabaseController.instance.DragSpeed * -1, 0);
+        Vector3 move = new Vector3(pos.x * DBC.dragSpeedOffset * DBC.DragSpeed * -1, pos.y * DBC.dragSpeedOffset * DBC.DragSpeed * -1, 0);
 
         transform.Translate(move, Space.World);
 
-        if (gameObject.transform.position.x > GameControllerScript.instance.PlayMapSize) { gameObject.transform.position = new Vector3(GameControllerScript.instance.PlayMapSize, transform.position.y, transform.position.z); }
-        if (gameObject.transform.position.y > GameControllerScript.instance.PlayMapSize) { gameObject.transform.position = new Vector3(transform.position.x, GameControllerScript.instance.PlayMapSize, transform.position.z); }
+        if (gameObject.transform.position.x > GCS.PlayMapSize) { gameObject.transform.position = new Vector3(GCS.PlayMapSize, transform.position.y, transform.position.z); }
+        if (gameObject.transform.position.y > GCS.PlayMapSize) { gameObject.transform.position = new Vector3(transform.position.x, GCS.PlayMapSize, transform.position.z); }
         if (gameObject.transform.position.x < 0) { gameObject.transform.position = new Vector3(0, transform.position.y, transform.position.z); }
         if (gameObject.transform.position.y < 0) { gameObject.transform.position = new Vector3(transform.position.x, 0, transform.position.z); }
 
@@ -161,13 +166,13 @@ public class PlaySceneCamController : MonoBehaviour
     private void MoveScreenZ()
     {
         int z = new int();
-        if (Input.GetAxis("Mouse ScrollWheel") > 0) { z = DatabaseController.instance.scrollSpeed; }
-        if (Input.GetAxis("Mouse ScrollWheel") < 0) { z = -DatabaseController.instance.scrollSpeed; }
+        if (Input.GetAxis("Mouse ScrollWheel") > 0) { z = DBC.scrollSpeed; }
+        if (Input.GetAxis("Mouse ScrollWheel") < 0) { z = -DBC.scrollSpeed; }
 
         transform.Translate(new Vector3(0, 0, z), Space.World);
 
         if (gameObject.transform.position.z > -1) { gameObject.transform.position = new Vector3(transform.position.x, transform.position.y, -1); }
-        if (gameObject.transform.position.z < -GameControllerScript.instance.PlayMapSize * 2) { gameObject.transform.position = new Vector3(transform.position.x, transform.position.y, -GameControllerScript.instance.PlayMapSize * 2); }
+        if (gameObject.transform.position.z < -GCS.PlayMapSize * 2) { gameObject.transform.position = new Vector3(transform.position.x, transform.position.y, -GCS.PlayMapSize * 2); }
 
     }//controls camera z movement
 
@@ -177,12 +182,12 @@ public class PlaySceneCamController : MonoBehaviour
     public void EndTurnButtonClicked()
     {
         BuildingPanel.SetActive(false);
-        if (GameControllerScript.instance.SelectedUnitPlayScene != null)
+        if (GCS.SelectedUnitPlayScene != null)
         {
-            GameControllerScript.instance.WaitActionPlayScene();
+            GCS.WaitActionPlayScene();
         }
-        GameControllerScript.instance.PlaySceneTurnChanger();
-        UpdateTurnImageColor(GameControllerScript.instance.CurrentTeamsTurn.Team);
+        GCS.PlaySceneTurnChanger();
+        UpdateTurnImageColor(GCS.CurrentTeamsTurn.Team);
         EventSystem.current.SetSelectedGameObject(null);
         MoveableUnitCount();
     }
@@ -209,7 +214,7 @@ public class PlaySceneCamController : MonoBehaviour
     /// </summary>
     public void WaitButtonClicked()
     {
-        GameControllerScript.instance.WaitActionPlayScene();
+        GCS.WaitActionPlayScene();
         MoveableUnitCount();
     }
 
@@ -218,7 +223,7 @@ public class PlaySceneCamController : MonoBehaviour
     /// </summary>
     public void AttackButtonClicked()
     {
-        GameControllerScript.instance.AttackActionPlayScene();
+        GCS.AttackActionPlayScene();
         AttackButtonSelected = true;
 
     }
@@ -228,14 +233,14 @@ public class PlaySceneCamController : MonoBehaviour
     /// </summary>
     public void CancelButtonClicked()
     {
-        GameControllerScript.instance.CancelActionPlayScene();
+        GCS.CancelActionPlayScene();
         AttackButtonSelected = false;
 
     }
 
     public void CaptureButtonClicked()
     {
-        GameControllerScript.instance.CaptureActionPlayScene();
+        GCS.CaptureActionPlayScene();
         MoveableUnitCount();
     }
 
@@ -270,54 +275,54 @@ public class PlaySceneCamController : MonoBehaviour
                 for (int i = 0; i < hits.Length; i++) // GO THROUGH THEM RAYS
                 {
                     RaycastHit hit = hits[i];
-                    if (hit.transform.tag == DatabaseController.instance.TerrainDictionary[0].Type && !hit.transform.GetComponent<TerrainController>().FogOfWarBool) //did we hit a terrain?
+                    if (hit.transform.tag == DBC.TerrainDictionary[0].Type && !hit.transform.GetComponent<TerrainController>().FogOfWarBool) //did we hit a terrain?
                     {
-                        foreach (var kvp in DatabaseController.instance.TerrainDictionary)
+                        foreach (var kvp in DBC.TerrainDictionary)
                         {
                             if (kvp.Value.Title == hit.transform.name)
                             {
-                                TerrainImage.GetComponent<Image>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.TerrainDictionary[kvp.Key].ArtworkDirectory[0]);
+                                TerrainImage.GetComponent<Image>().sprite = DBC.loadSprite(DBC.TerrainDictionary[kvp.Key].ArtworkDirectory[0],DBC.TerrainDictionary[kvp.Key].PixelsPerUnit);
                                 TerrainText.GetComponent<Text>().text = kvp.Value.Title;
                                 TerrainDescription.GetComponent<Text>().text = kvp.Value.Description;
                                 TerrainToolTipData.GetComponent<Text>().text = kvp.Value.DefenceBonus.ToString() + Environment.NewLine + kvp.Value.Walkable.ToString() + Environment.NewLine + kvp.Value.Weight.ToString();
                             }
                         }
                     }
-                    if (hit.transform.tag == DatabaseController.instance.UnitDictionary[0].Type && !GameControllerScript.instance.TilePos[(Vector2)hit.transform.position].GetComponent<TerrainController>().FogOfWarBool) //did we hit a unit?
+                    if (hit.transform.tag == DBC.UnitDictionary[0].Type && !GCS.TilePos[(Vector2)hit.transform.position].GetComponent<TerrainController>().FogOfWarBool) //did we hit a unit?
                     {
-                        foreach (var kvp in DatabaseController.instance.UnitDictionary)
+                        foreach (var kvp in DBC.UnitDictionary)
                         {
                             if (kvp.Value.Title == hit.transform.name)
                             {
-                                UnitImage.GetComponent<Image>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.UnitDictionary[kvp.Key].ArtworkDirectory[0]);
+                                UnitImage.GetComponent<Image>().sprite = DBC.loadSprite(DBC.UnitDictionary[kvp.Key].ArtworkDirectory[0],DBC.UnitDictionary[kvp.Key].PixelsPerUnit);
                                 UnitText.GetComponent<Text>().text = kvp.Value.Title;
                                 UnitDescription.GetComponent<Text>().text = kvp.Value.Description;
                                 UnitToolTipData.GetComponent<Text>().text = kvp.Value.Attack.ToString() + Environment.NewLine + kvp.Value.Defence.ToString() + Environment.NewLine + kvp.Value.AttackRange.ToString() + Environment.NewLine + kvp.Value.MovePoints.ToString();
                             }
                         }
                     }
-                    if (hit.transform.tag == DatabaseController.instance.BuildingDictionary[0].Type && !GameControllerScript.instance.TilePos[(Vector2)hit.transform.position].GetComponent<TerrainController>().FogOfWarBool) //did we hit a building?
+                    if (hit.transform.tag == DBC.BuildingDictionary[0].Type && !GCS.TilePos[(Vector2)hit.transform.position].GetComponent<TerrainController>().FogOfWarBool) //did we hit a building?
                     {
-                        foreach (var kvp in DatabaseController.instance.BuildingDictionary)
+                        foreach (var kvp in DBC.BuildingDictionary)
                         {
                             if (kvp.Value.Title == hit.transform.name)
                             {
-                                BuildingImage.GetComponent<Image>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.BuildingDictionary[kvp.Key].ArtworkDirectory[0]);
+                                BuildingImage.GetComponent<Image>().sprite = DBC.loadSprite(DBC.BuildingDictionary[kvp.Key].ArtworkDirectory[0],DBC.BuildingDictionary[kvp.Key].PixelsPerUnit);
                                 BuildingText.GetComponent<Text>().text = kvp.Value.Title;
                                 BuildingDescription.GetComponent<Text>().text = kvp.Value.Description;
                                 BuildingToolTipData.GetComponent<Text>().text = kvp.Value.DefenceBonus.ToString();
                             }
                         }
                     }
-                    if (hit.transform.tag == DatabaseController.instance.BuildingDictionary[0].Type)
+                    if (hit.transform.tag == DBC.BuildingDictionary[0].Type)
                     {
                         if (!BuildingRayBool)
                         {
                             BuildingRayBool = true;
                             //Debug.log("1");
-                            if (!hit.transform.GetComponent<BuildingController>().Occupied && hit.transform.GetComponent<BuildingController>().CanBuild && hit.transform.GetComponent<BuildingController>().Team == GameControllerScript.instance.CurrentTeamsTurn.Team)
+                            if (!hit.transform.GetComponent<BuildingController>().Occupied && hit.transform.GetComponent<BuildingController>().CanBuild && hit.transform.GetComponent<BuildingController>().Team == GCS.CurrentTeamsTurn.Team)
                             {
-                                if (GameControllerScript.instance.SelectedUnitPlayScene == null && hit.transform.GetComponent<BuildingController>().CanBuildUnits)
+                                if (GCS.SelectedUnitPlayScene == null && hit.transform.GetComponent<BuildingController>().CanBuildUnits)
                                 {
                                     //Debug.log("1.1");
                                     AddUnitButtonsToBuildContent(hit.transform.GetComponent<BuildingController>());
@@ -332,7 +337,7 @@ public class PlaySceneCamController : MonoBehaviour
                             }
                         }
                     }
-                    else if (hit.transform.tag != DatabaseController.instance.BuildingDictionary[0].Type && !BuildingRayBool)
+                    else if (hit.transform.tag != DBC.BuildingDictionary[0].Type && !BuildingRayBool)
                     {
                         //Debug.log("2");
                         BuildingPanel.SetActive(false);
@@ -356,15 +361,17 @@ public class PlaySceneCamController : MonoBehaviour
             Destroy(ContentWindowBuilding.transform.GetChild(i).gameObject);
         }
         //Debug.log("Adding Unit buttons to content window");
-        foreach (KeyValuePair<int, Unit> kvp in DatabaseController.instance.UnitDictionary) //adds a button for each Unit in the database
+        foreach (KeyValuePair<int, Unit> kvp in DBC.UnitDictionary) //adds a button for each Unit in the database
         {
             if (kvp.Value.Mod == BuildingHit.Mod && BuildingHit.BuildableUnits.Contains(kvp.Value.Title))
             {
                 GameObject tempbutton = Instantiate(BuildingButtonPrefab, ContentWindowBuilding.transform); //create button and set its parent to content
                 tempbutton.name = kvp.Value.Title; //change name
                 tempbutton.transform.GetChild(0).GetComponent<Text>().text = kvp.Value.Title + System.Environment.NewLine + kvp.Value.Cost; //change text on button to match sprite and create new line and add cost
-                tempbutton.GetComponent<Image>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.UnitDictionary[kvp.Key].ArtworkDirectory[0]); //set sprite
+                tempbutton.GetComponent<Image>().sprite = DBC.loadSprite(DBC.UnitDictionary[kvp.Key].ArtworkDirectory[0],DBC.UnitDictionary[kvp.Key].PixelsPerUnit); //set sprite
                 tempbutton.GetComponent<Button>().onClick.AddListener(CreateUnitController); //adds method to button clicked 
+                tempbutton.AddComponent<ButtonProperties>();
+                tempbutton.GetComponent<ButtonProperties>().DictionaryReferance = kvp.Key;
             }
         }
 
@@ -375,80 +382,72 @@ public class PlaySceneCamController : MonoBehaviour
     /// </summary>
     public void CreateUnitController()
     {
-        foreach (var kvp in DatabaseController.instance.UnitDictionary) //check though dictionary to see what unit to spawn
+        if (EventSystem.current.currentSelectedGameObject != null) //make sure player clicked on the unit button and did not use keyboard shortcut
         {
-            if (EventSystem.current.currentSelectedGameObject != null) //make sure player clicked on the unit button and did not use keyboard shortcut
+            SelectedUnitDR = EventSystem.current.currentSelectedGameObject.GetComponent<ButtonProperties>().DictionaryReferance;
+            if (GCS.TeamList[GCS.CurrentTeamsTurn.Team].Gold >= DBC.UnitDictionary[SelectedUnitDR].Cost) //can they afford this unit?
             {
-                if (kvp.Value.Title == EventSystem.current.currentSelectedGameObject.name)
+                GameObject GO = DBC.CreateAndSpawnUnit(CurrentlySelectedBuilding, DBC.UnitDictionary[SelectedUnitDR].ID, GCS.CurrentTeamsTurn.Team);
+                GCS.AddUnitsToDictionary(GO);
+                GO.GetComponent<UnitController>().UnitMovable = false;
+                foreach (var unit in GCS.UnitPos)
                 {
-                    if (GameControllerScript.instance.TeamList[GameControllerScript.instance.CurrentTeamsTurn.Team].Gold >= kvp.Value.Cost) //can they afford this unit?
-                    {
-                        GameObject GO = DatabaseController.instance.CreateAndSpawnUnit(CurrentlySelectedBuilding, kvp.Value.ID, GameControllerScript.instance.CurrentTeamsTurn.Team);
-                        GameControllerScript.instance.AddUnitsToDictionary(GO);
-                        GO.GetComponent<UnitController>().UnitMovable = false;
-                        foreach (var unit in GameControllerScript.instance.UnitPos)
-                        {
-                            unit.Value.GetComponent<UnitController>().GetTileValues();
-                            unit.Value.GetComponent<UnitController>().GetSightTiles();
-                        }
-                        BuildingPanel.SetActive(false);
-                        foreach (var b in GameControllerScript.instance.BuildingPos)
-                        {
-                            if ((Vector2)b.Value.transform.position == CurrentlySelectedBuilding)
-                            {
-                                b.Value.GetComponent<BuildingController>().CanBuild = false;
-                            }
-                        }
-                        foreach (var t in GameControllerScript.instance.TilePos)
-                        {
-                            t.Value.GetComponent<TerrainController>().FogOfWarController();
-                        }
-                        GameControllerScript.instance.TeamList[GameControllerScript.instance.CurrentTeamsTurn.Team].Gold = GameControllerScript.instance.TeamList[GameControllerScript.instance.CurrentTeamsTurn.Team].Gold - kvp.Value.Cost;
-                        UpdateGoldThings();
-                        FeedBackText.text = "";
-                    }
-                    else
-                    {
-                        FeedBackText.text = "Not enough gold to buy that unit";
-                    }
-                } 
-            }
-            else //keyboard shortcut was used
-            {
-                if (kvp.Value.Title == UnitSelectedForBuildingFromKeyboardShortcuts)
+                    unit.Value.GetComponent<UnitController>().GetTileValues();
+                    unit.Value.GetComponent<UnitController>().GetSightTiles();
+                }
+                BuildingPanel.SetActive(false);
+                foreach (var b in GCS.BuildingPos)
                 {
-                    if (GameControllerScript.instance.TeamList[GameControllerScript.instance.CurrentTeamsTurn.Team].Gold >= kvp.Value.Cost)
+                    if ((Vector2)b.Value.transform.position == CurrentlySelectedBuilding)
                     {
-                        GameObject GO = DatabaseController.instance.CreateAndSpawnUnit(CurrentlySelectedBuilding, kvp.Value.ID, GameControllerScript.instance.CurrentTeamsTurn.Team);
-                        GameControllerScript.instance.AddUnitsToDictionary(GO);
-                        GO.GetComponent<UnitController>().UnitMovable = false;
-                        foreach (var unit in GameControllerScript.instance.UnitPos)
-                        {
-                            unit.Value.GetComponent<UnitController>().GetTileValues();
-                            unit.Value.GetComponent<UnitController>().GetSightTiles();
-                        }
-                        BuildingPanel.SetActive(false);
-                        foreach (var b in GameControllerScript.instance.BuildingPos)
-                        {
-                            if ((Vector2)b.Value.transform.position == CurrentlySelectedBuilding)
-                            {
-                                b.Value.GetComponent<BuildingController>().CanBuild = false;
-                            }
-                        }
-                        foreach (var t in GameControllerScript.instance.TilePos)
-                        {
-                            t.Value.GetComponent<TerrainController>().FogOfWarController();
-                        }
-                        GameControllerScript.instance.TeamList[GameControllerScript.instance.CurrentTeamsTurn.Team].Gold = GameControllerScript.instance.TeamList[GameControllerScript.instance.CurrentTeamsTurn.Team].Gold - kvp.Value.Cost;
-                        UpdateGoldThings();
-                        UnitSelectedForBuildingFromKeyboardShortcuts = "NONE";
-                        FeedBackText.text = "";
-                    }
-                    else
-                    {
-                        FeedBackText.text = "Not enough gold to buy that unit";
+                        b.Value.GetComponent<BuildingController>().CanBuild = false;
                     }
                 }
+                foreach (var t in GCS.TilePos)
+                {
+                    t.Value.GetComponent<TerrainController>().FogOfWarController();
+                }
+                GCS.TeamList[GCS.CurrentTeamsTurn.Team].Gold = GCS.TeamList[GCS.CurrentTeamsTurn.Team].Gold - DBC.UnitDictionary[SelectedUnitDR].Cost;
+                UpdateGoldThings();
+                FeedBackText.text = "";
+            }
+            else
+            {
+                FeedBackText.text = "Not enough gold to buy that unit";
+            }
+        }
+        else //keyboard shortcut was used
+        {
+            if (GCS.TeamList[GCS.CurrentTeamsTurn.Team].Gold >= DBC.UnitDictionary[SelectedUnitDR].Cost)
+            {
+                GameObject GO = DBC.CreateAndSpawnUnit(CurrentlySelectedBuilding, DBC.UnitDictionary[SelectedUnitDR].ID, GCS.CurrentTeamsTurn.Team);
+                GCS.AddUnitsToDictionary(GO);
+                GO.GetComponent<UnitController>().UnitMovable = false;
+                foreach (var unit in GCS.UnitPos)
+                {
+                    unit.Value.GetComponent<UnitController>().GetTileValues();
+                    unit.Value.GetComponent<UnitController>().GetSightTiles();
+                }
+                BuildingPanel.SetActive(false);
+                foreach (var b in GCS.BuildingPos)
+                {
+                    if ((Vector2)b.Value.transform.position == CurrentlySelectedBuilding)
+                    {
+                        b.Value.GetComponent<BuildingController>().CanBuild = false;
+                    }
+                }
+                foreach (var t in GCS.TilePos)
+                {
+                    t.Value.GetComponent<TerrainController>().FogOfWarController();
+                }
+                GCS.TeamList[GCS.CurrentTeamsTurn.Team].Gold = GCS.TeamList[GCS.CurrentTeamsTurn.Team].Gold - DBC.UnitDictionary[SelectedUnitDR].Cost;
+                UpdateGoldThings();
+                UnitSelectedForBuildingFromKeyboardShortcuts = "NONE";
+                FeedBackText.text = "";
+            }
+            else
+            {
+                FeedBackText.text = "Not enough gold to buy that unit";
             }
         }
     }
@@ -487,9 +486,9 @@ public class PlaySceneCamController : MonoBehaviour
         {
             Destroy(GO);
         }
-        GameControllerScript.instance.BuildingPos = new Dictionary<Vector2, GameObject>();
-        GameControllerScript.instance.TilePos = new Dictionary<Vector2, GameObject>();
-        GameControllerScript.instance.UnitPos = new Dictionary<Vector2, GameObject>();
+        GCS.BuildingPos = new Dictionary<Vector2, GameObject>();
+        GCS.TilePos = new Dictionary<Vector2, GameObject>();
+        GCS.UnitPos = new Dictionary<Vector2, GameObject>();
         SceneManager.LoadScene("MainMenuScene");
 
     }
@@ -499,7 +498,7 @@ public class PlaySceneCamController : MonoBehaviour
     /// </summary>
     public void ReplayButtonClicked()
     {
-        foreach(var t in GameControllerScript.instance.TeamList)
+        foreach(var t in GCS.TeamList)
         {
             if (t.Active)
             {
@@ -519,11 +518,11 @@ public class PlaySceneCamController : MonoBehaviour
         {
             Destroy(GO);
         }
-        GameControllerScript.instance.BuildingPos = new Dictionary<Vector2, GameObject>();
-        GameControllerScript.instance.TilePos = new Dictionary<Vector2, GameObject>();
-        GameControllerScript.instance.UnitPos = new Dictionary<Vector2, GameObject>();
-        GameControllerScript.instance.LoadMapPlayScene(GameControllerScript.instance.MapNameForPlayScene);
-        GameControllerScript.instance.PlaySceneNewGameInitalizer();
+        GCS.BuildingPos = new Dictionary<Vector2, GameObject>();
+        GCS.TilePos = new Dictionary<Vector2, GameObject>();
+        GCS.UnitPos = new Dictionary<Vector2, GameObject>();
+        GCS.LoadMapPlayScene(GCS.MapNameForPlayScene);
+        GCS.PlaySceneNewGameInitalizer();
         CurrentPlayerTurnImage.SetActive(true);
         EndTurnButton.SetActive(true);
         TooltipPanel.SetActive(true);
@@ -536,7 +535,7 @@ public class PlaySceneCamController : MonoBehaviour
     /// </summary>
     public void UpdateGoldThings()
     {
-        GoldText.text = "Gold:" + GameControllerScript.instance.TeamList[GameControllerScript.instance.CurrentTeamsTurn.Team].Gold.ToString();
+        GoldText.text = "Gold:" + GCS.TeamList[GCS.CurrentTeamsTurn.Team].Gold.ToString();
     }
 
     public void UpdateTurnImageColor(int team)
@@ -616,7 +615,7 @@ public class PlaySceneCamController : MonoBehaviour
             {
                 if (!Regex.IsMatch(SaveGameName, @"^[a-z][A-Z]+$"))
                 {
-                    GameControllerScript.instance.SaveGame(SaveGameName);
+                    GCS.SaveGame(SaveGameName);
                     FeedbackSaveMenu.text = "Saveing Game.";
                 }
                 else
@@ -635,7 +634,7 @@ public class PlaySceneCamController : MonoBehaviour
 
     public void MoveButtonClicked()
     {
-        GameControllerScript.instance.MoveActionPlayScene();
+        GCS.MoveActionPlayScene();
         MoveableUnitCount();
     }
 
@@ -644,7 +643,7 @@ public class PlaySceneCamController : MonoBehaviour
     /// </summary>
     public void KeyBoardShortcuts()
     {
-        if (Input.GetKeyDown(KeyCode.Q) && AttackButton.activeSelf)
+        if (Input.GetKeyDown(KeyCode.Q) && AttackButton.activeSelf && !MoveButton.activeSelf)
         {
             AttackButtonClicked();
         }
@@ -674,7 +673,7 @@ public class PlaySceneCamController : MonoBehaviour
             {
                 if (ContentWindowBuilding.transform.childCount > 0)
                 {
-                    UnitSelectedForBuildingFromKeyboardShortcuts = ContentWindowBuilding.transform.GetChild(0).name;
+                    SelectedUnitDR = ContentWindowBuilding.transform.GetChild(0).GetComponent<ButtonProperties>().DictionaryReferance;
                     CreateUnitController();
                 }
             }
@@ -682,7 +681,7 @@ public class PlaySceneCamController : MonoBehaviour
             {
                 if (ContentWindowBuilding.transform.childCount > 1)
                 {
-                    UnitSelectedForBuildingFromKeyboardShortcuts = ContentWindowBuilding.transform.GetChild(1).name;
+                    SelectedUnitDR = ContentWindowBuilding.transform.GetChild(1).GetComponent<ButtonProperties>().DictionaryReferance;
                     CreateUnitController();
                 }
             }
@@ -690,7 +689,7 @@ public class PlaySceneCamController : MonoBehaviour
             {
                 if (ContentWindowBuilding.transform.childCount > 2)
                 {
-                    UnitSelectedForBuildingFromKeyboardShortcuts = ContentWindowBuilding.transform.GetChild(2).name;
+                    SelectedUnitDR = ContentWindowBuilding.transform.GetChild(2).GetComponent<ButtonProperties>().DictionaryReferance;
                     CreateUnitController();
                 }
             }
@@ -698,7 +697,7 @@ public class PlaySceneCamController : MonoBehaviour
             {
                 if (ContentWindowBuilding.transform.childCount > 3)
                 {
-                    UnitSelectedForBuildingFromKeyboardShortcuts = ContentWindowBuilding.transform.GetChild(3).name;
+                    SelectedUnitDR = ContentWindowBuilding.transform.GetChild(3).GetComponent<ButtonProperties>().DictionaryReferance;
                     CreateUnitController();
                 }
             }
@@ -708,9 +707,9 @@ public class PlaySceneCamController : MonoBehaviour
     public void MoveableUnitCount()
     {
         MovableUnits = 0;
-        foreach (var kvp in GameControllerScript.instance.UnitPos)
+        foreach (var kvp in GCS.UnitPos)
         {
-            if (GameControllerScript.instance.CurrentTeamsTurn.Team == kvp.Value.GetComponent<UnitController>().Team)
+            if (GCS.CurrentTeamsTurn.Team == kvp.Value.GetComponent<UnitController>().Team)
             {
                 if (kvp.Value.GetComponent<UnitController>().UnitMovable)
                 {

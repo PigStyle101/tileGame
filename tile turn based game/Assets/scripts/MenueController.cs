@@ -48,6 +48,8 @@ public class MenueController : MonoBehaviour {
     private string CurrentlySellectedMod;
     private string SelectedMapForMapEditor;
     private List<GameObject> ModsInModContentWindow = new List<GameObject>();
+    private GameControllerScript GCS;
+    private DatabaseController DBC;
 
     // everything in here is pretty self explanitory.
     void Start()
@@ -57,6 +59,8 @@ public class MenueController : MonoBehaviour {
 
     private void Awake()
     {
+        DBC = DatabaseController.instance;
+        GCS = GameControllerScript.instance;
         GetObjectReferances();
     }
 
@@ -121,16 +125,16 @@ public class MenueController : MonoBehaviour {
     {
         if (ModsList.Count >=1)
         {
-            DatabaseController.instance.UnitDictionary.Clear();
-            DatabaseController.instance.BuildingDictionary.Clear();
-            DatabaseController.instance.TerrainDictionary.Clear();
-            DatabaseController.instance.ModsLoaded.Clear();
+            DBC.UnitDictionary.Clear();
+            DBC.BuildingDictionary.Clear();
+            DBC.TerrainDictionary.Clear();
+            DBC.ModsLoaded.Clear();
             foreach (string Mod in ModsList)
             {
-                DatabaseController.instance.GetTerrianJsons(Mod);
-                DatabaseController.instance.GetUnitJsons(Mod);
-                DatabaseController.instance.GetBuildingJsons(Mod);
-                DatabaseController.instance.ModsLoaded.Add(Mod);
+                DBC.GetTerrianJsons(Mod);
+                DBC.GetUnitJsons(Mod);
+                DBC.GetBuildingJsons(Mod);
+                DBC.ModsLoaded.Add(Mod);
             }
             MainMenuePanel.SetActive(true);
             MapEditorMenuePanel.SetActive(false);
@@ -212,7 +216,7 @@ public class MenueController : MonoBehaviour {
         {
             if (tempMapSize >= 10 && tempMapSize <= 100)
             {
-                GameControllerScript.instance.CreateNewMapForMapEditor(tempMapSize);
+                GCS.CreateNewMapForMapEditor(tempMapSize);
             }
             else
             {
@@ -292,8 +296,8 @@ public class MenueController : MonoBehaviour {
     {
         if (SaveGameSelectedString != null)
         {
-            GameControllerScript.instance.PlaySceneLoadStatus = "SavedGame";
-            GameControllerScript.instance.MapNameForPlayScene = SaveGameSelectedString;
+            GCS.PlaySceneLoadStatus = "SavedGame";
+            GCS.MapNameForPlayScene = SaveGameSelectedString;
             UnityEngine.SceneManagement.SceneManager.LoadScene("PlayScene");
             //Debug.Log("Loading");
         }
@@ -306,7 +310,7 @@ public class MenueController : MonoBehaviour {
     public void StartGameButtonClickedNewGamePanel()
     {
         int aiCount = 0;
-        foreach(var t in GameControllerScript.instance.TeamList)
+        foreach(var t in GCS.TeamList)
         {
             if (t.IsAi)
             {
@@ -314,14 +318,14 @@ public class MenueController : MonoBehaviour {
             }
         }
         List<TeamStuff> TempTeamList = new List<TeamStuff>();
-        foreach(var t in GameControllerScript.instance.TeamList)
+        foreach(var t in GCS.TeamList)
         {
             if (t.Active)
             {
                 TempTeamList.Add(t);
             }
         }
-        TempTeamList.RemoveAll(GameControllerScript.instance.TeamIsNotActive);
+        TempTeamList.RemoveAll(GCS.TeamIsNotActive);
         if (aiCount == TempTeamList.Count)
         {
             FeedBackNewGame.text = "Cannot start a game with all ai";
@@ -329,7 +333,7 @@ public class MenueController : MonoBehaviour {
         else
         {
             UnityEngine.SceneManagement.SceneManager.LoadScene("PlayScene");
-            GameControllerScript.instance.PlaySceneLoadStatus = "NewGame";
+            GCS.PlaySceneLoadStatus = "NewGame";
         }
     }
 
@@ -404,12 +408,12 @@ public class MenueController : MonoBehaviour {
 
     public void MapSelectedNewGame()
     {
-        GameControllerScript.instance.MapNameForPlayScene = EventSystem.current.currentSelectedGameObject.name;
-        StreamReader SR = new StreamReader(Application.dataPath + "/StreamingAssets/Maps/" + GameControllerScript.instance.MapNameForPlayScene + ".json");
+        GCS.MapNameForPlayScene = EventSystem.current.currentSelectedGameObject.name;
+        StreamReader SR = new StreamReader(Application.dataPath + "/StreamingAssets/Maps/" + GCS.MapNameForPlayScene + ".json");
         string tempstring = SR.ReadToEnd();
         Map Load = JsonUtility.FromJson<Map>(tempstring);
-        GameControllerScript.instance.TeamList = Load.Teamlist;
-        if (GameControllerScript.instance.TeamList[1].Active)
+        GCS.TeamList = Load.Teamlist;
+        if (GCS.TeamList[1].Active)
         {
             Team1Image.SetActive(true);
             Team1Dropdown.SetActive(true);
@@ -419,7 +423,7 @@ public class MenueController : MonoBehaviour {
             Team1Image.SetActive(false);
             Team1Dropdown.SetActive(false);
         }
-        if (GameControllerScript.instance.TeamList[2].Active)
+        if (GCS.TeamList[2].Active)
         {
             Team2Image.SetActive(true);
             Team2Dropdown.SetActive(true);
@@ -429,7 +433,7 @@ public class MenueController : MonoBehaviour {
             Team2Image.SetActive(false);
             Team2Dropdown.SetActive(false);
         }
-        if (GameControllerScript.instance.TeamList[3].Active)
+        if (GCS.TeamList[3].Active)
         {
             Team3Image.SetActive(true);
             Team3Dropdown.SetActive(true);
@@ -439,7 +443,7 @@ public class MenueController : MonoBehaviour {
             Team3Image.SetActive(false);
             Team3Dropdown.SetActive(false);
         }
-        if (GameControllerScript.instance.TeamList[4].Active)
+        if (GCS.TeamList[4].Active)
         {
             Team4Image.SetActive(true);
             Team4Dropdown.SetActive(true);
@@ -449,7 +453,7 @@ public class MenueController : MonoBehaviour {
             Team4Image.SetActive(false);
             Team4Dropdown.SetActive(false);
         }
-        if (GameControllerScript.instance.TeamList[5].Active)
+        if (GCS.TeamList[5].Active)
         {
             Team5Image.SetActive(true);
             Team5Dropdown.SetActive(true);
@@ -459,7 +463,7 @@ public class MenueController : MonoBehaviour {
             Team5Image.SetActive(false);
             Team5Dropdown.SetActive(false);
         }
-        if (GameControllerScript.instance.TeamList[6].Active)
+        if (GCS.TeamList[6].Active)
         {
             Team6Image.SetActive(true);
             Team6Dropdown.SetActive(true);
@@ -469,7 +473,7 @@ public class MenueController : MonoBehaviour {
             Team6Image.SetActive(false);
             Team6Dropdown.SetActive(false);
         }
-        if (GameControllerScript.instance.TeamList[7].Active)
+        if (GCS.TeamList[7].Active)
         {
             Team7Image.SetActive(true);
             Team7Dropdown.SetActive(true);
@@ -479,7 +483,7 @@ public class MenueController : MonoBehaviour {
             Team7Image.SetActive(false);
             Team7Dropdown.SetActive(false);
         }
-        if (GameControllerScript.instance.TeamList[8].Active)
+        if (GCS.TeamList[8].Active)
         {
             Team8Image.SetActive(true);
             Team8Dropdown.SetActive(true);
@@ -489,7 +493,7 @@ public class MenueController : MonoBehaviour {
             Team8Image.SetActive(false);
             Team8Dropdown.SetActive(false);
         }
-        if (GameControllerScript.instance.TeamList[9].Active)
+        if (GCS.TeamList[9].Active)
         {
             Team9Image.SetActive(true);
             Team9Dropdown.SetActive(true);
@@ -510,7 +514,7 @@ public class MenueController : MonoBehaviour {
     {
         if (SelectedMapForMapEditor != null)
         {
-            GameControllerScript.instance.LoadMapForMapEditorFromMainMenu(SelectedMapForMapEditor); 
+            GCS.LoadMapForMapEditorFromMainMenu(SelectedMapForMapEditor); 
         }
         else
         {
@@ -522,11 +526,11 @@ public class MenueController : MonoBehaviour {
     {
         if (index == 1)
         {
-            GameControllerScript.instance.TeamList[1].IsAi = true;
+            GCS.TeamList[1].IsAi = true;
         }
         else
         {
-            GameControllerScript.instance.TeamList[1].IsAi = false;
+            GCS.TeamList[1].IsAi = false;
         }
     }
 
@@ -534,11 +538,11 @@ public class MenueController : MonoBehaviour {
     {
         if (index == 1)
         {
-            GameControllerScript.instance.TeamList[2].IsAi = true;
+            GCS.TeamList[2].IsAi = true;
         }
         else
         {
-            GameControllerScript.instance.TeamList[2].IsAi = false;
+            GCS.TeamList[2].IsAi = false;
         }
     }
 
@@ -546,11 +550,11 @@ public class MenueController : MonoBehaviour {
     {
         if (index == 1)
         {
-            GameControllerScript.instance.TeamList[3].IsAi = true;
+            GCS.TeamList[3].IsAi = true;
         }
         else
         {
-            GameControllerScript.instance.TeamList[3].IsAi = false;
+            GCS.TeamList[3].IsAi = false;
         }
     }
 
@@ -558,11 +562,11 @@ public class MenueController : MonoBehaviour {
     {
         if (index == 1)
         {
-            GameControllerScript.instance.TeamList[4].IsAi = true;
+            GCS.TeamList[4].IsAi = true;
         }
         else
         {
-            GameControllerScript.instance.TeamList[4].IsAi = false;
+            GCS.TeamList[4].IsAi = false;
         }
     }
 
@@ -570,11 +574,11 @@ public class MenueController : MonoBehaviour {
     {
         if (index == 1)
         {
-            GameControllerScript.instance.TeamList[5].IsAi = true;
+            GCS.TeamList[5].IsAi = true;
         }
         else
         {
-            GameControllerScript.instance.TeamList[5].IsAi = false;
+            GCS.TeamList[5].IsAi = false;
         }
     }
 
@@ -582,11 +586,11 @@ public class MenueController : MonoBehaviour {
     {
         if (index == 1)
         {
-            GameControllerScript.instance.TeamList[6].IsAi = true;
+            GCS.TeamList[6].IsAi = true;
         }
         else
         {
-            GameControllerScript.instance.TeamList[6].IsAi = false;
+            GCS.TeamList[6].IsAi = false;
         }
     }
 
@@ -594,11 +598,11 @@ public class MenueController : MonoBehaviour {
     {
         if (index == 1)
         {
-            GameControllerScript.instance.TeamList[7].IsAi = true;
+            GCS.TeamList[7].IsAi = true;
         }
         else
         {
-            GameControllerScript.instance.TeamList[7].IsAi = false;
+            GCS.TeamList[7].IsAi = false;
         }
     }
 
@@ -606,11 +610,11 @@ public class MenueController : MonoBehaviour {
     {
         if (index == 1)
         {
-            GameControllerScript.instance.TeamList[8].IsAi = true;
+            GCS.TeamList[8].IsAi = true;
         }
         else
         {
-            GameControllerScript.instance.TeamList[8].IsAi = false;
+            GCS.TeamList[8].IsAi = false;
         }
     }
 
@@ -618,11 +622,11 @@ public class MenueController : MonoBehaviour {
     {
         if (index == 1)
         {
-            GameControllerScript.instance.TeamList[9].IsAi = true;
+            GCS.TeamList[9].IsAi = true;
         }
         else
         {
-            GameControllerScript.instance.TeamList[9].IsAi = false;
+            GCS.TeamList[9].IsAi = false;
         }
     }
 }

@@ -10,5 +10,6 @@
   "BlocksSight": false,
   "Overlays": true,
   "IdleAnimations": true,
+  "PixelsPerUnit": 64,
   "Mod": "Core"
 }

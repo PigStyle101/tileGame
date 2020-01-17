@@ -5,14 +5,15 @@
   "Slug": "archer",
   "Type": "Unit",
   "Mod": "Core",
+  "PixelsPerUnit": 64,
   "Attack": 4,
   "Defence": 10,
   "AttackRange": 3,
   "Health": 5,
-  "MovePoints": 5,
+  "MovePoints": 4,
   "Cost": 200,
   "ConversionSpeed": 2,
-  "SightRange": 4,
+  "SightRange": 6,
   "CanConvert": true,
   "CanMoveAndAttack": true
 }

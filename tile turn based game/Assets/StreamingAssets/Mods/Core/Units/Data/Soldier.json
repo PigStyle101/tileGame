@@ -5,6 +5,7 @@
   "Slug": "soldier",
   "Type": "Unit",
   "Mod": "Core",
+  "PixelsPerUnit": 64,
   "Attack": 5,
   "Defence": 20,
   "AttackRange": 1,

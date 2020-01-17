@@ -46,9 +46,13 @@ public class UnitController : MonoBehaviour
     public List<Vector2> Directions = new List<Vector2>();//list for holding north,south,east,west
     [HideInInspector]
     public int DictionaryReferance;
+    private DatabaseController DBC;
+    private GameControllerScript GCS;
 
     private void Awake()
     {
+        DBC = DatabaseController.instance;
+        GCS = GameControllerScript.instance;
         if (SceneManager.GetActiveScene().name == "MapEditorScene")
         {
             MEMCC = GameObject.Find("MainCamera").GetComponent<MapEditMenueCamController>();
@@ -62,7 +66,7 @@ public class UnitController : MonoBehaviour
 
     public void UnitRoundUpdater()
     {
-        if (Team == GameControllerScript.instance.CurrentTeamsTurn.Team) //object is on the current team
+        if (Team == GCS.CurrentTeamsTurn.Team) //object is on the current team
         {
             UnitMoved = false;
             UnitMovable = true;
@@ -82,13 +86,7 @@ public class UnitController : MonoBehaviour
 
     public void TeamSpriteController()
     {
-        foreach (var kvp in DatabaseController.instance.UnitDictionary)
-        {
-            if (gameObject.name == kvp.Value.Title)
-            {
-                gameObject.GetComponent<SpriteRenderer>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.UnitDictionary[kvp.Value.ID].ArtworkDirectory[Team]);
-            }
-        }
+        gameObject.GetComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.UnitDictionary[DictionaryReferance].ArtworkDirectory[Team], DBC.UnitDictionary[DictionaryReferance].PixelsPerUnit);
         switch (Team)
         {
             case 1:
@@ -138,20 +136,20 @@ public class UnitController : MonoBehaviour
         TilesWeights = new Dictionary<Vector2, int>();
         foreach (var dir in Directions)
         {
-            if (GameControllerScript.instance.TilePos.ContainsKey(Position + dir) && GameControllerScript.instance.TilePos[Position + dir].GetComponent<TerrainController>().Walkable) //tile there?  already added to tilewhieght? can the tile be walked on?
+            if (GCS.TilePos.ContainsKey(Position + dir) && GCS.TilePos[Position + dir].GetComponent<TerrainController>().Walkable) //tile there?  already added to tilewhieght? can the tile be walked on?
             {
-                if (GameControllerScript.instance.TilePos[Position + dir].GetComponent<TerrainController>().Weight <= MovePoints && !GameControllerScript.instance.UnitPos.ContainsKey(Position + dir)) //is the wheight less then the total movement points?
+                if (GCS.TilePos[Position + dir].GetComponent<TerrainController>().Weight <= MovePoints && !GCS.UnitPos.ContainsKey(Position + dir)) //is the wheight less then the total movement points?
                 {
                     int temp; //array to store count and mp used to get to that tile, the count will be needed later for when a ai is added.
-                    temp = GameControllerScript.instance.TilePos[Position + dir].GetComponent<TerrainController>().Weight; //this is the movement points used so far
+                    temp = GCS.TilePos[Position + dir].GetComponent<TerrainController>().Weight; //this is the movement points used so far
                     TilesWeights.Add(Position + dir, temp);
                 }
-                else if (GameControllerScript.instance.UnitPos.ContainsKey(Position +dir))
+                else if (GCS.UnitPos.ContainsKey(Position +dir))
                 {
-                    if (GameControllerScript.instance.UnitPos[Position + dir].GetComponent<UnitController>().Team == Team)
+                    if (GCS.UnitPos[Position + dir].GetComponent<UnitController>().Team == Team)
                     {
                         int temp; //array to store count and mp used to get to that tile, the count will be needed later for when a ai is added.
-                        temp = GameControllerScript.instance.TilePos[Position + dir].GetComponent<TerrainController>().Weight; //this is the movement points used so far
+                        temp = GCS.TilePos[Position + dir].GetComponent<TerrainController>().Weight; //this is the movement points used so far
                         TilesWeights.Add(Position + dir, temp);
                     }
                 }
@@ -165,23 +163,39 @@ public class UnitController : MonoBehaviour
             {
                 foreach (var dir in Directions) //for each tile we are checking we need to look in each direction.
                 {
-                    if (GameControllerScript.instance.TilePos.ContainsKey(kvp.Key + dir)) //is there a tile there?
+                    if (GCS.TilePos.ContainsKey(kvp.Key + dir)) //is there a tile there?
                     {
                         if (!Temp.ContainsKey(kvp.Key + dir)) //does the temp already contain the tile?
                         {
-                            if (kvp.Value + GameControllerScript.instance.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Weight <= MovePoints && GameControllerScript.instance.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Walkable && kvp.Key + dir != (Vector2)gameObject.transform.position) //is the wegiht of the tile + move points used already < move points total? Walkable?
+                            if (kvp.Value + GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Weight <= MovePoints && GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Walkable && kvp.Key + dir != (Vector2)gameObject.transform.position) //is the wegiht of the tile + move points used already < move points total? Walkable?
                             {
-                                tempInt = GameControllerScript.instance.TilePos[kvp.Key + dir].transform.GetComponent<TerrainController>().Weight + kvp.Value; //sets this to mp used so far + weight of tile.
-                                Temp.Add(kvp.Key + dir, tempInt);
+                                if (!GCS.UnitPos.ContainsKey(kvp.Key + dir))
+                                {
+                                    tempInt = GCS.TilePos[kvp.Key + dir].transform.GetComponent<TerrainController>().Weight + kvp.Value; //sets this to mp used so far + weight of tile.
+                                    Temp.Add(kvp.Key + dir, tempInt); 
+                                }
+                                else
+                                {
+                                    if (GCS.UnitPos[kvp.Key + dir].GetComponent<UnitController>().Team == Team)
+                                    {
+                                        tempInt = GCS.TilePos[kvp.Key + dir].transform.GetComponent<TerrainController>().Weight + kvp.Value; //this is the movement points used so far
+                                        Temp.Add(kvp.Key + dir, tempInt);
+                                    }
+                                    else if (GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().FogOfWarBool)
+                                    {
+                                        tempInt = GCS.TilePos[kvp.Key + dir].transform.GetComponent<TerrainController>().Weight + kvp.Value; //this is the movement points used so far
+                                        Temp.Add(kvp.Key + dir, tempInt);
+                                    }
+                                }
                             }
                         }
                         else //if temp already contains a key for this tile but more mp were used to get there then we want to replace the second value of the array with the lower number
                         {
-                            if (kvp.Value + GameControllerScript.instance.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Weight <= MovePoints && GameControllerScript.instance.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Walkable && kvp.Key + dir != (Vector2)gameObject.transform.position)
+                            if (kvp.Value + GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Weight <= MovePoints && GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Walkable && kvp.Key + dir != (Vector2)gameObject.transform.position)
                             {
-                                if (kvp.Value + GameControllerScript.instance.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Weight < Temp[kvp.Key + dir])
+                                if (kvp.Value + GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Weight < Temp[kvp.Key + dir])
                                 {
-                                    Temp[kvp.Key + dir] = kvp.Value + GameControllerScript.instance.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Weight;
+                                    Temp[kvp.Key + dir] = kvp.Value + GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Weight;
                                 }
                             }
                         }
@@ -209,21 +223,6 @@ public class UnitController : MonoBehaviour
             }
             count = count + 1;
         }
-        /*Dictionary<Vector2,int> tempTW = new Dictionary<Vector2, int>();
-        foreach (var tile in TilesWeights)
-        {
-            tempTW.Add(tile.Key, tile.Value);
-        }
-        foreach(var tile in tempTW)
-        {
-            foreach(var unit in GameControllerScript.instance.UnitPos)
-            {
-                if (tile.Key == unit.Key)
-                {
-                    TilesWeights.Remove(tile.Key);
-                }
-            }
-        }*/
     }
 
     public void GetSightTiles()
@@ -234,7 +233,7 @@ public class UnitController : MonoBehaviour
         SightTiles = new Dictionary<Vector2, int>();
         foreach (var dir in Directions)
         {
-            if (GameControllerScript.instance.TilePos.ContainsKey(Position + dir) && !SightTiles.ContainsKey(Position + dir)) //tile there?  already added to dict?
+            if (GCS.TilePos.ContainsKey(Position + dir) && !SightTiles.ContainsKey(Position + dir)) //tile there?  already added to dict?
             {
                 int temp; //array to store count and mp used to get to that tile, the count will be needed later for when a ai is added.
                 temp = 1; //this is the range so far
@@ -249,13 +248,13 @@ public class UnitController : MonoBehaviour
             {
                 foreach (var dir in Directions) //for each tile we are checking we need to look in each direction.
                 {
-                    if (GameControllerScript.instance.TilePos.ContainsKey(kvp.Key + dir)) //is there a tile there?
+                    if (GCS.TilePos.ContainsKey(kvp.Key + dir)) //is there a tile there?
                     {
                         if (!Temp.ContainsKey(kvp.Key + dir)) //does the temp already contain the tile?
                         {
                             if (kvp.Value + 1 <= SightRange) //is the wegiht of the tile + move points used already < move points total? unit there?
                             {
-                                if (!GameControllerScript.instance.TilePos[kvp.Key + dir].GetComponent<TerrainController>().BlocksSight) // can the tile be walked on?
+                                if (!GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().BlocksSight) // can the tile be walked on?
                                 {
                                     tempInt = kvp.Value + 1; //sets this to mp used so far + weight of tile.
                                     Temp.Add(kvp.Key + dir, tempInt);
@@ -264,7 +263,7 @@ public class UnitController : MonoBehaviour
                         }
                         else //if temp already contains a key for this tile but more mp were used to get there then we want to replace the second value of the array with the lower number
                         {
-                            if (kvp.Value + 1 <= SightRange && !GameControllerScript.instance.TilePos[kvp.Key + dir].GetComponent<TerrainController>().BlocksSight)
+                            if (kvp.Value + 1 <= SightRange && !GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().BlocksSight)
                             {
                                 if (kvp.Value + 1 < Temp[kvp.Key + dir])
                                 {
@@ -308,9 +307,9 @@ public class UnitController : MonoBehaviour
         else
         {
             ////Debug.log("Changing tile to " + kvp.Value.Title);
-            gameObject.name = DatabaseController.instance.UnitDictionary[MEMCC.SelectedButtonDR].Title;//change name of tile
-            gameObject.GetComponent<SpriteRenderer>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.UnitDictionary[MEMCC.SelectedButtonDR].ArtworkDirectory[0]); //change sprite of tile
-            Health = DatabaseController.instance.UnitDictionary[MEMCC.SelectedButtonDR].Health;
+            gameObject.name = DBC.UnitDictionary[MEMCC.SelectedButtonDR].Title;//change name of tile
+            gameObject.GetComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.UnitDictionary[MEMCC.SelectedButtonDR].ArtworkDirectory[0],DBC.UnitDictionary[MEMCC.SelectedButtonDR].PixelsPerUnit); //change sprite of tile
+            Health = DBC.UnitDictionary[MEMCC.SelectedButtonDR].Health;
             DictionaryReferance = MEMCC.SelectedButtonDR;
             gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").Find("Text").GetComponent<Text>().text = Health.ToString();
         }
@@ -330,13 +329,13 @@ public class UnitController : MonoBehaviour
 
         foreach (var dir in Directions)
         {
-            if (GameControllerScript.instance.TilePos.ContainsKey(Position + dir)) //is the tile on the map?
+            if (GCS.TilePos.ContainsKey(Position + dir)) //is the tile on the map?
             {
-                if (!EnemyUnitsInRange.ContainsKey(Position + dir) && GameControllerScript.instance.UnitPos.ContainsKey(Position + dir)) //is the key already claimed?
+                if (!EnemyUnitsInRange.ContainsKey(Position + dir) && GCS.UnitPos.ContainsKey(Position + dir)) //is the key already claimed?
                 {
-                    if (!GameControllerScript.instance.TilePos[Position + dir].GetComponent<TerrainController>().FogOfWarBool) // if you cannot see the unit, you cannot attack it
+                    if (!GCS.TilePos[Position + dir].GetComponent<TerrainController>().FogOfWarBool) // if you cannot see the unit, you cannot attack it
                     {
-                        if (GameControllerScript.instance.UnitPos[Position + dir].GetComponent<UnitController>().Team != gameObject.GetComponent<UnitController>().Team)
+                        if (GCS.UnitPos[Position + dir].GetComponent<UnitController>().Team != gameObject.GetComponent<UnitController>().Team)
                         {
                             EnemyUnitsInRange.Add(Position + dir, count); //add to dictionary 
                         } 
@@ -353,13 +352,13 @@ public class UnitController : MonoBehaviour
             {
                 foreach (var dir in Directions)
                 {
-                    if (!TilesChecked.ContainsKey(kvp.Key + dir) && GameControllerScript.instance.TilePos.ContainsKey(kvp.Key + dir) && !EnemyUnitsInRange.ContainsKey(kvp.Key + dir) && !Temp.ContainsKey(kvp.Key + dir)) //is teh tile there?is key claimed?
+                    if (!TilesChecked.ContainsKey(kvp.Key + dir) && GCS.TilePos.ContainsKey(kvp.Key + dir) && !EnemyUnitsInRange.ContainsKey(kvp.Key + dir) && !Temp.ContainsKey(kvp.Key + dir)) //is teh tile there?is key claimed?
                     {
-                        if (GameControllerScript.instance.UnitPos.ContainsKey(kvp.Key + dir))//does tilesChecked not contain key? is there a unit there?
+                        if (GCS.UnitPos.ContainsKey(kvp.Key + dir))//does tilesChecked not contain key? is there a unit there?
                         {
-                            if (!GameControllerScript.instance.TilePos[kvp.Key + dir].GetComponent<TerrainController>().FogOfWarBool) //if we cannot see the unit, then we cannot attack it
+                            if (!GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().FogOfWarBool) //if we cannot see the unit, then we cannot attack it
                             {
-                                if (GameControllerScript.instance.UnitPos[kvp.Key + dir].GetComponent<UnitController>().Team != gameObject.GetComponent<UnitController>().Team) //is it not on the same team?
+                                if (GCS.UnitPos[kvp.Key + dir].GetComponent<UnitController>().Team != gameObject.GetComponent<UnitController>().Team) //is it not on the same team?
                                 {
                                     EnemyUnitsInRange.Add(kvp.Key + dir, count);
                                 } 
@@ -397,7 +396,7 @@ public class UnitController : MonoBehaviour
             {
                 foreach (var dir in Directions)
                 {
-                    if (GameControllerScript.instance.UnitPos.ContainsKey(kvp.Key + dir) && GameControllerScript.instance.UnitPos[kvp.Key + dir].GetComponent<UnitController>().Team != Team) // look for enemy in movement range
+                    if (GCS.UnitPos.ContainsKey(kvp.Key + dir) && GCS.UnitPos[kvp.Key + dir].GetComponent<UnitController>().Team != Team) // look for enemy in movement range
                     {
                         if (UnitMoved == false)
                         {
@@ -405,22 +404,22 @@ public class UnitController : MonoBehaviour
                             Target = kvp.Key + dir;
                             MoveToPosition = kvp.Key;
                             gameObject.transform.position = MoveToPosition;
-                            int attack = GameControllerScript.instance.CombatCalculator(gameObject, GameControllerScript.instance.UnitPos[Target]);
-                            GameControllerScript.instance.UnitPos[Target].GetComponent<UnitController>().Health = GameControllerScript.instance.UnitPos[Target].GetComponent<UnitController>().Health - attack;
-                            if (GameControllerScript.instance.UnitPos[Target].GetComponent<UnitController>().Health <= 0)
+                            int attack = GCS.CombatCalculator(gameObject, GCS.UnitPos[Target]);
+                            GCS.UnitPos[Target].GetComponent<UnitController>().Health = GCS.UnitPos[Target].GetComponent<UnitController>().Health - attack;
+                            if (GCS.UnitPos[Target].GetComponent<UnitController>().Health <= 0)
                             {
-                                GameControllerScript.instance.KillUnitPlayScene(GameControllerScript.instance.UnitPos[Target]);
+                                GCS.KillUnitPlayScene(GCS.UnitPos[Target]);
                             }
                             else
                             {
-                                GameControllerScript.instance.UnitPos[Target].GetComponentInChildren<Text>().text = GameControllerScript.instance.UnitPos[Target].GetComponent<UnitController>().Health.ToString();
+                                GCS.UnitPos[Target].GetComponentInChildren<Text>().text = GCS.UnitPos[Target].GetComponent<UnitController>().Health.ToString();
                             }
-                            GameControllerScript.instance.MoveUnitPositionInDictionary(gameObject, OriginalPositionOfUnit);
-                            foreach (var kvvp in GameControllerScript.instance.TilePos)
+                            GCS.MoveUnitPositionInDictionary(gameObject, OriginalPositionOfUnit);
+                            foreach (var kvvp in GCS.TilePos)
                             {
                                 kvvp.Value.GetComponent<TerrainController>().TerrainRoundUpdater();
                             }
-                            foreach (var kvpp in GameControllerScript.instance.UnitPos)
+                            foreach (var kvpp in GCS.UnitPos)
                             {
                                 kvpp.Value.GetComponent<UnitController>().GetTileValues();
                             }
@@ -439,22 +438,22 @@ public class UnitController : MonoBehaviour
                 {
                     //Debug.log("2");
                     Target = enemy.Key;
-                    int attack = GameControllerScript.instance.CombatCalculator(gameObject, GameControllerScript.instance.UnitPos[Target]);
-                    GameControllerScript.instance.UnitPos[Target].GetComponent<UnitController>().Health = GameControllerScript.instance.UnitPos[Target].GetComponent<UnitController>().Health - attack;
-                    if (GameControllerScript.instance.UnitPos[Target].GetComponent<UnitController>().Health <= 0)
+                    int attack = GCS.CombatCalculator(gameObject, GCS.UnitPos[Target]);
+                    GCS.UnitPos[Target].GetComponent<UnitController>().Health = GCS.UnitPos[Target].GetComponent<UnitController>().Health - attack;
+                    if (GCS.UnitPos[Target].GetComponent<UnitController>().Health <= 0)
                     {
-                        GameControllerScript.instance.KillUnitPlayScene(GameControllerScript.instance.UnitPos[Target]);
+                        GCS.KillUnitPlayScene(GCS.UnitPos[Target]);
                     }
                     else
                     {
-                        GameControllerScript.instance.UnitPos[Target].GetComponentInChildren<Text>().text = GameControllerScript.instance.UnitPos[Target].GetComponent<UnitController>().Health.ToString();
+                        GCS.UnitPos[Target].GetComponentInChildren<Text>().text = GCS.UnitPos[Target].GetComponent<UnitController>().Health.ToString();
                     }
-                    GameControllerScript.instance.MoveUnitPositionInDictionary(gameObject, OriginalPositionOfUnit);
-                    foreach (var kvvp in GameControllerScript.instance.TilePos)
+                    GCS.MoveUnitPositionInDictionary(gameObject, OriginalPositionOfUnit);
+                    foreach (var kvvp in GCS.TilePos)
                     {
                         kvvp.Value.GetComponent<TerrainController>().TerrainRoundUpdater();
                     }
-                    foreach (var kvpp in GameControllerScript.instance.UnitPos)
+                    foreach (var kvpp in GCS.UnitPos)
                     {
                         kvpp.Value.GetComponent<UnitController>().GetTileValues();
                     }
@@ -465,7 +464,7 @@ public class UnitController : MonoBehaviour
         }
         if (UnitMoved == false) //if standing on a building continue converting it
         {
-            foreach(var b in GameControllerScript.instance.BuildingPos)
+            foreach(var b in GCS.BuildingPos)
             {
                 if (b.Key == (Vector2)transform.position && b.Value.GetComponent<BuildingController>().Team != Team)
                 {
@@ -481,11 +480,11 @@ public class UnitController : MonoBehaviour
                     {
                         b.Value.transform.GetComponentInChildren<Text>().text = b.Value.transform.GetComponent<BuildingController>().Health.ToString();
                     }
-                    foreach (var kvvp in GameControllerScript.instance.TilePos)
+                    foreach (var kvvp in GCS.TilePos)
                     {
                         kvvp.Value.GetComponent<TerrainController>().TerrainRoundUpdater();
                     }
-                    foreach (var kvpp in GameControllerScript.instance.UnitPos)
+                    foreach (var kvpp in GCS.UnitPos)
                     {
                         kvpp.Value.GetComponent<UnitController>().GetTileValues();
                     }
@@ -498,7 +497,7 @@ public class UnitController : MonoBehaviour
         {
             foreach (var kvp in TilesWeights)
             {
-                foreach (var b in GameControllerScript.instance.BuildingPos)
+                foreach (var b in GCS.BuildingPos)
                 {
                     if (b.Value.GetComponent<BuildingController>().Team != Team && kvp.Key == b.Key)
                     {
@@ -517,12 +516,12 @@ public class UnitController : MonoBehaviour
                             {
                                 b.Value.transform.GetComponentInChildren<Text>().text = b.Value.transform.GetComponent<BuildingController>().Health.ToString();
                             }
-                            GameControllerScript.instance.MoveUnitPositionInDictionary(gameObject, OriginalPositionOfUnit);
-                            foreach (var kvvp in GameControllerScript.instance.TilePos)
+                            GCS.MoveUnitPositionInDictionary(gameObject, OriginalPositionOfUnit);
+                            foreach (var kvvp in GCS.TilePos)
                             {
                                 kvvp.Value.GetComponent<TerrainController>().TerrainRoundUpdater();
                             }
-                            foreach (var kvpp in GameControllerScript.instance.UnitPos)
+                            foreach (var kvpp in GCS.UnitPos)
                             {
                                 kvpp.Value.GetComponent<UnitController>().GetTileValues();
                             }
@@ -543,12 +542,12 @@ public class UnitController : MonoBehaviour
 
             //Debug.log("4.1");
             gameObject.transform.position = randkey;
-            GameControllerScript.instance.MoveUnitPositionInDictionary(gameObject, OriginalPositionOfUnit);
-            foreach (var kvvp in GameControllerScript.instance.TilePos)
+            GCS.MoveUnitPositionInDictionary(gameObject, OriginalPositionOfUnit);
+            foreach (var kvvp in GCS.TilePos)
             {
                 kvvp.Value.GetComponent<TerrainController>().TerrainRoundUpdater();
             }
-            foreach (var kvpp in GameControllerScript.instance.UnitPos)
+            foreach (var kvpp in GCS.UnitPos)
             {
                 kvpp.Value.GetComponent<UnitController>().GetTileValues();
             }
@@ -559,9 +558,9 @@ public class UnitController : MonoBehaviour
 
     public void HealUnitIfOnFriendlyBuilding()
     {
-        foreach (var b in GameControllerScript.instance.BuildingPos)
+        foreach (var b in GCS.BuildingPos)
         {
-            if (b.Key == (Vector2)gameObject.transform.position && b.Value.GetComponent<BuildingController>().Team == Team && Health < MaxHealth && GameControllerScript.instance.CurrentTeamsTurn.Team == Team)
+            if (b.Key == (Vector2)gameObject.transform.position && b.Value.GetComponent<BuildingController>().Team == Team && Health < MaxHealth && GCS.CurrentTeamsTurn.Team == Team)
             {
                 Health = Health + 1;
                 gameObject.GetComponentInChildren<Text>().text = Health.ToString();
@@ -571,13 +570,13 @@ public class UnitController : MonoBehaviour
 
     public void MovementController()
     {
-        if (UnitMoved && !UnitMovable && Team == GameControllerScript.instance.CurrentTeamsTurn.Team)
+        if (UnitMoved && !UnitMovable && Team == GCS.CurrentTeamsTurn.Team)
         {
             gameObject.GetComponent<SpriteRenderer>().color = new Color(1F, 1F, 1F);
         }
         else
         {
-            if (Team == GameControllerScript.instance.CurrentTeamsTurn.Team)
+            if (Team == GCS.CurrentTeamsTurn.Team)
             {
                 gameObject.GetComponent<SpriteRenderer>().color = new Color(.5F, .5F, .5F);
             }

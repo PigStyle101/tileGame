@@ -5,6 +5,7 @@
   "Slug": "catapult",
   "Type": "Unit",
   "Mod": "Core",
+  "PixelsPerUnit": 64,
   "Attack": 5,
   "Defence": 10,
   "AttackRange": 4,

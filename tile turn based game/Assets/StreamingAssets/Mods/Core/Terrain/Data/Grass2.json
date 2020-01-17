@@ -1,12 +1,13 @@
 {
   "ID": 1,
-  "Title": "Grass",
+  "Title": "Grass2",
   "Walkable": true,
   "Description": "Field of Grass",
   "DefenceBonus": 0,
-  "Slug": "grass_tile",
+  "Slug": "grass2_tile",
   "Type": "Terrain",
   "Weight": 2,
   "BlocksSight": false,
+  "PixelsPerUnit": 128,
   "Mod": "Core"
 }

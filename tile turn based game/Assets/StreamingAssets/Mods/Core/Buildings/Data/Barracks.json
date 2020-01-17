@@ -2,6 +2,7 @@
   "ID": 2,
   "Health": 10,
   "Title": "Barracks",
+  "PixelsPerUnit": 64,
   "Walkable": true,
   "Description": "A unit production building",
   "DefenceBonus": 20,

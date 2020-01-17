@@ -7,6 +7,7 @@ Things that need done:
 -add ports and boats, start with carrier and attack boat?
 -add more animations
 -add change all button to map editor
+-Change roads and water so they only try to update if a tile is changed next to them
 
 
 -Multiplayer?

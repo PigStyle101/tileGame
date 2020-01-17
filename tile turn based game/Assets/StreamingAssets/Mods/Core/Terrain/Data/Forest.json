@@ -8,5 +8,6 @@
   "Type": "Terrain",
   "Weight": 3,
   "BlocksSight": true,
+  "PixelsPerUnit": 64,
   "Mod": "Core"
 }

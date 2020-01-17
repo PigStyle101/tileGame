@@ -38,7 +38,14 @@ public class MapEditMenueCamController : MonoBehaviour
     [HideInInspector]
     public int SelectedTeam;
     private Text TeamText;
+    private DatabaseController DBC;
+    private GameControllerScript GCS;
 
+    private void Awake()
+    {
+        DBC = DatabaseController.instance;
+        GCS = GameControllerScript.instance;
+    }
     // this script is currently back up to date
     void Start()
     {
@@ -46,12 +53,12 @@ public class MapEditMenueCamController : MonoBehaviour
         AddTerrainButtonsToContent();
         AddBuildingButtonsToContent();
         AddUnitButtonsToContent();
-        SelectedTab = DatabaseController.instance.TerrainDictionary[0].Type;
+        SelectedTab = DBC.TerrainDictionary[0].Type;
         SelectedButtonDR = 0;
         SelectedTeam = 1;
         SaveFeedback.text = "Use only letters, cannot save with name that is already in use";
         SavePanel.SetActive(false);
-        CurrentSelectedButtonText.text = "Currently Selected: " + DatabaseController.instance.TerrainDictionary[0].Title;
+        CurrentSelectedButtonText.text = "Currently Selected: " + DBC.TerrainDictionary[0].Title;
         LoadPanelBackButtonClicked();
     }
 
@@ -93,12 +100,12 @@ public class MapEditMenueCamController : MonoBehaviour
 
         Vector3 pos = Camera.main.ScreenToViewportPoint(Input.mousePosition - dragOrigin);
 
-        Vector3 move = new Vector3(pos.x * DatabaseController.instance.dragSpeedOffset * DatabaseController.instance.DragSpeed * -1, pos.y * DatabaseController.instance.dragSpeedOffset * DatabaseController.instance.DragSpeed * -1, 0);
+        Vector3 move = new Vector3(pos.x * DBC.dragSpeedOffset * DBC.DragSpeed * -1, pos.y * DBC.dragSpeedOffset * DBC.DragSpeed * -1, 0);
 
         transform.Translate(move, Space.World);
 
-        if (gameObject.transform.position.x > GameControllerScript.instance.EditorMapSize) { gameObject.transform.position = new Vector3(GameControllerScript.instance.EditorMapSize, transform.position.y, transform.position.z); }
-        if (gameObject.transform.position.y > GameControllerScript.instance.EditorMapSize) { gameObject.transform.position = new Vector3(transform.position.x, GameControllerScript.instance.EditorMapSize, transform.position.z); }
+        if (gameObject.transform.position.x > GCS.EditorMapSize) { gameObject.transform.position = new Vector3(GCS.EditorMapSize, transform.position.y, transform.position.z); }
+        if (gameObject.transform.position.y > GCS.EditorMapSize) { gameObject.transform.position = new Vector3(transform.position.x, GCS.EditorMapSize, transform.position.z); }
         if (gameObject.transform.position.x < 0) { gameObject.transform.position = new Vector3(0, transform.position.y, transform.position.z); }
         if (gameObject.transform.position.y < 0) { gameObject.transform.position = new Vector3(transform.position.x, 0, transform.position.z); }
 
@@ -107,13 +114,13 @@ public class MapEditMenueCamController : MonoBehaviour
     private void MoveScreenZ()
     {
         int z = new int();
-        if (Input.GetAxis("Mouse ScrollWheel") > 0) { z = DatabaseController.instance.scrollSpeed; }
-        if (Input.GetAxis("Mouse ScrollWheel") < 0) { z = -DatabaseController.instance.scrollSpeed; }
+        if (Input.GetAxis("Mouse ScrollWheel") > 0) { z = DBC.scrollSpeed; }
+        if (Input.GetAxis("Mouse ScrollWheel") < 0) { z = -DBC.scrollSpeed; }
 
         transform.Translate(new Vector3(0, 0, z), Space.World);
 
         if (gameObject.transform.position.z > -1) { gameObject.transform.position = new Vector3(transform.position.x, transform.position.y, -1); }
-        if (gameObject.transform.position.z < -GameControllerScript.instance.EditorMapSize * 2) { gameObject.transform.position = new Vector3(transform.position.x, transform.position.y, -GameControllerScript.instance.EditorMapSize * 2); }
+        if (gameObject.transform.position.z < -GCS.EditorMapSize * 2) { gameObject.transform.position = new Vector3(transform.position.x, transform.position.y, -GCS.EditorMapSize * 2); }
 
     }//controls camera z movement
 
@@ -126,12 +133,12 @@ public class MapEditMenueCamController : MonoBehaviour
     private void AddTerrainButtonsToContent()
     {
         //Debug.log("Adding terrain buttons to content window");
-        foreach (KeyValuePair<int, Terrain> kvp in DatabaseController.instance.TerrainDictionary) //adds a button for each terrain in the database
+        foreach (KeyValuePair<int, Terrain> kvp in DBC.TerrainDictionary) //adds a button for each terrain in the database
         {
             GameObject tempbutton = Instantiate(MapEditorTilesButtonPrefab, ContentWindowTerrain.transform); //create button and set its parent to content
             tempbutton.name = kvp.Value.Title; //change name
             tempbutton.transform.GetChild(0).GetComponent<Text>().text = kvp.Value.Title; //change text on button to match sprite
-            tempbutton.GetComponent<Image>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.TerrainDictionary[kvp.Key].ArtworkDirectory[0]); //set sprite
+            tempbutton.GetComponent<Image>().sprite = DBC.loadSprite(DBC.TerrainDictionary[kvp.Key].ArtworkDirectory[0],DBC.TerrainDictionary[kvp.Key].PixelsPerUnit); //set sprite
             tempbutton.GetComponent<Button>().onClick.AddListener(ChangeSelectedButton); //adds method to button clicked
             tempbutton.AddComponent<ButtonProperties>();
             tempbutton.GetComponent<ButtonProperties>().DictionaryReferance = kvp.Key;
@@ -141,12 +148,12 @@ public class MapEditMenueCamController : MonoBehaviour
     private void AddUnitButtonsToContent()
     {
         //Debug.log("Adding unit buttons to content window");
-        foreach (KeyValuePair<int, Unit> kvp in DatabaseController.instance.UnitDictionary) //adds a button for each terrain in the database
+        foreach (KeyValuePair<int, Unit> kvp in DBC.UnitDictionary) //adds a button for each terrain in the database
         {
             GameObject tempbutton = Instantiate(MapEditorTilesButtonPrefab, ContentWindowUnits.transform); //create button and set its parent to content
             tempbutton.name = kvp.Value.Title; //change name
             tempbutton.transform.GetChild(0).GetComponent<Text>().text = kvp.Value.Title; //change text on button to match sprite
-            tempbutton.GetComponent<Image>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.UnitDictionary[kvp.Key].ArtworkDirectory[0]); //set sprite
+            tempbutton.GetComponent<Image>().sprite = DBC.loadSprite(DBC.UnitDictionary[kvp.Key].ArtworkDirectory[0], DBC.UnitDictionary[kvp.Key].PixelsPerUnit); //set sprite
             tempbutton.GetComponent<Button>().onClick.AddListener(ChangeSelectedButton); //adds method to button clicked
             tempbutton.AddComponent<ButtonProperties>();
             tempbutton.GetComponent<ButtonProperties>().DictionaryReferance = kvp.Key;
@@ -164,12 +171,12 @@ public class MapEditMenueCamController : MonoBehaviour
     private void AddBuildingButtonsToContent()
     {
         //Debug.log("Adding building buttons to content window");
-        foreach (KeyValuePair<int, Building> kvp in DatabaseController.instance.BuildingDictionary) //adds a button for each terrain in the database
+        foreach (KeyValuePair<int, Building> kvp in DBC.BuildingDictionary) //adds a button for each terrain in the database
         {
             GameObject tempbutton = Instantiate(MapEditorTilesButtonPrefab, ContentWindowBuilding.transform); //create button and set its parent to content
             tempbutton.name = kvp.Value.Title; //change name
             tempbutton.transform.GetChild(0).GetComponent<Text>().text = kvp.Value.Title; //change text on button to match sprite
-            tempbutton.GetComponent<Image>().sprite = DatabaseController.instance.loadSprite(DatabaseController.instance.BuildingDictionary[kvp.Key].ArtworkDirectory[0]); //set sprite
+            tempbutton.GetComponent<Image>().sprite = DBC.loadSprite(DBC.BuildingDictionary[kvp.Key].ArtworkDirectory[0], DBC.BuildingDictionary[kvp.Key].PixelsPerUnit); //set sprite
             tempbutton.GetComponent<Button>().onClick.AddListener(ChangeSelectedButton); //adds method to button clicked
             tempbutton.AddComponent<ButtonProperties>();
             tempbutton.GetComponent<ButtonProperties>().DictionaryReferance = kvp.Key;
@@ -212,7 +219,7 @@ public class MapEditMenueCamController : MonoBehaviour
         ScrollWindowBuilding.SetActive(false);
         ScrollWindowUnits.SetActive(false);
         SelectedTab = "Terrain";
-        CurrentSelectedButtonText.text = "Currently Selected: " + DatabaseController.instance.TerrainDictionary[0].Title;
+        CurrentSelectedButtonText.text = "Currently Selected: " + DBC.TerrainDictionary[0].Title;
         SelectedButtonDR = 0;
     } //sets the terrian content window as the active one
 
@@ -222,7 +229,7 @@ public class MapEditMenueCamController : MonoBehaviour
         ScrollWindowBuilding.SetActive(true);
         ScrollWindowUnits.SetActive(false);
         SelectedTab = "Building";
-        CurrentSelectedButtonText.text = "Currently Selected: " + DatabaseController.instance.BuildingDictionary[0].Title;
+        CurrentSelectedButtonText.text = "Currently Selected: " + DBC.BuildingDictionary[0].Title;
         SelectedButtonDR = 0;
     } //sets the building content window as the active one
 
@@ -232,7 +239,7 @@ public class MapEditMenueCamController : MonoBehaviour
         ScrollWindowBuilding.SetActive(false);
         ScrollWindowUnits.SetActive(true);
         SelectedTab = "Unit";
-        CurrentSelectedButtonText.text = "Currently Selected: " + DatabaseController.instance.UnitDictionary[0].Title;
+        CurrentSelectedButtonText.text = "Currently Selected: " + DBC.UnitDictionary[0].Title;
         SelectedButtonDR = 0;
     } //sets the unit content window as the active one
 
@@ -264,7 +271,7 @@ public class MapEditMenueCamController : MonoBehaviour
 
     public void SavePanelSaveButtonClicked()
     {
-        GameControllerScript.instance.SaveMap(GameControllerScript.instance.TilePos, GameControllerScript.instance.UnitPos, GameControllerScript.instance.BuildingPos, SaveInputField.text);
+        GCS.SaveMap(GCS.TilePos, GCS.UnitPos, GCS.BuildingPos, SaveInputField.text);
 
     } //activates save script in GameControllerScript
 
@@ -272,7 +279,7 @@ public class MapEditMenueCamController : MonoBehaviour
     {
         if (CurrentlySelectedLoadFile != null)
         {
-            GameControllerScript.instance.LoadMapMapEditor(CurrentlySelectedLoadFile);
+            GCS.LoadMapMapEditor(CurrentlySelectedLoadFile);
             LoadFeedback.text = "Loaded " + CurrentlySelectedLoadFile;
         }
         else
@@ -296,7 +303,7 @@ public class MapEditMenueCamController : MonoBehaviour
 
     public void NextTeamButtonClicked()
     {
-        if (SelectedTeam < DatabaseController.instance.UnitDictionary[0].ArtworkDirectory.Count - 1)
+        if (SelectedTeam < DBC.UnitDictionary[0].ArtworkDirectory.Count - 1)
         {
             SelectedTeam = SelectedTeam + 1;
             TeamText.text = "Team:" + SelectedTeam;
@@ -317,7 +324,7 @@ public class MapEditMenueCamController : MonoBehaviour
         }
         else
         {
-            SelectedTeam = DatabaseController.instance.UnitDictionary[0].ArtworkDirectory.Count - 1;
+            SelectedTeam = DBC.UnitDictionary[0].ArtworkDirectory.Count - 1;
             TeamText.text = "Team:" + SelectedTeam;
         }
     }
@@ -336,9 +343,9 @@ public class MapEditMenueCamController : MonoBehaviour
         {
             Destroy(GO);
         }
-        GameControllerScript.instance.BuildingPos = new Dictionary<Vector2, GameObject>();
-        GameControllerScript.instance.TilePos = new Dictionary<Vector2, GameObject>();
-        GameControllerScript.instance.UnitPos = new Dictionary<Vector2, GameObject>();
+        GCS.BuildingPos = new Dictionary<Vector2, GameObject>();
+        GCS.TilePos = new Dictionary<Vector2, GameObject>();
+        GCS.UnitPos = new Dictionary<Vector2, GameObject>();
         SceneManager.LoadScene("MainMenuScene");
     }
 

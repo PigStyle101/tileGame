@@ -1,5 +1,6 @@
 {
   "ID": 1,
   "Title": "MouseOverlaySelected",
+  "PixelsPerUnit": 64,
   "Slug": "mouse_Overlay"
 }
