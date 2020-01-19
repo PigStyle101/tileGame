@@ -6,6 +6,8 @@ Things that need done:
 -add xp to troops and a unit return(a list of units that you keep through battles)
 -Change roads and water so they only try to update if a tile is changed next to them
 
+-use warrior sprite stuff to get the foundatin layed out for animations
+
 
 -Multiplayer?
 -What to do here?
