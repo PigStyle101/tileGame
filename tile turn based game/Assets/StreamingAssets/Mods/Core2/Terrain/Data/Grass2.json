@@ -1,5 +1,4 @@
 {
-  "ID": 1,
   "Title": "Grass2",
   "Walkable": true,
   "Description": "Field of Grass",
@@ -9,5 +8,5 @@
   "Weight": 2,
   "BlocksSight": false,
   "PixelsPerUnit": 128,
-  "Mod": "Core"
+  "Mod": "Core2"
 }

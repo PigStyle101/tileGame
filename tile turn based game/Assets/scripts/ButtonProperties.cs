@@ -4,5 +4,5 @@ using UnityEngine;
 
 public class ButtonProperties : MonoBehaviour
 {
-    public int DictionaryReferance;
+    public int ID;
 }

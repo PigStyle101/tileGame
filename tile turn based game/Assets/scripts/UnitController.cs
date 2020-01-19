@@ -44,8 +44,6 @@ public class UnitController : MonoBehaviour
     public Dictionary<Vector2, int> EnemyUnitsInRange = new Dictionary<Vector2, int>();
     [HideInInspector]
     public List<Vector2> Directions = new List<Vector2>();//list for holding north,south,east,west
-    [HideInInspector]
-    public int DictionaryReferance;
     private DatabaseController DBC;
     private GameControllerScript GCS;
 
@@ -86,7 +84,7 @@ public class UnitController : MonoBehaviour
 
     public void TeamSpriteController()
     {
-        gameObject.GetComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.UnitDictionary[DictionaryReferance].ArtworkDirectory[Team], DBC.UnitDictionary[DictionaryReferance].PixelsPerUnit);
+        gameObject.GetComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.UnitDictionary[ID].ArtworkDirectory[Team], DBC.UnitDictionary[ID].PixelsPerUnit);
         switch (Team)
         {
             case 1:
@@ -310,7 +308,7 @@ public class UnitController : MonoBehaviour
             gameObject.name = DBC.UnitDictionary[MEMCC.SelectedButtonDR].Title;//change name of tile
             gameObject.GetComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.UnitDictionary[MEMCC.SelectedButtonDR].ArtworkDirectory[0],DBC.UnitDictionary[MEMCC.SelectedButtonDR].PixelsPerUnit); //change sprite of tile
             Health = DBC.UnitDictionary[MEMCC.SelectedButtonDR].Health;
-            DictionaryReferance = MEMCC.SelectedButtonDR;
+            ID = MEMCC.SelectedButtonDR;
             gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").Find("Text").GetComponent<Text>().text = Health.ToString();
         }
     }

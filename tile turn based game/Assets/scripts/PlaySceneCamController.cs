@@ -371,7 +371,7 @@ public class PlaySceneCamController : MonoBehaviour
                 tempbutton.GetComponent<Image>().sprite = DBC.loadSprite(DBC.UnitDictionary[kvp.Key].ArtworkDirectory[0],DBC.UnitDictionary[kvp.Key].PixelsPerUnit); //set sprite
                 tempbutton.GetComponent<Button>().onClick.AddListener(CreateUnitController); //adds method to button clicked 
                 tempbutton.AddComponent<ButtonProperties>();
-                tempbutton.GetComponent<ButtonProperties>().DictionaryReferance = kvp.Key;
+                tempbutton.GetComponent<ButtonProperties>().ID = kvp.Key;
             }
         }
 
@@ -384,7 +384,7 @@ public class PlaySceneCamController : MonoBehaviour
     {
         if (EventSystem.current.currentSelectedGameObject != null) //make sure player clicked on the unit button and did not use keyboard shortcut
         {
-            SelectedUnitDR = EventSystem.current.currentSelectedGameObject.GetComponent<ButtonProperties>().DictionaryReferance;
+            SelectedUnitDR = EventSystem.current.currentSelectedGameObject.GetComponent<ButtonProperties>().ID;
             if (GCS.TeamList[GCS.CurrentTeamsTurn.Team].Gold >= DBC.UnitDictionary[SelectedUnitDR].Cost) //can they afford this unit?
             {
                 GameObject GO = DBC.CreateAndSpawnUnit(CurrentlySelectedBuilding, DBC.UnitDictionary[SelectedUnitDR].ID, GCS.CurrentTeamsTurn.Team);
@@ -673,7 +673,7 @@ public class PlaySceneCamController : MonoBehaviour
             {
                 if (ContentWindowBuilding.transform.childCount > 0)
                 {
-                    SelectedUnitDR = ContentWindowBuilding.transform.GetChild(0).GetComponent<ButtonProperties>().DictionaryReferance;
+                    SelectedUnitDR = ContentWindowBuilding.transform.GetChild(0).GetComponent<ButtonProperties>().ID;
                     CreateUnitController();
                 }
             }
@@ -681,7 +681,7 @@ public class PlaySceneCamController : MonoBehaviour
             {
                 if (ContentWindowBuilding.transform.childCount > 1)
                 {
-                    SelectedUnitDR = ContentWindowBuilding.transform.GetChild(1).GetComponent<ButtonProperties>().DictionaryReferance;
+                    SelectedUnitDR = ContentWindowBuilding.transform.GetChild(1).GetComponent<ButtonProperties>().ID;
                     CreateUnitController();
                 }
             }
@@ -689,7 +689,7 @@ public class PlaySceneCamController : MonoBehaviour
             {
                 if (ContentWindowBuilding.transform.childCount > 2)
                 {
-                    SelectedUnitDR = ContentWindowBuilding.transform.GetChild(2).GetComponent<ButtonProperties>().DictionaryReferance;
+                    SelectedUnitDR = ContentWindowBuilding.transform.GetChild(2).GetComponent<ButtonProperties>().ID;
                     CreateUnitController();
                 }
             }
@@ -697,7 +697,7 @@ public class PlaySceneCamController : MonoBehaviour
             {
                 if (ContentWindowBuilding.transform.childCount > 3)
                 {
-                    SelectedUnitDR = ContentWindowBuilding.transform.GetChild(3).GetComponent<ButtonProperties>().DictionaryReferance;
+                    SelectedUnitDR = ContentWindowBuilding.transform.GetChild(3).GetComponent<ButtonProperties>().ID;
                     CreateUnitController();
                 }
             }

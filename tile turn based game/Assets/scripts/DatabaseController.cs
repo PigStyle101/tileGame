@@ -31,6 +31,12 @@ public class DatabaseController : MonoBehaviour
     public int DragSpeed;
     [HideInInspector]
     public int scrollSpeed;
+    private int NextTerrainDicIndex;
+    private int NextUnitDicIndex;
+    private int NextBuildingIndex;
+    private int NextMouseOverlayIndex;
+    private int NextFogIndex;
+    private int NextHeroIndex;
     public GameObject UnitHealthOverlay;
     public GameObject BuildingHealthOverlay;
     private GameControllerScript GCS;
@@ -54,12 +60,14 @@ public class DatabaseController : MonoBehaviour
         GetMasterJson();
         //MultiplayerController.instance.Connect();
         GCS.LoadingUpdater(.2f);
+        ResetNextIndexes();
         GetTerrianJsons("Core");
         GCS.LoadingUpdater(.4f);
         GetUnitJsons("Core");
         GetHeroJsons("Core");
         GCS.LoadingUpdater(.6f);
         GetBuildingJsons("Core");
+        ModsLoaded.Add("Core");
         GCS.LoadingUpdater(.8f);
         GetMouseJson();
         GetFogOfWarJson();
@@ -76,7 +84,7 @@ public class DatabaseController : MonoBehaviour
         Master tempjson = JsonUtility.FromJson<Master>(grassstring); //this converts from json string to unity object
         scrollSpeed = tempjson.ScrollSpeed;
         DragSpeed = tempjson.DragSpeed;
-        //Debug.log("Finished fetching json master file");
+        Debug.Log("Finished fetching json master file");
     }
 
     /// <summary>
@@ -92,17 +100,12 @@ public class DatabaseController : MonoBehaviour
             {
                 var Tempstring = File.ReadAllText(file); //temp string to hold the json data
                 Terrain tempjson = JsonUtility.FromJson<Terrain>(Tempstring); //this converts from json string to unity object
-                //Debug.log("Adding: " + tempjson.Slug + " to database");
-                if (!TerrainDictionary.ContainsKey(tempjson.ID))
-                {
-                    TerrainDictionary.Add(tempjson.ID, tempjson); //adds
-                    tempjson.GetSprites(); //details in fucntion
-                    //Debug.log("Finished adding: " + tempjson.Slug + " to database");
-                }
-                else
-                {
-                    Debug.LogError("Item id number: " + tempjson.ID + " is already claimed, change " + tempjson.Title + " ID please");
-                }
+                tempjson.ID = NextTerrainDicIndex;
+                Debug.Log("Adding: " + tempjson.Slug + " to database");
+
+                TerrainDictionary.Add(tempjson.ID, tempjson); //adds
+                tempjson.GetSprites(); //details in fucntion
+                NextTerrainDicIndex = NextTerrainDicIndex + 1;
             }
         }
     }//gets the json files from the terrain/data folder and converts them to unity object and stores tehm into dictionary
@@ -120,17 +123,12 @@ public class DatabaseController : MonoBehaviour
             {
                 var Tempstring = File.ReadAllText(file); //temp string to hold the json data
                 var tempjson = JsonUtility.FromJson<Unit>(Tempstring); //this converts from json string to unity object
-                //Debug.log("Adding: " + tempjson.Slug + " to database");
-                if (!UnitDictionary.ContainsKey(tempjson.ID))
-                {
-                    UnitDictionary.Add(tempjson.ID, tempjson); //adds
-                    tempjson.GetSprites(); //details in fucntion
-                    //Debug.log("Finished adding: " + tempjson.Slug + " to database");
-                }
-                else
-                {
-                    Debug.LogError("Item id number: " + tempjson.ID + " is already claimed, change " + tempjson.Title + " ID please");
-                }
+                tempjson.ID = NextUnitDicIndex;
+                Debug.Log("Adding: " + tempjson.Slug + " to database");
+
+                UnitDictionary.Add(tempjson.ID, tempjson); //adds
+                tempjson.GetSprites(); //details in fucntion
+                NextUnitDicIndex = NextUnitDicIndex + 1;
             }
         }
     }//gets the json files from the Units/data folder and converts them to unity object and stores tehm into dictionary
@@ -148,17 +146,11 @@ public class DatabaseController : MonoBehaviour
             {
                 var Tempstring = File.ReadAllText(file); //temp string to hold the json data
                 var tempjson = JsonUtility.FromJson<Hero>(Tempstring); //this converts from json string to unity object
-                //Debug.log("Adding: " + tempjson.Slug + " to database");
-                if (!HeroDictionary.ContainsKey(tempjson.ID))
-                {
-                    HeroDictionary.Add(tempjson.ID, tempjson); //adds
-                    tempjson.GetSprites(); //details in fucntion
-                    //Debug.log("Finished adding: " + tempjson.Slug + " to database");
-                }
-                else
-                {
-                    Debug.LogError("Item id number: " + tempjson.ID + " is already claimed, change " + tempjson.Title + " ID please");
-                }
+                Debug.Log("Adding: " + tempjson.Slug + " to database");
+                tempjson.ID = NextHeroIndex;
+                HeroDictionary.Add(tempjson.ID, tempjson); //adds
+                tempjson.GetSprites(); //details in fucntion
+                NextHeroIndex = NextHeroIndex + 1;
             }
         }
     }//gets the json files from the Units/data folder and converts them to unity object and stores tehm into dictionary
@@ -176,17 +168,11 @@ public class DatabaseController : MonoBehaviour
             {
                 var Tempstring = File.ReadAllText(file); //temp string to hold the json data
                 var tempjson = JsonUtility.FromJson<Building>(Tempstring); //this converts from json string to unity object
-                //Debug.log("Adding: " + tempjson.Slug + " to database");
-                if (!BuildingDictionary.ContainsKey(tempjson.ID))
-                {
-                    BuildingDictionary.Add(tempjson.ID, tempjson); //adds
-                    tempjson.GetSprites(); //details in fucntion
-                    //Debug.log("Finished adding: " + tempjson.Slug + " to database");
-                }
-                else
-                {
-                    Debug.LogError("Item id number: " + tempjson.ID + " is already claimed, change " + tempjson.Title + " ID please");
-                }
+                Debug.Log("Adding: " + tempjson.Slug + " to database");
+                tempjson.ID = NextBuildingIndex;
+                BuildingDictionary.Add(tempjson.ID, tempjson); //adds
+                tempjson.GetSprites(); //details in fucntion
+                NextBuildingIndex = NextBuildingIndex + 1;
             }
         }
     }
@@ -201,17 +187,11 @@ public class DatabaseController : MonoBehaviour
         {
             var TempString = File.ReadAllText(file);
             var tempjson = JsonUtility.FromJson<MouseOverlays>(TempString);
-            //Debug.log("Adding: " + tempjson.Slug + " to database");
-            if (!MouseDictionary.ContainsKey(tempjson.ID))
-            {
-                MouseDictionary.Add(tempjson.ID, tempjson);
-                tempjson.GetSprites();
-                //Debug.log("Finished adding: " + tempjson.Slug + " to database");
-            }
-            else
-            {
-                Debug.LogError("Item id number: " + tempjson.ID + " is already claimed" + tempjson.Title + " ID please");
-            }
+            Debug.Log("Adding: " + tempjson.Slug + " to database");
+            tempjson.ID = NextMouseOverlayIndex;
+            MouseDictionary.Add(tempjson.ID, tempjson);
+            tempjson.GetSprites();
+            NextMouseOverlayIndex = NextMouseOverlayIndex + 1;
         }
     }//same as getTerrainJson
 
@@ -222,17 +202,11 @@ public class DatabaseController : MonoBehaviour
         {
             var TempString = File.ReadAllText(file);
             var tempjson = JsonUtility.FromJson<FogOfWar>(TempString);
-            //Debug.log("Adding: " + tempjson.Slug + " to database");
-            if (!FogOfWarDictionary.ContainsKey(tempjson.ID))
-            {
-                FogOfWarDictionary.Add(tempjson.ID, tempjson);
-                tempjson.GetSprites();
-                //Debug.log("Finished adding: " + tempjson.Slug + " to database");
-            }
-            else
-            {
-                Debug.LogError("Item id number: " + tempjson.ID + " is already claimed" + tempjson.Title + " ID please");
-            }
+            Debug.Log("Adding: " + tempjson.Slug + " to database");
+            tempjson.ID = NextFogIndex;
+            FogOfWarDictionary.Add(tempjson.ID, tempjson);
+            tempjson.GetSprites();
+            NextFogIndex = NextFogIndex + 1;
         }
     }
 
@@ -256,21 +230,21 @@ public class DatabaseController : MonoBehaviour
 
         GameObject MouseOverlayGO = new GameObject();                                                                       //creating the child object for mouse overlay
         MouseOverlayGO.AddComponent<SpriteRenderer>().sprite = loadSprite(MouseDictionary[0].ArtworkDirectory[0], MouseDictionary[0].PixelsPerUnit);          //adding it to sprite
-        MouseOverlayGO.GetComponent<SpriteRenderer>().sortingLayerName = UnitDictionary[index].Type;
+        MouseOverlayGO.GetComponent<SpriteRenderer>().sortingLayerName = MouseDictionary[0].SortingLayer;
         MouseOverlayGO.GetComponent<SpriteRenderer>().sortingOrder = 4;                                                     //making it so its on top of the default sprite
         MouseOverlayGO.transform.parent = TGO.transform;                                                                    //setting its parent to the main game object
         MouseOverlayGO.name = "MouseOverlay";                                                                               //changing the name
 
         GameObject FogOverlay = new GameObject();
         FogOverlay.AddComponent<SpriteRenderer>().sprite = loadSprite(FogOfWarDictionary[0].ArtworkDirectory[0], FogOfWarDictionary[0].PixelsPerUnit);
-        FogOverlay.GetComponent<SpriteRenderer>().sortingLayerName = UnitDictionary[index].Type;
+        FogOverlay.GetComponent<SpriteRenderer>().sortingLayerName = FogOfWarDictionary[0].SortingLayer;
         FogOverlay.GetComponent<SpriteRenderer>().sortingOrder = 3;
         FogOverlay.transform.parent = TGO.transform;
         FogOverlay.name = "FogOfWar";
 
         GameObject MouseOverlaySelected = new GameObject();
         MouseOverlaySelected.AddComponent<SpriteRenderer>().sprite = loadSprite(MouseDictionary[1].ArtworkDirectory[0], MouseDictionary[1].PixelsPerUnit);
-        MouseOverlaySelected.GetComponent<SpriteRenderer>().sortingLayerName = UnitDictionary[index].Type;
+        MouseOverlaySelected.GetComponent<SpriteRenderer>().sortingLayerName = MouseDictionary[1].SortingLayer;
         MouseOverlaySelected.GetComponent<SpriteRenderer>().sortingOrder = 5;
         MouseOverlaySelected.transform.parent = TGO.transform;
         MouseOverlaySelected.name = "MouseOverlaySelected";
@@ -283,7 +257,7 @@ public class DatabaseController : MonoBehaviour
         TGO.GetComponent<TerrainController>().Overlays = TerrainDictionary[index].Overlays;
         TGO.GetComponent<TerrainController>().Connectable = TerrainDictionary[index].Connectable;
         TGO.GetComponent<TerrainController>().IdleAnimations = TerrainDictionary[index].IdleAnimations;
-        TGO.GetComponent<TerrainController>().DictionaryReferance = index;
+        TGO.GetComponent<TerrainController>().ID = index;
         if (TerrainDictionary[index].IdleAnimations)
         {
             TGO.GetComponent<TerrainController>().IdleAnimationsDirectory = TerrainDictionary[index].IdleAnimationDirectory;
@@ -320,7 +294,7 @@ public class DatabaseController : MonoBehaviour
         TGO.GetComponent<UnitController>().CanConvert = UnitDictionary[index].CanConvert;
         TGO.GetComponent<UnitController>().SightRange = UnitDictionary[index].SightRange;
         TGO.GetComponent<UnitController>().ID = index;
-        TGO.GetComponent<UnitController>().DictionaryReferance = index;
+        TGO.GetComponent<UnitController>().ID = index;
         if (UnitDictionary[index].CanConvert)
         {
             TGO.GetComponent<UnitController>().ConversionSpeed = UnitDictionary[index].ConversionSpeed;
@@ -406,7 +380,7 @@ public class DatabaseController : MonoBehaviour
         TGO.GetComponent<BuildingController>().ID = index;
         TGO.GetComponent<BuildingController>().CanBuildUnits = BuildingDictionary[index].CanBuildUnits;
         TGO.GetComponent<BuildingController>().BuildableUnits = BuildingDictionary[index].BuildableUnits;
-        TGO.GetComponent<BuildingController>().DictionaryReferance = index;
+        TGO.GetComponent<BuildingController>().ID = index;
         TGO.tag = BuildingDictionary[index].Type;
         TGO.transform.position = location;
         GameObject TempCan = Instantiate(BuildingHealthOverlay, TGO.transform);
@@ -437,12 +411,22 @@ public class DatabaseController : MonoBehaviour
         }
         return null;
     }// checks for images that are to be used for artwork stuffs
+
+    public void ResetNextIndexes()
+    {
+        NextBuildingIndex = 0;
+        NextFogIndex = 0;
+        NextHeroIndex = 0;
+        NextMouseOverlayIndex = 0;
+        NextTerrainDicIndex = 0;
+        NextUnitDicIndex = 0;
+    }
 }
 
 [System.Serializable]
 public class Terrain
 {
-    public int ID;
+    public int ID; //used as dictionary referance
     public string Mod;
     public string Title;
     public bool Walkable;
@@ -486,7 +470,7 @@ public class Terrain
             }
             //var tempname = Path.GetFileNameWithoutExtension(file);  // use this to get file name
         }
-        //Debug.Log("Sprites found: " + count);
+        Debug.Log("Sprites found for " + Title + ": " + count + " in mod " + Mod);
         if (Title == "Water")
         {
             //Debug.Log("Overlays Contains:" + OverlayArtworkDirectory.Count);
@@ -536,7 +520,7 @@ public class Unit
             }
             //var tempname = Path.GetFileNameWithoutExtension(file);  // use this to get file name
         }
-        //Debug.log("Sprites found: " + count);
+        Debug.Log("Sprites found for " + Title + ": " + count + " in mod " + Mod);
         count = 0;
     }
 }//same use as terrian class
@@ -579,7 +563,7 @@ public class Building
             }
             //var tempname = Path.GetFileNameWithoutExtension(file);  // use this to get file name
         }
-        //Debug.log("Sprites found: " + count);
+        Debug.Log("Sprites found for " + Title + ": " + count + " in mod " + Mod);
         count = 0;
     }
 }//same use as terrian class
@@ -590,6 +574,7 @@ public class MouseOverlays
     public string Title;
     public string Slug;
     public string Type;
+    public string SortingLayer = "Unit";
     public int PixelsPerUnit;
     public List<string> ArtworkDirectory;
 
@@ -609,7 +594,7 @@ public class MouseOverlays
             }
             //var tempname = Path.GetFileNameWithoutExtension(file);  // use this to get file name
         }
-        //Debug.log("Sprites found: " + count);
+        Debug.Log("Sprites found for MO: " + count);
         count = 0;
     }
 }//same use as terrian class
@@ -619,6 +604,7 @@ public class FogOfWar
     public int ID;
     public string Title;
     public string Slug;
+    public string SortingLayer = "Unit";
     public int PixelsPerUnit;
     public List<string> ArtworkDirectory;
 
@@ -638,7 +624,7 @@ public class FogOfWar
             }
             //var tempname = Path.GetFileNameWithoutExtension(file);  // use this to get file name
         }
-        //Debug.log("Sprites found: " + count);
+        Debug.Log("Sprites found for FogOfWar: " + count);
         count = 0;
     }
 }//same use as terrian class

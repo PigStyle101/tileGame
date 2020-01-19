@@ -2,13 +2,19 @@ General
 	Mod file path - StreamingAssets\Mods\(your mod main file goes here)
 	Use Core mod as example for file structure
 	Everything is driven off of the json files, so any png not with a matching name to the json files will not be loaded
+	Any values that are left blank or missed will go to default, EX. int will go to 0, bool to false,string to ""
 
 Animations
 	Animations need to have the animation name in the png file name ex. WaterIdle1,WaterIdle2
 	Terrain only supports idle animations
-	Water overlay only need the right side, will rotat it to make other sides
+	Terrain overlay (Such as sand between water and other tiles) only need the right side, will rotat it to make other sides
 	
 
 	List of animations supported:
 		-Idle (max of 2 for now)
 		-Moving
+
+
+Buildings
+	at least one building must have ("MainBase": true,)
+	at least one building must have ("HeroSpawnPoint": true,)

@@ -123,12 +123,14 @@ public class MenueController : MonoBehaviour {
 
     public void MainMenueButtonClickedFromModScreen()
     {
-        if (ModsList.Count >=1)
+        if (ModsList.Count >= 1)
         {
             DBC.UnitDictionary.Clear();
             DBC.BuildingDictionary.Clear();
             DBC.TerrainDictionary.Clear();
             DBC.ModsLoaded.Clear();
+            DBC.ResetNextIndexes();
+            ModsList.Sort();
             foreach (string Mod in ModsList)
             {
                 DBC.GetTerrianJsons(Mod);
@@ -136,12 +138,39 @@ public class MenueController : MonoBehaviour {
                 DBC.GetBuildingJsons(Mod);
                 DBC.ModsLoaded.Add(Mod);
             }
-            MainMenuePanel.SetActive(true);
-            MapEditorMenuePanel.SetActive(false);
-            NewGameMenuePanel.SetActive(false);
-            LoadGamePanel.SetActive(false);
-            ModPanel.SetActive(false);
-            HeroPanel.SetActive(false); 
+            bool HasMainBase = false;
+            bool HasHeroSP = false;
+            foreach (var kvp in DBC.BuildingDictionary)
+            {
+                if (kvp.Value.MainBase && !HasMainBase)
+                {
+                    HasMainBase = true;
+                }
+                if (kvp.Value.HeroSpawnPoint && !HasHeroSP)
+                {
+                    HasHeroSP = true;
+                }
+            }
+            if (HasMainBase)
+            {
+                if (HasHeroSP)
+                {
+                    MainMenuePanel.SetActive(true);
+                    MapEditorMenuePanel.SetActive(false);
+                    NewGameMenuePanel.SetActive(false);
+                    LoadGamePanel.SetActive(false);
+                    ModPanel.SetActive(false);
+                    HeroPanel.SetActive(false);  
+                }
+                else
+                {
+                    ModDescriptionText.text = "Must have at least one building with property HeroSpawnPoint = true";
+                }
+            }
+            else
+            {
+                ModDescriptionText.text = "Must have at least one building with property MainBase = true";
+            }
         }
         else
         {
@@ -239,10 +268,35 @@ public class MenueController : MonoBehaviour {
         }
         foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/Maps", "*.json")))
         {
-            GameObject tempbutton = Instantiate(LoadMenueButtonPrefab, ContentWindowNewGame.transform); //create button and set its parent to content
-            tempbutton.name = Path.GetFileNameWithoutExtension(file); //change name
-            tempbutton.transform.GetChild(0).GetComponent<Text>().text = Path.GetFileNameWithoutExtension(file);
-            tempbutton.GetComponent<Button>().onClick.AddListener(MapSelectedNewGame); //adds method to button clicked
+            var Tempstring = File.ReadAllText(file); //temp string to hold the json data
+            Save tempjson = JsonUtility.FromJson<Save>(Tempstring); //this converts from json string to unity object
+            bool SameMods;
+            if (DBC.ModsLoaded.Count == tempjson.Mods.Count) // is there the same number of mods when the save was made?
+            {
+                SameMods = true; //set this to true, and then check through mods
+                foreach (var item in DBC.ModsLoaded)
+                {
+                    if (tempjson.Mods.Contains(item) && SameMods)
+                    {
+                        SameMods = true;
+                    }
+                    else
+                    {
+                        SameMods = false; //if a mod is not found go to false, ending teh loop
+                    }
+                }
+            }
+            else
+            {
+                SameMods = false;
+            }
+            if (SameMods) //must have same mods as when save was made to be able to load the save
+            {
+                GameObject tempbutton = Instantiate(LoadMenueButtonPrefab, ContentWindowNewGame.transform); //create button and set its parent to content
+                tempbutton.name = Path.GetFileNameWithoutExtension(file); //change name
+                tempbutton.transform.GetChild(0).GetComponent<Text>().text = Path.GetFileNameWithoutExtension(file);
+                tempbutton.GetComponent<Button>().onClick.AddListener(MapSelectedNewGame); //adds method to button clicked
+            }
         }
     }
 
@@ -255,10 +309,35 @@ public class MenueController : MonoBehaviour {
         }
         foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/Maps", "*.json")))
         {
-            GameObject tempbutton = Instantiate(LoadMenueButtonPrefab, ContentWindowMapEditor.transform); //create button and set its parent to content
-            tempbutton.name = Path.GetFileNameWithoutExtension(file); //change name
-            tempbutton.transform.GetChild(0).GetComponent<Text>().text = Path.GetFileNameWithoutExtension(file);
-            tempbutton.GetComponent<Button>().onClick.AddListener(MapSelectedEditor); //adds method to button clicked
+            var Tempstring = File.ReadAllText(file); //temp string to hold the json data
+            Save tempjson = JsonUtility.FromJson<Save>(Tempstring); //this converts from json string to unity object
+            bool SameMods;
+            if (DBC.ModsLoaded.Count == tempjson.Mods.Count)
+            {
+                SameMods = true;
+                foreach (var item in DBC.ModsLoaded)
+                {
+                    if (tempjson.Mods.Contains(item) && SameMods)
+                    {
+                        SameMods = true;
+                    }
+                    else
+                    {
+                        SameMods = false;
+                    }
+                }
+            }
+            else
+            {
+                SameMods = false;
+            }
+            if (SameMods)
+            {
+                GameObject tempbutton = Instantiate(LoadMenueButtonPrefab, ContentWindowMapEditor.transform); //create button and set its parent to content
+                tempbutton.name = Path.GetFileNameWithoutExtension(file); //change name
+                tempbutton.transform.GetChild(0).GetComponent<Text>().text = Path.GetFileNameWithoutExtension(file);
+                tempbutton.GetComponent<Button>().onClick.AddListener(MapSelectedEditor); //adds method to button clicked 
+            }
         }
     }
 
@@ -271,10 +350,35 @@ public class MenueController : MonoBehaviour {
         }
         foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/Saves", "*.json")))
         {
-            GameObject tempbutton = Instantiate(LoadMenueButtonPrefab, ContentWindowLoad.transform); //create button and set its parent to content
-            tempbutton.name = Path.GetFileNameWithoutExtension(file); //change name
-            tempbutton.transform.GetChild(0).GetComponent<Text>().text = Path.GetFileNameWithoutExtension(file);
-            tempbutton.GetComponent<Button>().onClick.AddListener(SaveGameSelected); //adds method to button clicked
+            var Tempstring = File.ReadAllText(file); //temp string to hold the json data
+            Save tempjson = JsonUtility.FromJson<Save>(Tempstring); //this converts from json string to unity object
+            bool SameMods;
+            if (DBC.ModsLoaded.Count == tempjson.Mods.Count) // is there the same number of mods when the save was made?
+            {
+                SameMods = true; //set this to true, and then check through mods
+                foreach (var item in DBC.ModsLoaded)
+                {
+                    if (tempjson.Mods.Contains(item) && SameMods)
+                    {
+                        SameMods = true;
+                    }
+                    else
+                    {
+                        SameMods = false; //if a mod is not found go to false, ending teh loop
+                    }
+                }
+            }
+            else
+            {
+                SameMods = false;
+            }
+            if (SameMods) //must have same mods as when save was made to be able to load the save
+            {
+                GameObject tempbutton = Instantiate(LoadMenueButtonPrefab, ContentWindowLoad.transform); //create button and set its parent to content
+                tempbutton.name = Path.GetFileNameWithoutExtension(file); //change name
+                tempbutton.transform.GetChild(0).GetComponent<Text>().text = Path.GetFileNameWithoutExtension(file);
+                tempbutton.GetComponent<Button>().onClick.AddListener(SaveGameSelected); //adds method to button clicked 
+            }
         }
     }
 
@@ -344,6 +448,7 @@ public class MenueController : MonoBehaviour {
         {
             Destroy(ContentWindowMods.transform.GetChild(i).gameObject);
         }
+        ModsInModContentWindow.Clear();
         foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/")))
         {
             GameObject tempbutton = Instantiate(ModsButtonPrefab, ContentWindowMods.transform); //create button and set its parent to content
@@ -352,6 +457,8 @@ public class MenueController : MonoBehaviour {
             tempbutton.GetComponent<Button>().onClick.AddListener(ModSelected); //adds method to button clicked
             ModsInModContentWindow.Add(tempbutton);
         }
+        UpdateModsActive();
+        DBC.ModsLoaded.Clear(); //clear this, as it is used in update mods, so after it is added to the mod list the list is no longer needed untell we load new mods
     }
 
     public void ModSelected()
@@ -365,21 +472,12 @@ public class MenueController : MonoBehaviour {
         if (ModsList.Contains(CurrentlySellectedMod))
         {
             ModDescriptionText.text = "Mod " + CurrentlySellectedMod + "is already added.";
+            UpdateModsActive();
         }
         else
         {
             ModsList.Add(CurrentlySellectedMod);
-        }
-        foreach (GameObject Button in ModsInModContentWindow)
-        {
-            if (ModsList.Contains(Button.name))
-            {
-                Button.GetComponent<Image>().color = new Color(0, 0.5f, 0);
-            }
-            else
-            {
-                Button.GetComponent<Image>().color = new Color(1, 1, 1);
-            }
+            UpdateModsActive();
         }
     }
 
@@ -388,13 +486,24 @@ public class MenueController : MonoBehaviour {
         if (ModsList.Contains(CurrentlySellectedMod))
         {
             ModsList.Remove(CurrentlySellectedMod);
+            UpdateModsActive();
         }
         else
         {
             ModDescriptionText.text = "Mod " + CurrentlySellectedMod + " cannot be romoved as it is not on the list";
+            UpdateModsActive();
         }
+        
+    }
+
+    public void UpdateModsActive()
+    {
         foreach (GameObject Button in ModsInModContentWindow)
         {
+            if (DBC.ModsLoaded.Contains(Button.name) && !ModsList.Contains(Button.name))
+            {
+                ModsList.Add(Button.name);
+            }
             if (ModsList.Contains(Button.name))
             {
                 Button.GetComponent<Image>().color = new Color(0, 0.5f, 0);

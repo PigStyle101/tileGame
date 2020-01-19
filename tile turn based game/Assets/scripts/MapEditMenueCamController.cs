@@ -23,6 +23,7 @@ public class MapEditMenueCamController : MonoBehaviour
     private GameObject MainPanel;
     private GameObject LoadPanel;
     private GameObject SavePanel;
+    private GameObject ChangeAllButton;
     public GameObject LoadButtonPrefab;
     private GameObject ContentWindowLoadButtons;
     [HideInInspector]
@@ -86,6 +87,7 @@ public class MapEditMenueCamController : MonoBehaviour
         SaveFeedback = transform.Find("Canvas").Find("Panel").Find("SaveGamePanel").Find("FeedbackText").GetComponent<Text>();
         LoadFeedback = transform.Find("Canvas").Find("Panel").Find("LoadGamePanel").Find("LoadPanelFeedbackText").GetComponent<Text>();
         SaveInputField = transform.Find("Canvas").Find("Panel").Find("SaveGamePanel").GetComponentInChildren<InputField>();
+        ChangeAllButton = transform.Find("Canvas").Find("Panel").Find("MainPanel").Find("ChangeAllButton").gameObject;
     }
 
     private void MoveScreenXandY()
@@ -126,7 +128,7 @@ public class MapEditMenueCamController : MonoBehaviour
 
     void ChangeSelectedButton()
     {
-        SelectedButtonDR = EventSystem.current.currentSelectedGameObject.GetComponent<ButtonProperties>().DictionaryReferance;
+        SelectedButtonDR = EventSystem.current.currentSelectedGameObject.GetComponent<ButtonProperties>().ID;
         CurrentSelectedButtonText.text = "Currently Selected: " + EventSystem.current.currentSelectedGameObject.name;
     } //changes to whatever button is clicked
 
@@ -141,7 +143,7 @@ public class MapEditMenueCamController : MonoBehaviour
             tempbutton.GetComponent<Image>().sprite = DBC.loadSprite(DBC.TerrainDictionary[kvp.Key].ArtworkDirectory[0],DBC.TerrainDictionary[kvp.Key].PixelsPerUnit); //set sprite
             tempbutton.GetComponent<Button>().onClick.AddListener(ChangeSelectedButton); //adds method to button clicked
             tempbutton.AddComponent<ButtonProperties>();
-            tempbutton.GetComponent<ButtonProperties>().DictionaryReferance = kvp.Key;
+            tempbutton.GetComponent<ButtonProperties>().ID = kvp.Key;
         }
     } //populates the tile selection bar
 
@@ -156,7 +158,7 @@ public class MapEditMenueCamController : MonoBehaviour
             tempbutton.GetComponent<Image>().sprite = DBC.loadSprite(DBC.UnitDictionary[kvp.Key].ArtworkDirectory[0], DBC.UnitDictionary[kvp.Key].PixelsPerUnit); //set sprite
             tempbutton.GetComponent<Button>().onClick.AddListener(ChangeSelectedButton); //adds method to button clicked
             tempbutton.AddComponent<ButtonProperties>();
-            tempbutton.GetComponent<ButtonProperties>().DictionaryReferance = kvp.Key;
+            tempbutton.GetComponent<ButtonProperties>().ID = kvp.Key;
         }
 
         GameObject temppbutton = Instantiate(MapEditorTilesButtonPrefab, ContentWindowUnits.transform);
@@ -164,7 +166,7 @@ public class MapEditMenueCamController : MonoBehaviour
         temppbutton.transform.GetChild(0).GetComponent<Text>().text = "Delete Unit";
         temppbutton.GetComponent<Button>().onClick.AddListener(ChangeSelectedButton);
         temppbutton.AddComponent<ButtonProperties>();
-        temppbutton.GetComponent<ButtonProperties>().DictionaryReferance = -1;
+        temppbutton.GetComponent<ButtonProperties>().ID = -1;
 
     } //populates the tile selection bar
 
@@ -179,7 +181,7 @@ public class MapEditMenueCamController : MonoBehaviour
             tempbutton.GetComponent<Image>().sprite = DBC.loadSprite(DBC.BuildingDictionary[kvp.Key].ArtworkDirectory[0], DBC.BuildingDictionary[kvp.Key].PixelsPerUnit); //set sprite
             tempbutton.GetComponent<Button>().onClick.AddListener(ChangeSelectedButton); //adds method to button clicked
             tempbutton.AddComponent<ButtonProperties>();
-            tempbutton.GetComponent<ButtonProperties>().DictionaryReferance = kvp.Key;
+            tempbutton.GetComponent<ButtonProperties>().ID = kvp.Key;
         }
 
         GameObject temppbutton = Instantiate(MapEditorTilesButtonPrefab, ContentWindowBuilding.transform);
@@ -187,37 +189,59 @@ public class MapEditMenueCamController : MonoBehaviour
         temppbutton.transform.GetChild(0).GetComponent<Text>().text = "Delete Building";
         temppbutton.GetComponent<Button>().onClick.AddListener(ChangeSelectedButton);
         temppbutton.AddComponent<ButtonProperties>();
-        temppbutton.GetComponent<ButtonProperties>().DictionaryReferance = -1;
+        temppbutton.GetComponent<ButtonProperties>().ID = -1;
 
     } //populates the tile selection bar
 
     private void AddLoadButtonsToContent()
-    {
-        string[] files = Directory.GetFiles(Application.dataPath + "/StreamingAssets/Maps/", "*.json");
-        foreach (string file in files)
-        {
-            ////Debug.log(Path.GetFileNameWithoutExtension(file));
-            GameObject temploadbutton = Instantiate(LoadButtonPrefab, ContentWindowLoadButtons.transform);
-            temploadbutton.name = Path.GetFileNameWithoutExtension(file);
-            temploadbutton.transform.GetChild(0).GetComponent<Text>().text = Path.GetFileNameWithoutExtension(file);
-            temploadbutton.GetComponent<Button>().onClick.AddListener(LoadFileButtonClicked);
-        }
-    } //searches saves file and adds a button for each save
-
-    private void RemoveLoadButtonsFromContent()
     {
         var childcount = ContentWindowLoadButtons.transform.childCount;
         for (int i = 0; i < childcount; i++)
         {
             Destroy(ContentWindowLoadButtons.transform.GetChild(i).gameObject);
         }
-    } //this is needed so that ever time the AddLoadButtonsToContent is called the buttons will be refreshed
+        string[] files = Directory.GetFiles(Application.dataPath + "/StreamingAssets/Maps/", "*.json");
+        foreach (string file in files)
+        {
+            var Tempstring = File.ReadAllText(file); //temp string to hold the json data
+            Save tempjson = JsonUtility.FromJson<Save>(Tempstring); //this converts from json string to unity object
+            bool SameMods;
+            if (DBC.ModsLoaded.Count == tempjson.Mods.Count)
+            {
+                SameMods = true;
+                foreach (var item in DBC.ModsLoaded)
+                {
+                    if (tempjson.Mods.Contains(item) && SameMods)
+                    {
+                        SameMods = true;
+                    }
+                    else
+                    {
+                        SameMods = false;
+                    }
+                }
+            }
+            else
+            {
+                SameMods = false;
+            }
+            if (SameMods)
+            {
+                ////Debug.log(Path.GetFileNameWithoutExtension(file));
+                GameObject temploadbutton = Instantiate(LoadButtonPrefab, ContentWindowLoadButtons.transform);
+                temploadbutton.name = Path.GetFileNameWithoutExtension(file);
+                temploadbutton.transform.GetChild(0).GetComponent<Text>().text = Path.GetFileNameWithoutExtension(file);
+                temploadbutton.GetComponent<Button>().onClick.AddListener(LoadFileButtonClicked); 
+            }
+        }
+    } //searches saves file and adds a button for each save
 
     public void TerrainButtonClicked()
     {
         ScrollWindowTerrain.SetActive(true);
         ScrollWindowBuilding.SetActive(false);
         ScrollWindowUnits.SetActive(false);
+        ChangeAllButton.SetActive(true);
         SelectedTab = "Terrain";
         CurrentSelectedButtonText.text = "Currently Selected: " + DBC.TerrainDictionary[0].Title;
         SelectedButtonDR = 0;
@@ -228,6 +252,7 @@ public class MapEditMenueCamController : MonoBehaviour
         ScrollWindowTerrain.SetActive(false);
         ScrollWindowBuilding.SetActive(true);
         ScrollWindowUnits.SetActive(false);
+        ChangeAllButton.SetActive(false);
         SelectedTab = "Building";
         CurrentSelectedButtonText.text = "Currently Selected: " + DBC.BuildingDictionary[0].Title;
         SelectedButtonDR = 0;
@@ -238,9 +263,10 @@ public class MapEditMenueCamController : MonoBehaviour
         ScrollWindowTerrain.SetActive(false);
         ScrollWindowBuilding.SetActive(false);
         ScrollWindowUnits.SetActive(true);
+        ChangeAllButton.SetActive(false);
         SelectedTab = "Unit";
-        CurrentSelectedButtonText.text = "Currently Selected: " + DBC.UnitDictionary[0].Title;
-        SelectedButtonDR = 0;
+        CurrentSelectedButtonText.text = "Currently Selected: " + ContentWindowUnits.transform.GetChild(0).name;
+        SelectedButtonDR = ContentWindowUnits.transform.GetChild(0).GetComponent<ButtonProperties>().ID;
     } //sets the unit content window as the active one
 
     public void MainSaveButtonClicked()
@@ -251,7 +277,6 @@ public class MapEditMenueCamController : MonoBehaviour
 
     public void MainLoadButtonClicked()
     {
-        RemoveLoadButtonsFromContent();
         AddLoadButtonsToContent();
         MainPanel.SetActive(false);
         LoadPanel.SetActive(true);
@@ -405,52 +430,52 @@ public class MapEditMenueCamController : MonoBehaviour
         {
             if (ContentWindowTerrain.transform.childCount > 0 && Input.GetKeyDown(KeyCode.Q))
             {
-                SelectedButtonDR = ContentWindowTerrain.transform.GetChild(0).GetComponent<ButtonProperties>().DictionaryReferance;
+                SelectedButtonDR = ContentWindowTerrain.transform.GetChild(0).GetComponent<ButtonProperties>().ID;
                 CurrentSelectedButtonText.text = "Currently Selected: " + ContentWindowTerrain.transform.GetChild(0).name;
             }
             if (ContentWindowTerrain.transform.childCount > 1 && Input.GetKeyDown(KeyCode.W))
             {
-                SelectedButtonDR = ContentWindowTerrain.transform.GetChild(1).GetComponent<ButtonProperties>().DictionaryReferance;
+                SelectedButtonDR = ContentWindowTerrain.transform.GetChild(1).GetComponent<ButtonProperties>().ID;
                 CurrentSelectedButtonText.text = "Currently Selected: " + ContentWindowTerrain.transform.GetChild(1).name;
             }
             if (ContentWindowTerrain.transform.childCount > 2 && Input.GetKeyDown(KeyCode.E))
             {
-                SelectedButtonDR = ContentWindowTerrain.transform.GetChild(2).GetComponent<ButtonProperties>().DictionaryReferance;
+                SelectedButtonDR = ContentWindowTerrain.transform.GetChild(2).GetComponent<ButtonProperties>().ID;
                 CurrentSelectedButtonText.text = "Currently Selected: " + ContentWindowTerrain.transform.GetChild(2).name;
             }
             if (ContentWindowTerrain.transform.childCount > 3 && Input.GetKeyDown(KeyCode.R))
             {
-                SelectedButtonDR = ContentWindowTerrain.transform.GetChild(3).GetComponent<ButtonProperties>().DictionaryReferance;
+                SelectedButtonDR = ContentWindowTerrain.transform.GetChild(3).GetComponent<ButtonProperties>().ID;
                 CurrentSelectedButtonText.text = "Currently Selected: " + ContentWindowTerrain.transform.GetChild(3).name;
             }
             if (ContentWindowTerrain.transform.childCount > 4 && Input.GetKeyDown(KeyCode.T))
             {
-                SelectedButtonDR = ContentWindowTerrain.transform.GetChild(4).GetComponent<ButtonProperties>().DictionaryReferance;
+                SelectedButtonDR = ContentWindowTerrain.transform.GetChild(4).GetComponent<ButtonProperties>().ID;
                 CurrentSelectedButtonText.text = "Currently Selected: " + ContentWindowTerrain.transform.GetChild(4).name;
             }
             if (ContentWindowTerrain.transform.childCount > 5 && Input.GetKeyDown(KeyCode.Y))
             {
-                SelectedButtonDR = ContentWindowTerrain.transform.GetChild(5).GetComponent<ButtonProperties>().DictionaryReferance;
+                SelectedButtonDR = ContentWindowTerrain.transform.GetChild(5).GetComponent<ButtonProperties>().ID;
                 CurrentSelectedButtonText.text = "Currently Selected: " + ContentWindowTerrain.transform.GetChild(5).name;
             }
             if (ContentWindowTerrain.transform.childCount > 6 && Input.GetKeyDown(KeyCode.U))
             {
-                SelectedButtonDR = ContentWindowTerrain.transform.GetChild(6).GetComponent<ButtonProperties>().DictionaryReferance;
+                SelectedButtonDR = ContentWindowTerrain.transform.GetChild(6).GetComponent<ButtonProperties>().ID;
                 CurrentSelectedButtonText.text = "Currently Selected: " + ContentWindowTerrain.transform.GetChild(6).name;
             }
             if (ContentWindowTerrain.transform.childCount > 7 && Input.GetKeyDown(KeyCode.I))
             {
-                SelectedButtonDR = ContentWindowTerrain.transform.GetChild(7).GetComponent<ButtonProperties>().DictionaryReferance;
+                SelectedButtonDR = ContentWindowTerrain.transform.GetChild(7).GetComponent<ButtonProperties>().ID;
                 CurrentSelectedButtonText.text = "Currently Selected: " + ContentWindowTerrain.transform.GetChild(7).name;
             }
             if (ContentWindowTerrain.transform.childCount > 8 && Input.GetKeyDown(KeyCode.O))
             {
-                SelectedButtonDR = ContentWindowTerrain.transform.GetChild(8).GetComponent<ButtonProperties>().DictionaryReferance;
+                SelectedButtonDR = ContentWindowTerrain.transform.GetChild(8).GetComponent<ButtonProperties>().ID;
                 CurrentSelectedButtonText.text = "Currently Selected: " + ContentWindowTerrain.transform.GetChild(8).name;
             }
             if (ContentWindowTerrain.transform.childCount > 9 && Input.GetKeyDown(KeyCode.P))
             {
-                SelectedButtonDR = ContentWindowTerrain.transform.GetChild(9).GetComponent<ButtonProperties>().DictionaryReferance;
+                SelectedButtonDR = ContentWindowTerrain.transform.GetChild(9).GetComponent<ButtonProperties>().ID;
                 CurrentSelectedButtonText.text = "Currently Selected: " + ContentWindowTerrain.transform.GetChild(9).name;
             }
         }
@@ -458,52 +483,52 @@ public class MapEditMenueCamController : MonoBehaviour
         {
             if (ContentWindowUnits.transform.childCount > 0 && Input.GetKeyDown(KeyCode.Q))
             {
-                SelectedButtonDR = ContentWindowUnits.transform.GetChild(0).GetComponent<ButtonProperties>().DictionaryReferance;
+                SelectedButtonDR = ContentWindowUnits.transform.GetChild(0).GetComponent<ButtonProperties>().ID;
                 CurrentSelectedButtonText.text = "Currently Selected: " + ContentWindowUnits.transform.GetChild(0).name;
             }
             if (ContentWindowUnits.transform.childCount > 1 && Input.GetKeyDown(KeyCode.W))
             {
-                SelectedButtonDR = ContentWindowUnits.transform.GetChild(1).GetComponent<ButtonProperties>().DictionaryReferance;
+                SelectedButtonDR = ContentWindowUnits.transform.GetChild(1).GetComponent<ButtonProperties>().ID;
                 CurrentSelectedButtonText.text = "Currently Selected: " + ContentWindowUnits.transform.GetChild(1).name;
             }
             if (ContentWindowUnits.transform.childCount > 2 && Input.GetKeyDown(KeyCode.E))
             {
-                SelectedButtonDR = ContentWindowUnits.transform.GetChild(2).GetComponent<ButtonProperties>().DictionaryReferance;
+                SelectedButtonDR = ContentWindowUnits.transform.GetChild(2).GetComponent<ButtonProperties>().ID;
                 CurrentSelectedButtonText.text = "Currently Selected: " + ContentWindowUnits.transform.GetChild(2).name;
             }
             if (ContentWindowUnits.transform.childCount > 3 && Input.GetKeyDown(KeyCode.R))
             {
-                SelectedButtonDR = ContentWindowUnits.transform.GetChild(3).GetComponent<ButtonProperties>().DictionaryReferance;
+                SelectedButtonDR = ContentWindowUnits.transform.GetChild(3).GetComponent<ButtonProperties>().ID;
                 CurrentSelectedButtonText.text = "Currently Selected: " + ContentWindowUnits.transform.GetChild(3).name;
             }
             if (ContentWindowUnits.transform.childCount > 4 && Input.GetKeyDown(KeyCode.T))
             {
-                SelectedButtonDR = ContentWindowUnits.transform.GetChild(4).GetComponent<ButtonProperties>().DictionaryReferance;
+                SelectedButtonDR = ContentWindowUnits.transform.GetChild(4).GetComponent<ButtonProperties>().ID;
                 CurrentSelectedButtonText.text = "Currently Selected: " + ContentWindowUnits.transform.GetChild(4).name;
             }
             if (ContentWindowUnits.transform.childCount > 5 && Input.GetKeyDown(KeyCode.Y))
             {
-                SelectedButtonDR = ContentWindowUnits.transform.GetChild(5).GetComponent<ButtonProperties>().DictionaryReferance;
+                SelectedButtonDR = ContentWindowUnits.transform.GetChild(5).GetComponent<ButtonProperties>().ID;
                 CurrentSelectedButtonText.text = "Currently Selected: " + ContentWindowUnits.transform.GetChild(5).name;
             }
             if (ContentWindowUnits.transform.childCount > 6 && Input.GetKeyDown(KeyCode.U))
             {
-                SelectedButtonDR = ContentWindowUnits.transform.GetChild(6).GetComponent<ButtonProperties>().DictionaryReferance;
+                SelectedButtonDR = ContentWindowUnits.transform.GetChild(6).GetComponent<ButtonProperties>().ID;
                 CurrentSelectedButtonText.text = "Currently Selected: " + ContentWindowUnits.transform.GetChild(6).name;
             }
             if (ContentWindowUnits.transform.childCount > 7 && Input.GetKeyDown(KeyCode.I))
             {
-                SelectedButtonDR = ContentWindowUnits.transform.GetChild(7).GetComponent<ButtonProperties>().DictionaryReferance;
+                SelectedButtonDR = ContentWindowUnits.transform.GetChild(7).GetComponent<ButtonProperties>().ID;
                 CurrentSelectedButtonText.text = "Currently Selected: " + ContentWindowUnits.transform.GetChild(7).name;
             }
             if (ContentWindowUnits.transform.childCount > 8 && Input.GetKeyDown(KeyCode.O))
             {
-                SelectedButtonDR = ContentWindowUnits.transform.GetChild(8).GetComponent<ButtonProperties>().DictionaryReferance;
+                SelectedButtonDR = ContentWindowUnits.transform.GetChild(8).GetComponent<ButtonProperties>().ID;
                 CurrentSelectedButtonText.text = "Currently Selected: " + ContentWindowUnits.transform.GetChild(8).name;
             }
             if (ContentWindowUnits.transform.childCount > 9 && Input.GetKeyDown(KeyCode.P))
             {
-                SelectedButtonDR = ContentWindowUnits.transform.GetChild(9).GetComponent<ButtonProperties>().DictionaryReferance;
+                SelectedButtonDR = ContentWindowUnits.transform.GetChild(9).GetComponent<ButtonProperties>().ID;
                 CurrentSelectedButtonText.text = "Currently Selected: " + ContentWindowUnits.transform.GetChild(9).name;
             }
         }
@@ -511,54 +536,66 @@ public class MapEditMenueCamController : MonoBehaviour
         {
             if (ContentWindowBuilding.transform.childCount > 0 && Input.GetKeyDown(KeyCode.Q))
             {
-                SelectedButtonDR = ContentWindowBuilding.transform.GetChild(0).GetComponent<ButtonProperties>().DictionaryReferance;
+                SelectedButtonDR = ContentWindowBuilding.transform.GetChild(0).GetComponent<ButtonProperties>().ID;
                 CurrentSelectedButtonText.text = "Currently Selected: " + ContentWindowBuilding.transform.GetChild(0).name;
             }
             if (ContentWindowBuilding.transform.childCount > 1 && Input.GetKeyDown(KeyCode.W))
             {
-                SelectedButtonDR = ContentWindowBuilding.transform.GetChild(1).GetComponent<ButtonProperties>().DictionaryReferance;
+                SelectedButtonDR = ContentWindowBuilding.transform.GetChild(1).GetComponent<ButtonProperties>().ID;
                 CurrentSelectedButtonText.text = "Currently Selected: " + ContentWindowBuilding.transform.GetChild(1).name;
             }
             if (ContentWindowBuilding.transform.childCount > 2 && Input.GetKeyDown(KeyCode.E))
             {
-                SelectedButtonDR = ContentWindowBuilding.transform.GetChild(2).GetComponent<ButtonProperties>().DictionaryReferance;
+                SelectedButtonDR = ContentWindowBuilding.transform.GetChild(2).GetComponent<ButtonProperties>().ID;
                 CurrentSelectedButtonText.text = "Currently Selected: " + ContentWindowBuilding.transform.GetChild(2).name;
             }
             if (ContentWindowBuilding.transform.childCount > 3 && Input.GetKeyDown(KeyCode.R))
             {
-                SelectedButtonDR = ContentWindowBuilding.transform.GetChild(3).GetComponent<ButtonProperties>().DictionaryReferance;
+                SelectedButtonDR = ContentWindowBuilding.transform.GetChild(3).GetComponent<ButtonProperties>().ID;
                 CurrentSelectedButtonText.text = "Currently Selected: " + ContentWindowBuilding.transform.GetChild(3).name;
             }
             if (ContentWindowBuilding.transform.childCount > 4 && Input.GetKeyDown(KeyCode.T))
             {
-                SelectedButtonDR = ContentWindowBuilding.transform.GetChild(4).GetComponent<ButtonProperties>().DictionaryReferance;
+                SelectedButtonDR = ContentWindowBuilding.transform.GetChild(4).GetComponent<ButtonProperties>().ID;
                 CurrentSelectedButtonText.text = "Currently Selected: " + ContentWindowBuilding.transform.GetChild(4).name;
             }
             if (ContentWindowBuilding.transform.childCount > 5 && Input.GetKeyDown(KeyCode.Y))
             {
-                SelectedButtonDR = ContentWindowBuilding.transform.GetChild(5).GetComponent<ButtonProperties>().DictionaryReferance;
+                SelectedButtonDR = ContentWindowBuilding.transform.GetChild(5).GetComponent<ButtonProperties>().ID;
                 CurrentSelectedButtonText.text = "Currently Selected: " + ContentWindowBuilding.transform.GetChild(5).name;
             }
             if (ContentWindowBuilding.transform.childCount > 6 && Input.GetKeyDown(KeyCode.U))
             {
-                SelectedButtonDR = ContentWindowBuilding.transform.GetChild(6).GetComponent<ButtonProperties>().DictionaryReferance;
+                SelectedButtonDR = ContentWindowBuilding.transform.GetChild(6).GetComponent<ButtonProperties>().ID;
                 CurrentSelectedButtonText.text = "Currently Selected: " + ContentWindowBuilding.transform.GetChild(6).name;
             }
             if (ContentWindowBuilding.transform.childCount > 7 && Input.GetKeyDown(KeyCode.I))
             {
-                SelectedButtonDR = ContentWindowBuilding.transform.GetChild(7).GetComponent<ButtonProperties>().DictionaryReferance;
+                SelectedButtonDR = ContentWindowBuilding.transform.GetChild(7).GetComponent<ButtonProperties>().ID;
                 CurrentSelectedButtonText.text = "Currently Selected: " + ContentWindowBuilding.transform.GetChild(7).name;
             }
             if (ContentWindowBuilding.transform.childCount > 8 && Input.GetKeyDown(KeyCode.O))
             {
-                SelectedButtonDR = ContentWindowBuilding.transform.GetChild(8).GetComponent<ButtonProperties>().DictionaryReferance;
+                SelectedButtonDR = ContentWindowBuilding.transform.GetChild(8).GetComponent<ButtonProperties>().ID;
                 CurrentSelectedButtonText.text = "Currently Selected: " + ContentWindowBuilding.transform.GetChild(8).name;
             }
             if (ContentWindowBuilding.transform.childCount > 9 && Input.GetKeyDown(KeyCode.P))
             {
-                SelectedButtonDR = ContentWindowBuilding.transform.GetChild(9).GetComponent<ButtonProperties>().DictionaryReferance;
+                SelectedButtonDR = ContentWindowBuilding.transform.GetChild(9).GetComponent<ButtonProperties>().ID;
                 CurrentSelectedButtonText.text = "Currently Selected: " + ContentWindowBuilding.transform.GetChild(9).name;
             }
         }
+    }
+
+    public void ChangeAllButtonClicked()
+    {
+        foreach (var kvp in GCS.TilePos)
+        {
+            if (kvp.Value.GetComponent<TerrainController>().ID != SelectedButtonDR)
+            {
+                kvp.Value.GetComponent<TerrainController>().ChangeTile();
+            }
+        }
+        GCS.SpriteUpdateActivator();
     }
 }

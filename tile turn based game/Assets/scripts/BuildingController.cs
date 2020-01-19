@@ -29,8 +29,6 @@ public class BuildingController : MonoBehaviour
     [HideInInspector]
     public bool CanBuildUnits;
     private PlaySceneCamController PSCC;
-    [HideInInspector]
-    public int DictionaryReferance;
     private GameControllerScript GCS;
     private DatabaseController DBC;
 
@@ -47,7 +45,7 @@ public class BuildingController : MonoBehaviour
 
     public void TeamSpriteUpdater()
     {
-        gameObject.GetComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.BuildingDictionary[DictionaryReferance].ArtworkDirectory[Team], DBC.BuildingDictionary[DictionaryReferance].PixelsPerUnit);
+        gameObject.GetComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.BuildingDictionary[ID].ArtworkDirectory[Team], DBC.BuildingDictionary[ID].PixelsPerUnit);
     }
 
     public void ChangeBuilding()
@@ -65,10 +63,10 @@ public class BuildingController : MonoBehaviour
             CanBuildUnits = DBC.BuildingDictionary[MEMCC.SelectedButtonDR].CanBuildUnits;
             BuildableUnits = DBC.BuildingDictionary[MEMCC.SelectedButtonDR].BuildableUnits;
             ID = DBC.BuildingDictionary[MEMCC.SelectedButtonDR].ID;
-            DictionaryReferance = MEMCC.SelectedButtonDR;
+            ID = MEMCC.SelectedButtonDR;
             gameObject.GetComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.BuildingDictionary[MEMCC.SelectedButtonDR].ArtworkDirectory[0], DBC.BuildingDictionary[MEMCC.SelectedButtonDR].PixelsPerUnit); //change sprite of tile
 
-            if (GCS.UnitPos.ContainsKey(gameObject.transform.position) && DBC.BuildingDictionary[DictionaryReferance].HeroSpawnPoint)
+            if (GCS.UnitPos.ContainsKey(gameObject.transform.position) && DBC.BuildingDictionary[ID].HeroSpawnPoint)
             {
                 Destroy(GCS.UnitPos[gameObject.transform.position]);
                 GCS.UnitPos.Remove(gameObject.transform.position);

@@ -80,6 +80,7 @@ public class GameControllerScript : MonoBehaviour
             Destroy(gameObject);
         }
     }
+
     private void Start()
     {
         DBC = DatabaseController.instance;
@@ -150,7 +151,7 @@ public class GameControllerScript : MonoBehaviour
                     for (int o = 0; o < EditorMapSize; o++)
                     {
                         //creates a map in data to use for drawing later
-                        MapDictionary.Add(new Vector2(i, o), DBC.TerrainDictionary[1].Title);
+                        MapDictionary.Add(new Vector2(i, o), DBC.TerrainDictionary[0].Title);
                         //UnityEngine.//Debug.log("Added Key: " + i + o);
                     }
                 }
@@ -191,7 +192,7 @@ public class GameControllerScript : MonoBehaviour
     {
         foreach (var kvp in MapDictionary) //runs creation script for each 
         {
-            GameObject go = DBC.CreateAdnSpawnTerrain(kvp.Key, 1);
+            GameObject go = DBC.CreateAdnSpawnTerrain(kvp.Key, 0);
             AddTilesToDictionary(go);
         }
         CameraVar = GameObject.Find("MainCamera");
@@ -321,7 +322,7 @@ public class GameControllerScript : MonoBehaviour
                         if (hit.transform.tag == DBC.TerrainDictionary[0].Type) //is it a terrain?
                         {
                             TerrainController TC = hit.transform.GetComponent<TerrainController>();
-                            if (hit.transform.GetComponent<TerrainController>().DictionaryReferance != MEMCC.SelectedButtonDR) //are we changing the tile to something new?
+                            if (hit.transform.GetComponent<TerrainController>().ID != MEMCC.SelectedButtonDR) //are we changing the tile to something new?
                             {
                                 //Debug.Log("Changing terrain to " + MEMCC.SelectedButtonDR);
                                 TC.ChangeTile(); //change tile to new terrain tile
@@ -332,7 +333,7 @@ public class GameControllerScript : MonoBehaviour
                         else if (hit.transform.tag == DBC.UnitDictionary[0].Type) //is the hit a unit?
                         {
                             UnitController UC = hit.transform.GetComponent<UnitController>();
-                            if (hit.transform.GetComponent<UnitController>().DictionaryReferance != MEMCC.SelectedButtonDR) //are we changing the unit to something new?
+                            if (hit.transform.GetComponent<UnitController>().ID != MEMCC.SelectedButtonDR) //are we changing the unit to something new?
                             {
                                 //Debug.log("Changing unit to " + MEMCC.SelectedButton);
                                 if (MEMCC.SelectedButtonDR == -1)
@@ -358,7 +359,7 @@ public class GameControllerScript : MonoBehaviour
                         else if (hit.transform.tag == DBC.BuildingDictionary[0].Type) //is the hit a building?
                         {
                             BuildingController BC = hit.transform.GetComponent<BuildingController>();
-                            if (BC.DictionaryReferance != MEMCC.SelectedButtonDR) //are we changing the building to something new?
+                            if (BC.ID != MEMCC.SelectedButtonDR) //are we changing the building to something new?
                             {
                                 if (MEMCC.SelectedButtonDR != -1)
                                 {
@@ -467,7 +468,7 @@ public class GameControllerScript : MonoBehaviour
                             tempbool = hit.transform.GetComponent<TerrainController>().Walkable; //is the terrain we are trying to place on walkable?
                             if (BuildingPos.ContainsKey(hit.transform.position))
                             {
-                                if (DBC.BuildingDictionary[BuildingPos[hit.transform.position].GetComponent<BuildingController>().DictionaryReferance].HeroSpawnPoint)
+                                if (DBC.BuildingDictionary[BuildingPos[hit.transform.position].GetComponent<BuildingController>().ID].HeroSpawnPoint)
                                 {
                                     tempbool = false;
                                 }
@@ -711,6 +712,7 @@ public class GameControllerScript : MonoBehaviour
                 {
                     Map MF = new Map();
                     TeamList = FillTeamList();
+                    MF.Mods = DBC.ModsLoaded;
                     MF.UnitList = new List<SaveableUnit>();
                     MF.TerrainList = new List<SaveableTile>();
                     MF.BuildingList = new List<SaveableBuilding>();
@@ -743,7 +745,7 @@ public class GameControllerScript : MonoBehaviour
                         SB.Health = kvp.Value.GetComponent<BuildingController>().Health;
                         SB.Team = kvp.Value.GetComponent<BuildingController>().Team;
                         SB.ID = kvp.Value.GetComponent<BuildingController>().ID;
-                        SB.HeroSpawnPoint = DBC.BuildingDictionary[kvp.Value.GetComponent<BuildingController>().DictionaryReferance].HeroSpawnPoint;
+                        SB.MainBase = DBC.BuildingDictionary[kvp.Value.GetComponent<BuildingController>().ID].MainBase;
                         SB.Location = kvp.Key;
                         MF.BuildingList.Add(SB);
                         foreach (var t in TeamList)
@@ -752,7 +754,7 @@ public class GameControllerScript : MonoBehaviour
                             {
                                 t.Active = true;
                             }
-                            if (t.Team == SB.Team && t.Active && !t.HaseMainBase && SB.HeroSpawnPoint)
+                            if (t.Team == SB.Team && t.Active && !t.HaseMainBase && SB.MainBase)
                             {
                                 t.HaseMainBase = true;
                             }
@@ -1199,12 +1201,12 @@ public class GameControllerScript : MonoBehaviour
                 BC.Health = BC.Health - SelectedUnitPlayScene.GetComponent<UnitController>().ConversionSpeed;
                 if (BC.Health <= 0)
                 {
-                    if (DBC.BuildingDictionary[BC.DictionaryReferance].MainBase)
+                    if (DBC.BuildingDictionary[BC.ID].MainBase)
                     {
                         TeamList[BC.Team].Defeated = true;
                     }
                     BC.Team = SelectedUnitPlayScene.GetComponent<UnitController>().Team;
-                    BC.Health = DBC.BuildingDictionary[BC.DictionaryReferance].Health; // set this to max health variable from building json
+                    BC.Health = DBC.BuildingDictionary[BC.ID].Health; // set this to max health variable from building json
                     BC.TeamSpriteUpdater();
                     b.Value.transform.GetComponentInChildren<Text>().text = BC.Health.ToString();
                 }
@@ -1498,6 +1500,7 @@ public class GameControllerScript : MonoBehaviour
 
         Save SF = new Save();
         SF.TeamList = TeamList;
+        SF.Mods = DBC.ModsLoaded;
         SF.CurrentTeamsTurn = CurrentTeamsTurn.Team;
         SF.UnitList = new List<SaveableUnit>();
         SF.TerrainList = new List<SaveableTile>();
@@ -1714,6 +1717,7 @@ public class Save
     public List<SaveableUnit> UnitList;
     public List<SaveableBuilding> BuildingList;
     public List<SaveableTile> TerrainList;
+    public List<string> Mods;
 }
 
 [Serializable]
@@ -1785,7 +1789,7 @@ public class SaveableBuilding
 {
     public int Team;
     public int Health;
-    public bool HeroSpawnPoint;
+    public bool MainBase;
     public int ID;
     public SeralizableVector2 Location;
 }

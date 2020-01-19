@@ -49,11 +49,7 @@ public class TerrainController : MonoBehaviour
     private bool LastHitThis = false;
     //[HideInInspector]
     public bool IdleAnimations;
-    private float Timer = 0;
     public List<string> IdleAnimationsDirectory;
-    private int IdleState = 1;
-    [HideInInspector]
-    public int DictionaryReferance;
     private DatabaseController DBC;
     private GameControllerScript GCS;
 
@@ -112,7 +108,6 @@ public class TerrainController : MonoBehaviour
         Connectable = DBC.TerrainDictionary[MEMCC.SelectedButtonDR].Connectable;
         IdleAnimations = DBC.TerrainDictionary[MEMCC.SelectedButtonDR].IdleAnimations;
         Walkable = DBC.TerrainDictionary[MEMCC.SelectedButtonDR].Walkable;
-        DictionaryReferance = MEMCC.SelectedButtonDR;
         if (IdleAnimations)
         {
             IdleAnimationsDirectory = DBC.TerrainDictionary[MEMCC.SelectedButtonDR].IdleAnimationDirectory;
@@ -146,7 +141,7 @@ public class TerrainController : MonoBehaviour
                         LastHitThis = true;
                     }
                 }
-                else if (hit.transform.tag == DBC.UnitDictionary[0].Type || hit.transform.tag == DBC.BuildingDictionary[0].Type)
+                else if (hit.transform.tag != DBC.TerrainDictionary[ID].Type)
                 {
                     //if tag is a unit or building do nothing.
                 }
@@ -192,7 +187,7 @@ public class TerrainController : MonoBehaviour
                         GameObject RLO = new GameObject();
                         RLO.name = "TopLandOverlay";
                         RLO.transform.position = gameObject.transform.position;
-                        RLO.AddComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.TerrainDictionary[DictionaryReferance].OverlayArtworkDirectory[1],DBC.TerrainDictionary[DictionaryReferance].PixelsPerUnit);
+                        RLO.AddComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.TerrainDictionary[ID].OverlayArtworkDirectory[1],DBC.TerrainDictionary[ID].PixelsPerUnit);
                         RLO.GetComponent<SpriteRenderer>().sortingLayerName = "Terrain";
                         RLO.GetComponent<SpriteRenderer>().sortingOrder = 2;
                         RLO.transform.parent = gameObject.transform;
@@ -224,7 +219,7 @@ public class TerrainController : MonoBehaviour
                         GameObject RLO = new GameObject();
                         RLO.name = "TopRightLandOverlay";
                         RLO.transform.position = gameObject.transform.position;
-                        RLO.AddComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.TerrainDictionary[DictionaryReferance].OverlayArtworkDirectory[0], DBC.TerrainDictionary[DictionaryReferance].PixelsPerUnit);
+                        RLO.AddComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.TerrainDictionary[ID].OverlayArtworkDirectory[0], DBC.TerrainDictionary[ID].PixelsPerUnit);
                         RLO.GetComponent<SpriteRenderer>().sortingLayerName = "Terrain";
                         RLO.GetComponent<SpriteRenderer>().sortingOrder = 2;
                         RLO.transform.parent = gameObject.transform;
@@ -255,7 +250,7 @@ public class TerrainController : MonoBehaviour
                         GameObject RLO = new GameObject();
                         RLO.name = "RightLandOverlay";
                         RLO.transform.position = gameObject.transform.position;
-                        RLO.AddComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.TerrainDictionary[DictionaryReferance].OverlayArtworkDirectory[1], DBC.TerrainDictionary[DictionaryReferance].PixelsPerUnit);
+                        RLO.AddComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.TerrainDictionary[ID].OverlayArtworkDirectory[1], DBC.TerrainDictionary[ID].PixelsPerUnit);
                         RLO.GetComponent<SpriteRenderer>().sortingLayerName = "Terrain";
                         RLO.GetComponent<SpriteRenderer>().sortingOrder = 2;
                         RLO.transform.parent = gameObject.transform;
@@ -286,7 +281,7 @@ public class TerrainController : MonoBehaviour
                         GameObject RLO = new GameObject();
                         RLO.name = "BottomRightLandOverlay";
                         RLO.transform.position = gameObject.transform.position;
-                        RLO.AddComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.TerrainDictionary[DictionaryReferance].OverlayArtworkDirectory[0], DBC.TerrainDictionary[DictionaryReferance].PixelsPerUnit);
+                        RLO.AddComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.TerrainDictionary[ID].OverlayArtworkDirectory[0], DBC.TerrainDictionary[ID].PixelsPerUnit);
                         RLO.GetComponent<SpriteRenderer>().sortingLayerName = "Terrain";
                         RLO.GetComponent<SpriteRenderer>().sortingOrder = 2;
                         RLO.transform.parent = gameObject.transform;
@@ -318,7 +313,7 @@ public class TerrainController : MonoBehaviour
                         GameObject RLO = new GameObject();
                         RLO.name = "BottomLandOverlay";
                         RLO.transform.position = gameObject.transform.position;
-                        RLO.AddComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.TerrainDictionary[DictionaryReferance].OverlayArtworkDirectory[1], DBC.TerrainDictionary[DictionaryReferance].PixelsPerUnit);
+                        RLO.AddComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.TerrainDictionary[ID].OverlayArtworkDirectory[1], DBC.TerrainDictionary[ID].PixelsPerUnit);
                         RLO.GetComponent<SpriteRenderer>().sortingLayerName = "Terrain";
                         RLO.GetComponent<SpriteRenderer>().sortingOrder = 2;
                         RLO.transform.parent = gameObject.transform;
@@ -350,7 +345,7 @@ public class TerrainController : MonoBehaviour
                         GameObject RLO = new GameObject();
                         RLO.name = "BottomLeftLandOverlay";
                         RLO.transform.position = gameObject.transform.position;
-                        RLO.AddComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.TerrainDictionary[DictionaryReferance].OverlayArtworkDirectory[0], DBC.TerrainDictionary[DictionaryReferance].PixelsPerUnit);
+                        RLO.AddComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.TerrainDictionary[ID].OverlayArtworkDirectory[0], DBC.TerrainDictionary[ID].PixelsPerUnit);
                         RLO.GetComponent<SpriteRenderer>().sortingLayerName = "Terrain";
                         RLO.GetComponent<SpriteRenderer>().sortingOrder = 2;
                         RLO.transform.parent = gameObject.transform;
@@ -382,7 +377,7 @@ public class TerrainController : MonoBehaviour
                         GameObject RLO = new GameObject();
                         RLO.name = "LeftLandOverlay";
                         RLO.transform.position = gameObject.transform.position;
-                        RLO.AddComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.TerrainDictionary[DictionaryReferance].OverlayArtworkDirectory[1], DBC.TerrainDictionary[DictionaryReferance].PixelsPerUnit);
+                        RLO.AddComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.TerrainDictionary[ID].OverlayArtworkDirectory[1], DBC.TerrainDictionary[ID].PixelsPerUnit);
                         RLO.GetComponent<SpriteRenderer>().sortingLayerName = "Terrain";
                         RLO.GetComponent<SpriteRenderer>().sortingOrder = 2;
                         RLO.transform.parent = gameObject.transform;
@@ -414,7 +409,7 @@ public class TerrainController : MonoBehaviour
                         GameObject RLO = new GameObject();
                         RLO.name = "TopLeftLandOverlay";
                         RLO.transform.position = gameObject.transform.position;
-                        RLO.AddComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.TerrainDictionary[DictionaryReferance].OverlayArtworkDirectory[0], DBC.TerrainDictionary[DictionaryReferance].PixelsPerUnit);
+                        RLO.AddComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.TerrainDictionary[ID].OverlayArtworkDirectory[0], DBC.TerrainDictionary[ID].PixelsPerUnit);
                         RLO.GetComponent<SpriteRenderer>().sortingLayerName = "Terrain";
                         RLO.GetComponent<SpriteRenderer>().sortingOrder = 2;
                         RLO.transform.parent = gameObject.transform;
@@ -508,10 +503,10 @@ public class TerrainController : MonoBehaviour
             switch (counter)
             {
                 case 0:
-                    SR.sprite = DBC.loadSprite(DBC.TerrainDictionary[DictionaryReferance].ArtworkDirectory[0], DBC.TerrainDictionary[DictionaryReferance].PixelsPerUnit);
+                    SR.sprite = DBC.loadSprite(DBC.TerrainDictionary[ID].ArtworkDirectory[0], DBC.TerrainDictionary[ID].PixelsPerUnit);
                     break;
                 case 1:
-                    SR.sprite = DBC.loadSprite(DBC.TerrainDictionary[DictionaryReferance].ArtworkDirectory[1], DBC.TerrainDictionary[DictionaryReferance].PixelsPerUnit);
+                    SR.sprite = DBC.loadSprite(DBC.TerrainDictionary[ID].ArtworkDirectory[1], DBC.TerrainDictionary[ID].PixelsPerUnit);
                     if (topBool)
                     {
                         gameObject.transform.eulerAngles = OriginalRot;
@@ -532,37 +527,37 @@ public class TerrainController : MonoBehaviour
                 case 2:
                     if (topBool && rightbool)
                     {
-                        SR.sprite = DBC.loadSprite(DBC.TerrainDictionary[DictionaryReferance].ArtworkDirectory[2], DBC.TerrainDictionary[DictionaryReferance].PixelsPerUnit);
+                        SR.sprite = DBC.loadSprite(DBC.TerrainDictionary[ID].ArtworkDirectory[2], DBC.TerrainDictionary[ID].PixelsPerUnit);
                         gameObject.transform.eulerAngles = Road2way90TopRotOffset + OriginalRot;
                     }
                     else if (rightbool && bottombool)
                     {
-                        SR.sprite = DBC.loadSprite(DBC.TerrainDictionary[DictionaryReferance].ArtworkDirectory[2], DBC.TerrainDictionary[DictionaryReferance].PixelsPerUnit);
+                        SR.sprite = DBC.loadSprite(DBC.TerrainDictionary[ID].ArtworkDirectory[2], DBC.TerrainDictionary[ID].PixelsPerUnit);
                         gameObject.transform.eulerAngles = Road2way90RightRotOffset + OriginalRot;
                     }
                     else if (bottombool && leftbool)
                     {
-                        SR.sprite = DBC.loadSprite(DBC.TerrainDictionary[DictionaryReferance].ArtworkDirectory[2], DBC.TerrainDictionary[DictionaryReferance].PixelsPerUnit);
+                        SR.sprite = DBC.loadSprite(DBC.TerrainDictionary[ID].ArtworkDirectory[2], DBC.TerrainDictionary[ID].PixelsPerUnit);
                         gameObject.transform.eulerAngles = OriginalRot;
                     }
                     else if (leftbool && topBool)
                     {
-                        SR.sprite = DBC.loadSprite(DBC.TerrainDictionary[DictionaryReferance].ArtworkDirectory[2], DBC.TerrainDictionary[DictionaryReferance].PixelsPerUnit);
+                        SR.sprite = DBC.loadSprite(DBC.TerrainDictionary[ID].ArtworkDirectory[2], DBC.TerrainDictionary[ID].PixelsPerUnit);
                         gameObject.transform.eulerAngles = Road2way90LeftRotOffset + OriginalRot;
                     }
                     else if (topBool && bottombool)
                     {
-                        SR.sprite = DBC.loadSprite(DBC.TerrainDictionary[DictionaryReferance].ArtworkDirectory[3], DBC.TerrainDictionary[DictionaryReferance].PixelsPerUnit);
+                        SR.sprite = DBC.loadSprite(DBC.TerrainDictionary[ID].ArtworkDirectory[3], DBC.TerrainDictionary[ID].PixelsPerUnit);
                         gameObject.transform.eulerAngles = Road2wayStraightTopBottomRotOffset + OriginalRot;
                     }
                     else if (leftbool && rightbool)
                     {
-                        SR.sprite = DBC.loadSprite(DBC.TerrainDictionary[DictionaryReferance].ArtworkDirectory[3], DBC.TerrainDictionary[DictionaryReferance].PixelsPerUnit);
+                        SR.sprite = DBC.loadSprite(DBC.TerrainDictionary[ID].ArtworkDirectory[3], DBC.TerrainDictionary[ID].PixelsPerUnit);
                         gameObject.transform.eulerAngles = OriginalRot;
                     }
                     break;
                 case 3:
-                    SR.sprite = DBC.loadSprite(DBC.TerrainDictionary[DictionaryReferance].ArtworkDirectory[4], DBC.TerrainDictionary[DictionaryReferance].PixelsPerUnit);
+                    SR.sprite = DBC.loadSprite(DBC.TerrainDictionary[ID].ArtworkDirectory[4], DBC.TerrainDictionary[ID].PixelsPerUnit);
                     if (!bottombool)
                     {
                         gameObject.transform.eulerAngles = Road3wayTopRotOffset + OriginalRot;
@@ -581,7 +576,7 @@ public class TerrainController : MonoBehaviour
                     }
                     break;
                 case 4:
-                    SR.sprite = DBC.loadSprite(DBC.TerrainDictionary[DictionaryReferance].ArtworkDirectory[5], DBC.TerrainDictionary[DictionaryReferance].PixelsPerUnit);
+                    SR.sprite = DBC.loadSprite(DBC.TerrainDictionary[ID].ArtworkDirectory[5], DBC.TerrainDictionary[ID].PixelsPerUnit);
                     gameObject.transform.eulerAngles = OriginalRot;
                     break;
             }
@@ -637,17 +632,17 @@ public class TerrainController : MonoBehaviour
         {
             if (GCS.IdleState == 1)
             {
-                gameObject.GetComponent<SpriteRenderer>().sprite = DBC.loadSprite(IdleAnimationsDirectory[1], DBC.TerrainDictionary[DictionaryReferance].PixelsPerUnit);
+                gameObject.GetComponent<SpriteRenderer>().sprite = DBC.loadSprite(IdleAnimationsDirectory[1], DBC.TerrainDictionary[ID].PixelsPerUnit);
                 //Debug.Log("1");
             }
             else if (GCS.IdleState == 2)
             {
-                gameObject.GetComponent<SpriteRenderer>().sprite = DBC.loadSprite(IdleAnimationsDirectory[0], DBC.TerrainDictionary[DictionaryReferance].PixelsPerUnit);
+                gameObject.GetComponent<SpriteRenderer>().sprite = DBC.loadSprite(IdleAnimationsDirectory[0], DBC.TerrainDictionary[ID].PixelsPerUnit);
                 //Debug.Log("2");
             }
             else
             {
-                gameObject.GetComponent<SpriteRenderer>().sprite = DBC.loadSprite(IdleAnimationsDirectory[1], DBC.TerrainDictionary[DictionaryReferance].PixelsPerUnit);
+                gameObject.GetComponent<SpriteRenderer>().sprite = DBC.loadSprite(IdleAnimationsDirectory[1], DBC.TerrainDictionary[ID].PixelsPerUnit);
                 //Debug.Log("3");
             }
             

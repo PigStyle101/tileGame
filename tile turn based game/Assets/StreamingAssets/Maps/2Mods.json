@@ -1,10 +1,10 @@
 {
-    "TeamList": [
+    "Teamlist": [
         {
             "Team": 0,
             "Active": false,
             "UnitCount": 0,
-            "BuildingCount": 7,
+            "BuildingCount": 0,
             "Gold": 0,
             "IsAi": false,
             "Defeated": false,
@@ -14,8 +14,8 @@
             "Team": 1,
             "Active": true,
             "UnitCount": 0,
-            "BuildingCount": 3,
-            "Gold": 600,
+            "BuildingCount": 0,
+            "Gold": 0,
             "IsAi": false,
             "Defeated": false,
             "HaseMainBase": true
@@ -23,9 +23,9 @@
         {
             "Team": 2,
             "Active": true,
-            "UnitCount": 1,
-            "BuildingCount": 3,
-            "Gold": 800,
+            "UnitCount": 0,
+            "BuildingCount": 0,
+            "Gold": 0,
             "IsAi": false,
             "Defeated": false,
             "HaseMainBase": true
@@ -37,7 +37,7 @@
             "BuildingCount": 0,
             "Gold": 0,
             "IsAi": false,
-            "Defeated": true,
+            "Defeated": false,
             "HaseMainBase": false
         },
         {
@@ -47,7 +47,7 @@
             "BuildingCount": 0,
             "Gold": 0,
             "IsAi": false,
-            "Defeated": true,
+            "Defeated": false,
             "HaseMainBase": false
         },
         {
@@ -57,7 +57,7 @@
             "BuildingCount": 0,
             "Gold": 0,
             "IsAi": false,
-            "Defeated": true,
+            "Defeated": false,
             "HaseMainBase": false
         },
         {
@@ -67,7 +67,7 @@
             "BuildingCount": 0,
             "Gold": 0,
             "IsAi": false,
-            "Defeated": true,
+            "Defeated": false,
             "HaseMainBase": false
         },
         {
@@ -77,7 +77,7 @@
             "BuildingCount": 0,
             "Gold": 0,
             "IsAi": false,
-            "Defeated": true,
+            "Defeated": false,
             "HaseMainBase": false
         },
         {
@@ -87,7 +87,7 @@
             "BuildingCount": 0,
             "Gold": 0,
             "IsAi": false,
-            "Defeated": true,
+            "Defeated": false,
             "HaseMainBase": false
         },
         {
@@ -97,215 +97,92 @@
             "BuildingCount": 0,
             "Gold": 0,
             "IsAi": false,
-            "Defeated": true,
+            "Defeated": false,
             "HaseMainBase": false
         }
     ],
-    "CurrentTeamsTurn": 2,
-    "UnitList": [
-        {
-            "ID": 2,
-            "Team": 2,
-            "Health": 4,
-            "XP": 0,
-            "Level": 0,
-            "Location": {
-                "x": 8.0,
-                "y": 0.0
-            }
-        }
-    ],
+    "UnitList": [],
     "BuildingList": [
         {
-            "Team": 2,
-            "Health": 20,
-            "HeroSpawnPoint": false,
-            "ID": 0,
-            "Location": {
-                "x": 10.0,
-                "y": 0.0
-            }
-        },
-        {
             "Team": 1,
             "Health": 20,
-            "HeroSpawnPoint": false,
-            "ID": 0,
-            "Location": {
-                "x": 0.0,
-                "y": 10.0
-            }
-        },
-        {
-            "Team": 0,
-            "Health": 10,
-            "HeroSpawnPoint": false,
+            "MainBase": true,
             "ID": 1,
-            "Location": {
-                "x": 0.0,
-                "y": 5.0
-            }
-        },
-        {
-            "Team": 0,
-            "Health": 10,
-            "HeroSpawnPoint": false,
-            "ID": 1,
-            "Location": {
-                "x": 5.0,
-                "y": 10.0
-            }
-        },
-        {
-            "Team": 2,
-            "Health": 10,
-            "HeroSpawnPoint": false,
-            "ID": 2,
-            "Location": {
-                "x": 8.0,
-                "y": 1.0
-            }
-        },
-        {
-            "Team": 0,
-            "Health": 10,
-            "HeroSpawnPoint": false,
-            "ID": 1,
-            "Location": {
-                "x": 10.0,
-                "y": 5.0
-            }
-        },
-        {
-            "Team": 0,
-            "Health": 10,
-            "HeroSpawnPoint": false,
-            "ID": 1,
-            "Location": {
-                "x": 5.0,
-                "y": 0.0
-            }
-        },
-        {
-            "Team": 0,
-            "Health": 10,
-            "HeroSpawnPoint": false,
-            "ID": 2,
-            "Location": {
-                "x": 0.0,
-                "y": 0.0
-            }
-        },
-        {
-            "Team": 0,
-            "Health": 10,
-            "HeroSpawnPoint": false,
-            "ID": 2,
-            "Location": {
-                "x": 10.0,
-                "y": 10.0
-            }
-        },
-        {
-            "Team": 0,
-            "Health": 10,
-            "HeroSpawnPoint": false,
-            "ID": 2,
-            "Location": {
-                "x": 5.0,
-                "y": 5.0
-            }
-        },
-        {
-            "Team": 1,
-            "Health": 10,
-            "HeroSpawnPoint": false,
-            "ID": 2,
-            "Location": {
-                "x": 2.0,
-                "y": 9.0
-            }
-        },
-        {
-            "Team": 1,
-            "Health": 10,
-            "HeroSpawnPoint": false,
-            "ID": 2,
             "Location": {
                 "x": 1.0,
-                "y": 8.0
+                "y": 10.0
             }
         },
         {
             "Team": 2,
-            "Health": 10,
-            "HeroSpawnPoint": false,
-            "ID": 2,
+            "Health": 20,
+            "MainBase": true,
+            "ID": 1,
             "Location": {
-                "x": 9.0,
-                "y": 2.0
+                "x": 0.0,
+                "y": 10.0
             }
         }
     ],
     "TerrainList": [
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 0.0,
                 "y": 0.0
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 0.0,
                 "y": 1.0
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 0.0,
                 "y": 2.0
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 0.0,
                 "y": 3.0
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 0.0,
                 "y": 4.0
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 0.0,
                 "y": 5.0
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 0.0,
                 "y": 6.0
             }
         },
         {
-            "ID": 2,
+            "ID": 0,
             "Location": {
                 "x": 0.0,
                 "y": 7.0
             }
         },
         {
-            "ID": 2,
+            "ID": 1,
             "Location": {
                 "x": 0.0,
                 "y": 8.0
@@ -319,35 +196,35 @@
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 0.0,
                 "y": 10.0
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 1.0,
                 "y": 0.0
             }
         },
         {
-            "ID": 0,
+            "ID": 3,
             "Location": {
                 "x": 1.0,
                 "y": 1.0
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 1.0,
                 "y": 2.0
             }
         },
         {
-            "ID": 0,
+            "ID": 3,
             "Location": {
                 "x": 1.0,
                 "y": 3.0
@@ -361,7 +238,7 @@
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 1.0,
                 "y": 5.0
@@ -382,49 +259,49 @@
             }
         },
         {
-            "ID": 2,
+            "ID": 1,
             "Location": {
                 "x": 1.0,
                 "y": 8.0
             }
         },
         {
-            "ID": 0,
+            "ID": 2,
             "Location": {
                 "x": 1.0,
                 "y": 9.0
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 1.0,
                 "y": 10.0
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 2.0,
                 "y": 0.0
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 2.0,
                 "y": 1.0
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 2.0,
                 "y": 2.0
             }
         },
         {
-            "ID": 0,
+            "ID": 3,
             "Location": {
                 "x": 2.0,
                 "y": 3.0
@@ -438,7 +315,7 @@
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 2.0,
                 "y": 5.0
@@ -459,7 +336,7 @@
             }
         },
         {
-            "ID": 2,
+            "ID": 1,
             "Location": {
                 "x": 2.0,
                 "y": 8.0
@@ -480,28 +357,28 @@
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 3.0,
                 "y": 0.0
             }
         },
         {
-            "ID": 0,
+            "ID": 3,
             "Location": {
                 "x": 3.0,
                 "y": 1.0
             }
         },
         {
-            "ID": 0,
+            "ID": 3,
             "Location": {
                 "x": 3.0,
                 "y": 2.0
             }
         },
         {
-            "ID": 0,
+            "ID": 3,
             "Location": {
                 "x": 3.0,
                 "y": 3.0
@@ -515,7 +392,7 @@
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 3.0,
                 "y": 5.0
@@ -536,28 +413,28 @@
             }
         },
         {
-            "ID": 0,
+            "ID": 1,
             "Location": {
                 "x": 3.0,
                 "y": 8.0
             }
         },
         {
-            "ID": 0,
+            "ID": 1,
             "Location": {
                 "x": 3.0,
                 "y": 9.0
             }
         },
         {
-            "ID": 2,
+            "ID": 1,
             "Location": {
                 "x": 3.0,
                 "y": 10.0
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 4.0,
                 "y": 0.0
@@ -592,7 +469,7 @@
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 4.0,
                 "y": 5.0
@@ -606,112 +483,112 @@
             }
         },
         {
-            "ID": 3,
+            "ID": 0,
             "Location": {
                 "x": 4.0,
                 "y": 7.0
             }
         },
         {
-            "ID": 3,
+            "ID": 0,
             "Location": {
                 "x": 4.0,
                 "y": 8.0
             }
         },
         {
-            "ID": 3,
+            "ID": 0,
             "Location": {
                 "x": 4.0,
                 "y": 9.0
             }
         },
         {
-            "ID": 2,
+            "ID": 0,
             "Location": {
                 "x": 4.0,
                 "y": 10.0
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 5.0,
                 "y": 0.0
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 5.0,
                 "y": 1.0
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 5.0,
                 "y": 2.0
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 5.0,
                 "y": 3.0
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 5.0,
                 "y": 4.0
             }
         },
         {
-            "ID": 0,
+            "ID": 3,
             "Location": {
                 "x": 5.0,
                 "y": 5.0
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 5.0,
                 "y": 6.0
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 5.0,
                 "y": 7.0
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 5.0,
                 "y": 8.0
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 5.0,
                 "y": 9.0
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 5.0,
                 "y": 10.0
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 6.0,
                 "y": 0.0
@@ -746,7 +623,7 @@
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 6.0,
                 "y": 5.0
@@ -781,35 +658,35 @@
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 6.0,
                 "y": 10.0
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 7.0,
                 "y": 0.0
             }
         },
         {
-            "ID": 0,
+            "ID": 3,
             "Location": {
                 "x": 7.0,
                 "y": 1.0
             }
         },
         {
-            "ID": 0,
+            "ID": 3,
             "Location": {
                 "x": 7.0,
                 "y": 2.0
             }
         },
         {
-            "ID": 0,
+            "ID": 3,
             "Location": {
                 "x": 7.0,
                 "y": 3.0
@@ -823,7 +700,7 @@
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 7.0,
                 "y": 5.0
@@ -837,56 +714,56 @@
             }
         },
         {
-            "ID": 0,
+            "ID": 3,
             "Location": {
                 "x": 7.0,
                 "y": 7.0
             }
         },
         {
-            "ID": 0,
+            "ID": 3,
             "Location": {
                 "x": 7.0,
                 "y": 8.0
             }
         },
         {
-            "ID": 0,
+            "ID": 3,
             "Location": {
                 "x": 7.0,
                 "y": 9.0
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 7.0,
                 "y": 10.0
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 8.0,
                 "y": 0.0
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 8.0,
                 "y": 1.0
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 8.0,
                 "y": 2.0
             }
         },
         {
-            "ID": 0,
+            "ID": 3,
             "Location": {
                 "x": 8.0,
                 "y": 3.0
@@ -900,7 +777,7 @@
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 8.0,
                 "y": 5.0
@@ -914,56 +791,56 @@
             }
         },
         {
-            "ID": 0,
+            "ID": 3,
             "Location": {
                 "x": 8.0,
                 "y": 7.0
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 8.0,
                 "y": 8.0
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 8.0,
                 "y": 9.0
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 8.0,
                 "y": 10.0
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 9.0,
                 "y": 0.0
             }
         },
         {
-            "ID": 0,
+            "ID": 3,
             "Location": {
                 "x": 9.0,
                 "y": 1.0
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 9.0,
                 "y": 2.0
             }
         },
         {
-            "ID": 0,
+            "ID": 3,
             "Location": {
                 "x": 9.0,
                 "y": 3.0
@@ -977,7 +854,7 @@
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 9.0,
                 "y": 5.0
@@ -991,109 +868,113 @@
             }
         },
         {
-            "ID": 0,
+            "ID": 3,
             "Location": {
                 "x": 9.0,
                 "y": 7.0
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 9.0,
                 "y": 8.0
             }
         },
         {
-            "ID": 0,
+            "ID": 3,
             "Location": {
                 "x": 9.0,
                 "y": 9.0
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 9.0,
                 "y": 10.0
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 10.0,
                 "y": 0.0
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 10.0,
                 "y": 1.0
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 10.0,
                 "y": 2.0
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 10.0,
                 "y": 3.0
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 10.0,
                 "y": 4.0
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 10.0,
                 "y": 5.0
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 10.0,
                 "y": 6.0
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 10.0,
                 "y": 7.0
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 10.0,
                 "y": 8.0
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 10.0,
                 "y": 9.0
             }
         },
         {
-            "ID": 2,
+            "ID": 3,
             "Location": {
                 "x": 10.0,
                 "y": 10.0
             }
         }
+    ],
+    "Mods": [
+        "Core",
+        "Core2"
     ]
 }

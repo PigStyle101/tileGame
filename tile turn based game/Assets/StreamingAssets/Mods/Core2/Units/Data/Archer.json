@@ -1,10 +1,9 @@
 {
-  "ID": 0,
   "Title": "Archer",
   "Description": "Ranged unit with decent movement but low defence",
   "Slug": "archer",
   "Type": "Unit",
-  "Mod": "Core",
+  "Mod": "Core2",
   "PixelsPerUnit": 64,
   "Attack": 4,
   "Defence": 10,

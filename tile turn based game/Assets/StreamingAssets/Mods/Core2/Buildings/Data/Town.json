@@ -1,5 +1,4 @@
 {
-  "ID": 1,
   "Health": 10,
   "Title": "Town",
   "PixelsPerUnit": 64,
@@ -11,5 +10,5 @@
   "CanBuildUnits": false,
   "BlocksSight": false,
   "OnlyOneAllowed": false,
-  "Mod": "Core"
+  "Mod": "Core2"
 }
