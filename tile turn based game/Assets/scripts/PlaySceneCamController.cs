@@ -541,41 +541,44 @@ public class PlaySceneCamController : MonoBehaviour
     public void UpdateTurnImageColor(int team)
     {
         //Black,Blue,Cyan,Gray,Green,Magenta,Red,White,Yellow
-        if (team == 1)
+        switch (team)
         {
-            CurrentPlayerTurnImage.GetComponent<Image>().color = Color.black;
-        }
-        else if (team == 2)
-        {
-            CurrentPlayerTurnImage.GetComponent<Image>().color = Color.blue;
-        }
-        else if (team == 3)
-        {
-            CurrentPlayerTurnImage.GetComponent<Image>().color = Color.cyan;
-        }
-        else if (team == 4)
-        {
-            CurrentPlayerTurnImage.GetComponent<Image>().color = Color.gray;
-        }
-        else if (team == 5)
-        {
-            CurrentPlayerTurnImage.GetComponent<Image>().color = Color.green;
-        }
-        else if (team == 6)
-        {
-            CurrentPlayerTurnImage.GetComponent<Image>().color = Color.magenta;
-        }
-        else if (team == 7)
-        {
-            CurrentPlayerTurnImage.GetComponent<Image>().color = Color.red;
-        }
-        else if (team == 8)
-        {
-            CurrentPlayerTurnImage.GetComponent<Image>().color = Color.white;
-        }
-        else if (team == 9)
-        {
-            CurrentPlayerTurnImage.GetComponent<Image>().color = Color.yellow;
+            case 1:
+                CurrentPlayerTurnImage.GetComponent<Image>().color = Color.black;
+                CurrentPlayerTurnText.color = Color.white;
+                break;
+            case 2:
+                CurrentPlayerTurnImage.GetComponent<Image>().color = Color.blue;
+                CurrentPlayerTurnText.color = Color.white;
+                break;
+            case 3:
+                CurrentPlayerTurnImage.GetComponent<Image>().color = Color.cyan;
+                CurrentPlayerTurnText.color = Color.black;
+                break;
+            case 4:
+                CurrentPlayerTurnImage.GetComponent<Image>().color = Color.gray;
+                CurrentPlayerTurnText.color = Color.black;
+                break;
+            case 5:
+                CurrentPlayerTurnImage.GetComponent<Image>().color = Color.green;
+                CurrentPlayerTurnText.color = Color.black;
+                break;
+            case 6:
+                CurrentPlayerTurnImage.GetComponent<Image>().color = Color.magenta;
+                CurrentPlayerTurnText.color = Color.black;
+                break;
+            case 7:
+                CurrentPlayerTurnImage.GetComponent<Image>().color = Color.red;
+                CurrentPlayerTurnText.color = Color.black;
+                break;
+            case 8:
+                CurrentPlayerTurnImage.GetComponent<Image>().color = Color.white;
+                CurrentPlayerTurnText.color = Color.black;
+                break;
+            case 9:
+                CurrentPlayerTurnImage.GetComponent<Image>().color = Color.yellow;
+                CurrentPlayerTurnText.color = Color.black;
+                break;
         }
     }
 

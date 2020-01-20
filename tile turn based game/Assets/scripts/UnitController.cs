@@ -44,6 +44,8 @@ public class UnitController : MonoBehaviour
     public Dictionary<Vector2, int> EnemyUnitsInRange = new Dictionary<Vector2, int>();
     [HideInInspector]
     public List<Vector2> Directions = new List<Vector2>();//list for holding north,south,east,west
+    public bool UnitIdleAnimation;
+    public List<string> IdleAnimationsDirectory;
     private DatabaseController DBC;
     private GameControllerScript GCS;
 
@@ -84,7 +86,7 @@ public class UnitController : MonoBehaviour
 
     public void TeamSpriteController()
     {
-        gameObject.GetComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.UnitDictionary[ID].ArtworkDirectory[Team], DBC.UnitDictionary[ID].PixelsPerUnit);
+        //gameObject.GetComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.UnitDictionary[ID].ArtworkDirectory[Team], DBC.UnitDictionary[ID].PixelsPerUnit);
         switch (Team)
         {
             case 1:
@@ -121,6 +123,11 @@ public class UnitController : MonoBehaviour
                 break;
             case 9:
                 gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").GetComponent<Image>().color = Color.yellow;
+                gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").Find("Text").GetComponent<Text>().color = Color.black;
+                break;
+            case 0:
+                Color brown = new Color(.5f, .25f, 0, 255);
+                gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").GetComponent<Image>().color = brown;
                 gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").Find("Text").GetComponent<Text>().color = Color.black;
                 break;
         }
@@ -579,5 +586,9 @@ public class UnitController : MonoBehaviour
                 gameObject.GetComponent<SpriteRenderer>().color = new Color(.5F, .5F, .5F);
             }
         }
+    }
+
+    public void IdleAnimationController()
+    {
     }
 }

@@ -1063,7 +1063,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &177414276
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3818,7 +3818,7 @@ MonoBehaviour:
 
 
     -Once
-    attack button is clicked attackable units will had a gray tint
+    attack button is clicked attackable units will have a gray tint
 
 
     -Game can
@@ -3826,7 +3826,16 @@ MonoBehaviour:
 
 
     -Units that can do an action will be
-    tinted.'
+    tinted.
+
+
+    -If the only action a unit can do after moving is wait, the wait
+    action will automaticly activate
+
+
+    -If moving a unit into the fog of war
+    and you run into another unit, your unit will be unable to preform any actions
+    tell your next turn'
 --- !u!222 &1226519255
 CanvasRenderer:
   m_ObjectHideFlags: 0

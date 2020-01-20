@@ -45,7 +45,51 @@ public class BuildingController : MonoBehaviour
 
     public void TeamSpriteUpdater()
     {
-        gameObject.GetComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.BuildingDictionary[ID].ArtworkDirectory[Team], DBC.BuildingDictionary[ID].PixelsPerUnit);
+        //gameObject.GetComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.BuildingDictionary[ID].ArtworkDirectory[Team], DBC.BuildingDictionary[ID].PixelsPerUnit);
+        switch (Team)
+        {
+            case 1:
+                gameObject.transform.Find("BuildingHealthOverlay(Clone)").Find("Image").GetComponent<Image>().color = Color.black;
+                gameObject.transform.Find("BuildingHealthOverlay(Clone)").Find("Image").Find("Text").GetComponent<Text>().color = Color.white;
+                break;
+            case 2:
+                gameObject.transform.Find("BuildingHealthOverlay(Clone)").Find("Image").GetComponent<Image>().color = Color.blue;
+                gameObject.transform.Find("BuildingHealthOverlay(Clone)").Find("Image").Find("Text").GetComponent<Text>().color = Color.white;
+                break;
+            case 3:
+                gameObject.transform.Find("BuildingHealthOverlay(Clone)").Find("Image").GetComponent<Image>().color = Color.cyan;
+                gameObject.transform.Find("BuildingHealthOverlay(Clone)").Find("Image").Find("Text").GetComponent<Text>().color = Color.black;
+                break;
+            case 4:
+                gameObject.transform.Find("BuildingHealthOverlay(Clone)").Find("Image").GetComponent<Image>().color = Color.gray;
+                gameObject.transform.Find("BuildingHealthOverlay(Clone)").Find("Image").Find("Text").GetComponent<Text>().color = Color.black;
+                break;
+            case 5:
+                gameObject.transform.Find("BuildingHealthOverlay(Clone)").Find("Image").GetComponent<Image>().color = Color.green;
+                gameObject.transform.Find("BuildingHealthOverlay(Clone)").Find("Image").Find("Text").GetComponent<Text>().color = Color.black;
+                break;
+            case 6:
+                gameObject.transform.Find("BuildingHealthOverlay(Clone)").Find("Image").GetComponent<Image>().color = Color.magenta;
+                gameObject.transform.Find("BuildingHealthOverlay(Clone)").Find("Image").Find("Text").GetComponent<Text>().color = Color.black;
+                break;
+            case 7:
+                gameObject.transform.Find("BuildingHealthOverlay(Clone)").Find("Image").GetComponent<Image>().color = Color.red;
+                gameObject.transform.Find("BuildingHealthOverlay(Clone)").Find("Image").Find("Text").GetComponent<Text>().color = Color.black;
+                break;
+            case 8:
+                gameObject.transform.Find("BuildingHealthOverlay(Clone)").Find("Image").GetComponent<Image>().color = Color.white;
+                gameObject.transform.Find("BuildingHealthOverlay(Clone)").Find("Image").Find("Text").GetComponent<Text>().color = Color.black;
+                break;
+            case 9:
+                gameObject.transform.Find("BuildingHealthOverlay(Clone)").Find("Image").GetComponent<Image>().color = Color.yellow;
+                gameObject.transform.Find("BuildingHealthOverlay(Clone)").Find("Image").Find("Text").GetComponent<Text>().color = Color.black;
+                break;
+            case 0:
+                Color brown = new Color(.5f, .25f, 0, 255);
+                gameObject.transform.Find("BuildingHealthOverlay(Clone)").Find("Image").GetComponent<Image>().color = brown;
+                gameObject.transform.Find("BuildingHealthOverlay(Clone)").Find("Image").Find("Text").GetComponent<Text>().color = Color.black;
+                break;
+        }
     }
 
     public void ChangeBuilding()

@@ -262,7 +262,6 @@ public class DatabaseController : MonoBehaviour
         {
             TGO.GetComponent<TerrainController>().IdleAnimationsDirectory = TerrainDictionary[index].IdleAnimationDirectory;
         }
-        TGO.GetComponent<TerrainController>().ID = index;
         TGO.transform.position = location;
         return TGO;
     } //used to spawn terrian from database
@@ -293,8 +292,12 @@ public class DatabaseController : MonoBehaviour
         TGO.GetComponent<UnitController>().AttackRange = UnitDictionary[index].AttackRange;
         TGO.GetComponent<UnitController>().CanConvert = UnitDictionary[index].CanConvert;
         TGO.GetComponent<UnitController>().SightRange = UnitDictionary[index].SightRange;
+        TGO.GetComponent<UnitController>().UnitIdleAnimation = UnitDictionary[index].IdleAnimations;
         TGO.GetComponent<UnitController>().ID = index;
-        TGO.GetComponent<UnitController>().ID = index;
+        if (TerrainDictionary[index].IdleAnimations)
+        {
+            TGO.GetComponent<UnitController>().IdleAnimationsDirectory = UnitDictionary[index].IdleAnimationDirectory;
+        }
         if (UnitDictionary[index].CanConvert)
         {
             TGO.GetComponent<UnitController>().ConversionSpeed = UnitDictionary[index].ConversionSpeed;
@@ -451,7 +454,7 @@ public class Terrain
     {
         //Debug.Log("Getting sprites for: " + Title);
         int count = new int(); //used for debug
-        foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Terrain/Sprites/", "*.png"))) //could actaully put all png and json in same folder... idea for later
+        foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Terrain/Sprites/" + Title +"/", "*.png"))) //could actaully put all png and json in same folder... idea for later
         {
             if (file.Contains(Title) && file.Contains("Overlay")) //checks if any of the files found contains the right words
             {
@@ -496,7 +499,9 @@ public class Unit
     public string Description;
     public string Slug;
     public string Type;
+    public bool IdleAnimations;
     public List<string> ArtworkDirectory;
+    public List<string> IdleAnimationDirectory;
     public int Team;
     public int ConversionSpeed;
     public int PixelsPerUnit;
@@ -511,9 +516,14 @@ public class Unit
     {
         //Debug.log("Getting sprites for: " + Title);
         int count = new int();
-        foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Units/Sprites", "*.png")))
+        foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Units/Sprites/" + Title + "/", "*.png")))
         {
-            if (file.Contains(Title))
+            if (file.Contains(Title) && file.Contains("Idle"))
+            {
+                IdleAnimationDirectory.Add(file);
+                count = count + 1;
+            }
+            else if (file.Contains(Title))
             {
                 ArtworkDirectory.Add(file);
                 count = count + 1;
@@ -554,7 +564,7 @@ public class Building
     {
         //Debug.log("Getting sprites for: " + Title);
         int count = new int();
-        foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Buildings/Sprites", "*.png")))
+        foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Buildings/Sprites/" + Title + "/", "*.png")))
         {
             if (file.Contains(Title))
             {
@@ -671,7 +681,7 @@ public class Hero
     {
         //Debug.log("Getting sprites for: " + Title);
         int count = new int();
-        foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/Core/Heroes/Sprites", "*.png")))
+        foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/Core/Heroes/Sprites/" + Title + "/", "*.png")))
         {
             if (file.Contains(Title))
             {
