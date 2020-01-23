@@ -140,7 +140,7 @@ public class MapEditMenueCamController : MonoBehaviour
             GameObject tempbutton = Instantiate(MapEditorTilesButtonPrefab, ContentWindowTerrain.transform); //create button and set its parent to content
             tempbutton.name = kvp.Value.Title; //change name
             tempbutton.transform.GetChild(0).GetComponent<Text>().text = kvp.Value.Title; //change text on button to match sprite
-            tempbutton.GetComponent<Image>().sprite = DBC.loadSprite(DBC.TerrainDictionary[kvp.Key].ArtworkDirectory[0],DBC.TerrainDictionary[kvp.Key].PixelsPerUnit); //set sprite
+            tempbutton.GetComponent<Image>().sprite = DBC.TerrainDictionary[kvp.Key].ArtworkDirectory[0]; //set sprite
             tempbutton.GetComponent<Button>().onClick.AddListener(ChangeSelectedButton); //adds method to button clicked
             tempbutton.AddComponent<ButtonProperties>();
             tempbutton.GetComponent<ButtonProperties>().ID = kvp.Key;
@@ -155,7 +155,7 @@ public class MapEditMenueCamController : MonoBehaviour
             GameObject tempbutton = Instantiate(MapEditorTilesButtonPrefab, ContentWindowUnits.transform); //create button and set its parent to content
             tempbutton.name = kvp.Value.Title; //change name
             tempbutton.transform.GetChild(0).GetComponent<Text>().text = kvp.Value.Title; //change text on button to match sprite
-            tempbutton.GetComponent<Image>().sprite = DBC.loadSprite(DBC.UnitDictionary[kvp.Key].ArtworkDirectory[0], DBC.UnitDictionary[kvp.Key].PixelsPerUnit); //set sprite
+            tempbutton.GetComponent<Image>().sprite = DBC.UnitDictionary[kvp.Key].ArtworkDirectory[0]; //set sprite
             tempbutton.GetComponent<Button>().onClick.AddListener(ChangeSelectedButton); //adds method to button clicked
             tempbutton.AddComponent<ButtonProperties>();
             tempbutton.GetComponent<ButtonProperties>().ID = kvp.Key;
@@ -178,7 +178,7 @@ public class MapEditMenueCamController : MonoBehaviour
             GameObject tempbutton = Instantiate(MapEditorTilesButtonPrefab, ContentWindowBuilding.transform); //create button and set its parent to content
             tempbutton.name = kvp.Value.Title; //change name
             tempbutton.transform.GetChild(0).GetComponent<Text>().text = kvp.Value.Title; //change text on button to match sprite
-            tempbutton.GetComponent<Image>().sprite = DBC.loadSprite(DBC.BuildingDictionary[kvp.Key].ArtworkDirectory[0], DBC.BuildingDictionary[kvp.Key].PixelsPerUnit); //set sprite
+            tempbutton.GetComponent<Image>().sprite = DBC.BuildingDictionary[kvp.Key].ArtworkDirectory[0]; //set sprite
             tempbutton.GetComponent<Button>().onClick.AddListener(ChangeSelectedButton); //adds method to button clicked
             tempbutton.AddComponent<ButtonProperties>();
             tempbutton.GetComponent<ButtonProperties>().ID = kvp.Key;

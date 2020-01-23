@@ -4,6 +4,7 @@
   "Description": "Elite unit",
   "Type": "Elite",
   "Mod": "Core",
+  "PixelsPerUnit": 64,
   "Attack": 5,
   "Defence": 20,
   "Health": 10,

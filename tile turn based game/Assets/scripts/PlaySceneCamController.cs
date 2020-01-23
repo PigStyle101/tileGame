@@ -281,7 +281,7 @@ public class PlaySceneCamController : MonoBehaviour
                         {
                             if (kvp.Value.Title == hit.transform.name)
                             {
-                                TerrainImage.GetComponent<Image>().sprite = DBC.loadSprite(DBC.TerrainDictionary[kvp.Key].ArtworkDirectory[0],DBC.TerrainDictionary[kvp.Key].PixelsPerUnit);
+                                TerrainImage.GetComponent<Image>().sprite = DBC.TerrainDictionary[kvp.Key].ArtworkDirectory[0];
                                 TerrainText.GetComponent<Text>().text = kvp.Value.Title;
                                 TerrainDescription.GetComponent<Text>().text = kvp.Value.Description;
                                 TerrainToolTipData.GetComponent<Text>().text = kvp.Value.DefenceBonus.ToString() + Environment.NewLine + kvp.Value.Walkable.ToString() + Environment.NewLine + kvp.Value.Weight.ToString();
@@ -294,7 +294,7 @@ public class PlaySceneCamController : MonoBehaviour
                         {
                             if (kvp.Value.Title == hit.transform.name)
                             {
-                                UnitImage.GetComponent<Image>().sprite = DBC.loadSprite(DBC.UnitDictionary[kvp.Key].ArtworkDirectory[0],DBC.UnitDictionary[kvp.Key].PixelsPerUnit);
+                                UnitImage.GetComponent<Image>().sprite = DBC.UnitDictionary[kvp.Key].ArtworkDirectory[0];
                                 UnitText.GetComponent<Text>().text = kvp.Value.Title;
                                 UnitDescription.GetComponent<Text>().text = kvp.Value.Description;
                                 UnitToolTipData.GetComponent<Text>().text = kvp.Value.Attack.ToString() + Environment.NewLine + kvp.Value.Defence.ToString() + Environment.NewLine + kvp.Value.AttackRange.ToString() + Environment.NewLine + kvp.Value.MovePoints.ToString();
@@ -307,7 +307,7 @@ public class PlaySceneCamController : MonoBehaviour
                         {
                             if (kvp.Value.Title == hit.transform.name)
                             {
-                                BuildingImage.GetComponent<Image>().sprite = DBC.loadSprite(DBC.BuildingDictionary[kvp.Key].ArtworkDirectory[0],DBC.BuildingDictionary[kvp.Key].PixelsPerUnit);
+                                BuildingImage.GetComponent<Image>().sprite = DBC.BuildingDictionary[kvp.Key].ArtworkDirectory[0];
                                 BuildingText.GetComponent<Text>().text = kvp.Value.Title;
                                 BuildingDescription.GetComponent<Text>().text = kvp.Value.Description;
                                 BuildingToolTipData.GetComponent<Text>().text = kvp.Value.DefenceBonus.ToString();
@@ -368,7 +368,7 @@ public class PlaySceneCamController : MonoBehaviour
                 GameObject tempbutton = Instantiate(BuildingButtonPrefab, ContentWindowBuilding.transform); //create button and set its parent to content
                 tempbutton.name = kvp.Value.Title; //change name
                 tempbutton.transform.GetChild(0).GetComponent<Text>().text = kvp.Value.Title + System.Environment.NewLine + kvp.Value.Cost; //change text on button to match sprite and create new line and add cost
-                tempbutton.GetComponent<Image>().sprite = DBC.loadSprite(DBC.UnitDictionary[kvp.Key].ArtworkDirectory[0],DBC.UnitDictionary[kvp.Key].PixelsPerUnit); //set sprite
+                tempbutton.GetComponent<Image>().sprite = DBC.UnitDictionary[kvp.Key].ArtworkDirectory[0]; //set sprite
                 tempbutton.GetComponent<Button>().onClick.AddListener(CreateUnitController); //adds method to button clicked 
                 tempbutton.AddComponent<ButtonProperties>();
                 tempbutton.GetComponent<ButtonProperties>().ID = kvp.Key;

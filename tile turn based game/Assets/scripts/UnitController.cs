@@ -45,7 +45,11 @@ public class UnitController : MonoBehaviour
     [HideInInspector]
     public List<Vector2> Directions = new List<Vector2>();//list for holding north,south,east,west
     public bool UnitIdleAnimation;
-    public List<string> IdleAnimationsDirectory;
+    public List<Sprite> IdleAnimationsDirectory;
+    public int IdleAnimationCount;
+    private float IdleTimerFloat;
+    private int IdleState;
+    public float IdleAnimationSpeed;
     private DatabaseController DBC;
     private GameControllerScript GCS;
 
@@ -62,6 +66,11 @@ public class UnitController : MonoBehaviour
         Directions.Add(new Vector2(1, 0));
         Directions.Add(new Vector2(0, -1));
         Directions.Add(new Vector2(-1, 0));
+    }
+
+    private void Update()
+    {
+        IdleTimer();
     }
 
     public void UnitRoundUpdater()
@@ -313,7 +322,7 @@ public class UnitController : MonoBehaviour
         {
             ////Debug.log("Changing tile to " + kvp.Value.Title);
             gameObject.name = DBC.UnitDictionary[MEMCC.SelectedButtonDR].Title;//change name of tile
-            gameObject.GetComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.UnitDictionary[MEMCC.SelectedButtonDR].ArtworkDirectory[0],DBC.UnitDictionary[MEMCC.SelectedButtonDR].PixelsPerUnit); //change sprite of tile
+            gameObject.GetComponent<SpriteRenderer>().sprite = DBC.UnitDictionary[MEMCC.SelectedButtonDR].ArtworkDirectory[0]; //change sprite of tile
             Health = DBC.UnitDictionary[MEMCC.SelectedButtonDR].Health;
             ID = MEMCC.SelectedButtonDR;
             gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").Find("Text").GetComponent<Text>().text = Health.ToString();
@@ -588,7 +597,31 @@ public class UnitController : MonoBehaviour
         }
     }
 
+    public void IdleTimer()
+    {
+        IdleTimerFloat += Time.deltaTime;
+        if (IdleTimerFloat >= IdleAnimationSpeed)
+        {
+            IdleAnimationController();
+            IdleTimerFloat = 0;
+        }
+
+    }
+
     public void IdleAnimationController()
     {
+        if (UnitIdleAnimation)
+        {
+            if ((IdleAnimationCount - 1) > IdleState)
+            {
+                gameObject.GetComponent<SpriteRenderer>().sprite = IdleAnimationsDirectory[IdleState];
+                IdleState = IdleState + 1;
+            }
+            else
+            {
+                gameObject.GetComponent<SpriteRenderer>().sprite = IdleAnimationsDirectory[IdleState];
+                IdleState = 0;
+            }
+        }
     }
 }

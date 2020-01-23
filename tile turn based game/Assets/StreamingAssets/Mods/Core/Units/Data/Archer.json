@@ -5,6 +5,8 @@
   "Type": "Unit",
   "Mod": "Core",
   "PixelsPerUnit": 64,
+  "IdleAnimations": false,
+  "IdleAnimationSpeed": 0.2,
   "Attack": 4,
   "Defence": 10,
   "AttackRange": 3,

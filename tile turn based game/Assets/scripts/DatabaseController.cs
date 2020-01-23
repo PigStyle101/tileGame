@@ -221,7 +221,7 @@ public class DatabaseController : MonoBehaviour
         GameObject TGO = new GameObject();                                                                                  //create gameobject
         TGO.name = TerrainDictionary[index].Title;                                                                          //change the name
         TGO.AddComponent<SpriteRenderer>();                                                                                 //add a sprite controller
-        TGO.GetComponent<SpriteRenderer>().sprite = loadSprite(TerrainDictionary[index].ArtworkDirectory[0], TerrainDictionary[index].PixelsPerUnit);               //set the sprite to the texture
+        TGO.GetComponent<SpriteRenderer>().sprite = TerrainDictionary[index].ArtworkDirectory[0];               //set the sprite to the texture
         TGO.GetComponent<SpriteRenderer>().sortingLayerName = TerrainDictionary[index].Type;
         TGO.AddComponent<BoxCollider>();
         TGO.GetComponent<BoxCollider>().size = new Vector3(.95f, .95f, .1f);
@@ -229,21 +229,21 @@ public class DatabaseController : MonoBehaviour
         //TGO.AddComponent<RectTransform>();
 
         GameObject MouseOverlayGO = new GameObject();                                                                       //creating the child object for mouse overlay
-        MouseOverlayGO.AddComponent<SpriteRenderer>().sprite = loadSprite(MouseDictionary[0].ArtworkDirectory[0], MouseDictionary[0].PixelsPerUnit);          //adding it to sprite
+        MouseOverlayGO.AddComponent<SpriteRenderer>().sprite = MouseDictionary[0].ArtworkDirectory[0];          //adding it to sprite
         MouseOverlayGO.GetComponent<SpriteRenderer>().sortingLayerName = MouseDictionary[0].SortingLayer;
         MouseOverlayGO.GetComponent<SpriteRenderer>().sortingOrder = 4;                                                     //making it so its on top of the default sprite
         MouseOverlayGO.transform.parent = TGO.transform;                                                                    //setting its parent to the main game object
         MouseOverlayGO.name = "MouseOverlay";                                                                               //changing the name
 
         GameObject FogOverlay = new GameObject();
-        FogOverlay.AddComponent<SpriteRenderer>().sprite = loadSprite(FogOfWarDictionary[0].ArtworkDirectory[0], FogOfWarDictionary[0].PixelsPerUnit);
+        FogOverlay.AddComponent<SpriteRenderer>().sprite = FogOfWarDictionary[0].ArtworkDirectory[0];
         FogOverlay.GetComponent<SpriteRenderer>().sortingLayerName = FogOfWarDictionary[0].SortingLayer;
         FogOverlay.GetComponent<SpriteRenderer>().sortingOrder = 3;
         FogOverlay.transform.parent = TGO.transform;
         FogOverlay.name = "FogOfWar";
 
         GameObject MouseOverlaySelected = new GameObject();
-        MouseOverlaySelected.AddComponent<SpriteRenderer>().sprite = loadSprite(MouseDictionary[1].ArtworkDirectory[0], MouseDictionary[1].PixelsPerUnit);
+        MouseOverlaySelected.AddComponent<SpriteRenderer>().sprite = MouseDictionary[1].ArtworkDirectory[0];
         MouseOverlaySelected.GetComponent<SpriteRenderer>().sortingLayerName = MouseDictionary[1].SortingLayer;
         MouseOverlaySelected.GetComponent<SpriteRenderer>().sortingOrder = 5;
         MouseOverlaySelected.transform.parent = TGO.transform;
@@ -278,7 +278,7 @@ public class DatabaseController : MonoBehaviour
         GameObject TGO = new GameObject();
         TGO.name = UnitDictionary[index].Title;
         TGO.AddComponent<SpriteRenderer>();
-        TGO.GetComponent<SpriteRenderer>().sprite = loadSprite(UnitDictionary[index].ArtworkDirectory[0], UnitDictionary[index].PixelsPerUnit);
+        TGO.GetComponent<SpriteRenderer>().sprite = UnitDictionary[index].ArtworkDirectory[0];
         TGO.GetComponent<SpriteRenderer>().sortingLayerName = UnitDictionary[index].Type;
         TGO.AddComponent<BoxCollider>();
         TGO.GetComponent<BoxCollider>().size = new Vector3(.95f, .95f, .1f);
@@ -293,10 +293,12 @@ public class DatabaseController : MonoBehaviour
         TGO.GetComponent<UnitController>().CanConvert = UnitDictionary[index].CanConvert;
         TGO.GetComponent<UnitController>().SightRange = UnitDictionary[index].SightRange;
         TGO.GetComponent<UnitController>().UnitIdleAnimation = UnitDictionary[index].IdleAnimations;
+        TGO.GetComponent<UnitController>().IdleAnimationSpeed = UnitDictionary[index].IdleAnimationSpeed;
         TGO.GetComponent<UnitController>().ID = index;
         if (TerrainDictionary[index].IdleAnimations)
         {
             TGO.GetComponent<UnitController>().IdleAnimationsDirectory = UnitDictionary[index].IdleAnimationDirectory;
+            TGO.GetComponent<UnitController>().IdleAnimationCount = UnitDictionary[index].IdleAnimationDirectory.Count;
         }
         if (UnitDictionary[index].CanConvert)
         {
@@ -370,7 +372,7 @@ public class DatabaseController : MonoBehaviour
         GameObject TGO = new GameObject();
         TGO.name = BuildingDictionary[index].Title;
         TGO.AddComponent<SpriteRenderer>();
-        TGO.GetComponent<SpriteRenderer>().sprite = loadSprite(BuildingDictionary[index].ArtworkDirectory[0], BuildingDictionary[index].PixelsPerUnit);
+        TGO.GetComponent<SpriteRenderer>().sprite = BuildingDictionary[index].ArtworkDirectory[0];
         TGO.GetComponent<SpriteRenderer>().sortingLayerName = BuildingDictionary[index].Type;
         TGO.AddComponent<BoxCollider>();
         TGO.GetComponent<BoxCollider>().size = new Vector3(.95f, .95f, .1f);
@@ -408,7 +410,7 @@ public class DatabaseController : MonoBehaviour
         {
             FileData = File.ReadAllBytes(FilePath);
             Tex2D = new Texture2D(64,64); // Create new "empty" texture, this requires the size to be added, it get changed in teh next method
-            Tex2D.LoadImage(FileData);         // Load the imagedata into the texture (size is set automatically)
+            Tex2D.LoadImage(FileData);// Load the imagedata into the texture (size is set automatically)
             TempSprite = Sprite.Create(Tex2D, new Rect(0, 0, Tex2D.width, Tex2D.height), new Vector2(0.5f, 0.5f), PPU);
             return TempSprite;
         }
@@ -443,9 +445,9 @@ public class Terrain
     public bool Overlays;
     public bool Connectable;
     public bool IdleAnimations;
-    public List<string> ArtworkDirectory;
-    public List<string> OverlayArtworkDirectory;
-    public List<string> IdleAnimationDirectory;
+    public List<Sprite> ArtworkDirectory;
+    public List<Sprite> OverlayArtworkDirectory;
+    public List<Sprite> IdleAnimationDirectory;
 
     /// <summary>
     /// Gets location of sprites and saves them to a list
@@ -458,17 +460,17 @@ public class Terrain
         {
             if (file.Contains(Title) && file.Contains("Overlay")) //checks if any of the files found contains the right words
             {
-                OverlayArtworkDirectory.Add(file);
+                OverlayArtworkDirectory.Add(DatabaseController.instance.loadSprite(file, PixelsPerUnit));
                 count = count + 1;
             }
             else if (file.Contains(Title) && file.Contains("Idle"))
             {
-                IdleAnimationDirectory.Add(file);
+                IdleAnimationDirectory.Add(DatabaseController.instance.loadSprite(file,PixelsPerUnit));
                 count = count + 1;
             }
             else if (file.Contains(Title))
             {
-                ArtworkDirectory.Add(file); //adds if they do
+                ArtworkDirectory.Add(DatabaseController.instance.loadSprite(file, PixelsPerUnit)); //adds if they do
                 count = count + 1;
             }
             //var tempname = Path.GetFileNameWithoutExtension(file);  // use this to get file name
@@ -500,8 +502,9 @@ public class Unit
     public string Slug;
     public string Type;
     public bool IdleAnimations;
-    public List<string> ArtworkDirectory;
-    public List<string> IdleAnimationDirectory;
+    public List<Sprite> ArtworkDirectory;
+    public List<Sprite> IdleAnimationDirectory;
+    public float IdleAnimationSpeed;
     public int Team;
     public int ConversionSpeed;
     public int PixelsPerUnit;
@@ -516,22 +519,23 @@ public class Unit
     {
         //Debug.log("Getting sprites for: " + Title);
         int count = new int();
-        foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Units/Sprites/" + Title + "/", "*.png")))
+        if (IdleAnimations)
         {
-            if (file.Contains(Title) && file.Contains("Idle"))
+            foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Units/Sprites/" + Title + "/Idle/", "*.png")))
             {
-                IdleAnimationDirectory.Add(file);
+                IdleAnimationDirectory.Add(DatabaseController.instance.loadSprite(file, PixelsPerUnit));
                 count = count + 1;
-            }
-            else if (file.Contains(Title))
-            {
-                ArtworkDirectory.Add(file);
-                count = count + 1;
-            }
-            //var tempname = Path.GetFileNameWithoutExtension(file);  // use this to get file name
+                //var tempname = Path.GetFileNameWithoutExtension(file);  // use this to get file name
+            } 
         }
         Debug.Log("Sprites found for " + Title + ": " + count + " in mod " + Mod);
         count = 0;
+        foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Units/Sprites/" + Title + "/", "*.png")))
+        {
+            ArtworkDirectory.Add(DatabaseController.instance.loadSprite(file, PixelsPerUnit));
+            count = count + 1;
+            //var tempname = Path.GetFileNameWithoutExtension(file);  // use this to get file name
+        }
     }
 }//same use as terrian class
 
@@ -546,7 +550,7 @@ public class Building
     public string Slug;
     public int DefenceBonus;
     public string Type;
-    public List<string> ArtworkDirectory;
+    public List<Sprite> ArtworkDirectory;
     public int Team;
     public int Health;
     public int PixelsPerUnit;
@@ -568,7 +572,7 @@ public class Building
         {
             if (file.Contains(Title))
             {
-                ArtworkDirectory.Add(file);
+                ArtworkDirectory.Add(DatabaseController.instance.loadSprite(file, PixelsPerUnit));
                 count = count + 1;
             }
             //var tempname = Path.GetFileNameWithoutExtension(file);  // use this to get file name
@@ -586,7 +590,7 @@ public class MouseOverlays
     public string Type;
     public string SortingLayer = "Unit";
     public int PixelsPerUnit;
-    public List<string> ArtworkDirectory;
+    public List<Sprite> ArtworkDirectory;
 
     /// <summary>
     /// Gets location of sprites and saves them to a list
@@ -599,7 +603,7 @@ public class MouseOverlays
         {
             if (file.Contains(Title))
             {
-                ArtworkDirectory.Add(file);
+                ArtworkDirectory.Add(DatabaseController.instance.loadSprite(file, PixelsPerUnit));
                 count = count + 1;
             }
             //var tempname = Path.GetFileNameWithoutExtension(file);  // use this to get file name
@@ -616,7 +620,7 @@ public class FogOfWar
     public string Slug;
     public string SortingLayer = "Unit";
     public int PixelsPerUnit;
-    public List<string> ArtworkDirectory;
+    public List<Sprite> ArtworkDirectory;
 
     /// <summary>
     /// Gets location of sprites and saves them to a list
@@ -629,7 +633,7 @@ public class FogOfWar
         {
             if (file.Contains(Title))
             {
-                ArtworkDirectory.Add(file);
+                ArtworkDirectory.Add(DatabaseController.instance.loadSprite(file, PixelsPerUnit));
                 count = count + 1;
             }
             //var tempname = Path.GetFileNameWithoutExtension(file);  // use this to get file name
@@ -672,7 +676,7 @@ public class Hero
     public int Strenght;
     public int Dexterity;
     public int Charisma;
-    public List<string> ArtworkDirectory;
+    public List<Sprite> ArtworkDirectory;
 
     /// <summary>
     /// Gets location of sprites and saves them to a list
@@ -685,7 +689,7 @@ public class Hero
         {
             if (file.Contains(Title))
             {
-                ArtworkDirectory.Add(file);
+                ArtworkDirectory.Add(DatabaseController.instance.loadSprite(file, PixelsPerUnit));
                 count = count + 1;
             }
             //var tempname = Path.GetFileNameWithoutExtension(file);  // use this to get file name
