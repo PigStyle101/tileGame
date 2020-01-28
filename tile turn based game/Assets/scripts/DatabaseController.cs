@@ -295,7 +295,7 @@ public class DatabaseController : MonoBehaviour
         TGO.GetComponent<UnitController>().UnitIdleAnimation = UnitDictionary[index].IdleAnimations;
         TGO.GetComponent<UnitController>().IdleAnimationSpeed = UnitDictionary[index].IdleAnimationSpeed;
         TGO.GetComponent<UnitController>().ID = index;
-        if (TerrainDictionary[index].IdleAnimations)
+        if (UnitDictionary[index].IdleAnimations)
         {
             TGO.GetComponent<UnitController>().IdleAnimationsDirectory = UnitDictionary[index].IdleAnimationDirectory;
             TGO.GetComponent<UnitController>().IdleAnimationCount = UnitDictionary[index].IdleAnimationDirectory.Count;

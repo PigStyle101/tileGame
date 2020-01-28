@@ -8,7 +8,7 @@
   "Weight": 1,
   "BlocksSight": false,
   "Overlays": true,
-  "IdleAnimations": true,
+  "IdleAnimations": false,
   "PixelsPerUnit": 64,
   "Mod": "Core"
 }

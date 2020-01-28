@@ -7,7 +7,7 @@ Things that need done:
 -Change roads and water so they only try to update if a tile is changed next to them
 -set up animation controller for units, and add files for each state, and controll state from unit/terrain controller script, (Use idle animation to set up the foundation)
 
---some reeason loading 30 sprites makes it lag, might work better to load all the sprits into a dictionary, and then call them from there, instead of keep loading them over again
+-units so they can do an action on the same turn they are built
 
 -Multiplayer?
 -What to do here?

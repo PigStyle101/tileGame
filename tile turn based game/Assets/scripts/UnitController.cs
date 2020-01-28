@@ -33,6 +33,10 @@ public class UnitController : MonoBehaviour
     [HideInInspector]
     public int Defence;
     [HideInInspector]
+    public int XP;
+    [HideInInspector]
+    public int Level;
+    [HideInInspector]
     public int ConversionSpeed;
     [HideInInspector]
     public bool CanConvert;

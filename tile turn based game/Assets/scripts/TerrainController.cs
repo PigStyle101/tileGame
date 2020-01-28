@@ -548,12 +548,12 @@ public class TerrainController : MonoBehaviour
                     else if (topBool && bottombool)
                     {
                         SR.sprite = DBC.TerrainDictionary[ID].ArtworkDirectory[3];
-                        gameObject.transform.eulerAngles = Road2wayStraightTopBottomRotOffset + OriginalRot;
+                        gameObject.transform.eulerAngles = OriginalRot;
                     }
                     else if (leftbool && rightbool)
                     {
                         SR.sprite = DBC.TerrainDictionary[ID].ArtworkDirectory[3];
-                        gameObject.transform.eulerAngles = OriginalRot;
+                        gameObject.transform.eulerAngles = Road2wayStraightTopBottomRotOffset + OriginalRot;
                     }
                     break;
                 case 3:
