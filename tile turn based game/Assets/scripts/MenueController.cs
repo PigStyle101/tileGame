@@ -4,26 +4,44 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.IO;
 using UnityEngine.EventSystems;
+using System.Text.RegularExpressions;
 
 public class MenueController : MonoBehaviour {
-    
+
+    private Image NewHeroPreview;
+    private Image LoadHeroPreview;
+    private InputField mapsizeIF;
+    private InputField HeroInputField;
+    private Text errorTextField;
+    private Text ModDescriptionText;
+    private Text FeedBackNewGame;
+    public Text NewHeroFeedBackText;
+    private Text NewHeroIntValue;
+    private Text NewHeroStrValue;
+    private Text NewHeroDexValue;
+    private Text NewHeroCharValue;
+    private Text LoadHeroFeedBackText;
+    private Text LoadHeroIntValue;
+    private Text LoadHeroStrValue;
+    private Text LoadHeroDexValue;
+    private Text LoadHeroCharValue;
     private GameObject MainMenuePanel;
     private GameObject MapEditorMenuePanel;
     private GameObject NewGameMenuePanel;
     private GameObject LoadGamePanel;
-    private GameObject MainPanel;
     private GameObject ModPanel;
-    private GameObject HeroPanel;
-    private InputField mapsizeIF;
-    private Text errorTextField;
-    private Text ModDescriptionText;
+    private GameObject NewHeroPanel;
+    private GameObject LoadHeroPanel;
     public GameObject LoadMenueButtonPrefab;
     public GameObject ModsButtonPrefab;
     private GameObject ContentWindowLoad;
     private GameObject ContentWindowNewGame;
     private GameObject ContentWindowMods;
     private GameObject ContentWindowMapEditor;
-    private Text FeedBackNewGame;
+    private GameObject ContentWindowNewHero;
+    private GameObject ContentWindowLoadHero;
+    private GameObject DeleteHeroNeverMind;
+    private GameObject YesDeleteHero;
     private GameObject Team1Image;
     private GameObject Team2Image;
     private GameObject Team3Image;
@@ -42,12 +60,13 @@ public class MenueController : MonoBehaviour {
     private GameObject Team7Dropdown;
     private GameObject Team8Dropdown;
     private GameObject Team9Dropdown;
-    private string SaveGameSelectedString;
     private GameObject CurrentlySellectedLoadObject;
-    private List<string> ModsList = new List<string>();
+    private string SaveGameSelectedString;
     private string CurrentlySellectedMod;
     private string SelectedMapForMapEditor;
+    private int NewHeroCurrentlySelected;
     private List<GameObject> ModsInModContentWindow = new List<GameObject>();
+    private List<string> ModsList = new List<string>();
     private GameControllerScript GCS;
     private DatabaseController DBC;
 
@@ -55,6 +74,8 @@ public class MenueController : MonoBehaviour {
     void Start()
     {
         MainMenueButtonClicked();
+        if (DBC.MasterData.HeroSelectedWhenGameClosed != null && GCS.HeroDictionary.ContainsKey(DBC.MasterData.HeroSelectedWhenGameClosed))
+        GCS.HeroCurrentlySelected = GCS.HeroDictionary[DBC.MasterData.HeroSelectedWhenGameClosed];
     }
 
     private void Awake()
@@ -70,16 +91,34 @@ public class MenueController : MonoBehaviour {
         MapEditorMenuePanel = gameObject.transform.Find("MainPanel").Find("MapEditorMenuePanel").gameObject;
         NewGameMenuePanel = gameObject.transform.Find("MainPanel").Find("NewGamePanel").gameObject;
         LoadGamePanel = gameObject.transform.Find("MainPanel").Find("LoadGamePanel").gameObject;
-        HeroPanel = gameObject.transform.Find("MainPanel").Find("HeroPanel").gameObject;
+        NewHeroPanel = gameObject.transform.Find("MainPanel").Find("NewHeroPanel").gameObject;
+        LoadHeroPanel = gameObject.transform.Find("MainPanel").Find("LoadHeroPanel").gameObject;
         ModPanel = gameObject.transform.Find("MainPanel").Find("ModsPanel").gameObject;
+        DeleteHeroNeverMind = gameObject.transform.Find("MainPanel").Find("LoadHeroPanel").Find("DeleteNoButton").gameObject;
+        YesDeleteHero = gameObject.transform.Find("MainPanel").Find("LoadHeroPanel").Find("DeleteYesButon").gameObject;
+        NewHeroPreview = gameObject.transform.Find("MainPanel").Find("NewHeroPanel").Find("Preview").GetComponent<Image>();
+        LoadHeroPreview = gameObject.transform.Find("MainPanel").Find("LoadHeroPanel").Find("Preview").GetComponent<Image>();
         mapsizeIF = gameObject.transform.Find("MainPanel").Find("MapEditorMenuePanel").Find("InputFieldSize").GetComponent<InputField>();
+        HeroInputField = gameObject.transform.Find("MainPanel").Find("NewHeroPanel").Find("HeroInputField").GetComponent<InputField>();
+        FeedBackNewGame = gameObject.transform.Find("MainPanel").Find("NewGamePanel").Find("FeedBackText").GetComponent<Text>();
+        LoadHeroFeedBackText = gameObject.transform.Find("MainPanel").Find("LoadHeroPanel").Find("LoadHeroFeedback").GetComponent<Text>();
         errorTextField = gameObject.transform.Find("MainPanel").Find("MapEditorMenuePanel").Find("ErrorHandlertext").GetComponent<Text>();
         ModDescriptionText = gameObject.transform.Find("MainPanel").Find("ModsPanel").Find("DescriptionText").gameObject.GetComponent<Text>();
+        NewHeroFeedBackText = gameObject.transform.Find("MainPanel").Find("NewHeroPanel").Find("FeedbackText").gameObject.GetComponent<Text>();
+        NewHeroIntValue = gameObject.transform.Find("MainPanel").Find("NewHeroPanel").Find("IntImage").Find("IntValue").gameObject.GetComponent<Text>();
+        NewHeroStrValue = gameObject.transform.Find("MainPanel").Find("NewHeroPanel").Find("StrImage").Find("StrValue").gameObject.GetComponent<Text>();
+        NewHeroDexValue = gameObject.transform.Find("MainPanel").Find("NewHeroPanel").Find("DexImage").Find("DexValue").gameObject.GetComponent<Text>();
+        NewHeroCharValue = gameObject.transform.Find("MainPanel").Find("NewHeroPanel").Find("CharImage").Find("CharValue").gameObject.GetComponent<Text>();
+        LoadHeroIntValue = gameObject.transform.Find("MainPanel").Find("LoadHeroPanel").Find("IntImage").Find("IntValue").gameObject.GetComponent<Text>();
+        LoadHeroStrValue = gameObject.transform.Find("MainPanel").Find("LoadHeroPanel").Find("StrImage").Find("StrValue").gameObject.GetComponent<Text>();
+        LoadHeroDexValue = gameObject.transform.Find("MainPanel").Find("LoadHeroPanel").Find("DexImage").Find("DexValue").gameObject.GetComponent<Text>();
+        LoadHeroCharValue = gameObject.transform.Find("MainPanel").Find("LoadHeroPanel").Find("CharImage").Find("CharValue").gameObject.GetComponent<Text>();
         ContentWindowLoad = gameObject.transform.Find("MainPanel").Find("LoadGamePanel").Find("LoadGameScrollView").Find("Viewport").Find("LoadGameContent").gameObject;
         ContentWindowNewGame = gameObject.transform.Find("MainPanel").Find("NewGamePanel").Find("NewGameScrollView").Find("Viewport").Find("NewGameContent").gameObject;
         ContentWindowMods = gameObject.transform.Find("MainPanel").Find("ModsPanel").Find("ModsScrollView").Find("ModsViewport").Find("ModsContent").gameObject;
         ContentWindowMapEditor = gameObject.transform.Find("MainPanel").Find("MapEditorMenuePanel").Find("MapEditorScrollView").Find("Viewport").Find("MapEditorContent").gameObject;
-        FeedBackNewGame = gameObject.transform.Find("MainPanel").Find("NewGamePanel").Find("FeedBackText").GetComponent<Text>();
+        ContentWindowLoadHero = gameObject.transform.Find("MainPanel").Find("LoadHeroPanel").Find("LoadHeroScrollView").Find("HeroViewport").Find("LoadHeroContent").gameObject;
+        ContentWindowNewHero = gameObject.transform.Find("MainPanel").Find("NewHeroPanel").Find("NewHeroScrollView").Find("HeroViewport").Find("NewHeroContent").gameObject;
         Team1Image = gameObject.transform.Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team1Image").gameObject;
         Team2Image = gameObject.transform.Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team2Image").gameObject;
         Team3Image = gameObject.transform.Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team3Image").gameObject;
@@ -107,7 +146,8 @@ public class MenueController : MonoBehaviour {
         NewGameMenuePanel.SetActive(false);
         LoadGamePanel.SetActive(false);
         ModPanel.SetActive(false);
-        HeroPanel.SetActive(false);
+        NewHeroPanel.SetActive(false);
+        LoadHeroPanel.SetActive(false);
         GetMapsForMapEditorWindow();
     }
 
@@ -118,7 +158,8 @@ public class MenueController : MonoBehaviour {
         NewGameMenuePanel.SetActive(false);
         LoadGamePanel.SetActive(false);
         ModPanel.SetActive(false);
-        HeroPanel.SetActive(false);
+        NewHeroPanel.SetActive(false);
+        LoadHeroPanel.SetActive(false);
     }
 
     public void MainMenueButtonClickedFromModScreen()
@@ -160,7 +201,8 @@ public class MenueController : MonoBehaviour {
                     NewGameMenuePanel.SetActive(false);
                     LoadGamePanel.SetActive(false);
                     ModPanel.SetActive(false);
-                    HeroPanel.SetActive(false);  
+                    NewHeroPanel.SetActive(false);
+                    LoadHeroPanel.SetActive(false);
                 }
                 else
                 {
@@ -185,7 +227,8 @@ public class MenueController : MonoBehaviour {
         NewGameMenuePanel.SetActive(true);
         LoadGamePanel.SetActive(false);
         ModPanel.SetActive(false);
-        HeroPanel.SetActive(false);
+        NewHeroPanel.SetActive(false);
+        LoadHeroPanel.SetActive(false);
         GetMapsForLoadGameWindow();
         Team1Image.SetActive(false);
         Team2Image.SetActive(false);
@@ -214,7 +257,8 @@ public class MenueController : MonoBehaviour {
         NewGameMenuePanel.SetActive(false);
         LoadGamePanel.SetActive(true);
         ModPanel.SetActive(false);
-        HeroPanel.SetActive(false);
+        NewHeroPanel.SetActive(false);
+        LoadHeroPanel.SetActive(false);
         GetSaves();
     }
 
@@ -225,17 +269,55 @@ public class MenueController : MonoBehaviour {
         NewGameMenuePanel.SetActive(false);
         LoadGamePanel.SetActive(false);
         ModPanel.SetActive(true);
-        HeroPanel.SetActive(false);
+        NewHeroPanel.SetActive(false);
+        LoadHeroPanel.SetActive(false);
         GetMods();
     }
 
     public void QuitGameButtonClicked ()
     {
+        Master m = JsonUtility.FromJson<Master>(File.ReadAllText(Application.dataPath + "/StreamingAssets/MasterData/Master.json"));
+        m.HeroSelectedWhenGameClosed = GCS.HeroCurrentlySelected.Name;
+        string tempjson = JsonUtility.ToJson(m, true);
+        FileStream fs = File.Create(Application.dataPath + "/StreamingAssets/MasterData/Master.json");
+        StreamWriter sr = new StreamWriter(fs);
+        sr.Write(tempjson);
+        sr.Close();
+        sr.Dispose();
+        fs.Close();
+        fs.Dispose();
+
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
 #else
         Application.Quit();
 #endif
+    }
+
+    public void NewHeroButtonClicked()
+    {
+        MainMenuePanel.SetActive(false);
+        MapEditorMenuePanel.SetActive(false);
+        NewGameMenuePanel.SetActive(false);
+        LoadGamePanel.SetActive(false);
+        ModPanel.SetActive(false);
+        NewHeroPanel.SetActive(true);
+        LoadHeroPanel.SetActive(false);
+        GetHeroesNew();
+    }
+
+    public void LoadHeroButtonClicked()
+    {
+        MainMenuePanel.SetActive(false);
+        MapEditorMenuePanel.SetActive(false);
+        NewGameMenuePanel.SetActive(false);
+        LoadGamePanel.SetActive(false);
+        ModPanel.SetActive(false);
+        NewHeroPanel.SetActive(false);
+        LoadHeroPanel.SetActive(true);
+        YesDeleteHero.SetActive(false);
+        DeleteHeroNeverMind.SetActive(false);
+        GetHeroesLoad();
     }
 
     public void SettingMapSize()
@@ -382,6 +464,96 @@ public class MenueController : MonoBehaviour {
         }
     }
 
+    public void GetMods()
+    {
+        var childcount = ContentWindowMods.transform.childCount;
+        for (int i = 0; i < childcount; i++)
+        {
+            Destroy(ContentWindowMods.transform.GetChild(i).gameObject);
+        }
+        ModsInModContentWindow.Clear();
+        foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/")))
+        {
+            GameObject tempbutton = Instantiate(ModsButtonPrefab, ContentWindowMods.transform); //create button and set its parent to content
+            tempbutton.name = Path.GetFileNameWithoutExtension(file); //change name
+            tempbutton.transform.GetChild(0).GetComponent<Text>().text = Path.GetFileNameWithoutExtension(file);
+            tempbutton.GetComponent<Button>().onClick.AddListener(ModSelected); //adds method to button clicked
+            ModsInModContentWindow.Add(tempbutton);
+        }
+        UpdateModsActive();
+        DBC.ModsLoaded.Clear(); //clear this, as it is used in update mods, so after it is added to the mod list the list is no longer needed untell we load new mods
+    }
+
+    public void GetHeroesNew()
+    {
+        var childcount = ContentWindowNewHero.transform.childCount;
+        for (int i = 0; i < childcount; i++)
+        {
+            Destroy(ContentWindowNewHero.transform.GetChild(i).gameObject);
+        }
+        foreach (var kvp in DBC.HeroDictionary)
+        {
+            GameObject tempbutton = Instantiate(LoadMenueButtonPrefab, ContentWindowNewHero.transform); //create button and set its parent to content
+            tempbutton.name = kvp.Value.Title; //change name
+            tempbutton.transform.GetChild(0).GetComponent<Text>().text = kvp.Value.Title;
+            tempbutton.GetComponent<Button>().onClick.AddListener(NewHeroSelectedButton); //adds method to button clicked 
+            tempbutton.AddComponent<ButtonProperties>();
+            tempbutton.GetComponent<ButtonProperties>().ID = kvp.Value.ID;
+        }
+        NewHeroCurrentlySelected = 0;
+        NewHeroPreview.sprite = DBC.HeroDictionary[NewHeroCurrentlySelected].ArtworkDirectory[0];
+        NewHeroIntValue.text = DBC.HeroDictionary[NewHeroCurrentlySelected].Intelligance.ToString();
+        NewHeroDexValue.text = DBC.HeroDictionary[NewHeroCurrentlySelected].Dexterity.ToString();
+        NewHeroStrValue.text = DBC.HeroDictionary[NewHeroCurrentlySelected].Strenght.ToString();
+        NewHeroCharValue.text = DBC.HeroDictionary[NewHeroCurrentlySelected].Charisma.ToString();
+    }
+
+    public void GetHeroesLoad()
+    {
+        var childcount = ContentWindowLoadHero.transform.childCount;
+        for (int i = 0; i < childcount; i++)
+        {
+            Destroy(ContentWindowLoadHero.transform.GetChild(i).gameObject);
+        }
+        foreach (var kvp in GCS.HeroDictionary)
+        {
+            GameObject tempbutton = Instantiate(LoadMenueButtonPrefab, ContentWindowLoadHero.transform); //create button and set its parent to content
+            tempbutton.name = Path.GetFileNameWithoutExtension(kvp.Value.Name); //change name
+            tempbutton.transform.GetChild(0).GetComponent<Text>().text = kvp.Value.Name;
+            tempbutton.GetComponent<Button>().onClick.AddListener(LoadHeroSelectedButton); //adds method to button clicked 
+        }
+        if (GCS.HeroCurrentlySelected != null)
+        {
+            LoadHeroPreview.sprite = DBC.HeroDictionary[GCS.HeroCurrentlySelected.ID].ArtworkDirectory[0];
+            LoadHeroIntValue.text = DBC.HeroDictionary[GCS.HeroCurrentlySelected.ID].Intelligance.ToString();
+            LoadHeroStrValue.text = DBC.HeroDictionary[GCS.HeroCurrentlySelected.ID].Strenght.ToString();
+            LoadHeroDexValue.text = DBC.HeroDictionary[GCS.HeroCurrentlySelected.ID].Dexterity.ToString();
+            LoadHeroCharValue.text = DBC.HeroDictionary[GCS.HeroCurrentlySelected.ID].Charisma.ToString();
+            LoadHeroFeedBackText.text = "Current hero selected: " + GCS.HeroCurrentlySelected.Name; 
+        }
+    }
+
+    public void NewHeroSelectedButton()
+    {
+        NewHeroCurrentlySelected = EventSystem.current.currentSelectedGameObject.transform.GetComponent<ButtonProperties>().ID;
+        NewHeroPreview.sprite = DBC.HeroDictionary[NewHeroCurrentlySelected].ArtworkDirectory[0];
+        NewHeroIntValue.text = DBC.HeroDictionary[NewHeroCurrentlySelected].Intelligance.ToString();
+        NewHeroStrValue.text = DBC.HeroDictionary[NewHeroCurrentlySelected].Strenght.ToString();
+        NewHeroDexValue.text = DBC.HeroDictionary[NewHeroCurrentlySelected].Dexterity.ToString();
+        NewHeroCharValue.text = DBC.HeroDictionary[NewHeroCurrentlySelected].Charisma.ToString();
+    }
+
+    public void LoadHeroSelectedButton()
+    {
+        GCS.HeroCurrentlySelected = GCS.HeroDictionary[EventSystem.current.currentSelectedGameObject.name];
+        LoadHeroPreview.sprite = DBC.HeroDictionary[GCS.HeroCurrentlySelected.ID].ArtworkDirectory[0];
+        LoadHeroIntValue.text = DBC.HeroDictionary[GCS.HeroCurrentlySelected.ID].Intelligance.ToString();
+        LoadHeroStrValue.text = DBC.HeroDictionary[GCS.HeroCurrentlySelected.ID].Strenght.ToString();
+        LoadHeroDexValue.text = DBC.HeroDictionary[GCS.HeroCurrentlySelected.ID].Dexterity.ToString();
+        LoadHeroCharValue.text = DBC.HeroDictionary[GCS.HeroCurrentlySelected.ID].Charisma.ToString();
+        LoadHeroFeedBackText.text = "Current hero selected: " + GCS.HeroCurrentlySelected.Name;
+    }
+
     public void SaveGameSelected()
     {
         SaveGameSelectedString = EventSystem.current.currentSelectedGameObject.name;
@@ -439,26 +611,6 @@ public class MenueController : MonoBehaviour {
             UnityEngine.SceneManagement.SceneManager.LoadScene("PlayScene");
             GCS.PlaySceneLoadStatus = "NewGame";
         }
-    }
-
-    public void GetMods()
-    {
-        var childcount = ContentWindowMods.transform.childCount;
-        for (int i = 0; i < childcount; i++)
-        {
-            Destroy(ContentWindowMods.transform.GetChild(i).gameObject);
-        }
-        ModsInModContentWindow.Clear();
-        foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/")))
-        {
-            GameObject tempbutton = Instantiate(ModsButtonPrefab, ContentWindowMods.transform); //create button and set its parent to content
-            tempbutton.name = Path.GetFileNameWithoutExtension(file); //change name
-            tempbutton.transform.GetChild(0).GetComponent<Text>().text = Path.GetFileNameWithoutExtension(file);
-            tempbutton.GetComponent<Button>().onClick.AddListener(ModSelected); //adds method to button clicked
-            ModsInModContentWindow.Add(tempbutton);
-        }
-        UpdateModsActive();
-        DBC.ModsLoaded.Clear(); //clear this, as it is used in update mods, so after it is added to the mod list the list is no longer needed untell we load new mods
     }
 
     public void ModSelected()
@@ -629,6 +781,58 @@ public class MenueController : MonoBehaviour {
         {
             errorTextField.text = "Must select a map to load";
         }
+    }
+
+    public void NewHeroCreateButtonClicked()
+    {
+        if (!File.Exists(Application.dataPath + "/StreamingAssets/HeroList/" + HeroInputField.text + ".json"))
+        {
+            if (HeroInputField.text != "")
+            {
+                if (!Regex.IsMatch(HeroInputField.text, @"^[a-z][A-Z]+$"))
+                {
+                    GCS.CreateNewHero(NewHeroCurrentlySelected, HeroInputField.text);
+                    NewHeroFeedBackText.text = "New hero created.";
+                }
+                else
+                {
+                    NewHeroFeedBackText.text = "Only use letters";
+                }
+            }
+            else
+            {
+                NewHeroFeedBackText.text = "Cannot leave name blank";
+            }
+        }
+        else
+        {
+            NewHeroFeedBackText.text = "Hero With this name already exist.";
+        }
+    }
+
+    public void DeleteHeroButtonClicked()
+    {
+        YesDeleteHero.SetActive(true);
+        DeleteHeroNeverMind.SetActive(true);
+        LoadHeroFeedBackText.text = "You sure???";
+    }
+
+    public void YesDelete()
+    {
+        YesDeleteHero.SetActive(false);
+        DeleteHeroNeverMind.SetActive(false);
+        File.Delete(Application.dataPath + "/StreamingAssets/HeroList/" + GCS.HeroCurrentlySelected.Name + ".json");
+        GCS.HeroDictionary.Remove(GCS.HeroCurrentlySelected.Name);
+        GCS.HeroCurrentlySelected = null;
+        LoadHeroFeedBackText.text = "Current hero selected: None";
+        GetHeroesLoad();
+    }
+
+    public void Nevermind()
+    {
+        YesDeleteHero.SetActive(false);
+        DeleteHeroNeverMind.SetActive(false);
+        LoadHeroFeedBackText.text = "";
     }
 
     public void DropdownTeam1Controller(int index)

@@ -1,0 +1,92 @@
+{
+    "ID": 1,
+    "Name": "dead",
+    "Title": "Undead",
+    "Slug": "Undead_hero",
+    "Description": "Elite unit",
+    "Type": "Elite",
+    "Mod": "Core",
+    "PixelsPerUnit": 600,
+    "Attack": 5,
+    "Defence": 20,
+    "Health": 10,
+    "AttackRange": 1,
+    "MovePoints": 5,
+    "ConversionSpeed": 5,
+    "SightRange": 4,
+    "Mana": 5,
+    "HealthRegen": 0,
+    "ManaRegen": 1,
+    "CanConvert": true,
+    "CanMoveAndAttack": true,
+    "Intelligance": 2,
+    "Strenght": 1,
+    "Dexterity": 1,
+    "Charisma": 2,
+    "IdleAnimationSpeed": 0.05000000074505806,
+    "IdleAnimations": true,
+    "ArtworkDirectory": [
+        {
+            "instanceID": -56600
+        }
+    ],
+    "IdleAnimationDirectory": [
+        {
+            "instanceID": -56528
+        },
+        {
+            "instanceID": -56532
+        },
+        {
+            "instanceID": -56536
+        },
+        {
+            "instanceID": -56540
+        },
+        {
+            "instanceID": -56544
+        },
+        {
+            "instanceID": -56548
+        },
+        {
+            "instanceID": -56552
+        },
+        {
+            "instanceID": -56556
+        },
+        {
+            "instanceID": -56560
+        },
+        {
+            "instanceID": -56564
+        },
+        {
+            "instanceID": -56568
+        },
+        {
+            "instanceID": -56572
+        },
+        {
+            "instanceID": -56576
+        },
+        {
+            "instanceID": -56580
+        },
+        {
+            "instanceID": -56584
+        },
+        {
+            "instanceID": -56588
+        },
+        {
+            "instanceID": -56592
+        },
+        {
+            "instanceID": -56596
+        }
+    ],
+    "Team": 0,
+    "Level": 1,
+    "XP": 0
+}

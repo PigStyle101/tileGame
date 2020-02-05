@@ -5,6 +5,8 @@ using System.IO;
 using System.Reflection;
 using System;
 using UnityEngine.UI;
+using System.Dynamic;
+using System.Runtime.InteropServices.Expando;
 
 [System.Serializable]
 public class DatabaseController : MonoBehaviour
@@ -22,6 +24,7 @@ public class DatabaseController : MonoBehaviour
     public Dictionary<int, Building> BuildingDictionary = new Dictionary<int, Building>();
     public Dictionary<int, FogOfWar> FogOfWarDictionary = new Dictionary<int, FogOfWar>();
     public Dictionary<int, Hero> HeroDictionary = new Dictionary<int, Hero>();
+    public Master MasterData = new Master();
     public List<string> ModsLoaded = new List<string>();
     private GameObject NewTile;
     [HideInInspector]
@@ -81,10 +84,10 @@ public class DatabaseController : MonoBehaviour
     {
         //Debug.log("Fetching json master file");
         var grassstring = File.ReadAllText(Application.dataPath + "/StreamingAssets/MasterData/Master.json"); //temp string to hold the json data
-        Master tempjson = JsonUtility.FromJson<Master>(grassstring); //this converts from json string to unity object
-        scrollSpeed = tempjson.ScrollSpeed;
-        DragSpeed = tempjson.DragSpeed;
-        Debug.Log("Finished fetching json master file");
+        MasterData = JsonUtility.FromJson<Master>(grassstring); //this converts from json string to unity object
+        scrollSpeed = MasterData.ScrollSpeed;
+        DragSpeed = MasterData.DragSpeed;
+        //Debug.Log("Finished fetching json master file");
     }
 
     /// <summary>
@@ -101,7 +104,7 @@ public class DatabaseController : MonoBehaviour
                 var Tempstring = File.ReadAllText(file); //temp string to hold the json data
                 Terrain tempjson = JsonUtility.FromJson<Terrain>(Tempstring); //this converts from json string to unity object
                 tempjson.ID = NextTerrainDicIndex;
-                Debug.Log("Adding: " + tempjson.Slug + " to database");
+                // Debug.Log("Adding: " + tempjson.Slug + " to database");
 
                 TerrainDictionary.Add(tempjson.ID, tempjson); //adds
                 tempjson.GetSprites(); //details in fucntion
@@ -124,7 +127,7 @@ public class DatabaseController : MonoBehaviour
                 var Tempstring = File.ReadAllText(file); //temp string to hold the json data
                 var tempjson = JsonUtility.FromJson<Unit>(Tempstring); //this converts from json string to unity object
                 tempjson.ID = NextUnitDicIndex;
-                Debug.Log("Adding: " + tempjson.Slug + " to database");
+                //Debug.Log("Adding: " + tempjson.Slug + " to database");
 
                 UnitDictionary.Add(tempjson.ID, tempjson); //adds
                 tempjson.GetSprites(); //details in fucntion
@@ -146,7 +149,7 @@ public class DatabaseController : MonoBehaviour
             {
                 var Tempstring = File.ReadAllText(file); //temp string to hold the json data
                 var tempjson = JsonUtility.FromJson<Hero>(Tempstring); //this converts from json string to unity object
-                Debug.Log("Adding: " + tempjson.Slug + " to database");
+                //Debug.Log("Adding: " + tempjson.Slug + " to database");
                 tempjson.ID = NextHeroIndex;
                 HeroDictionary.Add(tempjson.ID, tempjson); //adds
                 tempjson.GetSprites(); //details in fucntion
@@ -168,7 +171,7 @@ public class DatabaseController : MonoBehaviour
             {
                 var Tempstring = File.ReadAllText(file); //temp string to hold the json data
                 var tempjson = JsonUtility.FromJson<Building>(Tempstring); //this converts from json string to unity object
-                Debug.Log("Adding: " + tempjson.Slug + " to database");
+                //Debug.Log("Adding: " + tempjson.Slug + " to database");
                 tempjson.ID = NextBuildingIndex;
                 BuildingDictionary.Add(tempjson.ID, tempjson); //adds
                 tempjson.GetSprites(); //details in fucntion
@@ -187,7 +190,7 @@ public class DatabaseController : MonoBehaviour
         {
             var TempString = File.ReadAllText(file);
             var tempjson = JsonUtility.FromJson<MouseOverlays>(TempString);
-            Debug.Log("Adding: " + tempjson.Slug + " to database");
+            //Debug.Log("Adding: " + tempjson.Slug + " to database");
             tempjson.ID = NextMouseOverlayIndex;
             MouseDictionary.Add(tempjson.ID, tempjson);
             tempjson.GetSprites();
@@ -202,7 +205,7 @@ public class DatabaseController : MonoBehaviour
         {
             var TempString = File.ReadAllText(file);
             var tempjson = JsonUtility.FromJson<FogOfWar>(TempString);
-            Debug.Log("Adding: " + tempjson.Slug + " to database");
+            // Debug.Log("Adding: " + tempjson.Slug + " to database");
             tempjson.ID = NextFogIndex;
             FogOfWarDictionary.Add(tempjson.ID, tempjson);
             tempjson.GetSprites();
@@ -351,7 +354,7 @@ public class DatabaseController : MonoBehaviour
                 TempCan.transform.Find("Image").Find("Text").GetComponent<Text>().color = Color.black;
                 break;
         }
-        
+
         TGO.GetComponent<UnitController>().UnitMovable = false;
         TGO.GetComponent<UnitController>().UnitMoved = true;
         TGO.GetComponent<UnitController>().CanMoveAndAttack = UnitDictionary[index].CanMoveAndAttack;
@@ -409,7 +412,7 @@ public class DatabaseController : MonoBehaviour
         if (File.Exists(FilePath))
         {
             FileData = File.ReadAllBytes(FilePath);
-            Tex2D = new Texture2D(64,64); // Create new "empty" texture, this requires the size to be added, it get changed in teh next method
+            Tex2D = new Texture2D(64, 64); // Create new "empty" texture, this requires the size to be added, it get changed in teh next method
             Tex2D.LoadImage(FileData);// Load the imagedata into the texture (size is set automatically)
             TempSprite = Sprite.Create(Tex2D, new Rect(0, 0, Tex2D.width, Tex2D.height), new Vector2(0.5f, 0.5f), PPU);
             return TempSprite;
@@ -475,7 +478,7 @@ public class Terrain
             }
             //var tempname = Path.GetFileNameWithoutExtension(file);  // use this to get file name
         }
-        Debug.Log("Sprites found for " + Title + ": " + count + " in mod " + Mod);
+        //Debug.Log("Sprites found for " + Title + ": " + count + " in mod " + Mod);
         if (Title == "Water")
         {
             //Debug.Log("Overlays Contains:" + OverlayArtworkDirectory.Count);
@@ -528,7 +531,7 @@ public class Unit
                 //var tempname = Path.GetFileNameWithoutExtension(file);  // use this to get file name
             } 
         }
-        Debug.Log("Sprites found for " + Title + ": " + count + " in mod " + Mod);
+        //Debug.Log("Sprites found for " + Title + ": " + count + " in mod " + Mod);
         count = 0;
         foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Units/Sprites/" + Title + "/", "*.png")))
         {
@@ -577,7 +580,7 @@ public class Building
             }
             //var tempname = Path.GetFileNameWithoutExtension(file);  // use this to get file name
         }
-        Debug.Log("Sprites found for " + Title + ": " + count + " in mod " + Mod);
+        //Debug.Log("Sprites found for " + Title + ": " + count + " in mod " + Mod);
         count = 0;
     }
 }//same use as terrian class
@@ -608,7 +611,7 @@ public class MouseOverlays
             }
             //var tempname = Path.GetFileNameWithoutExtension(file);  // use this to get file name
         }
-        Debug.Log("Sprites found for MO: " + count);
+        //Debug.Log("Sprites found for MO: " + count);
         count = 0;
     }
 }//same use as terrian class
@@ -638,7 +641,7 @@ public class FogOfWar
             }
             //var tempname = Path.GetFileNameWithoutExtension(file);  // use this to get file name
         }
-        Debug.Log("Sprites found for FogOfWar: " + count);
+       // Debug.Log("Sprites found for FogOfWar: " + count);
         count = 0;
     }
 }//same use as terrian class
@@ -648,12 +651,22 @@ public class Master
 {
     public int DragSpeed;
     public int ScrollSpeed;
+    public string HeroSelectedWhenGameClosed;
 }
 
 [System.Serializable]
 public class Hero
 {
+    //Populated by GetHeroesJson();
     public int ID;
+    //Populated by CreateNewHero();
+    public string Name;
+    //Populated by CreateNewHero(), and then updated when the hero lvls.
+    public int Intelligance;
+    public int Strenght;
+    public int Dexterity;
+    public int Charisma;
+    //Populated from json
     public string Title;
     public string Slug;
     public string Description;
@@ -670,13 +683,21 @@ public class Hero
     public int Mana;
     public int HealthRegen;
     public int ManaRegen;
+    public bool CanConvert;
+    public bool CanMoveAndAttack;
+    public int BaseIntelligance;
+    public int BaseStrenght;
+    public int BaseDexterity;
+    public int BaseCharisma;
+    public float IdleAnimationSpeed;
+    public bool IdleAnimations;
+    //Populated from GetSprites();
+    public List<Sprite> ArtworkDirectory;
+    public List<Sprite> IdleAnimationDirectory;
+    //Blank tell used in game
+    public int Team;
     public int Level;
     public int XP;
-    public int Intelligance;
-    public int Strenght;
-    public int Dexterity;
-    public int Charisma;
-    public List<Sprite> ArtworkDirectory;
 
     /// <summary>
     /// Gets location of sprites and saves them to a list
@@ -685,6 +706,15 @@ public class Hero
     {
         //Debug.log("Getting sprites for: " + Title);
         int count = new int();
+        if (IdleAnimations)
+        {
+            foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Heroes/Sprites/" + Title + "/Idle/", "*.png")))
+            {
+                IdleAnimationDirectory.Add(DatabaseController.instance.loadSprite(file, PixelsPerUnit));
+                count = count + 1;
+                //var tempname = Path.GetFileNameWithoutExtension(file);  // use this to get file name
+            }
+        }
         foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/Core/Heroes/Sprites/" + Title + "/", "*.png")))
         {
             if (file.Contains(Title))

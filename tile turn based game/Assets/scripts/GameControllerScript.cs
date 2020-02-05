@@ -26,6 +26,8 @@ public class GameControllerScript : MonoBehaviour
     public Dictionary<Vector2, GameObject> TilePos = new Dictionary<Vector2, GameObject>();
     public Dictionary<Vector2, GameObject> UnitPos = new Dictionary<Vector2, GameObject>();
     public Dictionary<Vector2, GameObject> BuildingPos = new Dictionary<Vector2, GameObject>();
+    public Dictionary<Vector2, GameObject> HeroPos = new Dictionary<Vector2, GameObject>();
+    public Dictionary<string, Hero> HeroDictionary = new Dictionary<string, Hero>();
     private GameObject CameraVar;
     [HideInInspector]
     public string CurrentScene;
@@ -67,6 +69,7 @@ public class GameControllerScript : MonoBehaviour
     private float IdleTimerFloat;
     public int IdleState;
     private DatabaseController DBC;
+    public Hero HeroCurrentlySelected;
 
     private void Awake()
     {
@@ -84,6 +87,7 @@ public class GameControllerScript : MonoBehaviour
     private void Start()
     {
         DBC = DatabaseController.instance;
+        PopulateHeroList();
     }
 
     void OnEnable()
@@ -1505,6 +1509,7 @@ public class GameControllerScript : MonoBehaviour
         SF.UnitList = new List<SaveableUnit>();
         SF.TerrainList = new List<SaveableTile>();
         SF.BuildingList = new List<SaveableBuilding>();
+        SF.HeroList = new List<SaveableHeroForSaveGames>();
         foreach (var kvp in UnitPos)
         {
             SaveableUnit SU = new SaveableUnit();
@@ -1529,6 +1534,31 @@ public class GameControllerScript : MonoBehaviour
             SB.ID = kvp.Value.GetComponent<BuildingController>().ID;
             SB.Location = kvp.Key;
             SF.BuildingList.Add(SB);
+        }
+        foreach (var kvp in HeroPos)
+        {
+            HeroDictionary[kvp.Value.GetComponent<HeroController>().Name].XP = kvp.Value.GetComponent<HeroController>().XP;
+            HeroDictionary[kvp.Value.GetComponent<HeroController>().Name].Level = kvp.Value.GetComponent<HeroController>().Level;
+            foreach (var Hero in HeroDictionary)
+            {
+                if (!File.Exists(Application.dataPath + "/StreamingAssets/HeroList/" + Hero.Key + ".json"))
+                {
+                    File.Delete(Application.dataPath + "/StreamingAssets/HeroList/" + Hero.Key + ".json");
+                    string Herojson = UnityEngine.JsonUtility.ToJson(Hero.Value, true);
+                    FileStream FStream = File.Create(Application.dataPath + "/StreamingAssets/HeroList/" + Hero.Key + ".json");
+                    StreamWriter StreamW = new StreamWriter(FStream);
+                    StreamW.Write(Herojson);
+                    StreamW.Close();
+                    StreamW.Dispose();
+                    FStream.Close();
+                    FStream.Dispose();
+                }
+            }
+            SaveableHeroForSaveGames SH = new SaveableHeroForSaveGames();
+            SH.Health = kvp.Value.GetComponent<HeroController>().Health;
+            SH.Team = kvp.Value.GetComponent<HeroController>().Team;
+            SH.Name = kvp.Value.GetComponent<HeroController>().Name;
+            SF.HeroList.Add(SH);
         }
         string tempjson = UnityEngine.JsonUtility.ToJson(SF,true);
         FileStream fs = File.Create(Application.dataPath + "/StreamingAssets/Saves/" + SaveName + ".json");
@@ -1575,10 +1605,49 @@ public class GameControllerScript : MonoBehaviour
             TGO.GetComponent<BuildingController>().Health = item.Health;
             BuildingPos.Add(item.Location, TGO);
         }
+        foreach (var item in LoadingFile.HeroList)
+        {
+            //create and spawn hero, apply hero value to hero controller
+        }
         CurrentTeamsTurn = TeamList[LoadingFile.CurrentTeamsTurn];
         CameraVar = GameObject.Find("MainCamera");
         CameraVar.transform.position = new Vector3(PlayMapSize / 2 - .5f, PlayMapSize / 2 - .5f, PlayMapSize * -1);
         SpriteUpdateActivator();
+    }
+
+    public void CreateNewHero(int ID, string name)
+    {
+        Hero h = new Hero();
+        h = DBC.HeroDictionary[ID];
+        h.Name = name;
+        h.Level = 1;
+        h.XP = 0;
+        h.Intelligance = h.BaseIntelligance;
+        h.Strenght = h.BaseStrenght;
+        h.Dexterity = h.BaseDexterity;
+        h.Charisma = h.BaseCharisma;
+        HeroDictionary.Add(h.Name,h);
+        //Working on this, Thinking for now we will save to a json file.
+        string tempjson = JsonUtility.ToJson(h, true);
+        FileStream fs = File.Create(Application.dataPath + "/StreamingAssets/HeroList/" + name + ".json");
+        StreamWriter sr = new StreamWriter(fs);
+        sr.Write(tempjson);
+        sr.Close();
+        sr.Dispose();
+        fs.Close();
+        fs.Dispose();
+        GameObject.Find("Canvas").GetComponent<MenueController>().NewHeroFeedBackText.text = "File saved as: " + name;
+
+    }
+
+    public void PopulateHeroList()
+    {
+        foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/HeroList/", "*.json")))
+        {
+            var Tempstring = File.ReadAllText(file); //temp string to hold the json data
+            Hero tempjson = JsonUtility.FromJson<Hero>(Tempstring); //this converts from json string to unity object
+            HeroDictionary.Add(tempjson.Name,tempjson);
+        }
     }
 
     /// <summary>
@@ -1713,10 +1782,11 @@ public class Map
 public class Save
 {
     public List<TeamStuff> TeamList;
-    public int CurrentTeamsTurn;
     public List<SaveableUnit> UnitList;
     public List<SaveableBuilding> BuildingList;
     public List<SaveableTile> TerrainList;
+    public List<SaveableHeroForSaveGames> HeroList;
+    public int CurrentTeamsTurn;
     public List<string> Mods;
 }
 
@@ -1781,6 +1851,15 @@ public class SaveableUnit
     public int Health;
     public int XP;
     public int Level;
+    public SeralizableVector2 Location;
+}
+
+[Serializable]
+public class SaveableHeroForSaveGames
+{
+    public int Team;
+    public int Health;
+    public string Name;
     public SeralizableVector2 Location;
 }
 

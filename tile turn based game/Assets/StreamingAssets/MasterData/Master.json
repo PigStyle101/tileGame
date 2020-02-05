@@ -1,4 +1,5 @@
 {
-  "DragSpeed": 1,
-  "ScrollSpeed": 2
+    "DragSpeed": 1,
+    "ScrollSpeed": 2,
+    "HeroSelectedWhenGameClosed": "dead"
 }

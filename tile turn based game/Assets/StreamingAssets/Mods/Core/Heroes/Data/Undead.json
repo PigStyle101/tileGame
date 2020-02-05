@@ -1,10 +1,10 @@
 {
-  "Title": "Hero",
-  "Slug": "hero",
+  "Title": "Undead",
+  "Slug": "Undead_hero",
   "Description": "Elite unit",
   "Type": "Elite",
   "Mod": "Core",
-  "PixelsPerUnit": 64,
+  "PixelsPerUnit": 600,
   "Attack": 5,
   "Defence": 20,
   "Health": 10,
@@ -16,5 +16,11 @@
   "HealthRegen": 0,
   "ManaRegen": 1,
   "CanConvert": true,
-  "CanMoveAndAttack": true
+  "CanMoveAndAttack": true,
+  "BaseIntelligance": 2,
+  "BaseStrenght": 1,
+  "BaseDexterity": 1,
+  "BaseCharisma": 2,
+  "IdleAnimationSpeed": 0.05,
+  "IdleAnimations": true
 }
