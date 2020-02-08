@@ -8,6 +8,10 @@ using UnityEngine.UI;
 public class UnitController : MonoBehaviour
 {
     private MapEditMenueCamController MEMCC;
+    [HideInInspector]
+    public bool Hero;
+    [HideInInspector]
+    public string Name;
     //[HideInInspector]
     public int Team;
     [HideInInspector]

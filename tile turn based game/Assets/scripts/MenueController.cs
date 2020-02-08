@@ -75,7 +75,7 @@ public class MenueController : MonoBehaviour {
     {
         MainMenueButtonClicked();
         if (DBC.MasterData.HeroSelectedWhenGameClosed != null && GCS.HeroDictionary.ContainsKey(DBC.MasterData.HeroSelectedWhenGameClosed))
-        GCS.HeroCurrentlySelected = GCS.HeroDictionary[DBC.MasterData.HeroSelectedWhenGameClosed];
+        GCS.HeroCurrentlySelectedP1 = GCS.HeroDictionary[DBC.MasterData.HeroSelectedWhenGameClosed];
     }
 
     private void Awake()
@@ -277,7 +277,7 @@ public class MenueController : MonoBehaviour {
     public void QuitGameButtonClicked ()
     {
         Master m = JsonUtility.FromJson<Master>(File.ReadAllText(Application.dataPath + "/StreamingAssets/MasterData/Master.json"));
-        m.HeroSelectedWhenGameClosed = GCS.HeroCurrentlySelected.Name;
+        m.HeroSelectedWhenGameClosed = GCS.HeroCurrentlySelectedP1.Name;
         string tempjson = JsonUtility.ToJson(m, true);
         FileStream fs = File.Create(Application.dataPath + "/StreamingAssets/MasterData/Master.json");
         StreamWriter sr = new StreamWriter(fs);
@@ -522,14 +522,14 @@ public class MenueController : MonoBehaviour {
             tempbutton.transform.GetChild(0).GetComponent<Text>().text = kvp.Value.Name;
             tempbutton.GetComponent<Button>().onClick.AddListener(LoadHeroSelectedButton); //adds method to button clicked 
         }
-        if (GCS.HeroCurrentlySelected != null)
+        if (GCS.HeroCurrentlySelectedP1 != null)
         {
-            LoadHeroPreview.sprite = DBC.HeroDictionary[GCS.HeroCurrentlySelected.ID].ArtworkDirectory[0];
-            LoadHeroIntValue.text = DBC.HeroDictionary[GCS.HeroCurrentlySelected.ID].Intelligance.ToString();
-            LoadHeroStrValue.text = DBC.HeroDictionary[GCS.HeroCurrentlySelected.ID].Strenght.ToString();
-            LoadHeroDexValue.text = DBC.HeroDictionary[GCS.HeroCurrentlySelected.ID].Dexterity.ToString();
-            LoadHeroCharValue.text = DBC.HeroDictionary[GCS.HeroCurrentlySelected.ID].Charisma.ToString();
-            LoadHeroFeedBackText.text = "Current hero selected: " + GCS.HeroCurrentlySelected.Name; 
+            LoadHeroPreview.sprite = DBC.HeroDictionary[GCS.HeroCurrentlySelectedP1.ID].ArtworkDirectory[0];
+            LoadHeroIntValue.text = DBC.HeroDictionary[GCS.HeroCurrentlySelectedP1.ID].Intelligance.ToString();
+            LoadHeroStrValue.text = DBC.HeroDictionary[GCS.HeroCurrentlySelectedP1.ID].Strenght.ToString();
+            LoadHeroDexValue.text = DBC.HeroDictionary[GCS.HeroCurrentlySelectedP1.ID].Dexterity.ToString();
+            LoadHeroCharValue.text = DBC.HeroDictionary[GCS.HeroCurrentlySelectedP1.ID].Charisma.ToString();
+            LoadHeroFeedBackText.text = "Current hero selected: " + GCS.HeroCurrentlySelectedP1.Name; 
         }
     }
 
@@ -545,13 +545,13 @@ public class MenueController : MonoBehaviour {
 
     public void LoadHeroSelectedButton()
     {
-        GCS.HeroCurrentlySelected = GCS.HeroDictionary[EventSystem.current.currentSelectedGameObject.name];
-        LoadHeroPreview.sprite = DBC.HeroDictionary[GCS.HeroCurrentlySelected.ID].ArtworkDirectory[0];
-        LoadHeroIntValue.text = DBC.HeroDictionary[GCS.HeroCurrentlySelected.ID].Intelligance.ToString();
-        LoadHeroStrValue.text = DBC.HeroDictionary[GCS.HeroCurrentlySelected.ID].Strenght.ToString();
-        LoadHeroDexValue.text = DBC.HeroDictionary[GCS.HeroCurrentlySelected.ID].Dexterity.ToString();
-        LoadHeroCharValue.text = DBC.HeroDictionary[GCS.HeroCurrentlySelected.ID].Charisma.ToString();
-        LoadHeroFeedBackText.text = "Current hero selected: " + GCS.HeroCurrentlySelected.Name;
+        GCS.HeroCurrentlySelectedP1 = GCS.HeroDictionary[EventSystem.current.currentSelectedGameObject.name];
+        LoadHeroPreview.sprite = DBC.HeroDictionary[GCS.HeroCurrentlySelectedP1.ID].ArtworkDirectory[0];
+        LoadHeroIntValue.text = DBC.HeroDictionary[GCS.HeroCurrentlySelectedP1.ID].Intelligance.ToString();
+        LoadHeroStrValue.text = DBC.HeroDictionary[GCS.HeroCurrentlySelectedP1.ID].Strenght.ToString();
+        LoadHeroDexValue.text = DBC.HeroDictionary[GCS.HeroCurrentlySelectedP1.ID].Dexterity.ToString();
+        LoadHeroCharValue.text = DBC.HeroDictionary[GCS.HeroCurrentlySelectedP1.ID].Charisma.ToString();
+        LoadHeroFeedBackText.text = "Current hero selected: " + GCS.HeroCurrentlySelectedP1.Name;
     }
 
     public void SaveGameSelected()
@@ -821,9 +821,9 @@ public class MenueController : MonoBehaviour {
     {
         YesDeleteHero.SetActive(false);
         DeleteHeroNeverMind.SetActive(false);
-        File.Delete(Application.dataPath + "/StreamingAssets/HeroList/" + GCS.HeroCurrentlySelected.Name + ".json");
-        GCS.HeroDictionary.Remove(GCS.HeroCurrentlySelected.Name);
-        GCS.HeroCurrentlySelected = null;
+        File.Delete(Application.dataPath + "/StreamingAssets/HeroList/" + GCS.HeroCurrentlySelectedP1.Name + ".json");
+        GCS.HeroDictionary.Remove(GCS.HeroCurrentlySelectedP1.Name);
+        GCS.HeroCurrentlySelectedP1 = null;
         LoadHeroFeedBackText.text = "Current hero selected: None";
         GetHeroesLoad();
     }

@@ -363,6 +363,96 @@ public class DatabaseController : MonoBehaviour
         return TGO;
     } //used to spawn units form database
 
+    public GameObject CreateAndSpawnHero(Vector2 location, string Hname, int team)
+    {
+        GameObject TGO = new GameObject();
+        Hero thero = GCS.HeroDictionary[Hname];
+        TGO.name = Hname;
+        TGO.AddComponent<SpriteRenderer>();
+        TGO.GetComponent<SpriteRenderer>().sprite = HeroDictionary[thero.ID].ArtworkDirectory[0];
+        TGO.GetComponent<SpriteRenderer>().sortingLayerName = UnitDictionary[thero.ID].Type;
+        TGO.AddComponent<BoxCollider>();
+        TGO.GetComponent<BoxCollider>().size = new Vector3(.95f, .95f, .1f);
+        TGO.AddComponent<UnitController>();
+        TGO.GetComponent<UnitController>().Name = Hname;
+        TGO.GetComponent<UnitController>().Hero = true;
+        TGO.GetComponent<UnitController>().Team = team;
+        TGO.GetComponent<UnitController>().MovePoints = HeroDictionary[thero.ID].MovePoints;
+        TGO.GetComponent<UnitController>().Attack = HeroDictionary[thero.ID].Attack;
+        TGO.GetComponent<UnitController>().Defence = HeroDictionary[thero.ID].Defence;
+        TGO.GetComponent<UnitController>().MaxHealth = HeroDictionary[thero.ID].Health;
+        TGO.GetComponent<UnitController>().Health = HeroDictionary[thero.ID].Health;
+        TGO.GetComponent<UnitController>().AttackRange = HeroDictionary[thero.ID].AttackRange;
+        TGO.GetComponent<UnitController>().CanConvert = HeroDictionary[thero.ID].CanConvert;
+        TGO.GetComponent<UnitController>().SightRange = HeroDictionary[thero.ID].SightRange;
+        TGO.GetComponent<UnitController>().UnitIdleAnimation = HeroDictionary[thero.ID].IdleAnimations;
+        TGO.GetComponent<UnitController>().IdleAnimationSpeed = HeroDictionary[thero.ID].IdleAnimationSpeed;
+        TGO.GetComponent<UnitController>().ID = thero.ID;
+        if (HeroDictionary[thero.ID].IdleAnimations)
+        {
+            TGO.GetComponent<UnitController>().IdleAnimationsDirectory = HeroDictionary[thero.ID].IdleAnimationDirectory;
+            TGO.GetComponent<UnitController>().IdleAnimationCount = HeroDictionary[thero.ID].IdleAnimationDirectory.Count;
+        }
+        if (HeroDictionary[thero.ID].CanConvert)
+        {
+            TGO.GetComponent<UnitController>().ConversionSpeed = HeroDictionary[thero.ID].ConversionSpeed;
+        }
+        TGO.tag = HeroDictionary[thero.ID].Type;
+        TGO.transform.position = location;
+
+        GameObject TempCan = Instantiate(UnitHealthOverlay, TGO.transform);
+        TempCan.transform.localPosition = new Vector3(0, 0, 0);
+        TempCan.GetComponentInChildren<Text>().text = HeroDictionary[thero.ID].Health.ToString();
+        TempCan.GetComponent<Canvas>().sortingLayerName = UnitDictionary[0].Type;
+        int CaseInt = TGO.GetComponent<UnitController>().Team;
+        switch (CaseInt)
+        {
+            case 1:
+                TempCan.transform.Find("Image").GetComponent<Image>().color = Color.black;
+                TempCan.transform.Find("Image").Find("Text").GetComponent<Text>().color = Color.white;
+                break;
+            case 2:
+                TempCan.transform.Find("Image").GetComponent<Image>().color = Color.blue;
+                TempCan.transform.Find("Image").Find("Text").GetComponent<Text>().color = Color.black;
+                break;
+            case 3:
+                TempCan.transform.Find("Image").GetComponent<Image>().color = Color.cyan;
+                TempCan.transform.Find("Image").Find("Text").GetComponent<Text>().color = Color.black;
+                break;
+            case 4:
+                TempCan.transform.Find("Image").GetComponent<Image>().color = Color.gray;
+                TempCan.transform.Find("Image").Find("Text").GetComponent<Text>().color = Color.black;
+                break;
+            case 5:
+                TempCan.transform.Find("Image").GetComponent<Image>().color = Color.green;
+                TempCan.transform.Find("Image").Find("Text").GetComponent<Text>().color = Color.black;
+                break;
+            case 6:
+                TempCan.transform.Find("Image").GetComponent<Image>().color = Color.magenta;
+                TempCan.transform.Find("Image").Find("Text").GetComponent<Text>().color = Color.black;
+                break;
+            case 7:
+                TempCan.transform.Find("Image").GetComponent<Image>().color = Color.red;
+                TempCan.transform.Find("Image").Find("Text").GetComponent<Text>().color = Color.black;
+                break;
+            case 8:
+                TempCan.transform.Find("Image").GetComponent<Image>().color = Color.white;
+                TempCan.transform.Find("Image").Find("Text").GetComponent<Text>().color = Color.black;
+                break;
+            case 9:
+                TempCan.transform.Find("Image").GetComponent<Image>().color = Color.yellow;
+                TempCan.transform.Find("Image").Find("Text").GetComponent<Text>().color = Color.black;
+                break;
+        }
+
+        TGO.GetComponent<UnitController>().UnitMovable = false;
+        TGO.GetComponent<UnitController>().UnitMoved = true;
+        TGO.GetComponent<UnitController>().CanMoveAndAttack = HeroDictionary[thero.ID].CanMoveAndAttack;
+        //GCS.AddUnitsToDictionary(TGO);
+        TGO.GetComponent<UnitController>().TeamSpriteController();
+        return TGO;
+    } //used to spawn units form database
+
     /// <summary>
     /// Creates a building and adds all needed components.
     /// </summary>

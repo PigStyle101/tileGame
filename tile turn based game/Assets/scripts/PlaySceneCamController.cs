@@ -389,7 +389,9 @@ public class PlaySceneCamController : MonoBehaviour
             {
                 GameObject GO = DBC.CreateAndSpawnUnit(CurrentlySelectedBuilding, DBC.UnitDictionary[SelectedUnitDR].ID, GCS.CurrentTeamsTurn.Team);
                 GCS.AddUnitsToDictionary(GO);
-                GO.GetComponent<UnitController>().UnitMovable = false;
+                GO.GetComponent<UnitController>().UnitMovable = true;
+                GO.GetComponent<UnitController>().UnitMoved = false;
+                GO.GetComponent<SpriteRenderer>().color = new Color(.5f, .5f, .5f);
                 foreach (var unit in GCS.UnitPos)
                 {
                     unit.Value.GetComponent<UnitController>().GetTileValues();
