@@ -52,8 +52,8 @@ public class GameControllerScript : MonoBehaviour
     public TeamStuff CurrentTeamsTurn = new TeamStuff();
     //[HideInInspector]
     //public int CurrentTeamsTurnIndex;
-    private Vector2 originalPositionOfUnit;
-    private Vector2 MoveToPosition;
+    public Vector2 originalPositionOfUnit;
+    public Vector2 MoveToPosition;
     public AudioClip BattleAudio;
     public AudioClip MainAudio;
     public AudioClip MapEditorAudio;
@@ -249,7 +249,7 @@ public class GameControllerScript : MonoBehaviour
     /// </summary>
     /// <param name="newUnit">Unit to add</param>
     /// <param name="oldPos">Old key that needs removed</param>
-    public void MoveUnitPositionInDictionary(GameObject newUnit, Vector2 oldPos)
+    public void MoveUnitPositionInDictionary(GameObject newUnit,Vector2 newPos, Vector2 oldPos)
     {
         if (UnitPos.ContainsKey(oldPos))
         {
@@ -258,7 +258,7 @@ public class GameControllerScript : MonoBehaviour
             {
                 throw new Exception("Key was not removed");
             }
-            UnitPos.Add(newUnit.transform.position, newUnit);
+            UnitPos.Add(newPos, newUnit);
         }
     }
 
@@ -273,7 +273,7 @@ public class GameControllerScript : MonoBehaviour
         {
             throw new Exception("Key was not removed");
         }
-        Destroy(Dead);
+        //Destroy(Dead);
     }
 
     /// <summary>
@@ -764,12 +764,22 @@ public class GameControllerScript : MonoBehaviour
                             {
                                 if (SelectedUnitPlayScene.GetComponent<UnitController>().EnemyUnitsInRange.ContainsKey(hit.transform.position)) //Are they in range of this units attacks?
                                 {
+                                    if (SelectedUnitPlayScene.GetComponent<UnitController>().UnitAttackAnimation)
+                                    {
+                                        SelectedUnitPlayScene.GetComponent<UnitController>().Attacking = true;
+                                    }
+                                    if (hit.transform.GetComponent<UnitController>().UnitHurtAnimation)
+                                    {
+                                        hit.transform.GetComponent<UnitController>().Hurt = true;
+                                    }
                                     //int attack = SelectedUnitPlayScene.GetComponent<UnitController>().Attack;
                                     int attack = CombatCalculator(SelectedUnitPlayScene, UnitPos[hit.transform.position]);
                                     UnitPos[hit.transform.position].GetComponent<UnitController>().Health = UnitPos[hit.transform.position].GetComponent<UnitController>().Health - attack;
                                     if (UnitPos[hit.transform.position].GetComponent<UnitController>().Health <= 0)
                                     {
                                         KillUnitPlayScene(hit.transform.gameObject);
+                                        hit.transform.GetComponent<UnitController>().Dying = true;
+                                        SelectedUnitPlayScene.GetComponent<UnitController>().KilledEnemyUnit(hit.transform.GetComponent<UnitController>());
                                     }
                                     else
                                     {
@@ -793,11 +803,21 @@ public class GameControllerScript : MonoBehaviour
                             {
                                 if (SelectedUnitPlayScene.GetComponent<UnitController>().EnemyUnitsInRange.ContainsKey(hit.transform.position)) //are they in range of this heros attacks
                                 {
+                                    if (SelectedUnitPlayScene.GetComponent<UnitController>().UnitAttackAnimation)
+                                    {
+                                        SelectedUnitPlayScene.GetComponent<UnitController>().Attacking = true;
+                                    }
+                                    if (hit.transform.GetComponent<UnitController>().UnitHurtAnimation)
+                                    {
+                                        hit.transform.GetComponent<UnitController>().Hurt = true;
+                                    }
                                     int attack = CombatCalculator(SelectedUnitPlayScene, UnitPos[hit.transform.position]);
                                     UnitPos[hit.transform.position].GetComponent<UnitController>().Health = UnitPos[hit.transform.position].GetComponent<UnitController>().Health - attack;
                                     if (UnitPos[hit.transform.position].GetComponent<UnitController>().Health <= 0)
                                     {
                                         KillUnitPlayScene(hit.transform.gameObject);
+                                        hit.transform.GetComponent<UnitController>().Dying = true;
+                                        SelectedUnitPlayScene.GetComponent<UnitController>().KilledEnemyUnit(hit.transform.GetComponent<UnitController>());
                                     }
                                     else
                                     {
@@ -1087,6 +1107,7 @@ public class GameControllerScript : MonoBehaviour
         PSCC.CurrentPlayerTurnText.text = "Team turn";
         PSCC.GoldText.text = "Gold:" + TeamList[CurrentTeamsTurn.Team].Gold.ToString();
         AllRoundUpdater();
+        AllRoundUpdater();
         foreach (var kvp in BuildingPos)
         {
             if (kvp.Value.GetComponent<BuildingController>().Team == CurrentTeamsTurn.Team)
@@ -1121,6 +1142,7 @@ public class GameControllerScript : MonoBehaviour
     {
         PSCC.CurrentPlayerTurnText.text = "Team turn";
         PSCC.GoldText.text = "Gold:" + TeamList[CurrentTeamsTurn.Team].Gold.ToString();
+        AllRoundUpdater();
         AllRoundUpdater();
         foreach (var kvp in BuildingPos)
         {
@@ -1280,7 +1302,7 @@ public class GameControllerScript : MonoBehaviour
     {
         if (MoveToPosition != new Vector2(-1, -1))
         {
-            MoveUnitPositionInDictionary(SelectedUnitPlayScene, originalPositionOfUnit);
+            MoveUnitPositionInDictionary(SelectedUnitPlayScene,MoveToPosition, originalPositionOfUnit);
             MoveToPosition = new Vector2(-1, -1);
         }
         SelectedUnitPlayScene.GetComponent<UnitController>().UnitMovable = false;
@@ -1316,18 +1338,13 @@ public class GameControllerScript : MonoBehaviour
     /// </summary>
     public void CaptureActionPlayScene()
     {
-        if (MoveToPosition != new Vector2(-1, -1))
-        {
-            MoveUnitPositionInDictionary(SelectedUnitPlayScene, originalPositionOfUnit);
-            MoveToPosition = new Vector2(-1, -1);
-        }
         SelectedUnitPlayScene.GetComponent<UnitController>().UnitMovable = false; //set unit movable to false
         SelectedUnitPlayScene.GetComponent<UnitController>().UnitMoved = true;
         PSCC.SetActionButtonsToFalse();
         foreach (var b in BuildingPos)
         {
             var BC = b.Value.transform.GetComponent<BuildingController>();
-            if (b.Value.transform.position == SelectedUnitPlayScene.transform.position && BC.Team != SelectedUnitPlayScene.GetComponent<UnitController>().Team)
+            if ((Vector2)b.Value.transform.position == SelectedUnitPlayScene.GetComponent<UnitController>().Position && BC.Team != SelectedUnitPlayScene.GetComponent<UnitController>().Team)
             {
                 BC.Health = BC.Health - SelectedUnitPlayScene.GetComponent<UnitController>().ConversionSpeed;
                 if (BC.Health <= 0)
@@ -1419,15 +1436,19 @@ public class GameControllerScript : MonoBehaviour
             }
         }
         vectorlist.Reverse(); //revers list so we cna move the unit in that order, looking for enemy units       x=right    y=up 
+        List<Vector2> TempList = new List<Vector2>();
         for (int i = 0; i < vectorlist.Count; i++)
         {
-            if (UnitPos.ContainsKey(vectorlist[i])) //if there is a unit there and he is enemy
+            if (UnitPos.ContainsKey(vectorlist[i])) //if there is a unit there
             {
                 if (UnitPos[vectorlist[i]].GetComponent<UnitController>().Team != SelectedUnitPlayScene.GetComponent<UnitController>().Team && TilePos[vectorlist[i]].GetComponent<TerrainController>().FogOfWarBool)
                 {
                     MoveToPosition = vectorlist[i - 1];
-                    SelectedUnitPlayScene.transform.position = MoveToPosition;
-                    MoveUnitPositionInDictionary(SelectedUnitPlayScene, originalPositionOfUnit);
+                    SelectedUnitPlayScene.GetComponent<UnitController>().Moving = true;
+                    SelectedUnitPlayScene.GetComponent<UnitController>().Position = MoveToPosition;
+                    SelectedUnitPlayScene.GetComponent<UnitController>().OriginalPosition = originalPositionOfUnit;
+                    SelectedUnitPlayScene.GetComponent<UnitController>().vectorlist = TempList;
+                    MoveUnitPositionInDictionary(SelectedUnitPlayScene, MoveToPosition, originalPositionOfUnit);
                     MoveToPosition = new Vector2(-1, -1);
                     SelectedUnitPlayScene.GetComponent<UnitController>().UnitMovable = false; //set unit movable to false
                     SelectedUnitPlayScene.GetComponent<UnitController>().UnitMoved = true;
@@ -1436,12 +1457,19 @@ public class GameControllerScript : MonoBehaviour
                     break;
                 }
             }
+            else
+            {
+                TempList.Add(vectorlist[i]);
+            }
         }
         if (!EnemyUnitFound) // if no enemy found
         {
             PSCC.SetActionButtonsToFalse();
-            SelectedUnitPlayScene.transform.position = MoveToPosition;
-            MoveUnitPositionInDictionary(SelectedUnitPlayScene, originalPositionOfUnit);
+            SelectedUnitPlayScene.GetComponent<UnitController>().Moving = true;
+            SelectedUnitPlayScene.GetComponent<UnitController>().Position = MoveToPosition;
+            SelectedUnitPlayScene.GetComponent<UnitController>().OriginalPosition = originalPositionOfUnit;
+            SelectedUnitPlayScene.GetComponent<UnitController>().vectorlist = vectorlist;
+            MoveUnitPositionInDictionary(SelectedUnitPlayScene, MoveToPosition, originalPositionOfUnit);
             MoveToPosition = new Vector2(-1, -1);
             SelectedUnitPlayScene.GetComponent<UnitController>().UnitMovable = false; //set unit movable to false
             SelectedUnitPlayScene.GetComponent<UnitController>().UnitMoved = true;
@@ -1463,9 +1491,9 @@ public class GameControllerScript : MonoBehaviour
             }
             //Debug.log("Moving Unit");
             PSCC.WaitButton.SetActive(true);
-            if (BuildingPos.ContainsKey(SelectedUnitPlayScene.transform.position))
+            if (BuildingPos.ContainsKey(SelectedUnitPlayScene.transform.GetComponent<UnitController>().Position))
             {
-                if (SelectedUnitPlayScene.GetComponent<UnitController>().Team != BuildingPos[SelectedUnitPlayScene.transform.position].GetComponent<BuildingController>().Team && SelectedUnitPlayScene.GetComponent<UnitController>().CanConvert)
+                if (SelectedUnitPlayScene.GetComponent<UnitController>().Team != BuildingPos[SelectedUnitPlayScene.transform.GetComponent<UnitController>().Position].GetComponent<BuildingController>().Team && SelectedUnitPlayScene.GetComponent<UnitController>().CanConvert)
                 {//are we landing on a building? is the building not on are team? can this unit convert?
                     PSCC.CaptureButton.SetActive(true);
                 }
@@ -1482,10 +1510,10 @@ public class GameControllerScript : MonoBehaviour
             {
                 PSCC.AttackButton.SetActive(false); //else set it to false
             }
-        }
-        if (!PSCC.AttackButton.activeSelf && !PSCC.CaptureButton.activeSelf)
-        {
-            WaitActionPlayScene();
+            if (!PSCC.AttackButton.activeSelf && !PSCC.CaptureButton.activeSelf)
+            {
+                WaitActionPlayScene();
+            }
         }
         PSCC.HideOrShowSaveButton(false);
     }

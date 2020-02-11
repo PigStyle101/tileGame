@@ -4,6 +4,7 @@ Things that need done:
 --What to do about hero classes? thinking that will be the hero json files and then the art will correlat to a class, that way json can be used to define hero properties
 -add xp to troops and a unit return(a list of units that you keep through battles)
 -Change roads and water so they only try to update if a tile is changed next to them
+-Add in animation controllers for attack, hurt, die, and move
 
 /////////////////////////////////////////// Currnetly working on:
 /////////////////////////////////////////// working on stat and level controllers for heroes, also lvling up interface. will need one for in game and for when game finished, in case they level from winning.
@@ -20,7 +21,6 @@ option are:
 
 Features to add later
 -different terrain like mountains (give something like longer sight range or something)
--add more animations
 -add ports and boats, start with carrier and attack boat?
 -Add building of walls/city managment (City managment could be done at any time, but will not go into affect tell your next turn)
 -add other reasorces

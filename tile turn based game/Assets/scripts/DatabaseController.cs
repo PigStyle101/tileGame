@@ -296,12 +296,37 @@ public class DatabaseController : MonoBehaviour
         TGO.GetComponent<UnitController>().CanConvert = UnitDictionary[index].CanConvert;
         TGO.GetComponent<UnitController>().SightRange = UnitDictionary[index].SightRange;
         TGO.GetComponent<UnitController>().UnitIdleAnimation = UnitDictionary[index].IdleAnimations;
-        TGO.GetComponent<UnitController>().IdleAnimationSpeed = UnitDictionary[index].IdleAnimationSpeed;
+        TGO.GetComponent<UnitController>().UnitAttackAnimation = UnitDictionary[index].AttackAnimations;
+        TGO.GetComponent<UnitController>().UnitHurtAnimation = UnitDictionary[index].HurtAnimations;
+        TGO.GetComponent<UnitController>().UnitMoveAnimation = UnitDictionary[index].MoveAnimations;
+        TGO.GetComponent<UnitController>().UnitDiedAnimation = UnitDictionary[index].DiedAnimations;
+        TGO.GetComponent<UnitController>().MoveAnimationSpeed = UnitDictionary[index].MoveAnimationSpeed;
+        TGO.GetComponent<UnitController>().MoveAnimationOffset = UnitDictionary[index].MoveAnimationOffset;
+        TGO.GetComponent<UnitController>().Position = location;
         TGO.GetComponent<UnitController>().ID = index;
         if (UnitDictionary[index].IdleAnimations)
         {
+            TGO.GetComponent<UnitController>().IdleAnimationSpeed = UnitDictionary[index].IdleAnimationSpeed;
             TGO.GetComponent<UnitController>().IdleAnimationsDirectory = UnitDictionary[index].IdleAnimationDirectory;
-            TGO.GetComponent<UnitController>().IdleAnimationCount = UnitDictionary[index].IdleAnimationDirectory.Count;
+        }
+        if (UnitDictionary[index].AttackAnimations)
+        {
+            TGO.GetComponent<UnitController>().AttackAnimationSpeed = UnitDictionary[index].AttackAnimationSpeed;
+            TGO.GetComponent<UnitController>().AttackAnimationsDirectory = UnitDictionary[index].AttackAnimationDirectory;
+        }
+        if (UnitDictionary[index].HurtAnimations)
+        {
+            TGO.GetComponent<UnitController>().HurtAnimationSpeed = UnitDictionary[index].HurtAnimationSpeed;
+            TGO.GetComponent<UnitController>().HurtAnimationsDirectory = UnitDictionary[index].HurtAnimationDirectory;
+        }
+        if (UnitDictionary[index].DiedAnimations)
+        {
+            TGO.GetComponent<UnitController>().DiedAnimationSpeed = UnitDictionary[index].DiedAnimationSpeed;
+            TGO.GetComponent<UnitController>().DiedAnimationsDirectory = UnitDictionary[index].DiedAnimationDirectory;
+        }
+        if (UnitDictionary[index].MoveAnimations)
+        {
+            TGO.GetComponent<UnitController>().MoveAnimationsDirectory = UnitDictionary[index].MoveAnimationDirectory;
         }
         if (UnitDictionary[index].CanConvert)
         {
@@ -386,12 +411,37 @@ public class DatabaseController : MonoBehaviour
         TGO.GetComponent<UnitController>().CanConvert = HeroDictionary[thero.ID].CanConvert;
         TGO.GetComponent<UnitController>().SightRange = HeroDictionary[thero.ID].SightRange;
         TGO.GetComponent<UnitController>().UnitIdleAnimation = HeroDictionary[thero.ID].IdleAnimations;
-        TGO.GetComponent<UnitController>().IdleAnimationSpeed = HeroDictionary[thero.ID].IdleAnimationSpeed;
+        TGO.GetComponent<UnitController>().UnitAttackAnimation = HeroDictionary[thero.ID].AttackAnimations;
+        TGO.GetComponent<UnitController>().UnitHurtAnimation = HeroDictionary[thero.ID].HurtAnimations;
+        TGO.GetComponent<UnitController>().UnitMoveAnimation = HeroDictionary[thero.ID].MoveAnimations;
+        TGO.GetComponent<UnitController>().UnitDiedAnimation = HeroDictionary[thero.ID].DiedAnimations;
         TGO.GetComponent<UnitController>().ID = thero.ID;
+        TGO.GetComponent<UnitController>().Position = location;
         if (HeroDictionary[thero.ID].IdleAnimations)
         {
+            TGO.GetComponent<UnitController>().IdleAnimationSpeed = HeroDictionary[thero.ID].IdleAnimationSpeed;
             TGO.GetComponent<UnitController>().IdleAnimationsDirectory = HeroDictionary[thero.ID].IdleAnimationDirectory;
-            TGO.GetComponent<UnitController>().IdleAnimationCount = HeroDictionary[thero.ID].IdleAnimationDirectory.Count;
+        }
+        if (HeroDictionary[thero.ID].AttackAnimations)
+        {
+            TGO.GetComponent<UnitController>().AttackAnimationSpeed = HeroDictionary[thero.ID].AttackAnimationSpeed;
+            TGO.GetComponent<UnitController>().AttackAnimationsDirectory = HeroDictionary[thero.ID].AttackAnimationDirectory;
+        }
+        if (HeroDictionary[thero.ID].HurtAnimations)
+        {
+            TGO.GetComponent<UnitController>().HurtAnimationSpeed = HeroDictionary[thero.ID].HurtAnimationSpeed;
+            TGO.GetComponent<UnitController>().HurtAnimationsDirectory = HeroDictionary[thero.ID].HurtAnimationDirectory;
+        }
+        if (HeroDictionary[thero.ID].DiedAnimations)
+        {
+            TGO.GetComponent<UnitController>().DiedAnimationSpeed = HeroDictionary[thero.ID].DiedAnimationSpeed;
+            TGO.GetComponent<UnitController>().DiedAnimationsDirectory = HeroDictionary[thero.ID].DiedAnimationDirectory;
+        }
+        if (HeroDictionary[thero.ID].MoveAnimations)
+        {
+            TGO.GetComponent<UnitController>().MoveAnimationSpeed = HeroDictionary[thero.ID].MoveAnimationSpeed;
+            TGO.GetComponent<UnitController>().MoveAnimationOffset = HeroDictionary[thero.ID].MoveAnimationOffset;
+            TGO.GetComponent<UnitController>().MoveAnimationsDirectory = HeroDictionary[thero.ID].MoveAnimationDirectory;
         }
         if (HeroDictionary[thero.ID].CanConvert)
         {
@@ -595,9 +645,22 @@ public class Unit
     public string Slug;
     public string Type;
     public bool IdleAnimations;
+    public bool AttackAnimations;
+    public bool HurtAnimations;
+    public bool DiedAnimations;
+    public bool MoveAnimations;
     public List<Sprite> ArtworkDirectory;
     public List<Sprite> IdleAnimationDirectory;
+    public List<Sprite> AttackAnimationDirectory;
+    public List<Sprite> HurtAnimationDirectory;
+    public List<Sprite> DiedAnimationDirectory;
+    public List<Sprite> MoveAnimationDirectory;
     public float IdleAnimationSpeed;
+    public float AttackAnimationSpeed;
+    public float HurtAnimationSpeed;
+    public float DiedAnimationSpeed;
+    public float MoveAnimationSpeed;
+    public float MoveAnimationOffset;
     public int Team;
     public int ConversionSpeed;
     public int PixelsPerUnit;
@@ -621,14 +684,49 @@ public class Unit
                 //var tempname = Path.GetFileNameWithoutExtension(file);  // use this to get file name
             } 
         }
+        if (AttackAnimations)
+        {
+            foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Units/Sprites/" + Title + "/Attack/", "*.png")))
+            {
+                AttackAnimationDirectory.Add(DatabaseController.instance.loadSprite(file, PixelsPerUnit));
+                count = count + 1;
+                //var tempname = Path.GetFileNameWithoutExtension(file);  // use this to get file name
+            }
+        }
+        if (HurtAnimations)
+        {
+            foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Units/Sprites/" + Title + "/Hurt/", "*.png")))
+            {
+                HurtAnimationDirectory.Add(DatabaseController.instance.loadSprite(file, PixelsPerUnit));
+                count = count + 1;
+                //var tempname = Path.GetFileNameWithoutExtension(file);  // use this to get file name
+            }
+        }
+        if (DiedAnimations)
+        {
+            foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Units/Sprites/" + Title + "/Died/", "*.png")))
+            {
+                DiedAnimationDirectory.Add(DatabaseController.instance.loadSprite(file, PixelsPerUnit));
+                count = count + 1;
+                //var tempname = Path.GetFileNameWithoutExtension(file);  // use this to get file name
+            }
+        }
+        if (MoveAnimations)
+        {
+            foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Units/Sprites/" + Title + "/Move/", "*.png")))
+            {
+                MoveAnimationDirectory.Add(DatabaseController.instance.loadSprite(file, PixelsPerUnit));
+                count = count + 1;
+                //var tempname = Path.GetFileNameWithoutExtension(file);  // use this to get file name
+            }
+        }
         //Debug.Log("Sprites found for " + Title + ": " + count + " in mod " + Mod);
         count = 0;
         foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Units/Sprites/" + Title + "/", "*.png")))
         {
             ArtworkDirectory.Add(DatabaseController.instance.loadSprite(file, PixelsPerUnit));
             count = count + 1;
-            //var tempname = Path.GetFileNameWithoutExtension(file);  // use this to get file name
-        }
+        } //this is used to get the default sprite for icons and stuff, only needs one.
     }
 }//same use as terrian class
 
@@ -779,11 +877,23 @@ public class Hero
     public int BaseStrenght;
     public int BaseDexterity;
     public int BaseCharisma;
-    public float IdleAnimationSpeed;
     public bool IdleAnimations;
-    //Populated from GetSprites();
+    public bool AttackAnimations;
+    public bool HurtAnimations;
+    public bool DiedAnimations;
+    public bool MoveAnimations;
     public List<Sprite> ArtworkDirectory;
     public List<Sprite> IdleAnimationDirectory;
+    public List<Sprite> AttackAnimationDirectory;
+    public List<Sprite> HurtAnimationDirectory;
+    public List<Sprite> DiedAnimationDirectory;
+    public List<Sprite> MoveAnimationDirectory;
+    public float IdleAnimationSpeed;
+    public float AttackAnimationSpeed;
+    public float HurtAnimationSpeed;
+    public float DiedAnimationSpeed;
+    public float MoveAnimationSpeed;
+    public float MoveAnimationOffset;
     //Blank tell used in game
     public int Team;
     public int Level;
@@ -801,6 +911,42 @@ public class Hero
             foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Heroes/Sprites/" + Title + "/Idle/", "*.png")))
             {
                 IdleAnimationDirectory.Add(DatabaseController.instance.loadSprite(file, PixelsPerUnit));
+                count = count + 1;
+                //var tempname = Path.GetFileNameWithoutExtension(file);  // use this to get file name
+            }
+        }
+        if (AttackAnimations)
+        {
+            foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Heroes/Sprites/" + Title + "/Attack/", "*.png")))
+            {
+                AttackAnimationDirectory.Add(DatabaseController.instance.loadSprite(file, PixelsPerUnit));
+                count = count + 1;
+                //var tempname = Path.GetFileNameWithoutExtension(file);  // use this to get file name
+            }
+        }
+        if (HurtAnimations)
+        {
+            foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Heroes/Sprites/" + Title + "/Hurt/", "*.png")))
+            {
+                HurtAnimationDirectory.Add(DatabaseController.instance.loadSprite(file, PixelsPerUnit));
+                count = count + 1;
+                //var tempname = Path.GetFileNameWithoutExtension(file);  // use this to get file name
+            }
+        }
+        if (DiedAnimations)
+        {
+            foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Heroes/Sprites/" + Title + "/Died/", "*.png")))
+            {
+                DiedAnimationDirectory.Add(DatabaseController.instance.loadSprite(file, PixelsPerUnit));
+                count = count + 1;
+                //var tempname = Path.GetFileNameWithoutExtension(file);  // use this to get file name
+            }
+        }
+        if (MoveAnimations)
+        {
+            foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Heroes/Sprites/" + Title + "/Move/", "*.png")))
+            {
+                MoveAnimationDirectory.Add(DatabaseController.instance.loadSprite(file, PixelsPerUnit));
                 count = count + 1;
                 //var tempname = Path.GetFileNameWithoutExtension(file);  // use this to get file name
             }
@@ -856,17 +1002,17 @@ public class Race
 /// Spellcasting Chance
 /// 
 /// Strenght affects:
-/// Damage
+/// Attack
 /// Health Points
+/// Health Regen
 /// 
 /// Dexterity affects:
 /// Move Points
-/// Moves per turn
-/// Armor
+/// Defence
 /// Amount of capture per turn
 /// 
 /// Charisma affects:
 /// Cost of stuff
-/// Troops Attack
+/// Troops Attack (moral)
 /// Units in return
 

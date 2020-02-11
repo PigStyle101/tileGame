@@ -12,31 +12,78 @@ public class PlaySceneCamController : MonoBehaviour
     [HideInInspector]
     public Text CurrentPlayerTurnText;
     public bool AttackButtonSelected = false;
-    //[HideInInspector]
+    [HideInInspector]
     public GameObject AttackButton;
-    //[HideInInspector]
+    [HideInInspector]
     public GameObject CancelButton;
-    //[HideInInspector]
+    [HideInInspector]
     public GameObject WaitButton;
-    //[HideInInspector]
+    [HideInInspector]
     public GameObject CaptureButton;
-    //[HideInInspector]
+    [HideInInspector]
     public GameObject MoveButton;
+    //ToolTip Stuff
     private GameObject TerrainImage;
-    private GameObject TerrainText;
-    private GameObject TerrainDescription;
-    private GameObject TerrainToolTipSet;
-    private GameObject TerrainToolTipData;
+    private Text TerrainText;
+    private Text TerrainDescription;
+    private Text TerrainToolTipDefence;
+    private Text TerrainToolTipWalkable;
+    private Text TerrainToolTipWeight;
     private GameObject UnitImage;
-    private GameObject UnitText;
-    private GameObject UnitDescription;
-    private GameObject UnitToolTipSet;
-    private GameObject UnitToolTipData;
+    private Text UnitText;
+    private Text UnitDescription;
+    private Text UnitToolTipAttack;
+    private Text UnitToolTipDefence;
+    private Text UnitToolTipAttackRange;
+    private Text UnitToolTipMovePoints;
+    private Text UnitToolTipSightRange;
+    private Text UnitToolTipConversionSpeed;
     private GameObject BuildingImage;
-    private GameObject BuildingText;
-    private GameObject BuildingDescription;
-    private GameObject BuildingToolTipSet;
-    private GameObject BuildingToolTipData;
+    private Text BuildingText;
+    private Text BuildingDescription;
+    private Text BuildingToolTipDefence;
+    //Info Stats Panel
+    private GameObject InfoAndStatsPanel;
+    private GameObject HeroStatButton;
+    private GameObject InfoPanel;
+    private Text TitleText;
+    private Text TypeText;
+    private Text ModText;
+    private Text CanConvertText;
+    private Text CanMoveAndAttackText;
+    private Text DescriptionText;
+    private GameObject StatsPanel;
+    private Text LevelText;
+    private Text XPText;
+    private Text AttackText;
+    private Text DefenceText;
+    private Text HealthText;
+    private Text AttackRangeText;
+    private Text MovePointsText;
+    private Text ConversionSpeedText;
+    private Text SightRangeText;
+    private GameObject HeroStatsPanel;
+    private Text StrenghtText;
+    private Text StrenghtPerLvlText;
+    private Text HeroAttackText;
+    private Text HeroHealthText;
+    private Text HeroHealthRegenText;
+    private Text DexterityText;
+    private Text DexterityPerLvlText;
+    private Text HeroMovePointsText;
+    private Text HeroDefenceText;
+    private Text HeroConversionSpeedText;
+    private Text IntelliganceText;
+    private Text IntelligancePerLvlText;
+    private Text HeroManaRegenText;
+    private Text HeroMaxManaText;
+    private Text HeroXpGainText;
+    private Text CharismaText;
+    private Text CharismaPerLvlText;
+    private Text HeroUnitCostText;
+    private Text MoraleText;
+    private Text ReturnLimitText;
+    //Other stuff
     public GameObject BuildingButtonPrefab;
     private GameObject ContentWindowBuilding;
     private Text MovableUnitsCountText;
@@ -48,7 +95,7 @@ public class PlaySceneCamController : MonoBehaviour
     private GameObject ActionPanel;
     private GameObject BuildingPanel;
     private GameObject EndGamePanel;
-    private GameObject InfoPanel;
+    private GameObject StartInfoPanel;
     private Text FeedbackSaveMenu;
     private InputField InputFieldSaveMenu;
     private GameObject SavePanel;
@@ -79,7 +126,7 @@ public class PlaySceneCamController : MonoBehaviour
     {
         SetActionButtonsToFalse();
         BuildingPanel.SetActive(false);
-        InfoPanel.SetActive(true);
+        StartInfoPanel.SetActive(true);
     }
 
     void Update()
@@ -104,21 +151,68 @@ public class PlaySceneCamController : MonoBehaviour
         CaptureButton = transform.Find("Canvas").Find("Panel").Find("ActionPanel").Find("CaptureButton").gameObject;
         MoveButton = transform.Find("Canvas").Find("Panel").Find("ActionPanel").Find("MoveButton").gameObject;
         WaitButton = transform.Find("Canvas").Find("Panel").Find("ActionPanel").Find("WaitButton").gameObject;
+        //tool tip stuff
         TerrainImage = transform.Find("Canvas").Find("Panel").Find("ToolTip").Find("TerrainImage").gameObject;
-        TerrainText = transform.Find("Canvas").Find("Panel").Find("ToolTip").Find("TerrainText").gameObject;
-        TerrainDescription = transform.Find("Canvas").Find("Panel").Find("ToolTip").Find("TerrainDescription").gameObject;
-        TerrainToolTipSet = transform.Find("Canvas").Find("Panel").Find("ToolTip").Find("TerrainToolTipSet").gameObject;
-        TerrainToolTipData = transform.Find("Canvas").Find("Panel").Find("ToolTip").Find("TerrainToolTipData").gameObject;
+        TerrainText = transform.Find("Canvas").Find("Panel").Find("ToolTip").Find("TerrainText").GetComponent<Text>();
+        TerrainDescription = transform.Find("Canvas").Find("Panel").Find("ToolTip").Find("TerrainDescription").GetComponent<Text>();
+        TerrainToolTipDefence = transform.Find("Canvas").Find("Panel").Find("ToolTip").Find("TerrainToolTipDef").GetComponent<Text>();
+        TerrainToolTipWalkable = transform.Find("Canvas").Find("Panel").Find("ToolTip").Find("TerrainToolTipWalkable").GetComponent<Text>();
+        TerrainToolTipWeight = transform.Find("Canvas").Find("Panel").Find("ToolTip").Find("TerrainToolTipWeight").GetComponent<Text>();
         UnitImage = transform.Find("Canvas").Find("Panel").Find("ToolTip").Find("UnitImage").gameObject;
-        UnitText = transform.Find("Canvas").Find("Panel").Find("ToolTip").Find("UnitText").gameObject;
-        UnitDescription = transform.Find("Canvas").Find("Panel").Find("ToolTip").Find("UnitDescription").gameObject;
-        UnitToolTipSet = transform.Find("Canvas").Find("Panel").Find("ToolTip").Find("UnitToolTipSet").gameObject;
-        UnitToolTipData = transform.Find("Canvas").Find("Panel").Find("ToolTip").Find("UnitToolTipData").gameObject;
+        UnitText = transform.Find("Canvas").Find("Panel").Find("ToolTip").Find("UnitText").GetComponent<Text>();
+        UnitDescription = transform.Find("Canvas").Find("Panel").Find("ToolTip").Find("UnitDescription").GetComponent<Text>();
+        UnitToolTipAttack = transform.Find("Canvas").Find("Panel").Find("ToolTip").Find("UnitToolTipAttack").GetComponent<Text>();
+        UnitToolTipDefence = transform.Find("Canvas").Find("Panel").Find("ToolTip").Find("UnitToolTipDefence").GetComponent<Text>();
+        UnitToolTipAttackRange = transform.Find("Canvas").Find("Panel").Find("ToolTip").Find("UnitToolTipAttackRange").GetComponent<Text>();
+        UnitToolTipMovePoints = transform.Find("Canvas").Find("Panel").Find("ToolTip").Find("UnitToolTipMovePoints").GetComponent<Text>();
+        UnitToolTipSightRange = transform.Find("Canvas").Find("Panel").Find("ToolTip").Find("UnitToolTipSightRange").GetComponent<Text>();
+        UnitToolTipConversionSpeed = transform.Find("Canvas").Find("Panel").Find("ToolTip").Find("UnitToolTipConversionSpeed").GetComponent<Text>();
         BuildingImage = transform.Find("Canvas").Find("Panel").Find("ToolTip").Find("BuildingImage").gameObject;
-        BuildingText = transform.Find("Canvas").Find("Panel").Find("ToolTip").Find("BuildingText").gameObject;
-        BuildingDescription = transform.Find("Canvas").Find("Panel").Find("ToolTip").Find("BuildingDescription").gameObject;
-        BuildingToolTipSet = transform.Find("Canvas").Find("Panel").Find("ToolTip").Find("BuildingToolTipSet").gameObject;
-        BuildingToolTipData = transform.Find("Canvas").Find("Panel").Find("ToolTip").Find("BuildingToolTipData").gameObject;
+        BuildingText = transform.Find("Canvas").Find("Panel").Find("ToolTip").Find("BuildingText").GetComponent<Text>();
+        BuildingDescription = transform.Find("Canvas").Find("Panel").Find("ToolTip").Find("BuildingDescription").GetComponent<Text>();
+        BuildingToolTipDefence = transform.Find("Canvas").Find("Panel").Find("ToolTip").Find("BuildingToolTipDefence").GetComponent<Text>();
+        //InfoStat Panel stuff
+        InfoAndStatsPanel = transform.Find("Canvas").Find("InfoAndStatPanel").gameObject;
+        HeroStatButton = transform.Find("Canvas").Find("InfoAndStatPanel").Find("HeroStatsButton").gameObject;
+        InfoPanel = transform.Find("Canvas").Find("InfoAndStatPanel").Find("InfoPanel").gameObject;
+        TitleText = transform.Find("Canvas").Find("InfoAndStatPanel").Find("InfoPanel").Find("Title").GetComponent<Text>();
+        TypeText = transform.Find("Canvas").Find("InfoAndStatPanel").Find("InfoPanel").Find("Type").GetComponent<Text>();
+        ModText = transform.Find("Canvas").Find("InfoAndStatPanel").Find("InfoPanel").Find("Mod").GetComponent<Text>();
+        CanConvertText = transform.Find("Canvas").Find("InfoAndStatPanel").Find("InfoPanel").Find("CanConvert").GetComponent<Text>();
+        CanMoveAndAttackText = transform.Find("Canvas").Find("InfoAndStatPanel").Find("InfoPanel").Find("CanMoveAndAttack").GetComponent<Text>();
+        DescriptionText = transform.Find("Canvas").Find("InfoAndStatPanel").Find("InfoPanel").Find("Description").GetComponent<Text>();
+        StatsPanel = transform.Find("Canvas").Find("InfoAndStatPanel").Find("StatPanel").gameObject;
+        LevelText = transform.Find("Canvas").Find("InfoAndStatPanel").Find("StatPanel").Find("Level").GetComponent<Text>();
+        XPText = transform.Find("Canvas").Find("InfoAndStatPanel").Find("StatPanel").Find("XP").GetComponent<Text>();
+        AttackText = transform.Find("Canvas").Find("InfoAndStatPanel").Find("StatPanel").Find("Attack").GetComponent<Text>();
+        DefenceText = transform.Find("Canvas").Find("InfoAndStatPanel").Find("StatPanel").Find("Defence").GetComponent<Text>();
+        HealthText = transform.Find("Canvas").Find("InfoAndStatPanel").Find("StatPanel").Find("Health").GetComponent<Text>();
+        AttackRangeText = transform.Find("Canvas").Find("InfoAndStatPanel").Find("StatPanel").Find("AttackRange").GetComponent<Text>();
+        MovePointsText = transform.Find("Canvas").Find("InfoAndStatPanel").Find("StatPanel").Find("MovePoints").GetComponent<Text>();
+        ConversionSpeedText = transform.Find("Canvas").Find("InfoAndStatPanel").Find("StatPanel").Find("ConversionSpeed").GetComponent<Text>();
+        SightRangeText = transform.Find("Canvas").Find("InfoAndStatPanel").Find("StatPanel").Find("SightRange").GetComponent<Text>();
+        HeroStatsPanel = transform.Find("Canvas").Find("InfoAndStatPanel").Find("HeroStatsPanel").gameObject;
+        StrenghtText = transform.Find("Canvas").Find("InfoAndStatPanel").Find("HeroStatsPanel").Find("Strenght").GetComponent<Text>();
+        StrenghtPerLvlText = transform.Find("Canvas").Find("InfoAndStatPanel").Find("HeroStatsPanel").Find("StrenghtPerLvl").GetComponent<Text>();
+        HeroAttackText = transform.Find("Canvas").Find("InfoAndStatPanel").Find("HeroStatsPanel").Find("Attack").GetComponent<Text>();
+        HeroHealthText = transform.Find("Canvas").Find("InfoAndStatPanel").Find("HeroStatsPanel").Find("Health").GetComponent<Text>();
+        HeroHealthRegenText = transform.Find("Canvas").Find("InfoAndStatPanel").Find("HeroStatsPanel").Find("HealthRegen").GetComponent<Text>();
+        DexterityText = transform.Find("Canvas").Find("InfoAndStatPanel").Find("HeroStatsPanel").Find("Dexterity").GetComponent<Text>();
+        DexterityPerLvlText = transform.Find("Canvas").Find("InfoAndStatPanel").Find("HeroStatsPanel").Find("DexPerLvl").GetComponent<Text>();
+        HeroMovePointsText = transform.Find("Canvas").Find("InfoAndStatPanel").Find("HeroStatsPanel").Find("MovePoints").GetComponent<Text>();
+        HeroDefenceText = transform.Find("Canvas").Find("InfoAndStatPanel").Find("HeroStatsPanel").Find("Defence").GetComponent<Text>();
+        HeroConversionSpeedText = transform.Find("Canvas").Find("InfoAndStatPanel").Find("HeroStatsPanel").Find("ConversionSpeed").GetComponent<Text>();
+        IntelliganceText = transform.Find("Canvas").Find("InfoAndStatPanel").Find("HeroStatsPanel").Find("Intelligance").GetComponent<Text>();
+        IntelligancePerLvlText = transform.Find("Canvas").Find("InfoAndStatPanel").Find("HeroStatsPanel").Find("IntPerLvl").GetComponent<Text>();
+        HeroManaRegenText = transform.Find("Canvas").Find("InfoAndStatPanel").Find("HeroStatsPanel").Find("ManaRegen").GetComponent<Text>();
+        HeroMaxManaText = transform.Find("Canvas").Find("InfoAndStatPanel").Find("HeroStatsPanel").Find("MaxMana").GetComponent<Text>();
+        HeroXpGainText = transform.Find("Canvas").Find("InfoAndStatPanel").Find("HeroStatsPanel").Find("XpGain").GetComponent<Text>();
+        CharismaText = transform.Find("Canvas").Find("InfoAndStatPanel").Find("HeroStatsPanel").Find("Charisma").GetComponent<Text>();
+        CharismaPerLvlText = transform.Find("Canvas").Find("InfoAndStatPanel").Find("HeroStatsPanel").Find("CharPerLvl").GetComponent<Text>();
+        HeroUnitCostText = transform.Find("Canvas").Find("InfoAndStatPanel").Find("HeroStatsPanel").Find("UnitCost").GetComponent<Text>();
+        MoraleText = transform.Find("Canvas").Find("InfoAndStatPanel").Find("HeroStatsPanel").Find("Morale").GetComponent<Text>();
+        ReturnLimitText = transform.Find("Canvas").Find("InfoAndStatPanel").Find("HeroStatsPanel").Find("ReturnLimit").GetComponent<Text>();
+        //Other Stuff
         ContentWindowBuilding = transform.Find("Canvas").Find("Panel").Find("BuildingPanel").Find("Viewport").Find("BuildingContent").gameObject;
         CurrentPlayerTurnImage = transform.Find("Canvas").Find("Panel").Find("CurrentPlayerTurnImage").gameObject;
         EndTurnButton = transform.Find("Canvas").Find("Panel").Find("EndTurnButton").gameObject;
@@ -126,7 +220,7 @@ public class PlaySceneCamController : MonoBehaviour
         ActionPanel = transform.Find("Canvas").Find("Panel").Find("ActionPanel").gameObject;
         BuildingPanel = transform.Find("Canvas").Find("Panel").Find("BuildingPanel").gameObject;
         EndGamePanel = transform.Find("Canvas").Find("Panel").Find("EndGamePanel").gameObject;
-        InfoPanel = transform.Find("Canvas").Find("InfoPanel").gameObject;
+        StartInfoPanel = transform.Find("Canvas").Find("InfoPanel").gameObject;
         SaveButton = transform.Find("Canvas").Find("Panel").Find("SaveButton").gameObject;
         FeedbackSaveMenu = transform.Find("Canvas").Find("SavePanel").Find("FeedBackText").GetComponent<Text>();
         InputFieldSaveMenu = transform.Find("Canvas").Find("SavePanel").Find("InputField").GetComponent<InputField>();
@@ -282,24 +376,41 @@ public class PlaySceneCamController : MonoBehaviour
                             if (kvp.Value.Title == hit.transform.name)
                             {
                                 TerrainImage.GetComponent<Image>().sprite = DBC.TerrainDictionary[kvp.Key].ArtworkDirectory[0];
-                                TerrainText.GetComponent<Text>().text = kvp.Value.Title;
-                                TerrainDescription.GetComponent<Text>().text = kvp.Value.Description;
-                                TerrainToolTipData.GetComponent<Text>().text = kvp.Value.DefenceBonus.ToString() + Environment.NewLine + kvp.Value.Walkable.ToString() + Environment.NewLine + kvp.Value.Weight.ToString();
+                                TerrainText.text = kvp.Value.Title;
+                                TerrainDescription.text = kvp.Value.Description;
+                                TerrainToolTipDefence.text = "Defence Bonus:" + kvp.Value.DefenceBonus;
+                                TerrainToolTipWalkable.text = "Walkable:" + kvp.Value.Walkable;
+                                TerrainToolTipWeight.text = "Weight:" + kvp.Value.Weight;
                             }
                         }
                     }
                     if (hit.transform.tag == DBC.UnitDictionary[0].Type && !GCS.TilePos[(Vector2)hit.transform.position].GetComponent<TerrainController>().FogOfWarBool) //did we hit a unit?
                     {
-                        foreach (var kvp in DBC.UnitDictionary)
-                        {
-                            if (kvp.Value.Title == hit.transform.name)
-                            {
-                                UnitImage.GetComponent<Image>().sprite = DBC.UnitDictionary[kvp.Key].ArtworkDirectory[0];
-                                UnitText.GetComponent<Text>().text = kvp.Value.Title;
-                                UnitDescription.GetComponent<Text>().text = kvp.Value.Description;
-                                UnitToolTipData.GetComponent<Text>().text = kvp.Value.Attack.ToString() + Environment.NewLine + kvp.Value.Defence.ToString() + Environment.NewLine + kvp.Value.AttackRange.ToString() + Environment.NewLine + kvp.Value.MovePoints.ToString();
-                            }
-                        }
+                        UnitController UC = hit.transform.GetComponent<UnitController>();
+                        Unit U = DBC.UnitDictionary[UC.ID];
+                        UnitImage.GetComponent<Image>().sprite = DBC.UnitDictionary[U.ID].ArtworkDirectory[0];
+                        UnitText.text = U.Title;
+                        UnitDescription.text = U.Description;
+                        UnitToolTipAttack.text = "Attack:" + UC.Attack;
+                        UnitToolTipDefence.text = "Defence:" + UC.Defence;
+                        UnitToolTipAttackRange.text = "Attack Range:" + UC.AttackRange;
+                        UnitToolTipMovePoints.text = "Move Points:" + UC.MovePoints;
+                        UnitToolTipSightRange.text = "Sight Range:" + UC.SightRange;
+                        UnitToolTipConversionSpeed.text = "Conversion Speed:" + UC.ConversionSpeed;
+                    }
+                    if (hit.transform.tag == DBC.HeroDictionary[0].Type && !GCS.TilePos[(Vector2)hit.transform.position].GetComponent<TerrainController>().FogOfWarBool) //did we hit a hero?
+                    {
+                        UnitController UC = hit.transform.GetComponent<UnitController>();
+                        Hero THero = DBC.HeroDictionary[UC.ID];
+                        UnitImage.GetComponent<Image>().sprite = DBC.HeroDictionary[UC.ID].ArtworkDirectory[0];
+                        UnitText.text = THero.Title;
+                        UnitDescription.text = THero.Description;
+                        UnitToolTipAttack.text = "Attack:" + UC.Attack;
+                        UnitToolTipDefence.text = "Defence:" + UC.Defence;
+                        UnitToolTipAttackRange.text = "Attack Range:" + UC.AttackRange;
+                        UnitToolTipMovePoints.text = "Move Points:" + UC.MovePoints;
+                        UnitToolTipSightRange.text = "Sight Range:" + UC.SightRange;
+                        UnitToolTipConversionSpeed.text = "Conversion Speed:" + UC.ConversionSpeed;
                     }
                     if (hit.transform.tag == DBC.BuildingDictionary[0].Type && !GCS.TilePos[(Vector2)hit.transform.position].GetComponent<TerrainController>().FogOfWarBool) //did we hit a building?
                     {
@@ -308,9 +419,9 @@ public class PlaySceneCamController : MonoBehaviour
                             if (kvp.Value.Title == hit.transform.name)
                             {
                                 BuildingImage.GetComponent<Image>().sprite = DBC.BuildingDictionary[kvp.Key].ArtworkDirectory[0];
-                                BuildingText.GetComponent<Text>().text = kvp.Value.Title;
-                                BuildingDescription.GetComponent<Text>().text = kvp.Value.Description;
-                                BuildingToolTipData.GetComponent<Text>().text = kvp.Value.DefenceBonus.ToString();
+                                BuildingText.text = kvp.Value.Title;
+                                BuildingDescription.text = kvp.Value.Description;
+                                BuildingToolTipDefence.text = "Defence:" + kvp.Value.DefenceBonus;
                             }
                         }
                     }
@@ -347,7 +458,91 @@ public class PlaySceneCamController : MonoBehaviour
                 FeedBackText.text = "";
             }
         }
+        if (Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButtonDown(0))
+        {
+            if (!EventSystem.current.IsPointerOverGameObject()) //dont want to click through menus
+            {
+                ////Debug.log("RayHitStarted");
+                Ray ray = GameObject.Find("MainCamera").GetComponent<Camera>().ScreenPointToRay(Input.mousePosition); //GET THEM RAYS
+                RaycastHit[] hits;
+                hits = Physics.RaycastAll(ray);
+                BuildingRayBool = false;
+                ////Debug.log("Starting play scene ray hits");
+                for (int i = 0; i < hits.Length; i++) // GO THROUGH THEM RAYS
+                {
+                    RaycastHit hit = hits[i];
+                    if (hit.transform.tag == DBC.UnitDictionary[0].Type && !GCS.TilePos[(Vector2)hit.transform.position].GetComponent<TerrainController>().FogOfWarBool) //did we hit a unit?
+                    {
+                        UnitController UC = hit.transform.GetComponent<UnitController>();
+                        Unit TUnit = DBC.UnitDictionary[UC.ID];
+                        
+                        TitleText.text = "Title:" + TUnit.Title;
+                        TypeText.text = "Type:" + TUnit.Type;
+                        ModText.text = "Mod:" + TUnit.Mod;
+                        CanConvertText.text = "Can convert buildings:" + UC.CanConvert;
+                        CanMoveAndAttackText.text = "Can move and attack:" + UC.CanMoveAndAttack;
+                        DescriptionText.text = "Description:" + TUnit.Description;
+                        LevelText.text = "Level:" + UC.Level;
+                        XPText.text = "XP:" + UC.XP;
+                        AttackText.text = "Attack:" + UC.Attack;
+                        DefenceText.text = "Defence:" + UC.Defence;
+                        HealthText.text = "Health:" + UC.Health;
+                        AttackRangeText.text = "Attack Range:" + UC.AttackRange;
+                        MovePointsText.text = "Move Points:" + UC.MovePoints;
+                        ConversionSpeedText.text = "Conversion Speed:" + UC.ConversionSpeed;
+                        SightRangeText.text = "Sight Range:" + UC.SightRange;
+                        InfoAndStatsPanel.SetActive(true);
+                        InfoButtonClicked();
+                        HeroStatButton.SetActive(false);
+                    }
+                    if (hit.transform.tag == DBC.HeroDictionary[0].Type && !GCS.TilePos[(Vector2)hit.transform.position].GetComponent<TerrainController>().FogOfWarBool) //did we hit a hero?
+                    {
+                        UnitController UC = hit.transform.GetComponent<UnitController>();
+                        Hero THero = DBC.HeroDictionary[UC.ID];
+                        
+                        TitleText.text = "Title:" + THero.Title;
+                        TypeText.text = "Type:" + THero.Type;
+                        ModText.text = "Mod:" + THero.Mod;
+                        CanConvertText.text = "Can convert buildings:" + UC.CanConvert;
+                        CanMoveAndAttackText.text = "Can move and attack:" + UC.CanMoveAndAttack;
+                        DescriptionText.text = "Description:" + THero.Description;
+                        LevelText.text = "Level:" + UC.Level;
+                        XPText.text = "XP:" + UC.XP;
+                        AttackText.text = "Attack:" + UC.Attack;
+                        DefenceText.text = "Defence:" + UC.Defence;
+                        HealthText.text = "Health:" + UC.Health;
+                        AttackRangeText.text = "Attack Range:" + UC.AttackRange;
+                        MovePointsText.text = "Move Points:" + UC.MovePoints;
+                        ConversionSpeedText.text = "Conversion Speed:" + UC.ConversionSpeed;
+                        SightRangeText.text = "Sight Range:" + UC.SightRange;
 
+                        StrenghtText.text = "Strenght:" + THero.Strenght;
+                        StrenghtPerLvlText.text = "Strenght pre lvl:" + THero.BaseStrenght;
+                        HeroAttackText.text = "Attack:" + THero.Attack;
+                        HeroHealthText.text = "Health:" + THero.Health;
+                        HeroHealthRegenText.text = "Health Regen:" + THero.HealthRegen;
+                        DexterityText.text = "Dexterity:" + THero.Dexterity;
+                        DexterityPerLvlText.text = "Dexterity per lvl:" + THero.BaseDexterity;
+                        HeroMovePointsText.text = "Move Points:" + THero.MovePoints;
+                        HeroDefenceText.text = "Defence:" + THero.Defence;
+                        HeroConversionSpeedText.text = "Conversion Speed:" + THero.ConversionSpeed;
+                        IntelliganceText.text = "Intelligance:" + THero.Intelligance;
+                        IntelligancePerLvlText.text = "Intelligance per lvl:" + THero.BaseIntelligance;
+                        HeroManaRegenText.text = "Mana Regen:" + THero.ManaRegen;
+                        HeroMaxManaText.text = "Max Mana:" + THero.Mana;
+                        HeroXpGainText.text = "Xp Gain:"; //need to set this up still
+                        CharismaText.text = "Charisma:" + THero.Charisma;
+                        CharismaPerLvlText.text = "Charisma per lvl:" + THero.BaseCharisma;
+                        HeroUnitCostText.text = "Unit Cost:"; //need to set this up still
+                        MoraleText.text = "Morale:"; //need to set this up still
+                        ReturnLimitText.text = "Return Limit:"; //need to set this up still
+                        InfoAndStatsPanel.SetActive(true);
+                        InfoButtonClicked();
+                        HeroStatButton.SetActive(true);
+                    }
+                }
+            }
+        }
     }
 
     /// <summary>
@@ -398,13 +593,6 @@ public class PlaySceneCamController : MonoBehaviour
                     unit.Value.GetComponent<UnitController>().GetSightTiles();
                 }
                 BuildingPanel.SetActive(false);
-                foreach (var b in GCS.BuildingPos)
-                {
-                    if ((Vector2)b.Value.transform.position == CurrentlySelectedBuilding)
-                    {
-                        b.Value.GetComponent<BuildingController>().CanBuild = false;
-                    }
-                }
                 foreach (var t in GCS.TilePos)
                 {
                     t.Value.GetComponent<TerrainController>().FogOfWarController();
@@ -586,7 +774,7 @@ public class PlaySceneCamController : MonoBehaviour
 
     public void HideInfoPanel()
     {
-        InfoPanel.SetActive(false);
+        StartInfoPanel.SetActive(false);
     }
 
     public void HideOrShowSaveButton(bool Show)
@@ -723,5 +911,31 @@ public class PlaySceneCamController : MonoBehaviour
             }
         }
         MovableUnitsCountText.text = MovableUnits.ToString();
+    }
+
+    public void CloseInfoStatPanel()
+    {
+        InfoAndStatsPanel.SetActive(false);
+    }
+
+    public void InfoButtonClicked()
+    {
+        InfoPanel.SetActive(true);
+        StatsPanel.SetActive(false);
+        HeroStatsPanel.SetActive(false);
+    }
+
+    public void StatButtonClicked()
+    {
+        InfoPanel.SetActive(false);
+        StatsPanel.SetActive(true);
+        HeroStatsPanel.SetActive(false);
+    }
+
+    public void HeroStatButtonClicked()
+    {
+        InfoPanel.SetActive(false);
+        StatsPanel.SetActive(false);
+        HeroStatsPanel.SetActive(true);
     }
 }

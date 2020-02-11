@@ -328,7 +328,7 @@ public class MapEditMenueCamController : MonoBehaviour
 
     public void NextTeamButtonClicked()
     {
-        if (SelectedTeam < DBC.UnitDictionary[0].ArtworkDirectory.Count - 1)
+        if (SelectedTeam < 9)
         {
             SelectedTeam = SelectedTeam + 1;
             TeamText.text = "Team:" + SelectedTeam;

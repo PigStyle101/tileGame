@@ -170,15 +170,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0.13751622, b: 0.2735849, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 21300000, guid: a454050719005b444b59a84eaafba779, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -290,7 +290,7 @@ MonoBehaviour:
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
   m_Colors:
-    m_NormalColor: {r: 0.0047169924, g: 1, b: 0.04311139, a: 1}
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -379,8 +379,8 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 10911, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 21300000, guid: 054411784c3fdf74d9db120b4a792a71, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -528,6 +528,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f3721952f2d5554a9825b16118bd339, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  MasterData:
+    DragSpeed: 0
+    ScrollSpeed: 0
+    HeroSelectedWhenGameClosed: 
   ModsLoaded: []
   Initalisation: 1
   dragSpeedOffset: 0.5
@@ -566,12 +570,212 @@ MonoBehaviour:
     Gold: 0
     IsAi: 0
     Defeated: 0
+    HaseMainBase: 0
+  originalPositionOfUnit: {x: 0, y: 0}
+  MoveToPosition: {x: 0, y: 0}
   BattleAudio: {fileID: 8300000, guid: b470432d7ce59ed4db71697500c86e9e, type: 3}
   MainAudio: {fileID: 8300000, guid: 63e2d732badada7439c476ac14746617, type: 3}
   MapEditorAudio: {fileID: 8300000, guid: 5b728ca468884df46bea6e8d1d74c2e7, type: 3}
   LogFile: log.txt
   EchoToConsole: 1
   AddTimeStamp: 1
+  IdleState: 0
+  HeroCurrentlySelectedP1:
+    ID: 0
+    Name: 
+    Intelligance: 0
+    Strenght: 0
+    Dexterity: 0
+    Charisma: 0
+    Title: 
+    Slug: 
+    Description: 
+    Type: 
+    Mod: 
+    PixelsPerUnit: 0
+    Attack: 0
+    Defence: 0
+    Health: 0
+    AttackRange: 0
+    MovePoints: 0
+    ConversionSpeed: 0
+    SightRange: 0
+    Mana: 0
+    HealthRegen: 0
+    ManaRegen: 0
+    CanConvert: 0
+    CanMoveAndAttack: 0
+    BaseIntelligance: 0
+    BaseStrenght: 0
+    BaseDexterity: 0
+    BaseCharisma: 0
+    IdleAnimations: 0
+    AttackAnimations: 0
+    HurtAnimations: 0
+    DiedAnimations: 0
+    MoveAnimations: 0
+    ArtworkDirectory: []
+    IdleAnimationDirectory: []
+    AttackAnimationDirectory: []
+    HurtAnimationDirectory: []
+    DiedAnimationDirectory: []
+    MoveAnimationDirectory: []
+    IdleAnimationSpeed: 0
+    AttackAnimationSpeed: 0
+    HurtAnimationSpeed: 0
+    DiedAnimationSpeed: 0
+    MoveAnimationSpeed: 0
+    MoveAnimationOffset: 0
+    Team: 0
+    Level: 0
+    XP: 0
+  HeroCurrentlySelectedP2:
+    ID: 0
+    Name: 
+    Intelligance: 0
+    Strenght: 0
+    Dexterity: 0
+    Charisma: 0
+    Title: 
+    Slug: 
+    Description: 
+    Type: 
+    Mod: 
+    PixelsPerUnit: 0
+    Attack: 0
+    Defence: 0
+    Health: 0
+    AttackRange: 0
+    MovePoints: 0
+    ConversionSpeed: 0
+    SightRange: 0
+    Mana: 0
+    HealthRegen: 0
+    ManaRegen: 0
+    CanConvert: 0
+    CanMoveAndAttack: 0
+    BaseIntelligance: 0
+    BaseStrenght: 0
+    BaseDexterity: 0
+    BaseCharisma: 0
+    IdleAnimations: 0
+    AttackAnimations: 0
+    HurtAnimations: 0
+    DiedAnimations: 0
+    MoveAnimations: 0
+    ArtworkDirectory: []
+    IdleAnimationDirectory: []
+    AttackAnimationDirectory: []
+    HurtAnimationDirectory: []
+    DiedAnimationDirectory: []
+    MoveAnimationDirectory: []
+    IdleAnimationSpeed: 0
+    AttackAnimationSpeed: 0
+    HurtAnimationSpeed: 0
+    DiedAnimationSpeed: 0
+    MoveAnimationSpeed: 0
+    MoveAnimationOffset: 0
+    Team: 0
+    Level: 0
+    XP: 0
+  HeroCurrentlySelectedP3:
+    ID: 0
+    Name: 
+    Intelligance: 0
+    Strenght: 0
+    Dexterity: 0
+    Charisma: 0
+    Title: 
+    Slug: 
+    Description: 
+    Type: 
+    Mod: 
+    PixelsPerUnit: 0
+    Attack: 0
+    Defence: 0
+    Health: 0
+    AttackRange: 0
+    MovePoints: 0
+    ConversionSpeed: 0
+    SightRange: 0
+    Mana: 0
+    HealthRegen: 0
+    ManaRegen: 0
+    CanConvert: 0
+    CanMoveAndAttack: 0
+    BaseIntelligance: 0
+    BaseStrenght: 0
+    BaseDexterity: 0
+    BaseCharisma: 0
+    IdleAnimations: 0
+    AttackAnimations: 0
+    HurtAnimations: 0
+    DiedAnimations: 0
+    MoveAnimations: 0
+    ArtworkDirectory: []
+    IdleAnimationDirectory: []
+    AttackAnimationDirectory: []
+    HurtAnimationDirectory: []
+    DiedAnimationDirectory: []
+    MoveAnimationDirectory: []
+    IdleAnimationSpeed: 0
+    AttackAnimationSpeed: 0
+    HurtAnimationSpeed: 0
+    DiedAnimationSpeed: 0
+    MoveAnimationSpeed: 0
+    MoveAnimationOffset: 0
+    Team: 0
+    Level: 0
+    XP: 0
+  HeroCurrentlySelectedP4:
+    ID: 0
+    Name: 
+    Intelligance: 0
+    Strenght: 0
+    Dexterity: 0
+    Charisma: 0
+    Title: 
+    Slug: 
+    Description: 
+    Type: 
+    Mod: 
+    PixelsPerUnit: 0
+    Attack: 0
+    Defence: 0
+    Health: 0
+    AttackRange: 0
+    MovePoints: 0
+    ConversionSpeed: 0
+    SightRange: 0
+    Mana: 0
+    HealthRegen: 0
+    ManaRegen: 0
+    CanConvert: 0
+    CanMoveAndAttack: 0
+    BaseIntelligance: 0
+    BaseStrenght: 0
+    BaseDexterity: 0
+    BaseCharisma: 0
+    IdleAnimations: 0
+    AttackAnimations: 0
+    HurtAnimations: 0
+    DiedAnimations: 0
+    MoveAnimations: 0
+    ArtworkDirectory: []
+    IdleAnimationDirectory: []
+    AttackAnimationDirectory: []
+    HurtAnimationDirectory: []
+    DiedAnimationDirectory: []
+    MoveAnimationDirectory: []
+    IdleAnimationSpeed: 0
+    AttackAnimationSpeed: 0
+    HurtAnimationSpeed: 0
+    DiedAnimationSpeed: 0
+    MoveAnimationSpeed: 0
+    MoveAnimationOffset: 0
+    Team: 0
+    Level: 0
+    XP: 0
 --- !u!224 &1259027382
 RectTransform:
   m_ObjectHideFlags: 0
@@ -755,7 +959,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.14901961, g: 0.5686275, b: 0.6862745, a: 1}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -815,15 +1019,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 21300000, guid: 7066e0747291df44fa5c2bf93bee3a6e, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -1187,15 +1391,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0.3018868, b: 0.011885301, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 21300000, guid: 8dd861a6e819de241bca68a36048a6bd, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4

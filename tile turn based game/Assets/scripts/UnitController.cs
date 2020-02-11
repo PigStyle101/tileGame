@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class UnitController : MonoBehaviour
 {
-    private MapEditMenueCamController MEMCC;
+    //json and stat stuff
     [HideInInspector]
     public bool Hero;
     [HideInInspector]
@@ -46,20 +46,58 @@ public class UnitController : MonoBehaviour
     public bool CanConvert;
     [HideInInspector]
     public bool CanMoveAndAttack;
+    //[HideInInspector]
+    public float MoveAnimationOffset;
+    //method stuff
     public Dictionary<Vector2, int> TilesWeights = new Dictionary<Vector2, int>();
     public Dictionary<Vector2, int> SightTiles = new Dictionary<Vector2, int>();
     public Dictionary<Vector2, int> TilesChecked = new Dictionary<Vector2, int>();
     public Dictionary<Vector2, int> EnemyUnitsInRange = new Dictionary<Vector2, int>();
     [HideInInspector]
     public List<Vector2> Directions = new List<Vector2>();//list for holding north,south,east,west
+    [HideInInspector]
+    public Vector2 OriginalPosition;
+    [HideInInspector]
+    public List<Vector2> vectorlist;
+    [HideInInspector]
+    public int VectorState = 0;
+    [HideInInspector]
+    public Vector2 Position;
+    //Animations stuff
     public bool UnitIdleAnimation;
+    public bool UnitAttackAnimation;
+    public bool UnitHurtAnimation;
+    public bool UnitDiedAnimation;
+    public bool UnitMoveAnimation;
     public List<Sprite> IdleAnimationsDirectory;
-    public int IdleAnimationCount;
+    public List<Sprite> AttackAnimationsDirectory;
+    public List<Sprite> HurtAnimationsDirectory;
+    public List<Sprite> DiedAnimationsDirectory;
+    public List<Sprite> MoveAnimationsDirectory;
     private float IdleTimerFloat;
+    private float AttackTimerFloat;
+    private float HurtTimerFloat;
+    private float DiedTimerFloat;
+    private float MoveTimerFloat;
+    private float MoveAnimationTimerFloat;
     private int IdleState;
+    private int AttackState;
+    private int HurtState;
+    private int DiedState;
+    private int MoveState;
     public float IdleAnimationSpeed;
+    public float AttackAnimationSpeed;
+    public float HurtAnimationSpeed;
+    public float DiedAnimationSpeed;
+    public float MoveAnimationSpeed;
+    public bool Attacking;
+    public bool Moving;
+    public bool Dying;
+    public bool Hurt;
+    //Script stuff
     private DatabaseController DBC;
     private GameControllerScript GCS;
+    private MapEditMenueCamController MEMCC;
 
     private void Awake()
     {
@@ -78,7 +116,7 @@ public class UnitController : MonoBehaviour
 
     private void Update()
     {
-        IdleTimer();
+        AnimationTimers();
     }
 
     public void UnitRoundUpdater()
@@ -153,7 +191,6 @@ public class UnitController : MonoBehaviour
     public void GetTileValues() 
     {
         ////Debug.log("MP = " + MovePoints);
-        Vector2 Position = gameObject.transform.position; //need original position of unitt
         int count = 1; //using this to make the algorith go more rounds then needed, as the most any unit should need is 6 rounds
         TilesWeights = new Dictionary<Vector2, int>();
         foreach (var dir in Directions)
@@ -250,7 +287,6 @@ public class UnitController : MonoBehaviour
     public void GetSightTiles()
     {
         ////Debug.log("MP = " + MovePoints);
-        Vector2 Position = gameObject.transform.position; //need original position of unit
         int count = 1; //using this to make the algorith go more rounds then needed
         SightTiles = new Dictionary<Vector2, int>();
         foreach (var dir in Directions)
@@ -331,6 +367,7 @@ public class UnitController : MonoBehaviour
             ////Debug.log("Changing tile to " + kvp.Value.Title);
             gameObject.name = DBC.UnitDictionary[MEMCC.SelectedButtonDR].Title;//change name of tile
             gameObject.GetComponent<SpriteRenderer>().sprite = DBC.UnitDictionary[MEMCC.SelectedButtonDR].ArtworkDirectory[0]; //change sprite of tile
+            IdleAnimationsDirectory = DBC.UnitDictionary[MEMCC.SelectedButtonDR].IdleAnimationDirectory;
             Health = DBC.UnitDictionary[MEMCC.SelectedButtonDR].Health;
             ID = MEMCC.SelectedButtonDR;
             gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").Find("Text").GetComponent<Text>().text = Health.ToString();
@@ -339,7 +376,6 @@ public class UnitController : MonoBehaviour
 
     public int GetEnemyUnitsInRange()
     {
-        Vector2 Position = gameObject.transform.position;
         List<Vector2> Directions = new List<Vector2>();
         Directions.Add(new Vector2(0, 1));
         Directions.Add(new Vector2(1, 0));
@@ -605,31 +641,164 @@ public class UnitController : MonoBehaviour
         }
     }
 
-    public void IdleTimer()
+    public void AnimationTimers()
     {
-        IdleTimerFloat += Time.deltaTime;
-        if (IdleTimerFloat >= IdleAnimationSpeed)
+        if (UnitIdleAnimation && !Attacking && !Dying && !Hurt && !Moving)
         {
-            IdleAnimationController();
-            IdleTimerFloat = 0;
+            IdleTimerFloat += Time.deltaTime;
+            if (IdleTimerFloat >= IdleAnimationSpeed)
+            {
+                if ((IdleAnimationsDirectory.Count - 1) > IdleState)
+                {
+                    gameObject.GetComponent<SpriteRenderer>().sprite = IdleAnimationsDirectory[IdleState];
+                    IdleState = IdleState + 1;
+                }
+                else
+                {
+                    gameObject.GetComponent<SpriteRenderer>().sprite = IdleAnimationsDirectory[IdleState];
+                    IdleState = 0;
+                }
+                IdleTimerFloat = 0;
+            }
         }
-
+        if (Attacking && UnitAttackAnimation)
+        {
+            AttackTimerFloat += Time.deltaTime;
+            if (AttackTimerFloat >= AttackAnimationSpeed)
+            {
+                if ((AttackAnimationsDirectory.Count - 1) > AttackState)
+                {
+                    gameObject.GetComponent<SpriteRenderer>().sprite = AttackAnimationsDirectory[AttackState];
+                    AttackState = AttackState + 1;
+                }
+                else
+                {
+                    AttackState = 0;
+                    Attacking = false;
+                }
+                AttackTimerFloat = 0;
+            }
+        }
+        if (Hurt)
+        {
+            HurtTimerFloat += Time.deltaTime;
+            if (HurtTimerFloat >= HurtAnimationSpeed && UnitHurtAnimation)
+            {
+                if ((HurtAnimationsDirectory.Count - 1) > HurtState)
+                {
+                    gameObject.GetComponent<SpriteRenderer>().sprite = HurtAnimationsDirectory[HurtState];
+                    HurtState = HurtState + 1;
+                }
+                else
+                {
+                    HurtState = 0;
+                    Hurt = false;
+                }
+                HurtTimerFloat = 0;
+            }
+            else if (!UnitHurtAnimation)
+            {
+                Hurt = false;
+            }
+        }
+        if (Dying && !Hurt)
+        {
+            DiedTimerFloat += Time.deltaTime;
+            if (DiedTimerFloat >= DiedAnimationSpeed && UnitDiedAnimation)
+            {
+                if ((DiedAnimationsDirectory.Count - 1) > DiedState)
+                {
+                    gameObject.GetComponent<SpriteRenderer>().sprite = DiedAnimationsDirectory[DiedState];
+                    DiedState = DiedState + 1;
+                }
+                else
+                {
+                    DiedState = 0;
+                    Dying = false;
+                    Destroy(gameObject);
+                }
+                DiedTimerFloat = 0;
+            }
+            else if (!UnitDiedAnimation)
+            {
+                Destroy(gameObject);
+            }
+        }
+        if (Moving)
+        {
+            transform.position = Vector2.Lerp(transform.position, vectorlist[VectorState], MoveAnimationSpeed);
+            MoveAnimationTimerFloat += Time.deltaTime;
+            if (MoveAnimationTimerFloat >= MoveAnimationSpeed * MoveAnimationOffset)
+            {
+                if ((vectorlist.Count - 1) > VectorState)
+                {
+                    VectorState += 1;
+                }
+                else
+                {
+                    VectorState = 0;
+                    Moving = false;
+                    transform.position = Position;
+                }
+                MoveAnimationTimerFloat = 0;
+            }
+            MoveTimerFloat += Time.deltaTime;
+            if (MoveTimerFloat >= MoveAnimationSpeed && UnitMoveAnimation)
+            {
+                if ((MoveAnimationsDirectory.Count - 1) > MoveState)
+                {
+                    gameObject.GetComponent<SpriteRenderer>().sprite = MoveAnimationsDirectory[MoveState];
+                    MoveState = MoveState + 1;
+                }
+                else
+                {
+                    gameObject.GetComponent<SpriteRenderer>().sprite = MoveAnimationsDirectory[MoveState];
+                    MoveState = 0;
+                }
+                MoveTimerFloat = 0;
+            }
+        }
     }
 
-    public void IdleAnimationController()
+    public void KilledEnemyUnit(UnitController UC)
     {
-        if (UnitIdleAnimation)
+        if (UC.Hero)
         {
-            if ((IdleAnimationCount - 1) > IdleState)
+            XP += 5;
+        }
+        else
+        {
+            XP += 1;
+        }
+        if (XP >= Math.Pow(2,Level + 1))
+        {
+            XP = 0;
+            Level += 1;
+            if (!Hero)
             {
-                gameObject.GetComponent<SpriteRenderer>().sprite = IdleAnimationsDirectory[IdleState];
-                IdleState = IdleState + 1;
-            }
-            else
-            {
-                gameObject.GetComponent<SpriteRenderer>().sprite = IdleAnimationsDirectory[IdleState];
-                IdleState = 0;
+                Defence += 1;
+                if (Level % 2 == 0)
+                {
+                    ConversionSpeed += 1;
+                }
+                if (Level % 3 == 0)
+                {
+                    Attack += 1;
+                }
+                if (Level % 4 == 0)
+                {
+                    MovePoints += 1;
+                } 
             }
         }
     }
 }
+
+
+/// 
+/// state/count
+/// 1/5 = .2
+/// 
+/// 
+/// 
+
