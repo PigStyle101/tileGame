@@ -1,7 +1,7 @@
 {
   "Health": 10,
   "Title": "Barracks",
-  "PixelsPerUnit": 64,
+  "PixelsPerUnit": 200,
   "Walkable": true,
   "Description": "A unit production building",
   "DefenceBonus": 20,
@@ -12,7 +12,7 @@
   "BuildableUnits": [
     "Archer",
     "Militia",
-    "Catapult",
+    "Mage",
     "Soldier"
   ],
   "OnlyOneAllowed": false,

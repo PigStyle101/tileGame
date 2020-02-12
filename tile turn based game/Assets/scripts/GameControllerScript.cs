@@ -1255,10 +1255,12 @@ public class GameControllerScript : MonoBehaviour
     /// Controls the loading slider in Initalization Scene
     /// </summary>
     /// <param name="f">Were to move the slider, using a float between 0-1</param>
-    public void LoadingUpdater(float f)
+    public void LoadingUpdater(float f, string State)
     {
         Slider LoadingSlider = GameObject.Find("Canvas").GetComponentInChildren<Slider>();
+        Text LoadingText = GameObject.Find("Canvas").transform.Find("LoadingPanel").Find("Text").GetComponent<Text>();
         LoadingSlider.value = f;
+        LoadingText.text = State;
         if (f == 1f)
         {
             SceneManager.LoadScene("MainMenuScene");
@@ -1670,18 +1672,7 @@ public class GameControllerScript : MonoBehaviour
             {
                 HeroDictionary[kvp.Value.GetComponent<UnitController>().Name].XP = kvp.Value.GetComponent<UnitController>().XP;
                 HeroDictionary[kvp.Value.GetComponent<UnitController>().Name].Level = kvp.Value.GetComponent<UnitController>().Level;
-                if (!File.Exists(Application.dataPath + "/StreamingAssets/HeroList/" + kvp.Value.GetComponent<UnitController>().Name + ".json"))
-                {
-                    File.Delete(Application.dataPath + "/StreamingAssets/HeroList/" + kvp.Value.GetComponent<UnitController>().Name + ".json");
-                    string Herojson = UnityEngine.JsonUtility.ToJson(HeroDictionary[kvp.Value.GetComponent<UnitController>().Name], true);
-                    FileStream FStream = File.Create(Application.dataPath + "/StreamingAssets/HeroList/" + kvp.Value.GetComponent<UnitController>().Name + ".json");
-                    StreamWriter StreamW = new StreamWriter(FStream);
-                    StreamW.Write(Herojson);
-                    StreamW.Close();
-                    StreamW.Dispose();
-                    FStream.Close();
-                    FStream.Dispose();
-                }
+                SaveHeroData(kvp.Value.GetComponent<UnitController>().Name);
                 SaveableUnit SH = new SaveableUnit();
                 SH.Health = kvp.Value.GetComponent<UnitController>().Health;
                 SH.Team = kvp.Value.GetComponent<UnitController>().Team;
@@ -1725,6 +1716,22 @@ public class GameControllerScript : MonoBehaviour
         sr.Dispose();
         fs.Close();
         fs.Dispose();
+    }
+
+    public void SaveHeroData(string Name)
+    {
+        if (!File.Exists(Application.dataPath + "/StreamingAssets/HeroList/" + Name + ".json"))
+        {
+            File.Delete(Application.dataPath + "/StreamingAssets/HeroList/" + Name + ".json");
+            string Herojson = UnityEngine.JsonUtility.ToJson(HeroDictionary[Name], true);
+            FileStream FStream = File.Create(Application.dataPath + "/StreamingAssets/HeroList/" + Name + ".json");
+            StreamWriter StreamW = new StreamWriter(FStream);
+            StreamW.Write(Herojson);
+            StreamW.Close();
+            StreamW.Dispose();
+            FStream.Close();
+            FStream.Dispose();
+        }
     }
 
     /// <summary>

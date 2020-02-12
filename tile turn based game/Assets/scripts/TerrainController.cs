@@ -47,6 +47,7 @@ public class TerrainController : MonoBehaviour
     [HideInInspector]
     public bool Connectable;
     private bool LastHitThis = false;
+    public bool AttackOverlay = false;
     //[HideInInspector]
     public bool IdleAnimations;
     public List<Sprite> IdleAnimationsDirectory;
@@ -75,7 +76,7 @@ public class TerrainController : MonoBehaviour
     void Update()
     {
         MouseOverlayRayCaster();
-        if (LastHitThis)
+        if (LastHitThis || AttackOverlay)
         {
             MouseOverlaySelectedSpriteRender.enabled = true;
         }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class UnitController : MonoBehaviour
@@ -63,6 +64,8 @@ public class UnitController : MonoBehaviour
     public int VectorState = 0;
     [HideInInspector]
     public Vector2 Position;
+    [HideInInspector]
+    private bool AttackOverlay = false;
     //Animations stuff
     public bool UnitIdleAnimation;
     public bool UnitAttackAnimation;
@@ -117,6 +120,7 @@ public class UnitController : MonoBehaviour
     private void Update()
     {
         AnimationTimers();
+        RayCastForAttackRange();
     }
 
     public void UnitRoundUpdater()
@@ -789,6 +793,43 @@ public class UnitController : MonoBehaviour
                 {
                     MovePoints += 1;
                 } 
+            }
+        }
+    }
+
+    public void RayCastForAttackRange()
+    {
+        if (Input.GetKey(KeyCode.LeftControl) && Input.GetMouseButtonDown(0))
+        {
+            if (!EventSystem.current.IsPointerOverGameObject()) //dont want to click through menus
+            {
+                ////Debug.log("RayHitStarted");
+                Ray ray = GameObject.Find("MainCamera").GetComponent<Camera>().ScreenPointToRay(Input.mousePosition); //GET THEM RAYS
+                RaycastHit[] hits;
+                hits = Physics.RaycastAll(ray);
+                for (int i = 0; i < hits.Length; i++) // GO THROUGH THEM RAYS
+                {
+                    RaycastHit hit = hits[i];
+                    if (hit.transform == gameObject.transform && AttackOverlay == false) //did we hit a this unit?
+                    {
+                        GetEnemyUnitsInRange();
+                        foreach (var kvp in TilesChecked)
+                        {
+                            GCS.TilePos[kvp.Key].transform.GetComponent<TerrainController>().AttackOverlay = true;
+                        }
+                        AttackOverlay = true;
+                        break;
+                    }
+                    else if (hit.transform == transform && AttackOverlay)
+                    {
+                        foreach (var kvp in TilesChecked)
+                        {
+                            GCS.TilePos[kvp.Key].transform.GetComponent<TerrainController>().AttackOverlay = false;
+                        }
+                        AttackOverlay = false;
+                        break;
+                    }
+                }
             }
         }
     }

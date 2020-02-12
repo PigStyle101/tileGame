@@ -166,52 +166,65 @@ public class MenueController : MonoBehaviour {
     {
         if (ModsList.Count >= 1)
         {
-            DBC.UnitDictionary.Clear();
-            DBC.BuildingDictionary.Clear();
-            DBC.TerrainDictionary.Clear();
-            DBC.ModsLoaded.Clear();
-            DBC.ResetNextIndexes();
-            ModsList.Sort();
-            foreach (string Mod in ModsList)
+            if (ModsList == DBC.ModsLoaded)
             {
-                DBC.GetTerrianJsons(Mod);
-                DBC.GetUnitJsons(Mod);
-                DBC.GetBuildingJsons(Mod);
-                DBC.ModsLoaded.Add(Mod);
-            }
-            bool HasMainBase = false;
-            bool HasHeroSP = false;
-            foreach (var kvp in DBC.BuildingDictionary)
-            {
-                if (kvp.Value.MainBase && !HasMainBase)
+                DBC.UnitDictionary.Clear();
+                DBC.BuildingDictionary.Clear();
+                DBC.TerrainDictionary.Clear();
+                DBC.ModsLoaded.Clear();
+                DBC.ResetNextIndexes();
+                ModsList.Sort();
+                foreach (string Mod in ModsList)
                 {
-                    HasMainBase = true;
+                    DBC.GetTerrianJsons(Mod);
+                    DBC.GetUnitJsons(Mod);
+                    DBC.GetBuildingJsons(Mod);
+                    DBC.ModsLoaded.Add(Mod);
                 }
-                if (kvp.Value.HeroSpawnPoint && !HasHeroSP)
+                bool HasMainBase = false;
+                bool HasHeroSP = false;
+                foreach (var kvp in DBC.BuildingDictionary)
                 {
-                    HasHeroSP = true;
+                    if (kvp.Value.MainBase && !HasMainBase)
+                    {
+                        HasMainBase = true;
+                    }
+                    if (kvp.Value.HeroSpawnPoint && !HasHeroSP)
+                    {
+                        HasHeroSP = true;
+                    }
                 }
-            }
-            if (HasMainBase)
-            {
-                if (HasHeroSP)
+                if (HasMainBase)
                 {
-                    MainMenuePanel.SetActive(true);
-                    MapEditorMenuePanel.SetActive(false);
-                    NewGameMenuePanel.SetActive(false);
-                    LoadGamePanel.SetActive(false);
-                    ModPanel.SetActive(false);
-                    NewHeroPanel.SetActive(false);
-                    LoadHeroPanel.SetActive(false);
+                    if (HasHeroSP)
+                    {
+                        MainMenuePanel.SetActive(true);
+                        MapEditorMenuePanel.SetActive(false);
+                        NewGameMenuePanel.SetActive(false);
+                        LoadGamePanel.SetActive(false);
+                        ModPanel.SetActive(false);
+                        NewHeroPanel.SetActive(false);
+                        LoadHeroPanel.SetActive(false);
+                    }
+                    else
+                    {
+                        ModDescriptionText.text = "Must have at least one building with property HeroSpawnPoint = true";
+                    }
                 }
                 else
                 {
-                    ModDescriptionText.text = "Must have at least one building with property HeroSpawnPoint = true";
-                }
+                    ModDescriptionText.text = "Must have at least one building with property MainBase = true";
+                } 
             }
             else
             {
-                ModDescriptionText.text = "Must have at least one building with property MainBase = true";
+                MainMenuePanel.SetActive(true);
+                MapEditorMenuePanel.SetActive(false);
+                NewGameMenuePanel.SetActive(false);
+                LoadGamePanel.SetActive(false);
+                ModPanel.SetActive(false);
+                NewHeroPanel.SetActive(false);
+                LoadHeroPanel.SetActive(false);
             }
         }
         else
@@ -502,10 +515,10 @@ public class MenueController : MonoBehaviour {
         }
         NewHeroCurrentlySelected = 0;
         NewHeroPreview.sprite = DBC.HeroDictionary[NewHeroCurrentlySelected].ArtworkDirectory[0];
-        NewHeroIntValue.text = DBC.HeroDictionary[NewHeroCurrentlySelected].Intelligance.ToString();
-        NewHeroDexValue.text = DBC.HeroDictionary[NewHeroCurrentlySelected].Dexterity.ToString();
-        NewHeroStrValue.text = DBC.HeroDictionary[NewHeroCurrentlySelected].Strenght.ToString();
-        NewHeroCharValue.text = DBC.HeroDictionary[NewHeroCurrentlySelected].Charisma.ToString();
+        NewHeroIntValue.text = DBC.HeroDictionary[NewHeroCurrentlySelected].BaseIntelligance.ToString();
+        NewHeroDexValue.text = DBC.HeroDictionary[NewHeroCurrentlySelected].BaseDexterity.ToString();
+        NewHeroStrValue.text = DBC.HeroDictionary[NewHeroCurrentlySelected].BaseStrenght.ToString();
+        NewHeroCharValue.text = DBC.HeroDictionary[NewHeroCurrentlySelected].BaseCharisma.ToString();
     }
 
     public void GetHeroesLoad()
@@ -537,10 +550,10 @@ public class MenueController : MonoBehaviour {
     {
         NewHeroCurrentlySelected = EventSystem.current.currentSelectedGameObject.transform.GetComponent<ButtonProperties>().ID;
         NewHeroPreview.sprite = DBC.HeroDictionary[NewHeroCurrentlySelected].ArtworkDirectory[0];
-        NewHeroIntValue.text = DBC.HeroDictionary[NewHeroCurrentlySelected].Intelligance.ToString();
-        NewHeroStrValue.text = DBC.HeroDictionary[NewHeroCurrentlySelected].Strenght.ToString();
-        NewHeroDexValue.text = DBC.HeroDictionary[NewHeroCurrentlySelected].Dexterity.ToString();
-        NewHeroCharValue.text = DBC.HeroDictionary[NewHeroCurrentlySelected].Charisma.ToString();
+        NewHeroIntValue.text = DBC.HeroDictionary[NewHeroCurrentlySelected].BaseIntelligance.ToString();
+        NewHeroStrValue.text = DBC.HeroDictionary[NewHeroCurrentlySelected].BaseStrenght.ToString();
+        NewHeroDexValue.text = DBC.HeroDictionary[NewHeroCurrentlySelected].BaseDexterity.ToString();
+        NewHeroCharValue.text = DBC.HeroDictionary[NewHeroCurrentlySelected].BaseCharisma.ToString();
     }
 
     public void LoadHeroSelectedButton()

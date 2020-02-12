@@ -7,6 +7,7 @@ using System;
 using UnityEngine.UI;
 using System.Dynamic;
 using System.Runtime.InteropServices.Expando;
+using System.Threading;
 
 [System.Serializable]
 public class DatabaseController : MonoBehaviour
@@ -43,6 +44,8 @@ public class DatabaseController : MonoBehaviour
     public GameObject UnitHealthOverlay;
     public GameObject BuildingHealthOverlay;
     private GameControllerScript GCS;
+    public int LoadState;
+    private bool Loading;
 
     private void Awake()
     {
@@ -59,22 +62,74 @@ public class DatabaseController : MonoBehaviour
 
     private void Start()
     {
+        LoadState = 1;
+        Loading = true;
         GCS = GameControllerScript.instance;
+        StartCoroutine(JsonGettier());
+        JsonGettier();
+    }
+
+    private void Update()
+    {
+        if (Loading)
+        {
+            switch (LoadState)
+            {
+                case 1:
+                    GCS.LoadingUpdater(.1f, "Getting Terrain data");
+                    break;
+                case 2:
+                    GCS.LoadingUpdater(.2f, "Getting Unit data");
+                    break;
+                case 3:
+                    GCS.LoadingUpdater(.3f, "Getting Hero data");
+                    break;
+                case 4:
+                    GCS.LoadingUpdater(.4f, "Getting Building data");
+                    break;
+                case 5:
+                    GCS.LoadingUpdater(.5f, "Trying to understand the data");
+                    break;
+                case 6:
+                    GCS.LoadingUpdater(.6f, "This is data?");
+                    break;
+                case 7:
+                    GCS.LoadingUpdater(.8f, "Winging it");
+                    break;
+                case 8:
+                    GCS.LoadingUpdater(1f, "Anything start smoking?");
+                    Loading = false;
+                    break;
+            } 
+        }
+    }
+
+    public IEnumerator JsonGettier()
+    {
         GetMasterJson();
-        //MultiplayerController.instance.Connect();
-        GCS.LoadingUpdater(.2f);
+        LoadState = 1;
+        yield return null;
         ResetNextIndexes();
         GetTerrianJsons("Core");
-        GCS.LoadingUpdater(.4f);
+        LoadState = 2;
+        yield return null;
         GetUnitJsons("Core");
+        LoadState = 3;
+        yield return null;
         GetHeroJsons("Core");
-        GCS.LoadingUpdater(.6f);
+        LoadState = 4;
+        yield return null;
         GetBuildingJsons("Core");
+        LoadState = 5;
+        yield return null;
         ModsLoaded.Add("Core");
-        GCS.LoadingUpdater(.8f);
+        LoadState = 6;
+        yield return null;
         GetMouseJson();
+        LoadState = 7;
+        yield return null;
         GetFogOfWarJson();
-        GCS.LoadingUpdater(1f);
+        LoadState = 8;
     }
 
     /// <summary>

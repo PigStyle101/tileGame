@@ -1428,8 +1428,13 @@ MonoBehaviour:
     show a gray area around it, that is the spaces it can move too.
 
 
-    -If a unit
-    is close enough to attack another unit it will show a attack button on the bottom.'
+    -If you
+    Left Control click a unit it will highlight the tiles that unit can attack. Control
+    Click the unit again to remove the highlight.
+
+
+    -If you Left Shift click
+    a unit it will pull up a window with more details about that unit.'
 --- !u!222 &175941917
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1455,7 +1460,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &177414276
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6652,8 +6657,8 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: '-As a unit losses health it will do less damage based on the health missing.Move
-    unit onto building owned by you and it will regen health each round.
+  m_Text: '-As a unit losses health it will do less damage based on the health missing.
+    Move unit onto building owned by you and it will regen health each round.
 
 
     -If

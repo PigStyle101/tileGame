@@ -1,7 +1,7 @@
 {
   "Health": 20,
   "Title": "MainBase",
-  "PixelsPerUnit": 64,
+  "PixelsPerUnit": 200,
   "Walkable": true,
   "Description": "Main base, capture this to win",
   "DefenceBonus": 30,

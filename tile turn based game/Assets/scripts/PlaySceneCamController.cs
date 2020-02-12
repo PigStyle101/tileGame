@@ -583,6 +583,7 @@ public class PlaySceneCamController : MonoBehaviour
             if (GCS.TeamList[GCS.CurrentTeamsTurn.Team].Gold >= DBC.UnitDictionary[SelectedUnitDR].Cost) //can they afford this unit?
             {
                 GameObject GO = DBC.CreateAndSpawnUnit(CurrentlySelectedBuilding, DBC.UnitDictionary[SelectedUnitDR].ID, GCS.CurrentTeamsTurn.Team);
+                GCS.BuildingPos[CurrentlySelectedBuilding].GetComponent<BuildingController>().Occupied = true;
                 GCS.AddUnitsToDictionary(GO);
                 GO.GetComponent<UnitController>().UnitMovable = true;
                 GO.GetComponent<UnitController>().UnitMoved = false;

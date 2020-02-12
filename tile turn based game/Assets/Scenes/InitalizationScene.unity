@@ -541,6 +541,7 @@ MonoBehaviour:
     type: 3}
   BuildingHealthOverlay: {fileID: 6243326969869550210, guid: 919c424da6df61042bcc197b97795d6f,
     type: 3}
+  LoadState: 0
 --- !u!114 &1259027381
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -968,10 +969,10 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 87
+    m_FontSize: 50
     m_FontStyle: 0
     m_BestFit: 0
-    m_MinSize: 10
+    m_MinSize: 5
     m_MaxSize: 87
     m_Alignment: 4
     m_AlignByGeometry: 0
@@ -979,7 +980,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Loading
+  m_Text: Getting Master data
 --- !u!222 &1421465102
 CanvasRenderer:
   m_ObjectHideFlags: 0
