@@ -1,0 +1,264 @@
+{
+    "ID": 0,
+    "Name": "try",
+    "MaxHealth": 4,
+    "Intelligance": 1,
+    "Strenght": 3,
+    "Dexterity": 2,
+    "Charisma": 0,
+    "Title": "Golem",
+    "Slug": "golem_hero",
+    "Description": "Hero unit",
+    "Type": "Hero",
+    "Mod": "Core",
+    "PixelsPerUnit": 600,
+    "Attack": 4,
+    "Defence": 2,
+    "Health": 0,
+    "AttackRange": 1,
+    "MovePoints": 2,
+    "ConversionSpeed": 2,
+    "SightRange": 4,
+    "Mana": 1,
+    "HealthRegen": 1,
+    "ManaRegen": 2,
+    "CanConvert": true,
+    "CanMoveAndAttack": true,
+    "BaseIntelligance": 1,
+    "BaseStrenght": 3,
+    "BaseDexterity": 2,
+    "BaseCharisma": 0,
+    "IdleAnimations": true,
+    "AttackAnimations": true,
+    "HurtAnimations": true,
+    "DiedAnimations": true,
+    "MoveAnimations": true,
+    "ArtworkDirectory": [
+        {
+            "instanceID": -222022
+        }
+    ],
+    "IdleAnimationDirectory": [
+        {
+            "instanceID": -221750
+        },
+        {
+            "instanceID": -221754
+        },
+        {
+            "instanceID": -221758
+        },
+        {
+            "instanceID": -221762
+        },
+        {
+            "instanceID": -221766
+        },
+        {
+            "instanceID": -221770
+        },
+        {
+            "instanceID": -221774
+        },
+        {
+            "instanceID": -221778
+        },
+        {
+            "instanceID": -221782
+        },
+        {
+            "instanceID": -221786
+        },
+        {
+            "instanceID": -221790
+        },
+        {
+            "instanceID": -221794
+        },
+        {
+            "instanceID": -221798
+        },
+        {
+            "instanceID": -221802
+        },
+        {
+            "instanceID": -221806
+        },
+        {
+            "instanceID": -221810
+        },
+        {
+            "instanceID": -221814
+        }
+    ],
+    "AttackAnimationDirectory": [
+        {
+            "instanceID": -221818
+        },
+        {
+            "instanceID": -221822
+        },
+        {
+            "instanceID": -221826
+        },
+        {
+            "instanceID": -221830
+        },
+        {
+            "instanceID": -221834
+        },
+        {
+            "instanceID": -221838
+        },
+        {
+            "instanceID": -221842
+        },
+        {
+            "instanceID": -221846
+        },
+        {
+            "instanceID": -221850
+        },
+        {
+            "instanceID": -221854
+        },
+        {
+            "instanceID": -221858
+        },
+        {
+            "instanceID": -221862
+        }
+    ],
+    "HurtAnimationDirectory": [
+        {
+            "instanceID": -221866
+        },
+        {
+            "instanceID": -221870
+        },
+        {
+            "instanceID": -221874
+        },
+        {
+            "instanceID": -221878
+        },
+        {
+            "instanceID": -221882
+        },
+        {
+            "instanceID": -221886
+        },
+        {
+            "instanceID": -221890
+        },
+        {
+            "instanceID": -221894
+        },
+        {
+            "instanceID": -221898
+        },
+        {
+            "instanceID": -221902
+        },
+        {
+            "instanceID": -221906
+        },
+        {
+            "instanceID": -221910
+        }
+    ],
+    "DiedAnimationDirectory": [
+        {
+            "instanceID": -221914
+        },
+        {
+            "instanceID": -221918
+        },
+        {
+            "instanceID": -221922
+        },
+        {
+            "instanceID": -221926
+        },
+        {
+            "instanceID": -221930
+        },
+        {
+            "instanceID": -221934
+        },
+        {
+            "instanceID": -221938
+        },
+        {
+            "instanceID": -221942
+        },
+        {
+            "instanceID": -221946
+        },
+        {
+            "instanceID": -221950
+        },
+        {
+            "instanceID": -221954
+        },
+        {
+            "instanceID": -221958
+        },
+        {
+            "instanceID": -221962
+        },
+        {
+            "instanceID": -221966
+        },
+        {
+            "instanceID": -221970
+        }
+    ],
+    "MoveAnimationDirectory": [
+        {
+            "instanceID": -221974
+        },
+        {
+            "instanceID": -221978
+        },
+        {
+            "instanceID": -221982
+        },
+        {
+            "instanceID": -221986
+        },
+        {
+            "instanceID": -221990
+        },
+        {
+            "instanceID": -221994
+        },
+        {
+            "instanceID": -221998
+        },
+        {
+            "instanceID": -222002
+        },
+        {
+            "instanceID": -222006
+        },
+        {
+            "instanceID": -222010
+        },
+        {
+            "instanceID": -222014
+        },
+        {
+            "instanceID": -222018
+        }
+    ],
+    "IdleAnimationSpeed": 0.019999999552965165,
+    "AttackAnimationSpeed": 0.019999999552965165,
+    "HurtAnimationSpeed": 0.019999999552965165,
+    "DiedAnimationSpeed": 0.019999999552965165,
+    "MoveAnimationSpeed": 0.019999999552965165,
+    "MoveAnimationOffset": 20.0,
+    "Team": 0,
+    "Level": 1,
+    "XP": 0
+}

@@ -74,8 +74,14 @@ public class MenueController : MonoBehaviour {
     void Start()
     {
         MainMenueButtonClicked();
-        if (DBC.MasterData.HeroSelectedWhenGameClosed != null && GCS.HeroDictionary.ContainsKey(DBC.MasterData.HeroSelectedWhenGameClosed))
-        GCS.HeroCurrentlySelectedP1 = GCS.HeroDictionary[DBC.MasterData.HeroSelectedWhenGameClosed];
+        if (DBC.MasterData.HeroSelectedWhenGameClosed != "" && GCS.HeroDictionary.ContainsKey(DBC.MasterData.HeroSelectedWhenGameClosed))
+        {
+            GCS.HeroCurrentlySelectedP1 = GCS.HeroDictionary[DBC.MasterData.HeroSelectedWhenGameClosed];
+        }
+        else
+        {
+            GCS.HeroCurrentlySelectedP1 = null;
+        }
     }
 
     private void Awake()
@@ -164,9 +170,25 @@ public class MenueController : MonoBehaviour {
 
     public void MainMenueButtonClickedFromModScreen()
     {
+        bool ModsSame = false;
         if (ModsList.Count >= 1)
         {
-            if (ModsList == DBC.ModsLoaded)
+            if (ModsList.Count == DBC.ModsLoaded.Count) //if the mod count is the same we need to make sure they are the same ones
+            {
+                foreach (var mod in ModsList)
+                {
+                    if (!DBC.ModsLoaded.Contains(mod)) //if any mod is not the same break
+                    {
+                        ModsSame = false;
+                        break;
+                    }
+                    else
+                    {
+                        ModsSame = true;
+                    }
+                }
+            }
+            if (!ModsSame) //if they are not the same
             {
                 DBC.UnitDictionary.Clear();
                 DBC.BuildingDictionary.Clear();
@@ -214,7 +236,7 @@ public class MenueController : MonoBehaviour {
                 else
                 {
                     ModDescriptionText.text = "Must have at least one building with property MainBase = true";
-                } 
+                }
             }
             else
             {
@@ -493,8 +515,12 @@ public class MenueController : MonoBehaviour {
             tempbutton.GetComponent<Button>().onClick.AddListener(ModSelected); //adds method to button clicked
             ModsInModContentWindow.Add(tempbutton);
         }
+        ModsList.Clear();
+        foreach (var mod in DBC.ModsLoaded)
+        {
+            ModsList.Add(mod);
+        }
         UpdateModsActive();
-        DBC.ModsLoaded.Clear(); //clear this, as it is used in update mods, so after it is added to the mod list the list is no longer needed untell we load new mods
     }
 
     public void GetHeroesNew()
@@ -538,10 +564,10 @@ public class MenueController : MonoBehaviour {
         if (GCS.HeroCurrentlySelectedP1 != null)
         {
             LoadHeroPreview.sprite = DBC.HeroDictionary[GCS.HeroCurrentlySelectedP1.ID].ArtworkDirectory[0];
-            LoadHeroIntValue.text = DBC.HeroDictionary[GCS.HeroCurrentlySelectedP1.ID].Intelligance.ToString();
-            LoadHeroStrValue.text = DBC.HeroDictionary[GCS.HeroCurrentlySelectedP1.ID].Strenght.ToString();
-            LoadHeroDexValue.text = DBC.HeroDictionary[GCS.HeroCurrentlySelectedP1.ID].Dexterity.ToString();
-            LoadHeroCharValue.text = DBC.HeroDictionary[GCS.HeroCurrentlySelectedP1.ID].Charisma.ToString();
+            LoadHeroIntValue.text = GCS.HeroDictionary[GCS.HeroCurrentlySelectedP1.Name].Intelligance.ToString();
+            LoadHeroStrValue.text = GCS.HeroDictionary[GCS.HeroCurrentlySelectedP1.Name].Strenght.ToString();
+            LoadHeroDexValue.text = GCS.HeroDictionary[GCS.HeroCurrentlySelectedP1.Name].Dexterity.ToString();
+            LoadHeroCharValue.text = GCS.HeroDictionary[GCS.HeroCurrentlySelectedP1.Name].Charisma.ToString();
             LoadHeroFeedBackText.text = "Current hero selected: " + GCS.HeroCurrentlySelectedP1.Name; 
         }
     }
@@ -560,10 +586,10 @@ public class MenueController : MonoBehaviour {
     {
         GCS.HeroCurrentlySelectedP1 = GCS.HeroDictionary[EventSystem.current.currentSelectedGameObject.name];
         LoadHeroPreview.sprite = DBC.HeroDictionary[GCS.HeroCurrentlySelectedP1.ID].ArtworkDirectory[0];
-        LoadHeroIntValue.text = DBC.HeroDictionary[GCS.HeroCurrentlySelectedP1.ID].Intelligance.ToString();
-        LoadHeroStrValue.text = DBC.HeroDictionary[GCS.HeroCurrentlySelectedP1.ID].Strenght.ToString();
-        LoadHeroDexValue.text = DBC.HeroDictionary[GCS.HeroCurrentlySelectedP1.ID].Dexterity.ToString();
-        LoadHeroCharValue.text = DBC.HeroDictionary[GCS.HeroCurrentlySelectedP1.ID].Charisma.ToString();
+        LoadHeroIntValue.text = GCS.HeroDictionary[GCS.HeroCurrentlySelectedP1.Name].Intelligance.ToString();
+        LoadHeroStrValue.text = GCS.HeroDictionary[GCS.HeroCurrentlySelectedP1.Name].Strenght.ToString();
+        LoadHeroDexValue.text = GCS.HeroDictionary[GCS.HeroCurrentlySelectedP1.Name].Dexterity.ToString();
+        LoadHeroCharValue.text = GCS.HeroDictionary[GCS.HeroCurrentlySelectedP1.Name].Charisma.ToString();
         LoadHeroFeedBackText.text = "Current hero selected: " + GCS.HeroCurrentlySelectedP1.Name;
     }
 
@@ -665,10 +691,6 @@ public class MenueController : MonoBehaviour {
     {
         foreach (GameObject Button in ModsInModContentWindow)
         {
-            if (DBC.ModsLoaded.Contains(Button.name) && !ModsList.Contains(Button.name))
-            {
-                ModsList.Add(Button.name);
-            }
             if (ModsList.Contains(Button.name))
             {
                 Button.GetComponent<Image>().color = new Color(0, 0.5f, 0);

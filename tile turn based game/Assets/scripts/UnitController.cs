@@ -12,7 +12,7 @@ public class UnitController : MonoBehaviour
     [HideInInspector]
     public bool Hero;
     [HideInInspector]
-    public string Name;
+    public Hero HClass;
     //[HideInInspector]
     public int Team;
     [HideInInspector]
@@ -29,7 +29,7 @@ public class UnitController : MonoBehaviour
     public int AttackRange;
     [HideInInspector]
     public int SightRange;
-    [HideInInspector]
+    //[HideInInspector]
     public int Health;
     [HideInInspector]
     public int MaxHealth;
@@ -794,6 +794,10 @@ public class UnitController : MonoBehaviour
                     MovePoints += 1;
                 } 
             }
+            else
+            {
+                UpdateHeroStats();
+            }
         }
     }
 
@@ -832,6 +836,34 @@ public class UnitController : MonoBehaviour
                 }
             }
         }
+    }
+
+    public void UpdateHeroStats()
+    {
+        HClass.Intelligance = HClass.BaseIntelligance * Level;
+        HClass.Strenght = HClass.BaseStrenght * Level;
+        HClass.Dexterity = HClass.BaseDexterity * Level;
+        HClass.Charisma = HClass.BaseCharisma * Level;
+        HClass.Attack = (int)Math.Ceiling((double)HClass.Strenght / 2);
+        HClass.MaxHealth = HClass.Strenght + 1;
+        HClass.HealthRegen = (int)Math.Ceiling((double)HClass.Strenght / 3);
+        HClass.MovePoints = (int)Math.Ceiling((double)HClass.Dexterity / 3) + 1;
+        HClass.Defence = HClass.Dexterity;
+        HClass.ConversionSpeed = (int)Math.Ceiling((double)HClass.Dexterity / 3) + 1;
+        HClass.Mana = HClass.Intelligance;
+        HClass.ManaRegen = (int)Math.Ceiling((double)HClass.Intelligance / 3) + 1;
+        Attack = HClass.Attack;
+        MaxHealth = HClass.MaxHealth;
+        MovePoints = HClass.MovePoints;
+        Defence = HClass.Defence;
+        ConversionSpeed = HClass.ConversionSpeed;
+        //xp gain here
+        //unit cost here
+        //Moral here
+        //Return limit here
+        HClass.Level = Level;
+        HClass.XP = XP;
+        GCS.HeroDictionary[HClass.Name] = HClass;
     }
 }
 

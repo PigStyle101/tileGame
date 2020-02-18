@@ -454,23 +454,23 @@ public class DatabaseController : MonoBehaviour
         TGO.AddComponent<BoxCollider>();
         TGO.GetComponent<BoxCollider>().size = new Vector3(.95f, .95f, .1f);
         TGO.AddComponent<UnitController>();
-        TGO.GetComponent<UnitController>().Name = Hname;
         TGO.GetComponent<UnitController>().Hero = true;
         TGO.GetComponent<UnitController>().Team = team;
-        TGO.GetComponent<UnitController>().MovePoints = HeroDictionary[thero.ID].MovePoints;
-        TGO.GetComponent<UnitController>().Attack = HeroDictionary[thero.ID].Attack;
-        TGO.GetComponent<UnitController>().Defence = HeroDictionary[thero.ID].Defence;
-        TGO.GetComponent<UnitController>().MaxHealth = HeroDictionary[thero.ID].Health;
-        TGO.GetComponent<UnitController>().Health = HeroDictionary[thero.ID].Health;
+        TGO.GetComponent<UnitController>().Health = GCS.HeroDictionary[thero.Name].MaxHealth;
         TGO.GetComponent<UnitController>().AttackRange = HeroDictionary[thero.ID].AttackRange;
         TGO.GetComponent<UnitController>().CanConvert = HeroDictionary[thero.ID].CanConvert;
         TGO.GetComponent<UnitController>().SightRange = HeroDictionary[thero.ID].SightRange;
+        TGO.GetComponent<UnitController>().HClass = GCS.HeroDictionary[Hname];
+        TGO.GetComponent<UnitController>().HClass.Health = GCS.HeroDictionary[thero.Name].MaxHealth;
+        TGO.GetComponent<UnitController>().Level = GCS.HeroDictionary[Hname].Level;
+        TGO.GetComponent<UnitController>().XP = GCS.HeroDictionary[Hname].XP;
         TGO.GetComponent<UnitController>().UnitIdleAnimation = HeroDictionary[thero.ID].IdleAnimations;
         TGO.GetComponent<UnitController>().UnitAttackAnimation = HeroDictionary[thero.ID].AttackAnimations;
         TGO.GetComponent<UnitController>().UnitHurtAnimation = HeroDictionary[thero.ID].HurtAnimations;
         TGO.GetComponent<UnitController>().UnitMoveAnimation = HeroDictionary[thero.ID].MoveAnimations;
         TGO.GetComponent<UnitController>().UnitDiedAnimation = HeroDictionary[thero.ID].DiedAnimations;
         TGO.GetComponent<UnitController>().ID = thero.ID;
+        TGO.GetComponent<UnitController>().UpdateHeroStats();
         TGO.GetComponent<UnitController>().Position = location;
         if (HeroDictionary[thero.ID].IdleAnimations)
         {
@@ -507,7 +507,7 @@ public class DatabaseController : MonoBehaviour
 
         GameObject TempCan = Instantiate(UnitHealthOverlay, TGO.transform);
         TempCan.transform.localPosition = new Vector3(0, 0, 0);
-        TempCan.GetComponentInChildren<Text>().text = HeroDictionary[thero.ID].Health.ToString();
+        TempCan.GetComponentInChildren<Text>().text = GCS.HeroDictionary[thero.Name].Health.ToString();
         TempCan.GetComponent<Canvas>().sortingLayerName = UnitDictionary[0].Type;
         int CaseInt = TGO.GetComponent<UnitController>().Team;
         switch (CaseInt)
@@ -905,6 +905,7 @@ public class Hero
     //Populated by CreateNewHero();
     public string Name;
     //Populated by CreateNewHero(), and then updated when the hero lvls.
+    public int MaxHealth;
     public int Intelligance;
     public int Strenght;
     public int Dexterity;

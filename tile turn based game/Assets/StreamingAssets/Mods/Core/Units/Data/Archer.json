@@ -10,7 +10,7 @@
   "MoveAnimations": true,
   "HurtAnimations": true,
   "DiedAnimations": true,
-  "IdleAnimationSpeed": 0.2,
+  "IdleAnimationSpeed": 0.02,
   "AttackAnimationSpeed": 0.02,
   "MoveAnimationSpeed": 0.02,
   "HurtAnimationSpeed": 0.02,

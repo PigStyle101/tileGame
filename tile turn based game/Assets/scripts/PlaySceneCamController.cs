@@ -401,16 +401,16 @@ public class PlaySceneCamController : MonoBehaviour
                     if (hit.transform.tag == DBC.HeroDictionary[0].Type && !GCS.TilePos[(Vector2)hit.transform.position].GetComponent<TerrainController>().FogOfWarBool) //did we hit a hero?
                     {
                         UnitController UC = hit.transform.GetComponent<UnitController>();
-                        Hero THero = DBC.HeroDictionary[UC.ID];
+                        Hero THero = UC.HClass;
                         UnitImage.GetComponent<Image>().sprite = DBC.HeroDictionary[UC.ID].ArtworkDirectory[0];
                         UnitText.text = THero.Title;
                         UnitDescription.text = THero.Description;
-                        UnitToolTipAttack.text = "Attack:" + UC.Attack;
-                        UnitToolTipDefence.text = "Defence:" + UC.Defence;
+                        UnitToolTipAttack.text = "Attack:" + THero.Attack;
+                        UnitToolTipDefence.text = "Defence:" + THero.Defence;
                         UnitToolTipAttackRange.text = "Attack Range:" + UC.AttackRange;
-                        UnitToolTipMovePoints.text = "Move Points:" + UC.MovePoints;
+                        UnitToolTipMovePoints.text = "Move Points:" + THero.MovePoints;
                         UnitToolTipSightRange.text = "Sight Range:" + UC.SightRange;
-                        UnitToolTipConversionSpeed.text = "Conversion Speed:" + UC.ConversionSpeed;
+                        UnitToolTipConversionSpeed.text = "Conversion Speed:" + THero.ConversionSpeed;
                     }
                     if (hit.transform.tag == DBC.BuildingDictionary[0].Type && !GCS.TilePos[(Vector2)hit.transform.position].GetComponent<TerrainController>().FogOfWarBool) //did we hit a building?
                     {
@@ -498,7 +498,7 @@ public class PlaySceneCamController : MonoBehaviour
                     if (hit.transform.tag == DBC.HeroDictionary[0].Type && !GCS.TilePos[(Vector2)hit.transform.position].GetComponent<TerrainController>().FogOfWarBool) //did we hit a hero?
                     {
                         UnitController UC = hit.transform.GetComponent<UnitController>();
-                        Hero THero = DBC.HeroDictionary[UC.ID];
+                        Hero THero = UC.HClass;
                         
                         TitleText.text = "Title:" + THero.Title;
                         TypeText.text = "Type:" + THero.Type;
@@ -508,18 +508,18 @@ public class PlaySceneCamController : MonoBehaviour
                         DescriptionText.text = "Description:" + THero.Description;
                         LevelText.text = "Level:" + UC.Level;
                         XPText.text = "XP:" + UC.XP;
-                        AttackText.text = "Attack:" + UC.Attack;
-                        DefenceText.text = "Defence:" + UC.Defence;
-                        HealthText.text = "Health:" + UC.Health;
+                        AttackText.text = "Attack:" + THero.Attack;
+                        DefenceText.text = "Defence:" + THero.Defence;
+                        HealthText.text = "Health:" + THero.Health;
                         AttackRangeText.text = "Attack Range:" + UC.AttackRange;
-                        MovePointsText.text = "Move Points:" + UC.MovePoints;
-                        ConversionSpeedText.text = "Conversion Speed:" + UC.ConversionSpeed;
+                        MovePointsText.text = "Move Points:" + THero.MovePoints;
+                        ConversionSpeedText.text = "Conversion Speed:" + THero.ConversionSpeed;
                         SightRangeText.text = "Sight Range:" + UC.SightRange;
 
                         StrenghtText.text = "Strenght:" + THero.Strenght;
                         StrenghtPerLvlText.text = "Strenght pre lvl:" + THero.BaseStrenght;
                         HeroAttackText.text = "Attack:" + THero.Attack;
-                        HeroHealthText.text = "Health:" + THero.Health;
+                        HeroHealthText.text = "Max Health:" + THero.MaxHealth;
                         HeroHealthRegenText.text = "Health Regen:" + THero.HealthRegen;
                         DexterityText.text = "Dexterity:" + THero.Dexterity;
                         DexterityPerLvlText.text = "Dexterity per lvl:" + THero.BaseDexterity;
@@ -649,6 +649,18 @@ public class PlaySceneCamController : MonoBehaviour
     /// <param name="Team"></param>
     public void GameEndController(int Team)
     {
+        List<string> templist = new List<string>();
+        foreach (var item in GCS.UnitPos)
+        {
+            if (item.Value.GetComponent<UnitController>().Hero)
+            {
+                if (!templist.Contains(item.Value.GetComponent<UnitController>().HClass.Name))
+                {
+                    GCS.SaveHeroData(item.Value.GetComponent<UnitController>().HClass.Name);
+                    templist.Add(item.Value.GetComponent<UnitController>().HClass.Name);
+                }
+            }
+        }
         CurrentPlayerTurnImage.SetActive(false);
         EndTurnButton.SetActive(false);
         TooltipPanel.SetActive(false);

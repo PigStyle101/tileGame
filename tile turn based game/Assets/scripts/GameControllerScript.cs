@@ -1302,11 +1302,6 @@ public class GameControllerScript : MonoBehaviour
     /// </summary>
     public void WaitActionPlayScene()
     {
-        if (MoveToPosition != new Vector2(-1, -1))
-        {
-            MoveUnitPositionInDictionary(SelectedUnitPlayScene,MoveToPosition, originalPositionOfUnit);
-            MoveToPosition = new Vector2(-1, -1);
-        }
         SelectedUnitPlayScene.GetComponent<UnitController>().UnitMovable = false;
         SelectedUnitPlayScene.GetComponent<UnitController>().UnitMoved = true; 
         SelectedUnitPlayScene = null;
@@ -1592,14 +1587,9 @@ public class GameControllerScript : MonoBehaviour
     /// <returns></returns>
     public int CombatCalculator(GameObject Attacker, GameObject Defender)
     {
-        //Debug.Log("Health:" + Attacker.GetComponent<UnitController>().Health);
-        //Debug.Log("MaxHealth:" + Attacker.GetComponent<UnitController>().MaxHealth);
         double HealthModifier = (double)Attacker.GetComponent<UnitController>().Health / Attacker.GetComponent<UnitController>().MaxHealth;
-        //Debug.Log("HealthMod:" + HealthModifier);
         double AttackDouble = Math.Ceiling(HealthModifier * Attacker.GetComponent<UnitController>().Attack);
-        //Debug.Log("Rounded:" + AttackDouble);
         int Attack = (int)AttackDouble;
-        //Debug.Log("Attack:" + Attack);
         int AttackAfterDefence;
         if (BuildingPos.ContainsKey(Defender.transform.position))
         {
@@ -1670,13 +1660,12 @@ public class GameControllerScript : MonoBehaviour
         {
             if (kvp.Value.GetComponent<UnitController>().Hero)
             {
-                HeroDictionary[kvp.Value.GetComponent<UnitController>().Name].XP = kvp.Value.GetComponent<UnitController>().XP;
-                HeroDictionary[kvp.Value.GetComponent<UnitController>().Name].Level = kvp.Value.GetComponent<UnitController>().Level;
-                SaveHeroData(kvp.Value.GetComponent<UnitController>().Name);
+                kvp.Value.GetComponent<UnitController>().UpdateHeroStats();
+                SaveHeroData(kvp.Value.GetComponent<UnitController>().HClass.Name);
                 SaveableUnit SH = new SaveableUnit();
                 SH.Health = kvp.Value.GetComponent<UnitController>().Health;
                 SH.Team = kvp.Value.GetComponent<UnitController>().Team;
-                SH.Name = kvp.Value.GetComponent<UnitController>().Name;
+                SH.Name = kvp.Value.GetComponent<UnitController>().HClass.Name;
                 SH.Hero = kvp.Value.GetComponent<UnitController>().Hero;
                 SH.Location = kvp.Key;
                 SF.UnitList.Add(SH);
@@ -1789,12 +1778,24 @@ public class GameControllerScript : MonoBehaviour
         Hero h = new Hero();
         h = DBC.HeroDictionary[ID];
         h.Name = name;
-        h.Level = 1;
+        h.Level = 0;
         h.XP = 0;
         h.Intelligance = h.BaseIntelligance;
         h.Strenght = h.BaseStrenght;
         h.Dexterity = h.BaseDexterity;
         h.Charisma = h.BaseCharisma;
+        h.Intelligance = h.BaseIntelligance;
+        h.Strenght = h.BaseStrenght;
+        h.Dexterity = h.BaseDexterity;
+        h.Charisma = h.BaseCharisma;
+        h.Attack = h.Strenght + 1;
+        h.MaxHealth = h.Strenght + 1;
+        h.HealthRegen = (int)Math.Ceiling((double)h.Strenght / 3);
+        h.MovePoints = (int)Math.Ceiling((double)h.Dexterity / 3) + 1;
+        h.Defence = h.Dexterity;
+        h.ConversionSpeed = (int)Math.Ceiling((double)h.Dexterity / 3) + 1;
+        h.Mana = h.Intelligance;
+        h.ManaRegen = (int)Math.Ceiling((double)h.Intelligance / 3) + 1;
         HeroDictionary.Add(h.Name,h);
         //Working on this, Thinking for now we will save to a json file.
         string tempjson = JsonUtility.ToJson(h, true);
@@ -2011,6 +2012,7 @@ public static class JsonHelper
     }
 }
 
+// this is all used for save files
 [Serializable]
 public class SaveableUnit
 {
