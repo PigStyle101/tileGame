@@ -1577,6 +1577,10 @@ public class GameControllerScript : MonoBehaviour
             kvp.Value.GetComponent<TerrainController>().TerrainRoundUpdater();
             kvp.Value.GetComponent<TerrainController>().FogOfWarController();
         }
+        foreach (var kvp in UnitPos)
+        {
+            kvp.Value.GetComponent<UnitController>().GetTileValues();
+        }
     }
 
     /// <summary>

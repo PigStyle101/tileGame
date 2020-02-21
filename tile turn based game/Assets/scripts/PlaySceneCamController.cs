@@ -612,21 +612,17 @@ public class PlaySceneCamController : MonoBehaviour
             if (GCS.TeamList[GCS.CurrentTeamsTurn.Team].Gold >= DBC.UnitDictionary[SelectedUnitDR].Cost)
             {
                 GameObject GO = DBC.CreateAndSpawnUnit(CurrentlySelectedBuilding, DBC.UnitDictionary[SelectedUnitDR].ID, GCS.CurrentTeamsTurn.Team);
+                GCS.BuildingPos[CurrentlySelectedBuilding].GetComponent<BuildingController>().Occupied = true;
                 GCS.AddUnitsToDictionary(GO);
-                GO.GetComponent<UnitController>().UnitMovable = false;
+                GO.GetComponent<UnitController>().UnitMovable = true;
+                GO.GetComponent<UnitController>().UnitMoved = false;
+                GO.GetComponent<SpriteRenderer>().color = new Color(.5f, .5f, .5f);
                 foreach (var unit in GCS.UnitPos)
                 {
                     unit.Value.GetComponent<UnitController>().GetTileValues();
                     unit.Value.GetComponent<UnitController>().GetSightTiles();
                 }
                 BuildingPanel.SetActive(false);
-                foreach (var b in GCS.BuildingPos)
-                {
-                    if ((Vector2)b.Value.transform.position == CurrentlySelectedBuilding)
-                    {
-                        b.Value.GetComponent<BuildingController>().CanBuild = false;
-                    }
-                }
                 foreach (var t in GCS.TilePos)
                 {
                     t.Value.GetComponent<TerrainController>().FogOfWarController();

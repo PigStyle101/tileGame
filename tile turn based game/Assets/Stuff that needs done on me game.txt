@@ -7,7 +7,7 @@ Things that need done:
 -Add function to show loading state when going back to main menu from mod screen
 
 /////////////////////////////////////////// Currnetly working on:
-/////////////////////////////////////////// working on stat and level controllers for heroes, also lvling up interface. will need one for in game and for when game finished, in case they level from winning.
+/////////////////////////////////////////// getting hero specific stats set, like xp gain, cost and morale
 
 -Multiplayer?
 -What to do here?

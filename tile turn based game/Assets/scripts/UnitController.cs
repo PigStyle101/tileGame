@@ -129,6 +129,22 @@ public class UnitController : MonoBehaviour
         {
             UnitMoved = false;
             UnitMovable = true;
+            if (Hero)
+            {
+                if (Health < MaxHealth) //is health less then maxhealth
+                {
+                    Health = Health + HClass.HealthRegen; //get us some regen
+                    if (Health > MaxHealth) //did we over regenerate?
+                    {
+                        Health = MaxHealth; //remove that extra regen
+                    }
+                }
+                else
+                {
+                    Health = MaxHealth; //if health gets over max somehow we need to fix that.
+                }
+                gameObject.GetComponentInChildren<Text>().text = Health.ToString();
+            }
             gameObject.GetComponent<SpriteRenderer>().color = new Color(.5F, .5F, .5F);
             GetTileValues();
             GetSightTiles();
@@ -231,20 +247,20 @@ public class UnitController : MonoBehaviour
                         if (!Temp.ContainsKey(kvp.Key + dir)) //does the temp already contain the tile?
                         {
                             if (kvp.Value + GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Weight <= MovePoints && GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Walkable && kvp.Key + dir != (Vector2)gameObject.transform.position) //is the wegiht of the tile + move points used already < move points total? Walkable?
-                            {
-                                if (!GCS.UnitPos.ContainsKey(kvp.Key + dir))
+                            {//enough mp? Is tile walkable? not the position of the unit currently?
+                                if (!GCS.UnitPos.ContainsKey(kvp.Key + dir)) //is there not a unit there?
                                 {
                                     tempInt = GCS.TilePos[kvp.Key + dir].transform.GetComponent<TerrainController>().Weight + kvp.Value; //sets this to mp used so far + weight of tile.
                                     Temp.Add(kvp.Key + dir, tempInt); 
                                 }
                                 else
                                 {
-                                    if (GCS.UnitPos[kvp.Key + dir].GetComponent<UnitController>().Team == Team)
+                                    if (GCS.UnitPos[kvp.Key + dir].GetComponent<UnitController>().Team == Team) //is this unit on are team?
                                     {
                                         tempInt = GCS.TilePos[kvp.Key + dir].transform.GetComponent<TerrainController>().Weight + kvp.Value; //this is the movement points used so far
                                         Temp.Add(kvp.Key + dir, tempInt);
                                     }
-                                    else if (GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().FogOfWarBool)
+                                    else if (GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().FogOfWarBool) //if enemy are they in the fog of war?
                                     {
                                         tempInt = GCS.TilePos[kvp.Key + dir].transform.GetComponent<TerrainController>().Weight + kvp.Value; //this is the movement points used so far
                                         Temp.Add(kvp.Key + dir, tempInt);
@@ -254,11 +270,14 @@ public class UnitController : MonoBehaviour
                         }
                         else //if temp already contains a key for this tile but more mp were used to get there then we want to replace the second value of the array with the lower number
                         {
-                            if (kvp.Value + GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Weight <= MovePoints && GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Walkable && kvp.Key + dir != (Vector2)gameObject.transform.position)
+                            if (kvp.Value + GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Weight <= MovePoints && GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Walkable)
                             {
                                 if (kvp.Value + GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Weight < Temp[kvp.Key + dir])
                                 {
-                                    Temp[kvp.Key + dir] = kvp.Value + GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Weight;
+                                    if (kvp.Key + dir != (Vector2)gameObject.transform.position)
+                                    {
+                                        Temp[kvp.Key + dir] = kvp.Value + GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Weight; 
+                                    }
                                 }
                             }
                         }
@@ -844,7 +863,7 @@ public class UnitController : MonoBehaviour
         HClass.Strenght = HClass.BaseStrenght * Level;
         HClass.Dexterity = HClass.BaseDexterity * Level;
         HClass.Charisma = HClass.BaseCharisma * Level;
-        HClass.Attack = (int)Math.Ceiling((double)HClass.Strenght / 2);
+        HClass.Attack = (int)Math.Ceiling((double)HClass.Strenght / 2) + 1;
         HClass.MaxHealth = HClass.Strenght + 1;
         HClass.HealthRegen = (int)Math.Ceiling((double)HClass.Strenght / 3);
         HClass.MovePoints = (int)Math.Ceiling((double)HClass.Dexterity / 3) + 1;

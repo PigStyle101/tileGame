@@ -1,6 +1,6 @@
 {
     "ID": 0,
-    "Name": "try",
+    "Name": "qwer",
     "MaxHealth": 4,
     "Intelligance": 1,
     "Strenght": 3,
@@ -35,221 +35,221 @@
     "MoveAnimations": true,
     "ArtworkDirectory": [
         {
-            "instanceID": -222022
+            "instanceID": -50696
         }
     ],
     "IdleAnimationDirectory": [
         {
-            "instanceID": -221750
+            "instanceID": -50424
         },
         {
-            "instanceID": -221754
+            "instanceID": -50428
         },
         {
-            "instanceID": -221758
+            "instanceID": -50432
         },
         {
-            "instanceID": -221762
+            "instanceID": -50436
         },
         {
-            "instanceID": -221766
+            "instanceID": -50440
         },
         {
-            "instanceID": -221770
+            "instanceID": -50444
         },
         {
-            "instanceID": -221774
+            "instanceID": -50448
         },
         {
-            "instanceID": -221778
+            "instanceID": -50452
         },
         {
-            "instanceID": -221782
+            "instanceID": -50456
         },
         {
-            "instanceID": -221786
+            "instanceID": -50460
         },
         {
-            "instanceID": -221790
+            "instanceID": -50464
         },
         {
-            "instanceID": -221794
+            "instanceID": -50468
         },
         {
-            "instanceID": -221798
+            "instanceID": -50472
         },
         {
-            "instanceID": -221802
+            "instanceID": -50476
         },
         {
-            "instanceID": -221806
+            "instanceID": -50480
         },
         {
-            "instanceID": -221810
+            "instanceID": -50484
         },
         {
-            "instanceID": -221814
+            "instanceID": -50488
         }
     ],
     "AttackAnimationDirectory": [
         {
-            "instanceID": -221818
+            "instanceID": -50492
         },
         {
-            "instanceID": -221822
+            "instanceID": -50496
         },
         {
-            "instanceID": -221826
+            "instanceID": -50500
         },
         {
-            "instanceID": -221830
+            "instanceID": -50504
         },
         {
-            "instanceID": -221834
+            "instanceID": -50508
         },
         {
-            "instanceID": -221838
+            "instanceID": -50512
         },
         {
-            "instanceID": -221842
+            "instanceID": -50516
         },
         {
-            "instanceID": -221846
+            "instanceID": -50520
         },
         {
-            "instanceID": -221850
+            "instanceID": -50524
         },
         {
-            "instanceID": -221854
+            "instanceID": -50528
         },
         {
-            "instanceID": -221858
+            "instanceID": -50532
         },
         {
-            "instanceID": -221862
+            "instanceID": -50536
         }
     ],
     "HurtAnimationDirectory": [
         {
-            "instanceID": -221866
+            "instanceID": -50540
         },
         {
-            "instanceID": -221870
+            "instanceID": -50544
         },
         {
-            "instanceID": -221874
+            "instanceID": -50548
         },
         {
-            "instanceID": -221878
+            "instanceID": -50552
         },
         {
-            "instanceID": -221882
+            "instanceID": -50556
         },
         {
-            "instanceID": -221886
+            "instanceID": -50560
         },
         {
-            "instanceID": -221890
+            "instanceID": -50564
         },
         {
-            "instanceID": -221894
+            "instanceID": -50568
         },
         {
-            "instanceID": -221898
+            "instanceID": -50572
         },
         {
-            "instanceID": -221902
+            "instanceID": -50576
         },
         {
-            "instanceID": -221906
+            "instanceID": -50580
         },
         {
-            "instanceID": -221910
+            "instanceID": -50584
         }
     ],
     "DiedAnimationDirectory": [
         {
-            "instanceID": -221914
+            "instanceID": -50588
         },
         {
-            "instanceID": -221918
+            "instanceID": -50592
         },
         {
-            "instanceID": -221922
+            "instanceID": -50596
         },
         {
-            "instanceID": -221926
+            "instanceID": -50600
         },
         {
-            "instanceID": -221930
+            "instanceID": -50604
         },
         {
-            "instanceID": -221934
+            "instanceID": -50608
         },
         {
-            "instanceID": -221938
+            "instanceID": -50612
         },
         {
-            "instanceID": -221942
+            "instanceID": -50616
         },
         {
-            "instanceID": -221946
+            "instanceID": -50620
         },
         {
-            "instanceID": -221950
+            "instanceID": -50624
         },
         {
-            "instanceID": -221954
+            "instanceID": -50628
         },
         {
-            "instanceID": -221958
+            "instanceID": -50632
         },
         {
-            "instanceID": -221962
+            "instanceID": -50636
         },
         {
-            "instanceID": -221966
+            "instanceID": -50640
         },
         {
-            "instanceID": -221970
+            "instanceID": -50644
         }
     ],
     "MoveAnimationDirectory": [
         {
-            "instanceID": -221974
+            "instanceID": -50648
         },
         {
-            "instanceID": -221978
+            "instanceID": -50652
         },
         {
-            "instanceID": -221982
+            "instanceID": -50656
         },
         {
-            "instanceID": -221986
+            "instanceID": -50660
         },
         {
-            "instanceID": -221990
+            "instanceID": -50664
         },
         {
-            "instanceID": -221994
+            "instanceID": -50668
         },
         {
-            "instanceID": -221998
+            "instanceID": -50672
         },
         {
-            "instanceID": -222002
+            "instanceID": -50676
         },
         {
-            "instanceID": -222006
+            "instanceID": -50680
         },
         {
-            "instanceID": -222010
+            "instanceID": -50684
         },
         {
-            "instanceID": -222014
+            "instanceID": -50688
         },
         {
-            "instanceID": -222018
+            "instanceID": -50692
         }
     ],
     "IdleAnimationSpeed": 0.019999999552965165,
@@ -259,6 +259,6 @@
     "MoveAnimationSpeed": 0.019999999552965165,
     "MoveAnimationOffset": 20.0,
     "Team": 0,
-    "Level": 1,
+    "Level": 0,
     "XP": 0
 }
