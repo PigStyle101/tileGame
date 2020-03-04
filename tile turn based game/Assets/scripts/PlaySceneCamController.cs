@@ -252,7 +252,7 @@ public class PlaySceneCamController : MonoBehaviour
         if (gameObject.transform.position.x < 0) { gameObject.transform.position = new Vector3(0, transform.position.y, transform.position.z); }
         if (gameObject.transform.position.y < 0) { gameObject.transform.position = new Vector3(transform.position.x, 0, transform.position.z); }
 
-    } //controls camera movment y and x
+    } //controls camera movment y and x //Potential lua code
 
     /// <summary>
     /// Used to control the z movement of the camera
@@ -268,7 +268,7 @@ public class PlaySceneCamController : MonoBehaviour
         if (gameObject.transform.position.z > -1) { gameObject.transform.position = new Vector3(transform.position.x, transform.position.y, -1); }
         if (gameObject.transform.position.z < -GCS.PlayMapSize * 2) { gameObject.transform.position = new Vector3(transform.position.x, transform.position.y, -GCS.PlayMapSize * 2); }
 
-    }//controls camera z movement
+    }//controls camera z movement //Potential lua code
 
     /// <summary>
     /// When a player clicks end of turn button this runs
@@ -564,7 +564,7 @@ public class PlaySceneCamController : MonoBehaviour
                 tempbutton.name = kvp.Value.Title; //change name
                 tempbutton.transform.GetChild(0).GetComponent<Text>().text = kvp.Value.Title + System.Environment.NewLine + kvp.Value.Cost; //change text on button to match sprite and create new line and add cost
                 tempbutton.GetComponent<Image>().sprite = DBC.UnitDictionary[kvp.Key].ArtworkDirectory[0]; //set sprite
-                tempbutton.GetComponent<Button>().onClick.AddListener(CreateUnitController); //adds method to button clicked 
+                tempbutton.GetComponent<Button>().onClick.AddListener(BuyUnitController); //adds method to button clicked 
                 tempbutton.AddComponent<ButtonProperties>();
                 tempbutton.GetComponent<ButtonProperties>().ID = kvp.Key;
             }
@@ -575,69 +575,40 @@ public class PlaySceneCamController : MonoBehaviour
     /// <summary>
     /// Creates unit, sets building var buildable to false, removes gold
     /// </summary>
-    public void CreateUnitController()
+    public void BuyUnitController()
     {
         if (EventSystem.current.currentSelectedGameObject != null) //make sure player clicked on the unit button and did not use keyboard shortcut
         {
             SelectedUnitDR = EventSystem.current.currentSelectedGameObject.GetComponent<ButtonProperties>().ID;
-            if (GCS.TeamList[GCS.CurrentTeamsTurn.Team].Gold >= DBC.UnitDictionary[SelectedUnitDR].Cost) //can they afford this unit?
-            {
-                GameObject GO = DBC.CreateAndSpawnUnit(CurrentlySelectedBuilding, DBC.UnitDictionary[SelectedUnitDR].ID, GCS.CurrentTeamsTurn.Team);
-                GCS.BuildingPos[CurrentlySelectedBuilding].GetComponent<BuildingController>().Occupied = true;
-                GCS.AddUnitsToDictionary(GO);
-                GO.GetComponent<UnitController>().UnitMovable = true;
-                GO.GetComponent<UnitController>().UnitMoved = false;
-                GO.GetComponent<SpriteRenderer>().color = new Color(.5f, .5f, .5f);
-                foreach (var unit in GCS.UnitPos)
-                {
-                    unit.Value.GetComponent<UnitController>().GetTileValues();
-                    unit.Value.GetComponent<UnitController>().GetSightTiles();
-                }
-                BuildingPanel.SetActive(false);
-                foreach (var t in GCS.TilePos)
-                {
-                    t.Value.GetComponent<TerrainController>().FogOfWarController();
-                }
-                GCS.TeamList[GCS.CurrentTeamsTurn.Team].Gold = GCS.TeamList[GCS.CurrentTeamsTurn.Team].Gold - DBC.UnitDictionary[SelectedUnitDR].Cost;
-                UpdateGoldThings();
-                FeedBackText.text = "";
-            }
-            else
-            {
-                FeedBackText.text = "Not enough gold to buy that unit";
-            }
         }
-        else //keyboard shortcut was used
+
+        if (GCS.TeamList[GCS.CurrentTeamsTurn.Team].Gold >= DBC.UnitDictionary[SelectedUnitDR].Cost) //can they afford this unit?
         {
-            if (GCS.TeamList[GCS.CurrentTeamsTurn.Team].Gold >= DBC.UnitDictionary[SelectedUnitDR].Cost)
+            GameObject GO = DBC.CreateAndSpawnUnit(CurrentlySelectedBuilding, DBC.UnitDictionary[SelectedUnitDR].ID, GCS.CurrentTeamsTurn.Team);
+            GCS.BuildingPos[CurrentlySelectedBuilding].GetComponent<BuildingController>().Occupied = true;
+            GCS.AddUnitsToDictionary(GO);
+            GO.GetComponent<UnitController>().UnitMovable = true;
+            GO.GetComponent<UnitController>().UnitMoved = false;
+            GO.GetComponent<SpriteRenderer>().color = new Color(.5f, .5f, .5f);
+            foreach (var unit in GCS.UnitPos)
             {
-                GameObject GO = DBC.CreateAndSpawnUnit(CurrentlySelectedBuilding, DBC.UnitDictionary[SelectedUnitDR].ID, GCS.CurrentTeamsTurn.Team);
-                GCS.BuildingPos[CurrentlySelectedBuilding].GetComponent<BuildingController>().Occupied = true;
-                GCS.AddUnitsToDictionary(GO);
-                GO.GetComponent<UnitController>().UnitMovable = true;
-                GO.GetComponent<UnitController>().UnitMoved = false;
-                GO.GetComponent<SpriteRenderer>().color = new Color(.5f, .5f, .5f);
-                foreach (var unit in GCS.UnitPos)
-                {
-                    unit.Value.GetComponent<UnitController>().GetTileValues();
-                    unit.Value.GetComponent<UnitController>().GetSightTiles();
-                }
-                BuildingPanel.SetActive(false);
-                foreach (var t in GCS.TilePos)
-                {
-                    t.Value.GetComponent<TerrainController>().FogOfWarController();
-                }
-                GCS.TeamList[GCS.CurrentTeamsTurn.Team].Gold = GCS.TeamList[GCS.CurrentTeamsTurn.Team].Gold - DBC.UnitDictionary[SelectedUnitDR].Cost;
-                UpdateGoldThings();
-                UnitSelectedForBuildingFromKeyboardShortcuts = "NONE";
-                FeedBackText.text = "";
+                unit.Value.GetComponent<UnitController>().GetTileValues();
+                unit.Value.GetComponent<UnitController>().GetSightTiles();
             }
-            else
+            BuildingPanel.SetActive(false);
+            foreach (var t in GCS.TilePos)
             {
-                FeedBackText.text = "Not enough gold to buy that unit";
+                t.Value.GetComponent<TerrainController>().FogOfWarController();
             }
+            GCS.TeamList[GCS.CurrentTeamsTurn.Team].Gold = GCS.TeamList[GCS.CurrentTeamsTurn.Team].Gold - DBC.UnitDictionary[SelectedUnitDR].Cost;
+            UpdateGoldThings();
+            FeedBackText.text = "";
         }
-    }
+        else
+        {
+            FeedBackText.text = "Not enough gold to buy that unit";
+        }
+    }  //potential lua method
 
     /// <summary>
     /// Sets requred panles to false and displayes winning message
@@ -666,7 +637,7 @@ public class PlaySceneCamController : MonoBehaviour
         SaveButton.SetActive(false);
         EndGameText.text = "Team: " + Team.ToString() + " has won the game.";
 
-    }
+    } //potential lua method
 
     /// <summary>
     /// Clears scene and then goes back to main menue
@@ -876,7 +847,7 @@ public class PlaySceneCamController : MonoBehaviour
                 if (ContentWindowBuilding.transform.childCount > 0)
                 {
                     SelectedUnitDR = ContentWindowBuilding.transform.GetChild(0).GetComponent<ButtonProperties>().ID;
-                    CreateUnitController();
+                    BuyUnitController();
                 }
             }
             if (Input.GetKeyDown(KeyCode.W))
@@ -884,7 +855,7 @@ public class PlaySceneCamController : MonoBehaviour
                 if (ContentWindowBuilding.transform.childCount > 1)
                 {
                     SelectedUnitDR = ContentWindowBuilding.transform.GetChild(1).GetComponent<ButtonProperties>().ID;
-                    CreateUnitController();
+                    BuyUnitController();
                 }
             }
             if (Input.GetKeyDown(KeyCode.E))
@@ -892,7 +863,7 @@ public class PlaySceneCamController : MonoBehaviour
                 if (ContentWindowBuilding.transform.childCount > 2)
                 {
                     SelectedUnitDR = ContentWindowBuilding.transform.GetChild(2).GetComponent<ButtonProperties>().ID;
-                    CreateUnitController();
+                    BuyUnitController();
                 }
             }
             if (Input.GetKeyDown(KeyCode.R))
@@ -900,11 +871,11 @@ public class PlaySceneCamController : MonoBehaviour
                 if (ContentWindowBuilding.transform.childCount > 3)
                 {
                     SelectedUnitDR = ContentWindowBuilding.transform.GetChild(3).GetComponent<ButtonProperties>().ID;
-                    CreateUnitController();
+                    BuyUnitController();
                 }
             }
         }
-    }
+    } //potential lua code
 
     public void MoveableUnitCount()
     {

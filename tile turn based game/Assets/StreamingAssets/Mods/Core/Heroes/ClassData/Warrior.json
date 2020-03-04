@@ -1,0 +1,16 @@
+{
+  "Title": "Warrior",
+  "Slug": "warrior_class",
+  "Description": "A skilled fighter.",
+  "Type": "Class",
+  "Mod": "Core",
+  "MovePointsModifier": 5,
+  "SightRangeModifier": 4,
+  "AttackRangeModifier": 1,
+  "CanConvertModifier": true,
+  "CanMoveAndAttackModifier": true,
+  "BaseIntelliganceModifier": 1,
+  "BaseStrenghtModifier": 3,
+  "BaseDexterityModifier": 2,
+  "BaseCharismaModifier": 0,
+}

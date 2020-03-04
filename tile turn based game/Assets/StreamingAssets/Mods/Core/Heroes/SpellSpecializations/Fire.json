@@ -1,0 +1,18 @@
+{
+  "Title": "Fire",
+  "Description": "Master of pyromancy.",
+  "Type": "Specialization",
+  "Mod": "Core",
+  "Spells":
+  [
+  	  "FireBall",
+	  "Cauterize",
+      "RingOfFire"
+  ],
+  "SpellsLevels":
+  [
+  	  1,
+	  2,
+      3
+  ]
+}

@@ -1,14 +1,18 @@
 {
-  "Damage": 2,
-  "Range": 2,
-  "ManaCost": 6,
-  "Title": "Fire_Ball",
-  "Description": "Throws a fireball at target",
+  "Title": "Fire Ball",
+  "Description": "Sends a fire ball at an enemy in range.",
   "Type": "Spell",
+  "Mod": "Core",
   "Effects":
   [
   	  "Damage",
-	  "Heal"
+      "SingleTarget"
   ],
-  "Mod": "Core"
+  "Targets": 
+  [
+      "Enemy"
+  ],
+  "Damage": 2,
+  "Range": 2,
+  "ManaCost": 4
 }

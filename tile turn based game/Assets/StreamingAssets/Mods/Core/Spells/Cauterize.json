@@ -1,0 +1,18 @@
+{
+  "Title": "Cauterize",
+  "Description": "Heals a friendly unit in range.",
+  "Type": "Spell",
+  "Mod": "Core",
+  "Effects":
+  [
+  	  "Heal",
+      "SingleTarget"
+  ],
+  "Targets": 
+  [
+      "Friendly"
+  ],
+  "HealAmount": 2,
+  "Range": 2,
+  "ManaCost": 2
+}

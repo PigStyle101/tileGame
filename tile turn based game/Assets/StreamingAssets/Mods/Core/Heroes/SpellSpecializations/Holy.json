@@ -1,0 +1,18 @@
+{
+  "Title": "Holy",
+  "Description": "Healer and protector of the weak.",
+  "Type": "Specialization",
+  "Mod": "Core",
+  "Spells":
+  [
+  	  "Heal",
+	  "Smite",
+      "GroupHeal"
+  ],
+  "SpellsLevels":
+  [
+  	  1,
+	  2,
+      3
+  ]
+}

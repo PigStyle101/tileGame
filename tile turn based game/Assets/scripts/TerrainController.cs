@@ -123,7 +123,7 @@ public class TerrainController : MonoBehaviour
             Destroy(GCS.BuildingPos[gameObject.transform.position]);
             GCS.BuildingPos.Remove(gameObject.transform.position);
         }
-    } //if a terrain is selected and the player clicks a tile it changes the tile to the correct terrain
+    } //Potential lua method
 
     private void MouseOverlayRayCaster()
     {
@@ -583,7 +583,7 @@ public class TerrainController : MonoBehaviour
             }
             counter = 0;
         }
-    } //makes the roads attatch to each other
+    } //Potential lua code
 
     public void FogOfWarController()
     {

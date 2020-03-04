@@ -1,0 +1,19 @@
+{
+  "Title": "Ring Of Fire",
+  "Description": "Creates a ring of fire around the caster damaging ALL units in range.",
+  "Type": "Spell",
+  "Mod": "Core",
+  "Effects":
+  [
+  	  "Damage",
+      "AOE"
+  ],
+  "Targets": 
+  [
+      "Friendly",
+      "Enemy"
+  ],
+  "Damage": 2,
+  "Range": 2,
+  "ManaCost": 6
+}

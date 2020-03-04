@@ -131,7 +131,7 @@ public class BuildingController : MonoBehaviour
         }
     }
 
-    public void BuildingAiController()
+    /*public void BuildingAiController()
     {
         foreach(var kvp in DBC.UnitDictionary)
         {
@@ -150,7 +150,7 @@ public class BuildingController : MonoBehaviour
                 CanBuild = false;
             }
         }
-    }
+    } */
 
     public void HealIfFriendlyUnitOnBuilding()
     {

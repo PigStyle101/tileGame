@@ -1,0 +1,18 @@
+{
+  "Title": "Holy Smite",
+  "Description": "Smites a enemy with holy power.",
+  "Type": "Spell",
+  "Mod": "Core",
+  "Effects":
+  [
+  	  "Damage",
+      "SingleTarget"
+  ],
+  "Targets": 
+  [
+      "Friendly"
+  ],
+  "Damage": 2,
+  "Range": 2,
+  "ManaCost": 4
+}

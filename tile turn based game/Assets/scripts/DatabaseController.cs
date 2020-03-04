@@ -2,14 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
-using System.Reflection;
-using System;
 using UnityEngine.UI;
-using System.Dynamic;
-using System.Runtime.InteropServices.Expando;
-using System.Threading;
+using MoonSharp.Interpreter;
 
 [System.Serializable]
+[MoonSharpUserData]
 public class DatabaseController : MonoBehaviour
 {
 
@@ -103,7 +100,7 @@ public class DatabaseController : MonoBehaviour
             } 
         }
     }
-
+    [MoonSharpHidden]
     public IEnumerator JsonGettier()
     {
         GetMasterJson();
@@ -131,7 +128,7 @@ public class DatabaseController : MonoBehaviour
         GetFogOfWarJson();
         LoadState = 8;
     }
-
+    [MoonSharpHidden]
     /// <summary>
     /// Gets Master Json file, this is used for any bigger settings
     /// </summary>
@@ -144,7 +141,7 @@ public class DatabaseController : MonoBehaviour
         DragSpeed = MasterData.DragSpeed;
         //Debug.Log("Finished fetching json master file");
     }
-
+    [MoonSharpHidden]
     /// <summary>
     /// Gets Terrain Json files. Pulls from data first then searches for sprites.
     /// </summary>
@@ -167,7 +164,7 @@ public class DatabaseController : MonoBehaviour
             }
         }
     }//gets the json files from the terrain/data folder and converts them to unity object and stores tehm into dictionary
-
+    [MoonSharpHidden]
     /// <summary>
     /// Gets Unit Json files. Pulls from data first then searches for sprites.
     /// </summary>
@@ -190,17 +187,17 @@ public class DatabaseController : MonoBehaviour
             }
         }
     }//gets the json files from the Units/data folder and converts them to unity object and stores tehm into dictionary
-
+    [MoonSharpHidden]
     /// <summary>
     /// Gets Hero Json files. Pulls from data first then searches for sprites.
     /// </summary>
     /// <param name="Mod">Mod folder name to look for</param>
     public void GetHeroJsons(string Mod)
     {
-        if (Directory.Exists(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Heroes"))
+        if (Directory.Exists(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Heroes/RaceData"))
         {
             //Debug.Log("Fetching json hero files");
-            foreach (string file in Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Heroes/Data/", "*.json")) //gets only json files form this path
+            foreach (string file in Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Heroes/RaceData/", "*.json")) //gets only json files form this path
             {
                 var Tempstring = File.ReadAllText(file); //temp string to hold the json data
                 var tempjson = JsonUtility.FromJson<Hero>(Tempstring); //this converts from json string to unity object
@@ -213,6 +210,12 @@ public class DatabaseController : MonoBehaviour
         }
     }//gets the json files from the Units/data folder and converts them to unity object and stores tehm into dictionary
 
+    [MoonSharpHidden]
+    public void GetSpellJson(string Mod)
+    {
+        //gonna get spell json and lua form here
+    }
+    [MoonSharpHidden]
     /// <summary>
     /// Gets Building Json files. Pulls from data first then searches for sprites.
     /// </summary>
@@ -234,7 +237,7 @@ public class DatabaseController : MonoBehaviour
             }
         }
     }
-
+    [MoonSharpHidden]
     /// <summary>
     /// Used to get mouse overlays for hovering over terrain tiles
     /// </summary>
@@ -252,7 +255,7 @@ public class DatabaseController : MonoBehaviour
             NextMouseOverlayIndex = NextMouseOverlayIndex + 1;
         }
     }//same as getTerrainJson
-
+    [MoonSharpHidden]
     public void GetFogOfWarJson()
     {
         //Debug.log("Fetching json mouse overlay files");
@@ -267,6 +270,73 @@ public class DatabaseController : MonoBehaviour
             NextFogIndex = NextFogIndex + 1;
         }
     }
+    [MoonSharpHidden]
+    /// <summary>
+    /// Loads a sprite
+    /// </summary>
+    /// <param name="FilePath">Location to get file from</param>
+    /// <returns></returns>
+    public Sprite loadSprite(string FilePath, int PPU)
+    {
+        Texture2D Tex2D;
+        Sprite TempSprite;
+        byte[] FileData;
+
+        if (File.Exists(FilePath))
+        {
+            FileData = File.ReadAllBytes(FilePath);
+            Tex2D = new Texture2D(64, 64); // Create new "empty" texture, this requires the size to be added, it get changed in teh next method
+            Tex2D.LoadImage(FileData);// Load the imagedata into the texture (size is set automatically)
+            TempSprite = Sprite.Create(Tex2D, new Rect(0, 0, Tex2D.width, Tex2D.height), new Vector2(0.5f, 0.5f), PPU);
+            return TempSprite;
+        }
+        return null;
+    }// checks for images that are to be used for artwork stuffs
+    [MoonSharpHidden]
+    public void ResetNextIndexes()
+    {
+        NextBuildingIndex = 0;
+        NextFogIndex = 0;
+        NextHeroIndex = 0;
+        NextMouseOverlayIndex = 0;
+        NextTerrainDicIndex = 0;
+        NextUnitDicIndex = 0;
+    }
+
+    /// <summary>
+    /// Creates a building and adds all needed components.
+    /// </summary>
+    /// <param name="location">Location to spawn unit at</param>
+    /// <param name="index">Unit index in unit dictionary</param>
+    /// <param name="team">Team to assign to this unit</param>
+    /// <returns></returns>
+    public GameObject CreateAndSpawnBuilding(Vector2 location, int index, int team)
+    {
+        GameObject TGO = new GameObject();
+        TGO.name = DatabaseController.instance.BuildingDictionary[index].Title;
+        TGO.AddComponent<SpriteRenderer>();
+        TGO.GetComponent<SpriteRenderer>().sprite = DatabaseController.instance.BuildingDictionary[index].ArtworkDirectory[0];
+        TGO.GetComponent<SpriteRenderer>().sortingLayerName = DatabaseController.instance.BuildingDictionary[index].Type;
+        TGO.AddComponent<BoxCollider>();
+        TGO.GetComponent<BoxCollider>().size = new Vector3(.95f, .95f, .1f);
+        TGO.AddComponent<BuildingController>();
+        TGO.GetComponent<BuildingController>().Team = team;
+        TGO.GetComponent<BuildingController>().Mod = DatabaseController.instance.BuildingDictionary[index].Mod;
+        TGO.GetComponent<BuildingController>().Health = DatabaseController.instance.BuildingDictionary[index].Health;
+        TGO.GetComponent<BuildingController>().MaxHealth = DatabaseController.instance.BuildingDictionary[index].Health;
+        TGO.GetComponent<BuildingController>().DefenceBonus = DatabaseController.instance.BuildingDictionary[index].DefenceBonus;
+        TGO.GetComponent<BuildingController>().ID = index;
+        TGO.GetComponent<BuildingController>().CanBuildUnits = DatabaseController.instance.BuildingDictionary[index].CanBuildUnits;
+        TGO.GetComponent<BuildingController>().BuildableUnits = DatabaseController.instance.BuildingDictionary[index].BuildableUnits;
+        TGO.GetComponent<BuildingController>().ID = index;
+        TGO.tag = DatabaseController.instance.BuildingDictionary[index].Type;
+        TGO.transform.position = location;
+        GameObject TempCan = Instantiate(DatabaseController.instance.BuildingHealthOverlay, TGO.transform);
+        TempCan.transform.localPosition = new Vector3(0, 0, 0);
+        TempCan.GetComponentInChildren<Text>().text = DatabaseController.instance.BuildingDictionary[index].Health.ToString();
+        TempCan.GetComponent<Canvas>().sortingLayerName = DatabaseController.instance.UnitDictionary[0].Type;
+        return TGO;
+    }
 
     /// <summary>
     /// Creates a terrain tile and adds all needed components.
@@ -274,51 +344,51 @@ public class DatabaseController : MonoBehaviour
     /// <param name="location">Location to spawn terrain tile at</param>
     /// <param name="index">Tile index in Terrain Dictionary</param>
     /// <returns></returns>
-    public GameObject CreateAdnSpawnTerrain(Vector2 location, int index)
+    public GameObject CreateAndSpawnTerrain(Vector2 location, int index)
     {
         GameObject TGO = new GameObject();                                                                                  //create gameobject
-        TGO.name = TerrainDictionary[index].Title;                                                                          //change the name
+        TGO.name = DatabaseController.instance.TerrainDictionary[index].Title;                                                                          //change the name
         TGO.AddComponent<SpriteRenderer>();                                                                                 //add a sprite controller
-        TGO.GetComponent<SpriteRenderer>().sprite = TerrainDictionary[index].ArtworkDirectory[0];               //set the sprite to the texture
-        TGO.GetComponent<SpriteRenderer>().sortingLayerName = TerrainDictionary[index].Type;
+        TGO.GetComponent<SpriteRenderer>().sprite = DatabaseController.instance.TerrainDictionary[index].ArtworkDirectory[0];               //set the sprite to the texture
+        TGO.GetComponent<SpriteRenderer>().sortingLayerName = DatabaseController.instance.TerrainDictionary[index].Type;
         TGO.AddComponent<BoxCollider>();
         TGO.GetComponent<BoxCollider>().size = new Vector3(.95f, .95f, .1f);
-        TGO.tag = (TerrainDictionary[index].Type);
+        TGO.tag = (DatabaseController.instance.TerrainDictionary[index].Type);
         //TGO.AddComponent<RectTransform>();
 
         GameObject MouseOverlayGO = new GameObject();                                                                       //creating the child object for mouse overlay
-        MouseOverlayGO.AddComponent<SpriteRenderer>().sprite = MouseDictionary[0].ArtworkDirectory[0];          //adding it to sprite
-        MouseOverlayGO.GetComponent<SpriteRenderer>().sortingLayerName = MouseDictionary[0].SortingLayer;
+        MouseOverlayGO.AddComponent<SpriteRenderer>().sprite = DatabaseController.instance.MouseDictionary[0].ArtworkDirectory[0];          //adding it to sprite
+        MouseOverlayGO.GetComponent<SpriteRenderer>().sortingLayerName = DatabaseController.instance.MouseDictionary[0].SortingLayer;
         MouseOverlayGO.GetComponent<SpriteRenderer>().sortingOrder = 4;                                                     //making it so its on top of the default sprite
         MouseOverlayGO.transform.parent = TGO.transform;                                                                    //setting its parent to the main game object
         MouseOverlayGO.name = "MouseOverlay";                                                                               //changing the name
 
         GameObject FogOverlay = new GameObject();
-        FogOverlay.AddComponent<SpriteRenderer>().sprite = FogOfWarDictionary[0].ArtworkDirectory[0];
-        FogOverlay.GetComponent<SpriteRenderer>().sortingLayerName = FogOfWarDictionary[0].SortingLayer;
+        FogOverlay.AddComponent<SpriteRenderer>().sprite = DatabaseController.instance.FogOfWarDictionary[0].ArtworkDirectory[0];
+        FogOverlay.GetComponent<SpriteRenderer>().sortingLayerName = DatabaseController.instance.FogOfWarDictionary[0].SortingLayer;
         FogOverlay.GetComponent<SpriteRenderer>().sortingOrder = 3;
         FogOverlay.transform.parent = TGO.transform;
         FogOverlay.name = "FogOfWar";
 
         GameObject MouseOverlaySelected = new GameObject();
-        MouseOverlaySelected.AddComponent<SpriteRenderer>().sprite = MouseDictionary[1].ArtworkDirectory[0];
-        MouseOverlaySelected.GetComponent<SpriteRenderer>().sortingLayerName = MouseDictionary[1].SortingLayer;
+        MouseOverlaySelected.AddComponent<SpriteRenderer>().sprite = DatabaseController.instance.MouseDictionary[1].ArtworkDirectory[0];
+        MouseOverlaySelected.GetComponent<SpriteRenderer>().sortingLayerName = DatabaseController.instance.MouseDictionary[1].SortingLayer;
         MouseOverlaySelected.GetComponent<SpriteRenderer>().sortingOrder = 5;
         MouseOverlaySelected.transform.parent = TGO.transform;
         MouseOverlaySelected.name = "MouseOverlaySelected";
 
         TGO.AddComponent<TerrainController>();                                                                               //adding the sprite controller script to it
-        TGO.GetComponent<TerrainController>().Weight = TerrainDictionary[index].Weight;
-        TGO.GetComponent<TerrainController>().Walkable = TerrainDictionary[index].Walkable;
-        TGO.GetComponent<TerrainController>().DefenceBonus = TerrainDictionary[index].DefenceBonus;
-        TGO.GetComponent<TerrainController>().BlocksSight = TerrainDictionary[index].BlocksSight;
-        TGO.GetComponent<TerrainController>().Overlays = TerrainDictionary[index].Overlays;
-        TGO.GetComponent<TerrainController>().Connectable = TerrainDictionary[index].Connectable;
-        TGO.GetComponent<TerrainController>().IdleAnimations = TerrainDictionary[index].IdleAnimations;
+        TGO.GetComponent<TerrainController>().Weight = DatabaseController.instance.TerrainDictionary[index].Weight;
+        TGO.GetComponent<TerrainController>().Walkable = DatabaseController.instance.TerrainDictionary[index].Walkable;
+        TGO.GetComponent<TerrainController>().DefenceBonus = DatabaseController.instance.TerrainDictionary[index].DefenceBonus;
+        TGO.GetComponent<TerrainController>().BlocksSight = DatabaseController.instance.TerrainDictionary[index].BlocksSight;
+        TGO.GetComponent<TerrainController>().Overlays = DatabaseController.instance.TerrainDictionary[index].Overlays;
+        TGO.GetComponent<TerrainController>().Connectable = DatabaseController.instance.TerrainDictionary[index].Connectable;
+        TGO.GetComponent<TerrainController>().IdleAnimations = DatabaseController.instance.TerrainDictionary[index].IdleAnimations;
         TGO.GetComponent<TerrainController>().ID = index;
-        if (TerrainDictionary[index].IdleAnimations)
+        if (DatabaseController.instance.TerrainDictionary[index].IdleAnimations)
         {
-            TGO.GetComponent<TerrainController>().IdleAnimationsDirectory = TerrainDictionary[index].IdleAnimationDirectory;
+            TGO.GetComponent<TerrainController>().IdleAnimationsDirectory = DatabaseController.instance.TerrainDictionary[index].IdleAnimationDirectory;
         }
         TGO.transform.position = location;
         return TGO;
@@ -362,26 +432,18 @@ public class DatabaseController : MonoBehaviour
         if (UnitDictionary[index].IdleAnimations)
         {
             TGO.GetComponent<UnitController>().IdleAnimationSpeed = UnitDictionary[index].IdleAnimationSpeed;
-            TGO.GetComponent<UnitController>().IdleAnimationsDirectory = UnitDictionary[index].IdleAnimationDirectory;
         }
         if (UnitDictionary[index].AttackAnimations)
         {
             TGO.GetComponent<UnitController>().AttackAnimationSpeed = UnitDictionary[index].AttackAnimationSpeed;
-            TGO.GetComponent<UnitController>().AttackAnimationsDirectory = UnitDictionary[index].AttackAnimationDirectory;
         }
         if (UnitDictionary[index].HurtAnimations)
         {
             TGO.GetComponent<UnitController>().HurtAnimationSpeed = UnitDictionary[index].HurtAnimationSpeed;
-            TGO.GetComponent<UnitController>().HurtAnimationsDirectory = UnitDictionary[index].HurtAnimationDirectory;
         }
         if (UnitDictionary[index].DiedAnimations)
         {
             TGO.GetComponent<UnitController>().DiedAnimationSpeed = UnitDictionary[index].DiedAnimationSpeed;
-            TGO.GetComponent<UnitController>().DiedAnimationsDirectory = UnitDictionary[index].DiedAnimationDirectory;
-        }
-        if (UnitDictionary[index].MoveAnimations)
-        {
-            TGO.GetComponent<UnitController>().MoveAnimationsDirectory = UnitDictionary[index].MoveAnimationDirectory;
         }
         if (UnitDictionary[index].CanConvert)
         {
@@ -445,6 +507,7 @@ public class DatabaseController : MonoBehaviour
 
     public GameObject CreateAndSpawnHero(Vector2 location, string Hname, int team)
     {
+        GameControllerScript GCS = GameControllerScript.instance;
         GameObject TGO = new GameObject();
         Hero thero = GCS.HeroDictionary[Hname];
         TGO.name = Hname;
@@ -475,28 +538,23 @@ public class DatabaseController : MonoBehaviour
         if (HeroDictionary[thero.ID].IdleAnimations)
         {
             TGO.GetComponent<UnitController>().IdleAnimationSpeed = HeroDictionary[thero.ID].IdleAnimationSpeed;
-            TGO.GetComponent<UnitController>().IdleAnimationsDirectory = HeroDictionary[thero.ID].IdleAnimationDirectory;
         }
         if (HeroDictionary[thero.ID].AttackAnimations)
         {
             TGO.GetComponent<UnitController>().AttackAnimationSpeed = HeroDictionary[thero.ID].AttackAnimationSpeed;
-            TGO.GetComponent<UnitController>().AttackAnimationsDirectory = HeroDictionary[thero.ID].AttackAnimationDirectory;
         }
         if (HeroDictionary[thero.ID].HurtAnimations)
         {
             TGO.GetComponent<UnitController>().HurtAnimationSpeed = HeroDictionary[thero.ID].HurtAnimationSpeed;
-            TGO.GetComponent<UnitController>().HurtAnimationsDirectory = HeroDictionary[thero.ID].HurtAnimationDirectory;
         }
         if (HeroDictionary[thero.ID].DiedAnimations)
         {
             TGO.GetComponent<UnitController>().DiedAnimationSpeed = HeroDictionary[thero.ID].DiedAnimationSpeed;
-            TGO.GetComponent<UnitController>().DiedAnimationsDirectory = HeroDictionary[thero.ID].DiedAnimationDirectory;
         }
         if (HeroDictionary[thero.ID].MoveAnimations)
         {
             TGO.GetComponent<UnitController>().MoveAnimationSpeed = HeroDictionary[thero.ID].MoveAnimationSpeed;
             TGO.GetComponent<UnitController>().MoveAnimationOffset = HeroDictionary[thero.ID].MoveAnimationOffset;
-            TGO.GetComponent<UnitController>().MoveAnimationsDirectory = HeroDictionary[thero.ID].MoveAnimationDirectory;
         }
         if (HeroDictionary[thero.ID].CanConvert)
         {
@@ -557,73 +615,6 @@ public class DatabaseController : MonoBehaviour
         TGO.GetComponent<UnitController>().TeamSpriteController();
         return TGO;
     } //used to spawn units form database
-
-    /// <summary>
-    /// Creates a building and adds all needed components.
-    /// </summary>
-    /// <param name="location">Location to spawn unit at</param>
-    /// <param name="index">Unit index in unit dictionary</param>
-    /// <param name="team">Team to assign to this unit</param>
-    /// <returns></returns>
-    public GameObject CreateAndSpawnBuilding(Vector2 location, int index, int team)
-    {
-        GameObject TGO = new GameObject();
-        TGO.name = BuildingDictionary[index].Title;
-        TGO.AddComponent<SpriteRenderer>();
-        TGO.GetComponent<SpriteRenderer>().sprite = BuildingDictionary[index].ArtworkDirectory[0];
-        TGO.GetComponent<SpriteRenderer>().sortingLayerName = BuildingDictionary[index].Type;
-        TGO.AddComponent<BoxCollider>();
-        TGO.GetComponent<BoxCollider>().size = new Vector3(.95f, .95f, .1f);
-        TGO.AddComponent<BuildingController>();
-        TGO.GetComponent<BuildingController>().Team = team;
-        TGO.GetComponent<BuildingController>().Mod = BuildingDictionary[index].Mod;
-        TGO.GetComponent<BuildingController>().Health = BuildingDictionary[index].Health;
-        TGO.GetComponent<BuildingController>().MaxHealth = BuildingDictionary[index].Health;
-        TGO.GetComponent<BuildingController>().DefenceBonus = BuildingDictionary[index].DefenceBonus;
-        TGO.GetComponent<BuildingController>().ID = index;
-        TGO.GetComponent<BuildingController>().CanBuildUnits = BuildingDictionary[index].CanBuildUnits;
-        TGO.GetComponent<BuildingController>().BuildableUnits = BuildingDictionary[index].BuildableUnits;
-        TGO.GetComponent<BuildingController>().ID = index;
-        TGO.tag = BuildingDictionary[index].Type;
-        TGO.transform.position = location;
-        GameObject TempCan = Instantiate(BuildingHealthOverlay, TGO.transform);
-        TempCan.transform.localPosition = new Vector3(0, 0, 0);
-        TempCan.GetComponentInChildren<Text>().text = BuildingDictionary[index].Health.ToString();
-        TempCan.GetComponent<Canvas>().sortingLayerName = UnitDictionary[0].Type;
-        return TGO;
-    }
-
-    /// <summary>
-    /// Loads a sprite
-    /// </summary>
-    /// <param name="FilePath">Location to get file from</param>
-    /// <returns></returns>
-    public Sprite loadSprite(string FilePath, int PPU)
-    {
-        Texture2D Tex2D;
-        Sprite TempSprite;
-        byte[] FileData;
-
-        if (File.Exists(FilePath))
-        {
-            FileData = File.ReadAllBytes(FilePath);
-            Tex2D = new Texture2D(64, 64); // Create new "empty" texture, this requires the size to be added, it get changed in teh next method
-            Tex2D.LoadImage(FileData);// Load the imagedata into the texture (size is set automatically)
-            TempSprite = Sprite.Create(Tex2D, new Rect(0, 0, Tex2D.width, Tex2D.height), new Vector2(0.5f, 0.5f), PPU);
-            return TempSprite;
-        }
-        return null;
-    }// checks for images that are to be used for artwork stuffs
-
-    public void ResetNextIndexes()
-    {
-        NextBuildingIndex = 0;
-        NextFogIndex = 0;
-        NextHeroIndex = 0;
-        NextMouseOverlayIndex = 0;
-        NextTerrainDicIndex = 0;
-        NextUnitDicIndex = 0;
-    }
 }
 
 [System.Serializable]

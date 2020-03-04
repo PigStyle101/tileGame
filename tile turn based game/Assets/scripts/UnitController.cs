@@ -5,7 +5,9 @@ using UnityEngine.SceneManagement;
 using System;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using MoonSharp.Interpreter;
 
+[MoonSharpUserData]
 public class UnitController : MonoBehaviour
 {
     //json and stat stuff
@@ -72,11 +74,6 @@ public class UnitController : MonoBehaviour
     public bool UnitHurtAnimation;
     public bool UnitDiedAnimation;
     public bool UnitMoveAnimation;
-    public List<Sprite> IdleAnimationsDirectory;
-    public List<Sprite> AttackAnimationsDirectory;
-    public List<Sprite> HurtAnimationsDirectory;
-    public List<Sprite> DiedAnimationsDirectory;
-    public List<Sprite> MoveAnimationsDirectory;
     private float IdleTimerFloat;
     private float AttackTimerFloat;
     private float HurtTimerFloat;
@@ -93,15 +90,16 @@ public class UnitController : MonoBehaviour
     public float HurtAnimationSpeed;
     public float DiedAnimationSpeed;
     public float MoveAnimationSpeed;
-    public bool Attacking;
-    public bool Moving;
-    public bool Dying;
-    public bool Hurt;
+    private bool Attacking;
+    private bool Moving;
+    private bool Dying;
+    private bool Hurt;
     //Script stuff
     private DatabaseController DBC;
     private GameControllerScript GCS;
     private MapEditMenueCamController MEMCC;
 
+    [MoonSharpHidden]
     private void Awake()
     {
         DBC = DatabaseController.instance;
@@ -116,13 +114,13 @@ public class UnitController : MonoBehaviour
         Directions.Add(new Vector2(0, -1));
         Directions.Add(new Vector2(-1, 0));
     }
-
+    [MoonSharpHidden]
     private void Update()
     {
         AnimationTimers();
         RayCastForAttackRange();
     }
-
+    [MoonSharpHidden]
     public void UnitRoundUpdater()
     {
         if (Team == GCS.CurrentTeamsTurn.Team) //object is on the current team
@@ -158,7 +156,7 @@ public class UnitController : MonoBehaviour
         }
         
     }
-
+    [MoonSharpHidden]
     public void TeamSpriteController()
     {
         //gameObject.GetComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.UnitDictionary[ID].ArtworkDirectory[Team], DBC.UnitDictionary[ID].PixelsPerUnit);
@@ -206,8 +204,8 @@ public class UnitController : MonoBehaviour
                 gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").Find("Text").GetComponent<Text>().color = Color.black;
                 break;
         }
-    }
-
+    } //Potential lua method
+    [MoonSharpHidden]
     public void GetTileValues() 
     {
         ////Debug.log("MP = " + MovePoints);
@@ -305,8 +303,8 @@ public class UnitController : MonoBehaviour
             }
             count = count + 1;
         }
-    }
-
+    } //Potential lua method
+    [MoonSharpHidden]
     public void GetSightTiles()
     {
         ////Debug.log("MP = " + MovePoints);
@@ -376,8 +374,8 @@ public class UnitController : MonoBehaviour
             }
             count = count + 1;
         }
-    }
-
+    } //Potential lua method
+    [MoonSharpHidden]
     public void ChangeUnit()
     {
         if (MEMCC.SelectedButtonDR == -1)
@@ -390,13 +388,12 @@ public class UnitController : MonoBehaviour
             ////Debug.log("Changing tile to " + kvp.Value.Title);
             gameObject.name = DBC.UnitDictionary[MEMCC.SelectedButtonDR].Title;//change name of tile
             gameObject.GetComponent<SpriteRenderer>().sprite = DBC.UnitDictionary[MEMCC.SelectedButtonDR].ArtworkDirectory[0]; //change sprite of tile
-            IdleAnimationsDirectory = DBC.UnitDictionary[MEMCC.SelectedButtonDR].IdleAnimationDirectory;
             Health = DBC.UnitDictionary[MEMCC.SelectedButtonDR].Health;
             ID = MEMCC.SelectedButtonDR;
             gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").Find("Text").GetComponent<Text>().text = Health.ToString();
         }
-    }
-
+    }   //Potential lua method
+    [MoonSharpHidden]
     public int GetEnemyUnitsInRange()
     {
         List<Vector2> Directions = new List<Vector2>();
@@ -462,7 +459,7 @@ public class UnitController : MonoBehaviour
         }
         //Debug.log("Enemys in range:" + EnemyUnitsInRange.Count);
         return EnemyUnitsInRange.Count;
-    }
+    } //Potential lua method
 
     /*public void UnitAi()
     {
@@ -636,7 +633,7 @@ public class UnitController : MonoBehaviour
             UnitMoved = true;
         }
     }*/   //this will need to be redone and reworked as mechanicks are added to the units. currently set up to work before fog of war was added. 
-
+    [MoonSharpHidden]
     public void HealUnitIfOnFriendlyBuilding()
     {
         foreach (var b in GCS.BuildingPos)
@@ -647,8 +644,8 @@ public class UnitController : MonoBehaviour
                 gameObject.GetComponentInChildren<Text>().text = Health.ToString();
             }
         }
-    } 
-
+    }  //Potential lua method
+    [MoonSharpHidden]
     public void MovementController()
     {
         if (UnitMoved && !UnitMovable && Team == GCS.CurrentTeamsTurn.Team)
@@ -662,8 +659,8 @@ public class UnitController : MonoBehaviour
                 gameObject.GetComponent<SpriteRenderer>().color = new Color(.5F, .5F, .5F);
             }
         }
-    }
-
+    } //Potential lua method
+    [MoonSharpHidden]
     public void AnimationTimers()
     {
         if (UnitIdleAnimation && !Attacking && !Dying && !Hurt && !Moving)
@@ -671,27 +668,27 @@ public class UnitController : MonoBehaviour
             IdleTimerFloat += Time.deltaTime;
             if (IdleTimerFloat >= IdleAnimationSpeed)
             {
-                if ((IdleAnimationsDirectory.Count - 1) > IdleState)
+                if ((DBC.UnitDictionary[ID].IdleAnimationDirectory.Count - 1) > IdleState)
                 {
-                    gameObject.GetComponent<SpriteRenderer>().sprite = IdleAnimationsDirectory[IdleState];
+                    gameObject.GetComponent<SpriteRenderer>().sprite = DBC.UnitDictionary[ID].IdleAnimationDirectory[IdleState];
                     IdleState = IdleState + 1;
                 }
                 else
                 {
-                    gameObject.GetComponent<SpriteRenderer>().sprite = IdleAnimationsDirectory[IdleState];
+                    gameObject.GetComponent<SpriteRenderer>().sprite = DBC.UnitDictionary[ID].IdleAnimationDirectory[IdleState];
                     IdleState = 0;
                 }
                 IdleTimerFloat = 0;
             }
         }
-        if (Attacking && UnitAttackAnimation)
+        if (Attacking)
         {
             AttackTimerFloat += Time.deltaTime;
-            if (AttackTimerFloat >= AttackAnimationSpeed)
+            if (AttackTimerFloat >= AttackAnimationSpeed && UnitAttackAnimation)
             {
-                if ((AttackAnimationsDirectory.Count - 1) > AttackState)
+                if ((DBC.UnitDictionary[ID].AttackAnimationDirectory.Count - 1) > AttackState)
                 {
-                    gameObject.GetComponent<SpriteRenderer>().sprite = AttackAnimationsDirectory[AttackState];
+                    gameObject.GetComponent<SpriteRenderer>().sprite = DBC.UnitDictionary[ID].AttackAnimationDirectory[AttackState];
                     AttackState = AttackState + 1;
                 }
                 else
@@ -701,15 +698,19 @@ public class UnitController : MonoBehaviour
                 }
                 AttackTimerFloat = 0;
             }
+            else if (!UnitAttackAnimation)
+            {
+                Attacking = false;
+            }
         }
         if (Hurt)
         {
             HurtTimerFloat += Time.deltaTime;
             if (HurtTimerFloat >= HurtAnimationSpeed && UnitHurtAnimation)
             {
-                if ((HurtAnimationsDirectory.Count - 1) > HurtState)
+                if ((DBC.UnitDictionary[ID].HurtAnimationDirectory.Count - 1) > HurtState)
                 {
-                    gameObject.GetComponent<SpriteRenderer>().sprite = HurtAnimationsDirectory[HurtState];
+                    gameObject.GetComponent<SpriteRenderer>().sprite = DBC.UnitDictionary[ID].HurtAnimationDirectory[HurtState];
                     HurtState = HurtState + 1;
                 }
                 else
@@ -729,9 +730,9 @@ public class UnitController : MonoBehaviour
             DiedTimerFloat += Time.deltaTime;
             if (DiedTimerFloat >= DiedAnimationSpeed && UnitDiedAnimation)
             {
-                if ((DiedAnimationsDirectory.Count - 1) > DiedState)
+                if ((DBC.UnitDictionary[ID].DiedAnimationDirectory.Count - 1) > DiedState)
                 {
-                    gameObject.GetComponent<SpriteRenderer>().sprite = DiedAnimationsDirectory[DiedState];
+                    gameObject.GetComponent<SpriteRenderer>().sprite = DBC.UnitDictionary[ID].DiedAnimationDirectory[DiedState];
                     DiedState = DiedState + 1;
                 }
                 else
@@ -768,21 +769,21 @@ public class UnitController : MonoBehaviour
             MoveTimerFloat += Time.deltaTime;
             if (MoveTimerFloat >= MoveAnimationSpeed && UnitMoveAnimation)
             {
-                if ((MoveAnimationsDirectory.Count - 1) > MoveState)
+                if ((DBC.UnitDictionary[ID].MoveAnimationDirectory.Count - 1) > MoveState)
                 {
-                    gameObject.GetComponent<SpriteRenderer>().sprite = MoveAnimationsDirectory[MoveState];
+                    gameObject.GetComponent<SpriteRenderer>().sprite = DBC.UnitDictionary[ID].MoveAnimationDirectory[MoveState];
                     MoveState = MoveState + 1;
                 }
                 else
                 {
-                    gameObject.GetComponent<SpriteRenderer>().sprite = MoveAnimationsDirectory[MoveState];
+                    gameObject.GetComponent<SpriteRenderer>().sprite = DBC.UnitDictionary[ID].MoveAnimationDirectory[MoveState];
                     MoveState = 0;
                 }
                 MoveTimerFloat = 0;
             }
         }
     }
-
+    [MoonSharpHidden]
     public void KilledEnemyUnit(UnitController UC)
     {
         if (UC.Hero)
@@ -818,8 +819,8 @@ public class UnitController : MonoBehaviour
                 UpdateHeroStats();
             }
         }
-    }
-
+    } //Potential lua method
+    [MoonSharpHidden]
     public void RayCastForAttackRange()
     {
         if (Input.GetKey(KeyCode.LeftControl) && Input.GetMouseButtonDown(0))
@@ -856,7 +857,7 @@ public class UnitController : MonoBehaviour
             }
         }
     }
-
+    [MoonSharpHidden]
     public void UpdateHeroStats()
     {
         HClass.Intelligance = HClass.BaseIntelligance * Level;
@@ -883,6 +884,36 @@ public class UnitController : MonoBehaviour
         HClass.Level = Level;
         HClass.XP = XP;
         GCS.HeroDictionary[HClass.Name] = HClass;
+    } //Potential lua method
+
+    public bool DoDamage(int damage)
+    {
+        Health = Health - damage;
+        if (Health >= 0)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public void StartAttackAnimation()
+    {
+        Attacking = true;
+    }
+
+    public void StartHurtAnimation()
+    {
+        Hurt = true;
+    }
+
+    public void StartMovingAnimation()
+    {
+        Moving = true;
+    }
+
+    public void StartDeadAnimation()
+    {
+        Dying = true;
     }
 }
 
