@@ -59,6 +59,7 @@ public class DatabaseController : MonoBehaviour
 
     private void Start()
     {
+        UserData.RegisterAssembly();
         LoadState = 1;
         Loading = true;
         GCS = GameControllerScript.instance;
@@ -116,7 +117,7 @@ public class DatabaseController : MonoBehaviour
         GetHeroJsons("Core");
         LoadState = 4;
         yield return null;
-        GetBuildingJsons("Core");
+        GetBuildingData("Core");
         LoadState = 5;
         yield return null;
         ModsLoaded.Add("Core");
@@ -151,19 +152,21 @@ public class DatabaseController : MonoBehaviour
         if (Directory.Exists(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Terrain"))
         {
             //Debug.log("Fetching json terrain files");
-            foreach (string file in Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Terrain/Data/", "*.json")) //gets only json files form this path
+            foreach (string file in Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Terrain/Data/", "*.lua")) //gets only json files form this path
             {
                 var Tempstring = File.ReadAllText(file); //temp string to hold the json data
-                Terrain tempjson = JsonUtility.FromJson<Terrain>(Tempstring); //this converts from json string to unity object
-                tempjson.ID = NextTerrainDicIndex;
-                // Debug.Log("Adding: " + tempjson.Slug + " to database");
-
-                TerrainDictionary.Add(tempjson.ID, tempjson); //adds
-                tempjson.GetSprites(); //details in fucntion
+                Script script = new Script();
+                Terrain t = new Terrain();
+                script.Globals["Terrain"] = t;
+                script.DoString(Tempstring);
+                script.Call(script.Globals["GetAllData"]);
+                t.ID = NextTerrainDicIndex;
+                t.GetSprites();
+                TerrainDictionary.Add(t.ID, t);
                 NextTerrainDicIndex = NextTerrainDicIndex + 1;
             }
         }
-    }//gets the json files from the terrain/data folder and converts them to unity object and stores tehm into dictionary
+    } //not done
     [MoonSharpHidden]
     /// <summary>
     /// Gets Unit Json files. Pulls from data first then searches for sprites.
@@ -174,19 +177,21 @@ public class DatabaseController : MonoBehaviour
         if (Directory.Exists(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Units"))
         {
             //Debug.log("Fetching json unit files");
-            foreach (string file in Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Units/Data/", "*.json")) //gets only json files form this path
+            foreach (string file in Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Units/Data/", "*.lua")) //gets only json files form this path
             {
-                var Tempstring = File.ReadAllText(file); //temp string to hold the json data
-                var tempjson = JsonUtility.FromJson<Unit>(Tempstring); //this converts from json string to unity object
-                tempjson.ID = NextUnitDicIndex;
-                //Debug.Log("Adding: " + tempjson.Slug + " to database");
-
-                UnitDictionary.Add(tempjson.ID, tempjson); //adds
-                tempjson.GetSprites(); //details in fucntion
+                var Tempstring = File.ReadAllText(file);
+                Script script = new Script();
+                Unit u = new Unit();
+                script.Globals["Unit"] = u;
+                script.DoString(Tempstring);
+                script.Call(script.Globals["GetAllData"]);
+                u.ID = NextUnitDicIndex;
+                u.GetSprites();
+                UnitDictionary.Add(u.ID, u);
                 NextUnitDicIndex = NextUnitDicIndex + 1;
             }
         }
-    }//gets the json files from the Units/data folder and converts them to unity object and stores tehm into dictionary
+    } //done
     [MoonSharpHidden]
     /// <summary>
     /// Gets Hero Json files. Pulls from data first then searches for sprites.
@@ -197,46 +202,52 @@ public class DatabaseController : MonoBehaviour
         if (Directory.Exists(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Heroes/RaceData"))
         {
             //Debug.Log("Fetching json hero files");
-            foreach (string file in Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Heroes/RaceData/", "*.json")) //gets only json files form this path
+            foreach (string file in Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Heroes/RaceData/", "*.lua")) //gets only json files form this path
             {
                 var Tempstring = File.ReadAllText(file); //temp string to hold the json data
-                var tempjson = JsonUtility.FromJson<Hero>(Tempstring); //this converts from json string to unity object
-                //Debug.Log("Adding: " + tempjson.Slug + " to database");
-                tempjson.ID = NextHeroIndex;
-                HeroDictionary.Add(tempjson.ID, tempjson); //adds
-                tempjson.GetSprites(); //details in fucntion
-                NextHeroIndex = NextHeroIndex + 1;
+                Script script = new Script();
+                Hero h = new Hero();
+                script.Globals["Hero"] = h;
+                script.DoString(Tempstring);
+                script.Call(script.Globals["GetAllData"]);
+                h.ID = NextHeroIndex;
+                h.GetSprites();
+                HeroDictionary.Add(h.ID, h);
+                NextHeroIndex += 1;
             }
         }
-    }//gets the json files from the Units/data folder and converts them to unity object and stores tehm into dictionary
+    } //not done
 
     [MoonSharpHidden]
     public void GetSpellJson(string Mod)
     {
         //gonna get spell json and lua form here
-    }
-    [MoonSharpHidden]
+    } //not done
+    //[MoonSharpHidden]
     /// <summary>
     /// Gets Building Json files. Pulls from data first then searches for sprites.
     /// </summary>
     /// <param name="Mod">Mod folder name to look for</param>
-    public void GetBuildingJsons(string Mod)
+    public void GetBuildingData(string Mod)
     {
         if (Directory.Exists(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Buildings"))
         {
             //Debug.log("Fetching json building files");
-            foreach (string file in Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Buildings/Data/", "*.json")) //gets only json files form this path
+            foreach (string file in Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Buildings/Data/", "*.lua")) //gets only lua files form this path
             {
-                var Tempstring = File.ReadAllText(file); //temp string to hold the json data
-                var tempjson = JsonUtility.FromJson<Building>(Tempstring); //this converts from json string to unity object
-                //Debug.Log("Adding: " + tempjson.Slug + " to database");
-                tempjson.ID = NextBuildingIndex;
-                BuildingDictionary.Add(tempjson.ID, tempjson); //adds
-                tempjson.GetSprites(); //details in fucntion
-                NextBuildingIndex = NextBuildingIndex + 1;
+                var Tempstring = File.ReadAllText(file);
+                Script script = new Script();
+                Building b = new Building();
+                script.Globals["Building"] = b;
+                script.DoString(Tempstring);
+                script.Call(script.Globals["GetAllData"]);
+                b.ID = NextBuildingIndex;
+                b.GetSprites();
+                BuildingDictionary.Add(b.ID, b);
+                NextBuildingIndex += 1;
             }
         }
-    }
+    } //done
     [MoonSharpHidden]
     /// <summary>
     /// Used to get mouse overlays for hovering over terrain tiles
@@ -406,7 +417,7 @@ public class DatabaseController : MonoBehaviour
         GameObject TGO = new GameObject();
         TGO.name = UnitDictionary[index].Title;
         TGO.AddComponent<SpriteRenderer>();
-        TGO.GetComponent<SpriteRenderer>().sprite = UnitDictionary[index].ArtworkDirectory[0];
+        TGO.GetComponent<SpriteRenderer>().sprite = UnitDictionary[index].IconSprite;
         TGO.GetComponent<SpriteRenderer>().sortingLayerName = UnitDictionary[index].Type;
         TGO.AddComponent<BoxCollider>();
         TGO.GetComponent<BoxCollider>().size = new Vector3(.95f, .95f, .1f);
@@ -512,7 +523,7 @@ public class DatabaseController : MonoBehaviour
         Hero thero = GCS.HeroDictionary[Hname];
         TGO.name = Hname;
         TGO.AddComponent<SpriteRenderer>();
-        TGO.GetComponent<SpriteRenderer>().sprite = HeroDictionary[thero.ID].ArtworkDirectory[0];
+        TGO.GetComponent<SpriteRenderer>().sprite = HeroDictionary[thero.ID].IconSprite;
         TGO.GetComponent<SpriteRenderer>().sortingLayerName = UnitDictionary[thero.ID].Type;
         TGO.AddComponent<BoxCollider>();
         TGO.GetComponent<BoxCollider>().size = new Vector3(.95f, .95f, .1f);
@@ -617,7 +628,7 @@ public class DatabaseController : MonoBehaviour
     } //used to spawn units form database
 }
 
-[System.Serializable]
+[MoonSharpUserData]
 public class Terrain
 {
     public int ID; //used as dictionary referance
@@ -634,9 +645,9 @@ public class Terrain
     public bool Overlays;
     public bool Connectable;
     public bool IdleAnimations;
-    public List<Sprite> ArtworkDirectory;
-    public List<Sprite> OverlayArtworkDirectory;
-    public List<Sprite> IdleAnimationDirectory;
+    public List<Sprite> ArtworkDirectory = new List<Sprite>();
+    public List<Sprite> OverlayArtworkDirectory = new List<Sprite>();
+    public List<Sprite> IdleAnimationDirectory = new List<Sprite>();
 
     /// <summary>
     /// Gets location of sprites and saves them to a list
@@ -673,9 +684,26 @@ public class Terrain
         }
         count = 0;
     }  //checks how many sprites are in folder and adds them to the directory
+
+    public void GetInfo(string mod,string title,string type,string description,int pixelsperunit, int defencebonus, int weight, 
+        bool blockssight,bool idleanimations, bool overlays,bool connectable, bool walkable)
+    {
+        Mod = mod;
+        Title = title;
+        Type = type;
+        Description = description;
+        PixelsPerUnit = pixelsperunit;
+        Weight = weight;
+        DefenceBonus = defencebonus;
+        BlocksSight = blockssight;
+        IdleAnimations = idleanimations;
+        Overlays = overlays;
+        Connectable = connectable;
+        Walkable = walkable;
+    }
 }//the json file cannot have values that are not stated here, this can have more values then the jso
 
-[System.Serializable]
+[MoonSharpUserData]
 public class Unit
 {
     public int ID;
@@ -695,12 +723,12 @@ public class Unit
     public bool HurtAnimations;
     public bool DiedAnimations;
     public bool MoveAnimations;
-    public List<Sprite> ArtworkDirectory;
-    public List<Sprite> IdleAnimationDirectory;
-    public List<Sprite> AttackAnimationDirectory;
-    public List<Sprite> HurtAnimationDirectory;
-    public List<Sprite> DiedAnimationDirectory;
-    public List<Sprite> MoveAnimationDirectory;
+    public Sprite IconSprite;
+    public List<Sprite> IdleAnimationDirectory = new List<Sprite>();
+    public List<Sprite> AttackAnimationDirectory = new List<Sprite>();
+    public List<Sprite> HurtAnimationDirectory = new List<Sprite>();
+    public List<Sprite> DiedAnimationDirectory = new List<Sprite>();
+    public List<Sprite> MoveAnimationDirectory = new List<Sprite>();
     public float IdleAnimationSpeed;
     public float AttackAnimationSpeed;
     public float HurtAnimationSpeed;
@@ -768,15 +796,47 @@ public class Unit
         }
         //Debug.Log("Sprites found for " + Title + ": " + count + " in mod " + Mod);
         count = 0;
+
         foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Units/Sprites/" + Title + "/", "*.png")))
         {
-            ArtworkDirectory.Add(DatabaseController.instance.loadSprite(file, PixelsPerUnit));
+            IconSprite = DatabaseController.instance.loadSprite(file, PixelsPerUnit);
             count = count + 1;
         } //this is used to get the default sprite for icons and stuff, only needs one.
     }
+
+    public void GetInfo(string mod, string title, string type, string description, int pixelsperunit, bool idleanimations,bool attackanimtions, bool moveanimtions, bool hurtanimtions, bool diedanimtions,
+        float idlespeed, float attackspeed,float movespeed, float hurtspeed, float diedspeed, float movespeedoffset, int attack, int defence, int attackrange, int health, int movepoints,int cost,int conversionspeed,
+        int sightrange, bool canconvert, bool canmoveandattack)
+    {
+        Mod = mod;
+        Title = title;
+        Type = type;
+        Description = description;
+        PixelsPerUnit = pixelsperunit;
+        IdleAnimations = idleanimations;
+        AttackAnimations = attackanimtions;
+        MoveAnimations = moveanimtions;
+        HurtAnimations = hurtanimtions;
+        DiedAnimations = diedanimtions;
+        IdleAnimationSpeed = idlespeed;
+        AttackAnimationSpeed = attackspeed;
+        MoveAnimationSpeed = movespeed;
+        DiedAnimationSpeed = diedspeed;
+        MoveAnimationOffset = movespeedoffset;
+        Attack = attack;
+        Defence = defence;
+        AttackRange = attackrange;
+        Health = health;
+        MovePoints = movepoints;
+        Cost = cost;
+        ConversionSpeed = conversionspeed;
+        SightRange = sightrange;
+        CanConvert = canconvert;
+        CanMoveAndAttack = canmoveandattack;
+    }
 }//same use as terrian class
 
-[System.Serializable]
+[MoonSharpUserData]
 public class Building
 {
     public int ID;
@@ -787,10 +847,11 @@ public class Building
     public string Slug;
     public int DefenceBonus;
     public string Type;
-    public List<Sprite> ArtworkDirectory;
+    public List<Sprite> ArtworkDirectory = new List<Sprite>();
     public int Team;
     public int Health;
     public int PixelsPerUnit;
+    public bool Walkable;
     public bool Capturable;
     public bool CanBuildUnits;
     public bool BlocksSight;
@@ -816,6 +877,24 @@ public class Building
         }
         //Debug.Log("Sprites found for " + Title + ": " + count + " in mod " + Mod);
         count = 0;
+    }
+
+    public void GetInfo(string mod,string title, string type, string description, int pixelsperunit, int health, int defencebonus, bool walkable, bool canbuildunits, bool blockssight, bool onlyoneallowed, 
+        List<string> buildableunits,bool herospawnpoint)
+    {
+        Mod = mod;
+        Title = title;
+        Type = type;
+        Description = description;
+        PixelsPerUnit = pixelsperunit;
+        Health = health;
+        DefenceBonus = defencebonus;
+        Walkable = walkable;
+        CanBuildUnits = canbuildunits;
+        BlocksSight = blockssight;
+        OnlyOneAllowed = onlyoneallowed;
+        BuildableUnits = buildableunits;
+        HeroSpawnPoint = herospawnpoint;
     }
 }//same use as terrian class
 
@@ -888,7 +967,7 @@ public class Master
     public string HeroSelectedWhenGameClosed;
 }
 
-[System.Serializable]
+[MoonSharpUserData]
 public class Hero
 {
     //Populated by GetHeroesJson();
@@ -929,12 +1008,12 @@ public class Hero
     public bool HurtAnimations;
     public bool DiedAnimations;
     public bool MoveAnimations;
-    public List<Sprite> ArtworkDirectory;
-    public List<Sprite> IdleAnimationDirectory;
-    public List<Sprite> AttackAnimationDirectory;
-    public List<Sprite> HurtAnimationDirectory;
-    public List<Sprite> DiedAnimationDirectory;
-    public List<Sprite> MoveAnimationDirectory;
+    public Sprite IconSprite;
+    public List<Sprite> IdleAnimationDirectory = new List<Sprite>();
+    public List<Sprite> AttackAnimationDirectory = new List<Sprite>();
+    public List<Sprite> HurtAnimationDirectory = new List<Sprite>();
+    public List<Sprite> DiedAnimationDirectory = new List<Sprite>();
+    public List<Sprite> MoveAnimationDirectory = new List<Sprite>();
     public float IdleAnimationSpeed;
     public float AttackAnimationSpeed;
     public float HurtAnimationSpeed;
@@ -1002,13 +1081,46 @@ public class Hero
         {
             if (file.Contains(Title))
             {
-                ArtworkDirectory.Add(DatabaseController.instance.loadSprite(file, PixelsPerUnit));
+                IconSprite = DatabaseController.instance.loadSprite(file, PixelsPerUnit);
                 count = count + 1;
             }
             //var tempname = Path.GetFileNameWithoutExtension(file);  // use this to get file name
         }
         //Debug.Log("Sprites found: " + count);
         count = 0;
+    }
+
+    public void GetInfo(string mod, string title, string type,string description, int pixelsperunit, int movepoints,
+        int sightrange, int attackrange, bool canconvert, bool canmoveandattack,int baseintelligance, int basestrenght,
+        int basedexterity, int basecharisma, bool idleanimation, bool attackanimation, bool moveanimation,
+        bool hurtanimation, bool diedanimation, float idleanimationspeed, float attackanimationspeed,
+        float moveanimationspeed, float hurtanimationspeed, float diedanimationspeed, int moveanimationoffset)
+    {
+        Mod = mod;
+        Title = title;
+        Type = type;
+        Description = description;
+        PixelsPerUnit = pixelsperunit;
+        MovePoints = movepoints;
+        SightRange = sightrange;
+        AttackRange = attackrange;
+        CanConvert = canconvert;
+        CanMoveAndAttack = canmoveandattack;
+        BaseIntelligance = baseintelligance;
+        BaseStrenght = basestrenght;
+        BaseDexterity = basedexterity;
+        BaseCharisma = basecharisma;
+        IdleAnimations = idleanimation;
+        AttackAnimations = attackanimation;
+        MoveAnimations = moveanimation;
+        HurtAnimations = hurtanimation;
+        DiedAnimations = diedanimation;
+        IdleAnimationSpeed = idleanimationspeed;
+        AttackAnimationSpeed = attackanimationspeed;
+        MoveAnimationSpeed = moveanimationspeed;
+        HurtAnimationSpeed = hurtanimationspeed;
+        DiedAnimationSpeed = diedanimationspeed;
+        MoveAnimationOffset = moveanimationoffset;
     }
 }
 

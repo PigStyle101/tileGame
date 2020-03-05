@@ -388,7 +388,7 @@ public class PlaySceneCamController : MonoBehaviour
                     {
                         UnitController UC = hit.transform.GetComponent<UnitController>();
                         Unit U = DBC.UnitDictionary[UC.ID];
-                        UnitImage.GetComponent<Image>().sprite = DBC.UnitDictionary[U.ID].ArtworkDirectory[0];
+                        UnitImage.GetComponent<Image>().sprite = DBC.UnitDictionary[U.ID].IconSprite;
                         UnitText.text = U.Title;
                         UnitDescription.text = U.Description;
                         UnitToolTipAttack.text = "Attack:" + UC.Attack;
@@ -402,7 +402,7 @@ public class PlaySceneCamController : MonoBehaviour
                     {
                         UnitController UC = hit.transform.GetComponent<UnitController>();
                         Hero THero = UC.HClass;
-                        UnitImage.GetComponent<Image>().sprite = DBC.HeroDictionary[UC.ID].ArtworkDirectory[0];
+                        UnitImage.GetComponent<Image>().sprite = DBC.HeroDictionary[UC.ID].IconSprite;
                         UnitText.text = THero.Title;
                         UnitDescription.text = THero.Description;
                         UnitToolTipAttack.text = "Attack:" + THero.Attack;
@@ -563,7 +563,7 @@ public class PlaySceneCamController : MonoBehaviour
                 GameObject tempbutton = Instantiate(BuildingButtonPrefab, ContentWindowBuilding.transform); //create button and set its parent to content
                 tempbutton.name = kvp.Value.Title; //change name
                 tempbutton.transform.GetChild(0).GetComponent<Text>().text = kvp.Value.Title + System.Environment.NewLine + kvp.Value.Cost; //change text on button to match sprite and create new line and add cost
-                tempbutton.GetComponent<Image>().sprite = DBC.UnitDictionary[kvp.Key].ArtworkDirectory[0]; //set sprite
+                tempbutton.GetComponent<Image>().sprite = DBC.UnitDictionary[kvp.Key].IconSprite; //set sprite
                 tempbutton.GetComponent<Button>().onClick.AddListener(BuyUnitController); //adds method to button clicked 
                 tempbutton.AddComponent<ButtonProperties>();
                 tempbutton.GetComponent<ButtonProperties>().ID = kvp.Key;

@@ -387,7 +387,7 @@ public class UnitController : MonoBehaviour
         {
             ////Debug.log("Changing tile to " + kvp.Value.Title);
             gameObject.name = DBC.UnitDictionary[MEMCC.SelectedButtonDR].Title;//change name of tile
-            gameObject.GetComponent<SpriteRenderer>().sprite = DBC.UnitDictionary[MEMCC.SelectedButtonDR].ArtworkDirectory[0]; //change sprite of tile
+            gameObject.GetComponent<SpriteRenderer>().sprite = DBC.UnitDictionary[MEMCC.SelectedButtonDR].IconSprite; //change sprite of tile
             Health = DBC.UnitDictionary[MEMCC.SelectedButtonDR].Health;
             ID = MEMCC.SelectedButtonDR;
             gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").Find("Text").GetComponent<Text>().text = Health.ToString();

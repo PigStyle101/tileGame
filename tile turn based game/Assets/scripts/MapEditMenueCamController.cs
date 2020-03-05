@@ -155,7 +155,7 @@ public class MapEditMenueCamController : MonoBehaviour
             GameObject tempbutton = Instantiate(MapEditorTilesButtonPrefab, ContentWindowUnits.transform); //create button and set its parent to content
             tempbutton.name = kvp.Value.Title; //change name
             tempbutton.transform.GetChild(0).GetComponent<Text>().text = kvp.Value.Title; //change text on button to match sprite
-            tempbutton.GetComponent<Image>().sprite = DBC.UnitDictionary[kvp.Key].ArtworkDirectory[0]; //set sprite
+            tempbutton.GetComponent<Image>().sprite = DBC.UnitDictionary[kvp.Key].IconSprite; //set sprite
             tempbutton.GetComponent<Button>().onClick.AddListener(ChangeSelectedButton); //adds method to button clicked
             tempbutton.AddComponent<ButtonProperties>();
             tempbutton.GetComponent<ButtonProperties>().ID = kvp.Key;
@@ -349,7 +349,7 @@ public class MapEditMenueCamController : MonoBehaviour
         }
         else
         {
-            SelectedTeam = DBC.UnitDictionary[0].ArtworkDirectory.Count - 1;
+            SelectedTeam = 9;
             TeamText.text = "Team:" + SelectedTeam;
         }
     }

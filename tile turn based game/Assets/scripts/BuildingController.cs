@@ -105,10 +105,10 @@ public class BuildingController : MonoBehaviour
             gameObject.name = DBC.BuildingDictionary[MEMCC.SelectedButtonDR].Title;//change name of tile
             Team = MEMCC.SelectedTeam;
             CanBuildUnits = DBC.BuildingDictionary[MEMCC.SelectedButtonDR].CanBuildUnits;
-            BuildableUnits = DBC.BuildingDictionary[MEMCC.SelectedButtonDR].BuildableUnits;
+            //BuildableUnits = DBC.BuildingDictionary[MEMCC.SelectedButtonDR].BuildableUnits;
             ID = DBC.BuildingDictionary[MEMCC.SelectedButtonDR].ID;
             ID = MEMCC.SelectedButtonDR;
-            gameObject.GetComponent<SpriteRenderer>().sprite = DBC.BuildingDictionary[MEMCC.SelectedButtonDR].ArtworkDirectory[0]; //change sprite of tile
+            //gameObject.GetComponent<SpriteRenderer>().sprite = DBC.BuildingDictionary[MEMCC.SelectedButtonDR].ArtworkDirectory[0]; //change sprite of tile
 
             if (GCS.UnitPos.ContainsKey(gameObject.transform.position) && DBC.BuildingDictionary[ID].HeroSpawnPoint)
             {

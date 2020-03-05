@@ -679,8 +679,8 @@ public class GameControllerScript : MonoBehaviour
                         {
                             if (SelectedUnitPlayScene == null && hit.transform.GetComponent<UnitController>().UnitMovable)//is the unit movable ? is there no unit selected ?
                             {
-                                UnitController UC = SelectedUnitPlayScene.GetComponent<UnitController>();
                                 SelectedUnitPlayScene = hit.transform.gameObject; //set unit to selected unit
+                                UnitController UC = SelectedUnitPlayScene.GetComponent<UnitController>();
                                 originalPositionOfUnit = SelectedUnitPlayScene.transform.position; //get unit position
                                 PSCC.CancelButton.SetActive(true);
                                 foreach (var kvp in UC.TilesWeights)

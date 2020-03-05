@@ -200,7 +200,7 @@ public class MenueController : MonoBehaviour {
                 {
                     DBC.GetTerrianJsons(Mod);
                     DBC.GetUnitJsons(Mod);
-                    DBC.GetBuildingJsons(Mod);
+                    DBC.GetBuildingData(Mod);
                     DBC.ModsLoaded.Add(Mod);
                 }
                 bool HasMainBase = false;
@@ -540,7 +540,7 @@ public class MenueController : MonoBehaviour {
             tempbutton.GetComponent<ButtonProperties>().ID = kvp.Value.ID;
         }
         NewHeroCurrentlySelected = 0;
-        NewHeroPreview.sprite = DBC.HeroDictionary[NewHeroCurrentlySelected].ArtworkDirectory[0];
+        NewHeroPreview.sprite = DBC.HeroDictionary[NewHeroCurrentlySelected].IconSprite;
         NewHeroIntValue.text = DBC.HeroDictionary[NewHeroCurrentlySelected].BaseIntelligance.ToString();
         NewHeroDexValue.text = DBC.HeroDictionary[NewHeroCurrentlySelected].BaseDexterity.ToString();
         NewHeroStrValue.text = DBC.HeroDictionary[NewHeroCurrentlySelected].BaseStrenght.ToString();
@@ -563,7 +563,7 @@ public class MenueController : MonoBehaviour {
         }
         if (GCS.HeroCurrentlySelectedP1 != null)
         {
-            LoadHeroPreview.sprite = DBC.HeroDictionary[GCS.HeroCurrentlySelectedP1.ID].ArtworkDirectory[0];
+            LoadHeroPreview.sprite = DBC.HeroDictionary[GCS.HeroCurrentlySelectedP1.ID].IconSprite;
             LoadHeroIntValue.text = GCS.HeroDictionary[GCS.HeroCurrentlySelectedP1.Name].Intelligance.ToString();
             LoadHeroStrValue.text = GCS.HeroDictionary[GCS.HeroCurrentlySelectedP1.Name].Strenght.ToString();
             LoadHeroDexValue.text = GCS.HeroDictionary[GCS.HeroCurrentlySelectedP1.Name].Dexterity.ToString();
@@ -575,7 +575,7 @@ public class MenueController : MonoBehaviour {
     public void NewHeroSelectedButton()
     {
         NewHeroCurrentlySelected = EventSystem.current.currentSelectedGameObject.transform.GetComponent<ButtonProperties>().ID;
-        NewHeroPreview.sprite = DBC.HeroDictionary[NewHeroCurrentlySelected].ArtworkDirectory[0];
+        NewHeroPreview.sprite = DBC.HeroDictionary[NewHeroCurrentlySelected].IconSprite;
         NewHeroIntValue.text = DBC.HeroDictionary[NewHeroCurrentlySelected].BaseIntelligance.ToString();
         NewHeroStrValue.text = DBC.HeroDictionary[NewHeroCurrentlySelected].BaseStrenght.ToString();
         NewHeroDexValue.text = DBC.HeroDictionary[NewHeroCurrentlySelected].BaseDexterity.ToString();
@@ -585,7 +585,7 @@ public class MenueController : MonoBehaviour {
     public void LoadHeroSelectedButton()
     {
         GCS.HeroCurrentlySelectedP1 = GCS.HeroDictionary[EventSystem.current.currentSelectedGameObject.name];
-        LoadHeroPreview.sprite = DBC.HeroDictionary[GCS.HeroCurrentlySelectedP1.ID].ArtworkDirectory[0];
+        LoadHeroPreview.sprite = DBC.HeroDictionary[GCS.HeroCurrentlySelectedP1.ID].IconSprite;
         LoadHeroIntValue.text = GCS.HeroDictionary[GCS.HeroCurrentlySelectedP1.Name].Intelligance.ToString();
         LoadHeroStrValue.text = GCS.HeroDictionary[GCS.HeroCurrentlySelectedP1.Name].Strenght.ToString();
         LoadHeroDexValue.text = GCS.HeroDictionary[GCS.HeroCurrentlySelectedP1.Name].Dexterity.ToString();
