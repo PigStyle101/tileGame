@@ -18,7 +18,6 @@ public class MultiplayerController : MonoBehaviour
 {
     public static MultiplayerController instance = null;
     public TcpClient TcpClnt = new TcpClient();
-    public MenueController MMScript;
     private GameObject plyermngerobject;
     public List<PlayerInfo> Lisst = new List<PlayerInfo>();
     public bool LevelLoaded;
