@@ -14,8 +14,6 @@ namespace TileGame
     {
 
         //this is the second main controller script, everything that needs to be loaded into the game from streaming assets folder should be done through here. 
-        //i will need to add a way for looking for more stuff that modders may add. like say a ability or something that is not already in the game. 
-        //should potentialy be able to add game changing scripts though this at some point, will need some reasurch i think.
 
         public static DatabaseController instance = null;
 
@@ -24,7 +22,10 @@ namespace TileGame
         public Dictionary<int, Unit> UnitDictionary = new Dictionary<int, Unit>();
         public Dictionary<int, Building> BuildingDictionary = new Dictionary<int, Building>();
         public Dictionary<int, FogOfWar> FogOfWarDictionary = new Dictionary<int, FogOfWar>();
-        public Dictionary<int, Hero> HeroDictionary = new Dictionary<int, Hero>();
+        public Dictionary<string, Hero> HeroDictionary = new Dictionary<string, Hero>();
+        public Dictionary<int, HeroRace> HeroRaceDictionary = new Dictionary<int, HeroRace>();
+        public Dictionary<int, HeroClass> HeroClassDictionary = new Dictionary<int, HeroClass>();
+        public Dictionary<int, Spell> SpellDictionary = new Dictionary<int, Spell>();
         public Master MasterData = new Master();
         public List<string> ModsLoaded = new List<string>();
         public Dictionary<string, string> LuaCoreScripts = new Dictionary<string, string>();
@@ -41,7 +42,9 @@ namespace TileGame
         private int NextBuildingIndex;
         private int NextMouseOverlayIndex;
         private int NextFogIndex;
-        private int NextHeroIndex;
+        private int NextHeroRaceIndex;
+        private int NextHeroClassIndex;
+        private int NextSpellIndex;
         public GameObject UnitHealthOverlay;
         public GameObject BuildingHealthOverlay;
         private GameControllerScript GCS;
@@ -119,7 +122,8 @@ namespace TileGame
             GetUnitData("Core");
             LoadState = 3;
             yield return null;
-            GetHeroData("Core");
+            GetHeroRaceData("Core");
+            GetHeroClassData("Core");
             LoadState = 4;
             yield return null;
             GetBuildingData("Core");
@@ -157,18 +161,14 @@ namespace TileGame
             if (Directory.Exists(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Terrain"))
             {
                 //Debug.log("Fetching json terrain files");
-                foreach (string file in Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Terrain/Data/", "*.lua")) //gets only json files form this path
+                foreach (string file in Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Terrain/Data/", "*.json")) //gets only json files form this path
                 {
                     var Tempstring = File.ReadAllText(file); //temp string to hold the json data
-                    Script script = new Script();
-                    Terrain t = new Terrain();
-                    script.Globals["Terrain"] = t;
-                    script.DoString(Tempstring);
-                    script.Call(script.Globals["GetAllData"]);
+                    Terrain t = JsonUtility.FromJson<Terrain>(Tempstring);
                     t.ID = NextTerrainDicIndex;
                     t.GetSprites();
                     TerrainDictionary.Add(t.ID, t);
-                    NextTerrainDicIndex = NextTerrainDicIndex + 1;
+                    NextTerrainDicIndex += 1;
                 }
             }
         } //not done
@@ -182,18 +182,14 @@ namespace TileGame
             if (Directory.Exists(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Units"))
             {
                 //Debug.log("Fetching json unit files");
-                foreach (string file in Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Units/Data/", "*.lua")) //gets only json files form this path
+                foreach (string file in Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Units/Data/", "*.json")) //gets only json files form this path
                 {
-                    var Tempstring = File.ReadAllText(file);
-                    Script script = new Script();
-                    Unit u = new Unit();
-                    script.Globals["Unit"] = u;
-                    script.DoString(Tempstring);
-                    script.Call(script.Globals["GetAllData"]);
+                    var Tempstring = File.ReadAllText(file); //temp string to hold the json data
+                    Unit u = JsonUtility.FromJson<Unit>(Tempstring);
                     u.ID = NextUnitDicIndex;
                     u.GetSprites();
                     UnitDictionary.Add(u.ID, u);
-                    NextUnitDicIndex = NextUnitDicIndex + 1;
+                    NextUnitDicIndex += 1;
                 }
             }
         } //done
@@ -202,45 +198,53 @@ namespace TileGame
         /// Gets Hero Json files. Pulls from data first then searches for sprites.
         /// </summary>
         /// <param name="Mod">Mod folder name to look for</param>
-        public void GetHeroData(string Mod)
+        public void GetHeroRaceData(string Mod)
         {
             if (Directory.Exists(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Heroes/RaceData"))
             {
                 //Debug.Log("Fetching json hero files");
-                foreach (string file in Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Heroes/RaceData/", "*.lua")) //gets only json files form this path
+                foreach (string file in Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Heroes/RaceData/", "*.json")) //gets only lua files form this path
                 {
                     var Tempstring = File.ReadAllText(file); //temp string to hold the json data
-                    Script script = new Script();
-                    Hero h = new Hero();
-                    script.Globals["Hero"] = h;
-                    script.DoString(Tempstring);
-                    script.Call(script.Globals["GetAllData"]);
-                    h.ID = NextHeroIndex;
-                    h.GetSprites();
-                    HeroDictionary.Add(h.ID, h);
-                    NextHeroIndex += 1;
+                    HeroRace hr = JsonUtility.FromJson<HeroRace>(Tempstring);
+                    hr.ID = NextHeroRaceIndex;
+                    hr.GetSprites();
+                    HeroRaceDictionary.Add(hr.ID, hr);
+                    NextHeroRaceIndex += 1;
                 }
             }
         } //not done
 
+        public void GetHeroClassData(string Mod)
+        {
+            if (Directory.Exists(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Heroes/ClassData"))
+            {
+                //Debug.Log("Fetching json hero files");
+                foreach (string file in Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Heroes/ClassData/", "*.json")) //gets only lua files form this path
+                {
+                    var Tempstring = File.ReadAllText(file); //temp string to hold the json data
+                    HeroClass hc = JsonUtility.FromJson<HeroClass>(Tempstring);
+                    hc.ID = NextHeroClassIndex;
+                    HeroClassDictionary.Add(hc.ID, hc);
+                    NextHeroClassIndex += 1;
+                }
+            }
+        }
+
         [MoonSharpHidden]
         public void GetSpellData(string Mod)
         {
-            if (Directory.Exists(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Heroes/RaceData"))
+            if (Directory.Exists(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Spells/SpellData"))
             {
                 //Debug.Log("Fetching json hero files");
-                foreach (string file in Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Heroes/RaceData/", "*.lua")) //gets only json files form this path
+                foreach (string file in Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Spells/SpellData/", "*.json")) //gets only json files form this path
                 {
                     var Tempstring = File.ReadAllText(file); //temp string to hold the json data
-                    Script script = new Script();
-                    Hero h = new Hero();
-                    script.Globals["Hero"] = h;
-                    script.DoString(Tempstring);
-                    script.Call(script.Globals["GetAllData"]);
-                    h.ID = NextHeroIndex;
-                    h.GetSprites();
-                    HeroDictionary.Add(h.ID, h);
-                    NextHeroIndex += 1;
+                    Spell s = JsonUtility.FromJson<Spell>(Tempstring);
+                    s.ID = NextSpellIndex;
+                    s.GetSprites();
+                    SpellDictionary.Add(s.ID, s);
+                    NextSpellIndex += 1;
                 }
             }
         } //not done
@@ -254,14 +258,10 @@ namespace TileGame
             if (Directory.Exists(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Buildings"))
             {
                 //Debug.log("Fetching json building files");
-                foreach (string file in Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Buildings/Data/", "*.lua")) //gets only lua files form this path
+                foreach (string file in Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Buildings/Data/", "*.json")) //gets only lua files form this path
                 {
-                    var Tempstring = File.ReadAllText(file);
-                    Script script = new Script();
-                    Building b = new Building();
-                    script.Globals["Building"] = b;
-                    script.DoString(Tempstring);
-                    script.Call(script.Globals["GetAllData"]);
+                    var Tempstring = File.ReadAllText(file); //temp string to hold the json data
+                    Building b = JsonUtility.FromJson<Building>(Tempstring);
                     b.ID = NextBuildingIndex;
                     b.GetSprites();
                     BuildingDictionary.Add(b.ID, b);
@@ -338,10 +338,12 @@ namespace TileGame
         {
             NextBuildingIndex = 0;
             NextFogIndex = 0;
-            NextHeroIndex = 0;
+            NextHeroClassIndex = 0;
+            NextHeroRaceIndex = 0;
             NextMouseOverlayIndex = 0;
             NextTerrainDicIndex = 0;
             NextUnitDicIndex = 0;
+            NextSpellIndex = 0;
         }
 
         /// <summary>
@@ -354,7 +356,7 @@ namespace TileGame
         public GameObject CreateAndSpawnBuilding(Vector2 location, int index, int team)
         {
             GameObject TGO = new GameObject();
-            TGO.name = DatabaseController.instance.BuildingDictionary[index].Title;
+            TGO.name = instance.BuildingDictionary[index].Title;
             TGO.AddComponent<SpriteRenderer>();
             TGO.GetComponent<SpriteRenderer>().sprite = DatabaseController.instance.BuildingDictionary[index].ArtworkDirectory[0];
             TGO.GetComponent<SpriteRenderer>().sortingLayerName = DatabaseController.instance.BuildingDictionary[index].Type;
@@ -550,63 +552,63 @@ namespace TileGame
         {
             GameControllerScript GCS = GameControllerScript.instance;
             GameObject TGO = new GameObject();
-            Hero thero = GCS.HeroDictionary[Hname];
+            Hero thero = HeroDictionary[Hname];
             TGO.name = Hname;
             TGO.AddComponent<SpriteRenderer>();
-            TGO.GetComponent<SpriteRenderer>().sprite = HeroDictionary[thero.ID].IconSprite;
-            TGO.GetComponent<SpriteRenderer>().sortingLayerName = UnitDictionary[thero.ID].Type;
+            TGO.GetComponent<SpriteRenderer>().sprite = HeroRaceDictionary[thero.RaceID].IconSprite;
+            TGO.GetComponent<SpriteRenderer>().sortingLayerName = UnitDictionary[thero.RaceID].Type;
             TGO.AddComponent<BoxCollider>();
             TGO.GetComponent<BoxCollider>().size = new Vector3(.95f, .95f, .1f);
             TGO.AddComponent<UnitController>();
             TGO.GetComponent<UnitController>().Hero = true;
             TGO.GetComponent<UnitController>().Team = team;
-            TGO.GetComponent<UnitController>().Health = GCS.HeroDictionary[thero.Name].MaxHealth;
-            TGO.GetComponent<UnitController>().AttackRange = HeroDictionary[thero.ID].AttackRange;
-            TGO.GetComponent<UnitController>().CanConvert = HeroDictionary[thero.ID].CanConvert;
-            TGO.GetComponent<UnitController>().SightRange = HeroDictionary[thero.ID].SightRange;
-            TGO.GetComponent<UnitController>().HClass = GCS.HeroDictionary[Hname];
-            TGO.GetComponent<UnitController>().HClass.Health = GCS.HeroDictionary[thero.Name].MaxHealth;
-            TGO.GetComponent<UnitController>().Level = GCS.HeroDictionary[Hname].Level;
-            TGO.GetComponent<UnitController>().XP = GCS.HeroDictionary[Hname].XP;
-            TGO.GetComponent<UnitController>().UnitIdleAnimation = HeroDictionary[thero.ID].IdleAnimations;
-            TGO.GetComponent<UnitController>().UnitAttackAnimation = HeroDictionary[thero.ID].AttackAnimations;
-            TGO.GetComponent<UnitController>().UnitHurtAnimation = HeroDictionary[thero.ID].HurtAnimations;
-            TGO.GetComponent<UnitController>().UnitMoveAnimation = HeroDictionary[thero.ID].MoveAnimations;
-            TGO.GetComponent<UnitController>().UnitDiedAnimation = HeroDictionary[thero.ID].DiedAnimations;
-            TGO.GetComponent<UnitController>().ID = thero.ID;
+            TGO.GetComponent<UnitController>().Health = HeroDictionary[thero.Name].MaxHealth;
+            TGO.GetComponent<UnitController>().AttackRange = HeroRaceDictionary[thero.RaceID].AttackRange;
+            TGO.GetComponent<UnitController>().CanConvert = HeroRaceDictionary[thero.RaceID].CanConvert;
+            TGO.GetComponent<UnitController>().SightRange = HeroRaceDictionary[thero.RaceID].SightRange;
+            TGO.GetComponent<UnitController>().HClass = HeroDictionary[Hname];
+            TGO.GetComponent<UnitController>().HClass.Health = HeroDictionary[thero.Name].MaxHealth;
+            TGO.GetComponent<UnitController>().Level = HeroDictionary[Hname].Level;
+            TGO.GetComponent<UnitController>().XP = HeroDictionary[Hname].XP;
+            TGO.GetComponent<UnitController>().UnitIdleAnimation = HeroRaceDictionary[thero.RaceID].IdleAnimations;
+            TGO.GetComponent<UnitController>().UnitAttackAnimation = HeroRaceDictionary[thero.RaceID].AttackAnimations;
+            TGO.GetComponent<UnitController>().UnitHurtAnimation = HeroRaceDictionary[thero.RaceID].HurtAnimations;
+            TGO.GetComponent<UnitController>().UnitMoveAnimation = HeroRaceDictionary[thero.RaceID].MoveAnimations;
+            TGO.GetComponent<UnitController>().UnitDiedAnimation = HeroRaceDictionary[thero.RaceID].DiedAnimations;
+            TGO.GetComponent<UnitController>().ID = thero.RaceID;
             TGO.GetComponent<UnitController>().UpdateHeroStats();
             TGO.GetComponent<UnitController>().Position = location;
-            if (HeroDictionary[thero.ID].IdleAnimations)
+            if (HeroRaceDictionary[thero.RaceID].IdleAnimations)
             {
-                TGO.GetComponent<UnitController>().IdleAnimationSpeed = HeroDictionary[thero.ID].IdleAnimationSpeed;
+                TGO.GetComponent<UnitController>().IdleAnimationSpeed = HeroRaceDictionary[thero.RaceID].IdleAnimationSpeed;
             }
-            if (HeroDictionary[thero.ID].AttackAnimations)
+            if (HeroRaceDictionary[thero.RaceID].AttackAnimations)
             {
-                TGO.GetComponent<UnitController>().AttackAnimationSpeed = HeroDictionary[thero.ID].AttackAnimationSpeed;
+                TGO.GetComponent<UnitController>().AttackAnimationSpeed = HeroRaceDictionary[thero.RaceID].AttackAnimationSpeed;
             }
-            if (HeroDictionary[thero.ID].HurtAnimations)
+            if (HeroRaceDictionary[thero.RaceID].HurtAnimations)
             {
-                TGO.GetComponent<UnitController>().HurtAnimationSpeed = HeroDictionary[thero.ID].HurtAnimationSpeed;
+                TGO.GetComponent<UnitController>().HurtAnimationSpeed = HeroRaceDictionary[thero.RaceID].HurtAnimationSpeed;
             }
-            if (HeroDictionary[thero.ID].DiedAnimations)
+            if (HeroRaceDictionary[thero.RaceID].DiedAnimations)
             {
-                TGO.GetComponent<UnitController>().DiedAnimationSpeed = HeroDictionary[thero.ID].DiedAnimationSpeed;
+                TGO.GetComponent<UnitController>().DiedAnimationSpeed = HeroRaceDictionary[thero.RaceID].DiedAnimationSpeed;
             }
-            if (HeroDictionary[thero.ID].MoveAnimations)
+            if (HeroRaceDictionary[thero.RaceID].MoveAnimations)
             {
-                TGO.GetComponent<UnitController>().MoveAnimationSpeed = HeroDictionary[thero.ID].MoveAnimationSpeed;
-                TGO.GetComponent<UnitController>().MoveAnimationOffset = HeroDictionary[thero.ID].MoveAnimationOffset;
+                TGO.GetComponent<UnitController>().MoveAnimationSpeed = HeroRaceDictionary[thero.RaceID].MoveAnimationSpeed;
+                TGO.GetComponent<UnitController>().MoveAnimationOffset = HeroRaceDictionary[thero.RaceID].MoveAnimationOffset;
             }
-            if (HeroDictionary[thero.ID].CanConvert)
+            if (HeroRaceDictionary[thero.RaceID].CanConvert)
             {
-                TGO.GetComponent<UnitController>().ConversionSpeed = HeroDictionary[thero.ID].ConversionSpeed;
+                TGO.GetComponent<UnitController>().ConversionSpeed = HeroRaceDictionary[thero.RaceID].ConversionSpeed;
             }
-            TGO.tag = HeroDictionary[thero.ID].Type;
+            TGO.tag = HeroRaceDictionary[thero.RaceID].Type;
             TGO.transform.position = location;
 
             GameObject TempCan = Instantiate(UnitHealthOverlay, TGO.transform);
             TempCan.transform.localPosition = new Vector3(0, 0, 0);
-            TempCan.GetComponentInChildren<Text>().text = GCS.HeroDictionary[thero.Name].Health.ToString();
+            TempCan.GetComponentInChildren<Text>().text = HeroDictionary[thero.Name].Health.ToString();
             TempCan.GetComponent<Canvas>().sortingLayerName = UnitDictionary[0].Type;
             int CaseInt = TGO.GetComponent<UnitController>().Team;
             switch (CaseInt)
@@ -651,7 +653,7 @@ namespace TileGame
 
             TGO.GetComponent<UnitController>().UnitMovable = false;
             TGO.GetComponent<UnitController>().UnitMoved = true;
-            TGO.GetComponent<UnitController>().CanMoveAndAttack = HeroDictionary[thero.ID].CanMoveAndAttack;
+            TGO.GetComponent<UnitController>().CanMoveAndAttack = HeroRaceDictionary[thero.RaceID].CanMoveAndAttack;
             //GCS.AddUnitsToDictionary(TGO);
             TGO.GetComponent<UnitController>().TeamSpriteController();
             return TGO;
@@ -664,11 +666,10 @@ namespace TileGame
         public int ID; //used as dictionary referance
         public string Mod;
         public string Title;
+        public string Type;
         public bool Walkable;
         public string Description;
         public int DefenceBonus;
-        public string Slug;
-        public string Type;
         public int Weight;
         public int PixelsPerUnit;
         public bool BlocksSight;
@@ -714,23 +715,6 @@ namespace TileGame
             }
             count = 0;
         }  //checks how many sprites are in folder and adds them to the directory
-
-        public void GetInfo(string mod, string title, string type, string description, int pixelsperunit, int defencebonus, int weight,
-            bool blockssight, bool idleanimations, bool overlays, bool connectable, bool walkable)
-        {
-            Mod = mod;
-            Title = title;
-            Type = type;
-            Description = description;
-            PixelsPerUnit = pixelsperunit;
-            Weight = weight;
-            DefenceBonus = defencebonus;
-            BlocksSight = blockssight;
-            IdleAnimations = idleanimations;
-            Overlays = overlays;
-            Connectable = connectable;
-            Walkable = walkable;
-        }
     }
 
     [MoonSharpUserData]
@@ -763,8 +747,8 @@ namespace TileGame
         public float AttackAnimationSpeed;
         public float HurtAnimationSpeed;
         public float DiedAnimationSpeed;
-        public float MoveAnimationSpeed;
-        public float MoveAnimationOffset;
+        public float MoveAnimationSpeed; //controls how fast the animation plays
+        public float MoveAnimationOffset; //controls how long the moving animation plays for
         public int Team;
         public int ConversionSpeed;
         public int PixelsPerUnit;
@@ -777,7 +761,7 @@ namespace TileGame
         /// </summary>
         public void GetSprites()
         {
-            //Debug.log("Getting sprites for: " + Title);
+            //Debug.Log("Getting sprites for: " + Title);
             int count = new int();
             if (IdleAnimations)
             {
@@ -833,37 +817,6 @@ namespace TileGame
                 count = count + 1;
             } //this is used to get the default sprite for icons and stuff, only needs one.
         }
-
-        public void GetInfo(string mod, string title, string type, string description, int pixelsperunit, bool idleanimations, bool attackanimtions, bool moveanimtions, bool hurtanimtions, bool diedanimtions,
-            float idlespeed, float attackspeed, float movespeed, float hurtspeed, float diedspeed, float movespeedoffset, int attack, int defence, int attackrange, int health, int movepoints, int cost, int conversionspeed,
-            int sightrange, bool canconvert, bool canmoveandattack)
-        {
-            Mod = mod;
-            Title = title;
-            Type = type;
-            Description = description;
-            PixelsPerUnit = pixelsperunit;
-            IdleAnimations = idleanimations;
-            AttackAnimations = attackanimtions;
-            MoveAnimations = moveanimtions;
-            HurtAnimations = hurtanimtions;
-            DiedAnimations = diedanimtions;
-            IdleAnimationSpeed = idlespeed;
-            AttackAnimationSpeed = attackspeed;
-            MoveAnimationSpeed = movespeed;
-            DiedAnimationSpeed = diedspeed;
-            MoveAnimationOffset = movespeedoffset;
-            Attack = attack;
-            Defence = defence;
-            AttackRange = attackrange;
-            Health = health;
-            MovePoints = movepoints;
-            Cost = cost;
-            ConversionSpeed = conversionspeed;
-            SightRange = sightrange;
-            CanConvert = canconvert;
-            CanMoveAndAttack = canmoveandattack;
-        }
     }//same use as terrian class
 
     [MoonSharpUserData]
@@ -907,24 +860,6 @@ namespace TileGame
             }
             //Debug.Log("Sprites found for " + Title + ": " + count + " in mod " + Mod);
             count = 0;
-        }
-
-        public void GetInfo(string mod, string title, string type, string description, int pixelsperunit, int health, int defencebonus, bool walkable, bool canbuildunits, bool blockssight, bool onlyoneallowed,
-            List<string> buildableunits, bool herospawnpoint)
-        {
-            Mod = mod;
-            Title = title;
-            Type = type;
-            Description = description;
-            PixelsPerUnit = pixelsperunit;
-            Health = health;
-            DefenceBonus = defencebonus;
-            Walkable = walkable;
-            CanBuildUnits = canbuildunits;
-            BlocksSight = blockssight;
-            OnlyOneAllowed = onlyoneallowed;
-            BuildableUnits = buildableunits;
-            HeroSpawnPoint = herospawnpoint;
         }
     }//same use as terrian class
 
@@ -997,8 +932,67 @@ namespace TileGame
         public string HeroSelectedWhenGameClosed;
     }
 
-    [MoonSharpUserData]
     public class Hero
+    {
+        //Populated by GetHeroesJson();
+        public int RaceID;
+        public int ClassID;
+        //Populated by CreateNewHero();
+        public string Name;
+        //Populated by CreateNewHero(), and then updated when the hero lvls.
+        public int MaxHealth;
+        public int Intelligance;
+        public int Strenght;
+        public int Dexterity;
+        public int Charisma;
+        //Populated from json
+        public string Title;
+        public string Slug;
+        public string Description;
+        public string Type;
+        public string Mod;
+        public int PixelsPerUnit;
+        public int Attack;
+        public int Defence;
+        public int Health;
+        public int AttackRange;
+        public int MovePoints;
+        public int ConversionSpeed;
+        public int SightRange;
+        public int Mana;
+        public int HealthRegen;
+        public int ManaRegen;
+        public bool CanConvert;
+        public bool CanMoveAndAttack;
+        public int BaseIntelligance;
+        public int BaseStrenght;
+        public int BaseDexterity;
+        public int BaseCharisma;
+        public bool IdleAnimations;
+        public bool AttackAnimations;
+        public bool HurtAnimations;
+        public bool DiedAnimations;
+        public bool MoveAnimations;
+        public Sprite IconSprite;
+        public List<Sprite> IdleAnimationDirectory = new List<Sprite>();
+        public List<Sprite> AttackAnimationDirectory = new List<Sprite>();
+        public List<Sprite> HurtAnimationDirectory = new List<Sprite>();
+        public List<Sprite> DiedAnimationDirectory = new List<Sprite>();
+        public List<Sprite> MoveAnimationDirectory = new List<Sprite>();
+        public float IdleAnimationSpeed;
+        public float AttackAnimationSpeed;
+        public float HurtAnimationSpeed;
+        public float DiedAnimationSpeed;
+        public float MoveAnimationSpeed;
+        public float MoveAnimationOffset;
+        //Blank tell used in game
+        public int Team;
+        public int Level;
+        public int XP;
+    }
+
+    [MoonSharpUserData]
+    public class HeroRace
     {
         //Populated by GetHeroesJson();
         public int ID;
@@ -1119,39 +1113,25 @@ namespace TileGame
             //Debug.Log("Sprites found: " + count);
             count = 0;
         }
+    }
 
-        public void GetInfo(string mod, string title, string type, string description, int pixelsperunit, int movepoints,
-            int sightrange, int attackrange, bool canconvert, bool canmoveandattack, int baseintelligance, int basestrenght,
-            int basedexterity, int basecharisma, bool idleanimation, bool attackanimation, bool moveanimation,
-            bool hurtanimation, bool diedanimation, float idleanimationspeed, float attackanimationspeed,
-            float moveanimationspeed, float hurtanimationspeed, float diedanimationspeed, int moveanimationoffset)
-        {
-            Mod = mod;
-            Title = title;
-            Type = type;
-            Description = description;
-            PixelsPerUnit = pixelsperunit;
-            MovePoints = movepoints;
-            SightRange = sightrange;
-            AttackRange = attackrange;
-            CanConvert = canconvert;
-            CanMoveAndAttack = canmoveandattack;
-            BaseIntelligance = baseintelligance;
-            BaseStrenght = basestrenght;
-            BaseDexterity = basedexterity;
-            BaseCharisma = basecharisma;
-            IdleAnimations = idleanimation;
-            AttackAnimations = attackanimation;
-            MoveAnimations = moveanimation;
-            HurtAnimations = hurtanimation;
-            DiedAnimations = diedanimation;
-            IdleAnimationSpeed = idleanimationspeed;
-            AttackAnimationSpeed = attackanimationspeed;
-            MoveAnimationSpeed = moveanimationspeed;
-            HurtAnimationSpeed = hurtanimationspeed;
-            DiedAnimationSpeed = diedanimationspeed;
-            MoveAnimationOffset = moveanimationoffset;
-        }
+    [MoonSharpUserData]
+    public class HeroClass
+    {
+        public int ID;
+        public string Mod;
+        public string Title;
+        public string Description;
+        public List<string> SpellClasses;
+        public int IntelliganceModifier;
+        public int StrenghtModifier;
+        public int DexterityModifier;
+        public int CharismaModifier;
+        public bool CanConvertModifier;
+        public bool CanMoveAndAttackModifier;
+        public int MovePointsModifier;
+        public int SightModifier;
+        public int AttackRangeModifier;
     }
 
     public class Spell
@@ -1170,18 +1150,24 @@ namespace TileGame
         public int Healing;
         public bool SpawnUnit;
         public int UnitID;
-    }
+        public Sprite Sprite;
 
-    public class Race
-    {
-        public string Title;
-        public int ID;
-        public string Slug;
-        public string Description;
-        public string Type;
-        public string Mod;
-        public int PixelsPerUnit;
-        public List<string> UsableUnits;
+        public void GetSprites()
+        {
+            //Debug.log("Getting sprites for: " + Title);
+            int count = new int();
+            foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/Core/Spells/Sprites/" + Title + "/", "*.png")))
+            {
+                if (file.Contains(Title))
+                {
+                    Sprite = DatabaseController.instance.loadSprite(file, PixelsPerUnit);
+                    count = count + 1;
+                }
+                //var tempname = Path.GetFileNameWithoutExtension(file);  // use this to get file name
+            }
+            //Debug.Log("Sprites found: " + count);
+            count = 0;
+        }
     }
 }
 

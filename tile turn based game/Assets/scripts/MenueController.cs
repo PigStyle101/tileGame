@@ -63,11 +63,13 @@ namespace TileGame
         private GameObject Team7Dropdown;
         private GameObject Team8Dropdown;
         private GameObject Team9Dropdown;
+        private Dropdown ClassDropDown;
         private GameObject CurrentlySellectedLoadObject;
         private string SaveGameSelectedString;
         private string CurrentlySellectedMod;
         private string SelectedMapForMapEditor;
         private int NewHeroCurrentlySelected;
+        private int NewHeroClassCurrentlySelected;
         private List<GameObject> ModsInModContentWindow = new List<GameObject>();
         private List<string> ModsList = new List<string>();
         private GameControllerScript GCS;
@@ -76,10 +78,11 @@ namespace TileGame
         // everything in here is pretty self explanitory.
         void Start()
         {
+            ClassDropDown.onValueChanged.AddListener(delegate { ClassDropDownChanged(ClassDropDown); });
             MainMenueButtonClicked();
-            if (DBC.MasterData.HeroSelectedWhenGameClosed != "" && GCS.HeroDictionary.ContainsKey(DBC.MasterData.HeroSelectedWhenGameClosed))
+            if (DBC.MasterData.HeroSelectedWhenGameClosed != "" && DBC.HeroDictionary.ContainsKey(DBC.MasterData.HeroSelectedWhenGameClosed))
             {
-                GCS.HeroCurrentlySelectedP1 = GCS.HeroDictionary[DBC.MasterData.HeroSelectedWhenGameClosed];
+                GCS.HeroCurrentlySelectedP1 = DBC.HeroDictionary[DBC.MasterData.HeroSelectedWhenGameClosed];
             }
             else
             {
@@ -146,6 +149,7 @@ namespace TileGame
             Team7Dropdown = gameObject.transform.Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team7Dropdown").gameObject;
             Team8Dropdown = gameObject.transform.Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team8Dropdown").gameObject;
             Team9Dropdown = gameObject.transform.Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team9Dropdown").gameObject;
+            ClassDropDown = gameObject.transform.Find("MainPanel").Find("NewHeroPanel").Find("ClassDropDown").GetComponent<Dropdown>();
         }
 
         public void MapEditorButtonClicked()
@@ -342,6 +346,7 @@ namespace TileGame
             NewHeroPanel.SetActive(true);
             LoadHeroPanel.SetActive(false);
             GetHeroesNew();
+            GetHeroClassesNew();
         }
 
         public void LoadHeroButtonClicked()
@@ -533,7 +538,7 @@ namespace TileGame
             {
                 Destroy(ContentWindowNewHero.transform.GetChild(i).gameObject);
             }
-            foreach (var kvp in DBC.HeroDictionary)
+            foreach (var kvp in DBC.HeroRaceDictionary)
             {
                 GameObject tempbutton = Instantiate(LoadMenueButtonPrefab, ContentWindowNewHero.transform); //create button and set its parent to content
                 tempbutton.name = kvp.Value.Title; //change name
@@ -543,11 +548,20 @@ namespace TileGame
                 tempbutton.GetComponent<ButtonProperties>().ID = kvp.Value.ID;
             }
             NewHeroCurrentlySelected = 0;
-            NewHeroPreview.sprite = DBC.HeroDictionary[NewHeroCurrentlySelected].IconSprite;
-            NewHeroIntValue.text = DBC.HeroDictionary[NewHeroCurrentlySelected].BaseIntelligance.ToString();
-            NewHeroDexValue.text = DBC.HeroDictionary[NewHeroCurrentlySelected].BaseDexterity.ToString();
-            NewHeroStrValue.text = DBC.HeroDictionary[NewHeroCurrentlySelected].BaseStrenght.ToString();
-            NewHeroCharValue.text = DBC.HeroDictionary[NewHeroCurrentlySelected].BaseCharisma.ToString();
+            NewHeroPreview.sprite = DBC.HeroRaceDictionary[NewHeroCurrentlySelected].IconSprite;
+        }
+
+        public void GetHeroClassesNew()
+        {
+            ClassDropDown.ClearOptions();
+            foreach (var kvp in DBC.HeroClassDictionary)
+            {
+                //Debug.Log("Adding:" + kvp.Value.Title);
+                ClassDropDown.options.Add(new Dropdown.OptionData() { text = kvp.Value.Title });
+            }
+            ClassDropDown.RefreshShownValue();
+            NewHeroClassCurrentlySelected = 0;
+            ChangeNewHeroStats();
         }
 
         public void GetHeroesLoad()
@@ -557,7 +571,7 @@ namespace TileGame
             {
                 Destroy(ContentWindowLoadHero.transform.GetChild(i).gameObject);
             }
-            foreach (var kvp in GCS.HeroDictionary)
+            foreach (var kvp in DBC.HeroDictionary)
             {
                 GameObject tempbutton = Instantiate(LoadMenueButtonPrefab, ContentWindowLoadHero.transform); //create button and set its parent to content
                 tempbutton.name = Path.GetFileNameWithoutExtension(kvp.Value.Name); //change name
@@ -566,11 +580,11 @@ namespace TileGame
             }
             if (GCS.HeroCurrentlySelectedP1 != null)
             {
-                LoadHeroPreview.sprite = DBC.HeroDictionary[GCS.HeroCurrentlySelectedP1.ID].IconSprite;
-                LoadHeroIntValue.text = GCS.HeroDictionary[GCS.HeroCurrentlySelectedP1.Name].Intelligance.ToString();
-                LoadHeroStrValue.text = GCS.HeroDictionary[GCS.HeroCurrentlySelectedP1.Name].Strenght.ToString();
-                LoadHeroDexValue.text = GCS.HeroDictionary[GCS.HeroCurrentlySelectedP1.Name].Dexterity.ToString();
-                LoadHeroCharValue.text = GCS.HeroDictionary[GCS.HeroCurrentlySelectedP1.Name].Charisma.ToString();
+                LoadHeroPreview.sprite = DBC.HeroRaceDictionary[GCS.HeroCurrentlySelectedP1.RaceID].IconSprite;
+                LoadHeroIntValue.text = DBC.HeroDictionary[GCS.HeroCurrentlySelectedP1.Name].Intelligance.ToString();
+                LoadHeroStrValue.text = DBC.HeroDictionary[GCS.HeroCurrentlySelectedP1.Name].Strenght.ToString();
+                LoadHeroDexValue.text = DBC.HeroDictionary[GCS.HeroCurrentlySelectedP1.Name].Dexterity.ToString();
+                LoadHeroCharValue.text = DBC.HeroDictionary[GCS.HeroCurrentlySelectedP1.Name].Charisma.ToString();
                 LoadHeroFeedBackText.text = "Current hero selected: " + GCS.HeroCurrentlySelectedP1.Name;
             }
         }
@@ -578,21 +592,18 @@ namespace TileGame
         public void NewHeroSelectedButton()
         {
             NewHeroCurrentlySelected = EventSystem.current.currentSelectedGameObject.transform.GetComponent<ButtonProperties>().ID;
-            NewHeroPreview.sprite = DBC.HeroDictionary[NewHeroCurrentlySelected].IconSprite;
-            NewHeroIntValue.text = DBC.HeroDictionary[NewHeroCurrentlySelected].BaseIntelligance.ToString();
-            NewHeroStrValue.text = DBC.HeroDictionary[NewHeroCurrentlySelected].BaseStrenght.ToString();
-            NewHeroDexValue.text = DBC.HeroDictionary[NewHeroCurrentlySelected].BaseDexterity.ToString();
-            NewHeroCharValue.text = DBC.HeroDictionary[NewHeroCurrentlySelected].BaseCharisma.ToString();
+            NewHeroPreview.sprite = DBC.HeroRaceDictionary[NewHeroCurrentlySelected].IconSprite;
+            ChangeNewHeroStats();
         }
 
         public void LoadHeroSelectedButton()
         {
-            GCS.HeroCurrentlySelectedP1 = GCS.HeroDictionary[EventSystem.current.currentSelectedGameObject.name];
-            LoadHeroPreview.sprite = DBC.HeroDictionary[GCS.HeroCurrentlySelectedP1.ID].IconSprite;
-            LoadHeroIntValue.text = GCS.HeroDictionary[GCS.HeroCurrentlySelectedP1.Name].Intelligance.ToString();
-            LoadHeroStrValue.text = GCS.HeroDictionary[GCS.HeroCurrentlySelectedP1.Name].Strenght.ToString();
-            LoadHeroDexValue.text = GCS.HeroDictionary[GCS.HeroCurrentlySelectedP1.Name].Dexterity.ToString();
-            LoadHeroCharValue.text = GCS.HeroDictionary[GCS.HeroCurrentlySelectedP1.Name].Charisma.ToString();
+            GCS.HeroCurrentlySelectedP1 = DBC.HeroDictionary[EventSystem.current.currentSelectedGameObject.name];
+            LoadHeroPreview.sprite = DBC.HeroRaceDictionary[GCS.HeroCurrentlySelectedP1.RaceID].IconSprite;
+            LoadHeroIntValue.text = DBC.HeroDictionary[GCS.HeroCurrentlySelectedP1.Name].Intelligance.ToString();
+            LoadHeroStrValue.text = DBC.HeroDictionary[GCS.HeroCurrentlySelectedP1.Name].Strenght.ToString();
+            LoadHeroDexValue.text = DBC.HeroDictionary[GCS.HeroCurrentlySelectedP1.Name].Dexterity.ToString();
+            LoadHeroCharValue.text = DBC.HeroDictionary[GCS.HeroCurrentlySelectedP1.Name].Charisma.ToString();
             LoadHeroFeedBackText.text = "Current hero selected: " + GCS.HeroCurrentlySelectedP1.Name;
         }
 
@@ -860,7 +871,7 @@ namespace TileGame
             YesDeleteHero.SetActive(false);
             DeleteHeroNeverMind.SetActive(false);
             File.Delete(Application.dataPath + "/StreamingAssets/HeroList/" + GCS.HeroCurrentlySelectedP1.Name + ".json");
-            GCS.HeroDictionary.Remove(GCS.HeroCurrentlySelectedP1.Name);
+            DBC.HeroDictionary.Remove(GCS.HeroCurrentlySelectedP1.Name);
             GCS.HeroCurrentlySelectedP1 = null;
             LoadHeroFeedBackText.text = "Current hero selected: None";
             GetHeroesLoad();
@@ -871,6 +882,41 @@ namespace TileGame
             YesDeleteHero.SetActive(false);
             DeleteHeroNeverMind.SetActive(false);
             LoadHeroFeedBackText.text = "";
+        }
+
+        public void ClassDropDownChanged(Dropdown change)
+        {
+            //Debug.Log(DBC.HeroClassDictionary[change.value].Title);
+            NewHeroClassCurrentlySelected = change.value;
+            ChangeNewHeroStats();
+        }
+
+        public void ChangeNewHeroStats()
+        {
+            var intell = DBC.HeroClassDictionary[NewHeroClassCurrentlySelected].IntelliganceModifier + DBC.HeroRaceDictionary[NewHeroCurrentlySelected].BaseIntelligance;
+            var dext = DBC.HeroClassDictionary[NewHeroClassCurrentlySelected].DexterityModifier + DBC.HeroRaceDictionary[NewHeroCurrentlySelected].BaseDexterity;
+            var stren = DBC.HeroClassDictionary[NewHeroClassCurrentlySelected].StrenghtModifier + DBC.HeroRaceDictionary[NewHeroCurrentlySelected].BaseStrenght;
+            var charis = DBC.HeroClassDictionary[NewHeroClassCurrentlySelected].CharismaModifier + DBC.HeroRaceDictionary[NewHeroCurrentlySelected].BaseCharisma;
+            if (intell < 0)
+            {
+                intell = 0;
+            }
+            if (dext < 0)
+            {
+                dext = 0;
+            }
+            if (stren < 0)
+            {
+                stren = 0;
+            }
+            if (charis < 0)
+            {
+                charis = 0;
+            }
+            NewHeroIntValue.text = intell.ToString();
+            NewHeroDexValue.text = dext.ToString();
+            NewHeroStrValue.text = stren.ToString();
+            NewHeroCharValue.text = charis.ToString();
         }
 
         public void DropdownTeam1Controller(int index)

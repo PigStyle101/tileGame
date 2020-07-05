@@ -2,7 +2,6 @@
 com = GCS.VectorCompair(GCS.originalPositionOfUnit.x,GCS.originalPositionOfUnit.y,-1,-1);
 GCS.PrintDebug(GCS.originalPositionOfUnit);
 if com == false then
-	--GCS.ChangeVector2(GCS.originalPositionOfUnit,-1,-1);
 	GCS.originalPositionOfUnit = GCS.ChangeVector2(-1,-1)
 end
 GCS.PrintDebug(GCS.SelectedUnitPlayScene.name);
@@ -15,7 +14,7 @@ for k,v in pairs(GCS.UnitPos) do
 	unit2.MovementController();
 	unit2.GetSightTiles();
 end
---GCS.PrintDebug("Starting 1st loop");
+--GCS.PrintDebug("Starting 2nd loop");
 for k,v in pairs(GCS.TilePos) do
 	GCS.ChangeSpriteColor(v,1,1,1);
 	GCS.ChangeFOWSpriteColor(v,1,1,1);

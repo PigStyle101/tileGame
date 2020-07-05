@@ -402,11 +402,11 @@ namespace TileGame
                             UnitToolTipSightRange.text = "Sight Range:" + UC.SightRange;
                             UnitToolTipConversionSpeed.text = "Conversion Speed:" + UC.ConversionSpeed;
                         }
-                        if (hit.transform.tag == DBC.HeroDictionary[0].Type && !GCS.TilePos[(Vector2)hit.transform.position].GetComponent<TerrainController>().FogOfWarBool) //did we hit a hero?
+                        if (hit.transform.tag == DBC.HeroRaceDictionary[0].Type && !GCS.TilePos[(Vector2)hit.transform.position].GetComponent<TerrainController>().FogOfWarBool) //did we hit a hero?
                         {
                             UnitController UC = hit.transform.GetComponent<UnitController>();
                             Hero THero = UC.HClass;
-                            UnitImage.GetComponent<Image>().sprite = DBC.HeroDictionary[UC.ID].IconSprite;
+                            UnitImage.GetComponent<Image>().sprite = DBC.HeroRaceDictionary[UC.ID].IconSprite;
                             UnitText.text = THero.Title;
                             UnitDescription.text = THero.Description;
                             UnitToolTipAttack.text = "Attack:" + THero.Attack;
@@ -499,7 +499,7 @@ namespace TileGame
                             InfoButtonClicked();
                             HeroStatButton.SetActive(false);
                         }
-                        if (hit.transform.tag == DBC.HeroDictionary[0].Type && !GCS.TilePos[(Vector2)hit.transform.position].GetComponent<TerrainController>().FogOfWarBool) //did we hit a hero?
+                        if (hit.transform.tag == DBC.HeroRaceDictionary[0].Type && !GCS.TilePos[(Vector2)hit.transform.position].GetComponent<TerrainController>().FogOfWarBool) //did we hit a hero?
                         {
                             UnitController UC = hit.transform.GetComponent<UnitController>();
                             Hero THero = UC.HClass;

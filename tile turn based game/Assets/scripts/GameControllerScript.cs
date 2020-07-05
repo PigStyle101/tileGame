@@ -31,7 +31,6 @@ namespace TileGame
         public Dictionary<Vector2, GameObject> TilePos = new Dictionary<Vector2, GameObject>();
         public Dictionary<Vector2, GameObject> UnitPos = new Dictionary<Vector2, GameObject>();
         public Dictionary<Vector2, GameObject> BuildingPos = new Dictionary<Vector2, GameObject>();
-        public Dictionary<string, Hero> HeroDictionary = new Dictionary<string, Hero>();
         private GameObject CameraVar;
         [HideInInspector]
         public string CurrentScene;
@@ -681,7 +680,7 @@ namespace TileGame
                                     }
                                 }
                             }
-                            else if (hit.transform.tag == DBC.HeroDictionary[0].Type)
+                            else if (hit.transform.tag == DBC.HeroRaceDictionary[0].Type)
                             {
                                 if (SelectedUnitPlayScene == null && hit.transform.GetComponent<UnitController>().UnitMovable)//is the unit movable ? is there no unit selected ?
                                 {
@@ -772,7 +771,7 @@ namespace TileGame
                         {
                             if (SelectedUnitPlayScene.tag == DBC.UnitDictionary[0].Type) //do we have a regular unit selected?
                             {
-                                if (hit.transform.tag == DBC.UnitDictionary[0].Type || hit.transform.tag == DBC.HeroDictionary[0].Type) //did we hit Somthing we can attack?
+                                if (hit.transform.tag == DBC.UnitDictionary[0].Type || hit.transform.tag == DBC.HeroRaceDictionary[0].Type) //did we hit Somthing we can attack?
                                 {
                                     UnitController UC = SelectedUnitPlayScene.GetComponent<UnitController>();
                                     UnitController HitUC = hit.transform.GetComponent<UnitController>();
@@ -804,9 +803,9 @@ namespace TileGame
                                     }
                                 }
                             }
-                            else if (SelectedUnitPlayScene.tag == DBC.HeroDictionary[0].Type) //we have a hero selected
+                            else if (SelectedUnitPlayScene.tag == DBC.HeroRaceDictionary[0].Type) //we have a hero selected
                             {
-                                if (hit.transform.tag == DBC.UnitDictionary[0].Type || hit.transform.tag == DBC.HeroDictionary[0].Type) //did we hit something we can attack?
+                                if (hit.transform.tag == DBC.UnitDictionary[0].Type || hit.transform.tag == DBC.HeroRaceDictionary[0].Type) //did we hit something we can attack?
                                 {
                                     UnitController UC = SelectedUnitPlayScene.GetComponent<UnitController>();
                                     UnitController HitUC = hit.transform.GetComponent<UnitController>();
@@ -1453,6 +1452,7 @@ namespace TileGame
                 }
             }
             vectorlist.Reverse(); //revers list so we cna move the unit in that order, looking for enemy units       x=right    y=up 
+            //Debug.Log(vectorlist.Count);
             List<Vector2> TempList = new List<Vector2>();
             for (int i = 0; i < vectorlist.Count; i++)
             {
@@ -1737,7 +1737,7 @@ namespace TileGame
             if (!File.Exists(Application.dataPath + "/StreamingAssets/HeroList/" + Name + ".json"))
             {
                 File.Delete(Application.dataPath + "/StreamingAssets/HeroList/" + Name + ".json");
-                string Herojson = UnityEngine.JsonUtility.ToJson(HeroDictionary[Name], true);
+                string Herojson = UnityEngine.JsonUtility.ToJson(DBC.HeroDictionary[Name], true);
                 FileStream FStream = File.Create(Application.dataPath + "/StreamingAssets/HeroList/" + Name + ".json");
                 StreamWriter StreamW = new StreamWriter(FStream);
                 StreamW.Write(Herojson);
@@ -1801,7 +1801,6 @@ namespace TileGame
         public void CreateNewHero(int ID, string name)
         {
             Hero h = new Hero();
-            h = DBC.HeroDictionary[ID];
             h.Name = name;
             h.Level = 0;
             h.XP = 0;
@@ -1821,7 +1820,7 @@ namespace TileGame
             h.ConversionSpeed = (int)Math.Ceiling((double)h.Dexterity / 3) + 1;
             h.Mana = h.Intelligance;
             h.ManaRegen = (int)Math.Ceiling((double)h.Intelligance / 3) + 1;
-            HeroDictionary.Add(h.Name, h);
+            DBC.HeroDictionary.Add(h.Name, h);
             //Working on this, Thinking for now we will save to a json file.
             string tempjson = JsonUtility.ToJson(h, true);
             FileStream fs = File.Create(Application.dataPath + "/StreamingAssets/HeroList/" + name + ".json");
@@ -1841,7 +1840,7 @@ namespace TileGame
             {
                 var Tempstring = File.ReadAllText(file); //temp string to hold the json data
                 Hero tempjson = JsonUtility.FromJson<Hero>(Tempstring); //this converts from json string to unity object
-                HeroDictionary.Add(tempjson.Name, tempjson);
+                DBC.HeroDictionary.Add(tempjson.Name, tempjson);
             }
         }
 

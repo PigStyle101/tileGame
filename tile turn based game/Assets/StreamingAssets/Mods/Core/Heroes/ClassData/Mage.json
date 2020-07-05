@@ -1,26 +1,18 @@
 {
-  "Title": "Mage",
-  "Slug": "mage_class",
-  "Description": "A skilled spell caster.",
-  "Type": "Class",
   "Mod": "Core",
-  "MovePointsModifier": 5,
-  "SightRangeModifier": 4,
-  "AttackRangeModifier": 1,
-  "CanConvertModifier": true,
-  "CanMoveAndAttackModifier": true,
-  "BaseIntelliganceModifier": 1,
-  "BaseStrenghtModifier": 3,
-  "BaseDexterityModifier": 2,
-  "BaseCharismaModifier": 0,
-  "SpellSpecializations":
+  "Title": "Archmage",
+  "SpellClasses":
   [
   	  "Fire",
 	  "Holy"
   ],
-  "SpellSpecializationsLevels":
-  [
-  	  1,
-	  3
-  ],
+  "IntelliganceModifier": 2,
+  "StrenghtModifier": -2,
+  "DexterityModifier": -2,
+  "CharismaModifier": 1,
+  "CanConvertModifier": true,
+  "CanMoveAndAttackModifier": true,
+  "MovePointsModifier": 5,
+  "SightModifier": 4,
+  "AttackRangeMofifier": 1
 }

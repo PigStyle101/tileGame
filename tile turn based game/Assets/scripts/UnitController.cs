@@ -878,7 +878,7 @@ namespace TileGame
             //Return limit here
             HClass.Level = Level;
             HClass.XP = XP;
-            GCS.HeroDictionary[HClass.Name] = HClass;
+            DBC.HeroDictionary[HClass.Name] = HClass;
         } //Potential lua method
 
         public bool DoDamage(int damage)

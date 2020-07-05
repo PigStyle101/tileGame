@@ -1,0 +1,14 @@
+{
+  "Mod": "Core",
+  "Title": "Forest",
+  "Type": "Terrain",
+  "Description": "Lots of trees",
+  "PixelsPerUnit": 64,
+  "DefenceBonus": 10,
+  "Weight": 3,
+  "Walkable": true,
+  "BlocksSight": true,
+  "IdleAnimations": false,
+  "Overlays": false,
+  "Connectable": false
+}

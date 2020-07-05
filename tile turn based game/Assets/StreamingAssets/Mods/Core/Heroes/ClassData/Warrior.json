@@ -1,16 +1,16 @@
 {
-  "Title": "Warrior",
-  "Slug": "warrior_class",
-  "Description": "A skilled fighter.",
-  "Type": "Class",
   "Mod": "Core",
-  "MovePointsModifier": 5,
-  "SightRangeModifier": 4,
-  "AttackRangeModifier": 1,
+  "Title": "Warrior",
+  "SpellClasses":
+  [
+  ],
+  "IntelliganceModifier": -1,
+  "StrenghtModifier": 3,
+  "DexterityModifier": 2,
+  "CharismaModifier": 0,
   "CanConvertModifier": true,
   "CanMoveAndAttackModifier": true,
-  "BaseIntelliganceModifier": 1,
-  "BaseStrenghtModifier": 3,
-  "BaseDexterityModifier": 2,
-  "BaseCharismaModifier": 0,
+  "MovePointsModifier": 5,
+  "SightModifier": 4,
+  "AttackRangeMofifier": 1
 }

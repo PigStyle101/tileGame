@@ -1,0 +1,14 @@
+{
+  "Mod": "Core",
+  "Title": "Water",
+  "Type": "Terrain",
+  "Description": "Deep water",
+  "PixelsPerUnit": 64,
+  "DefenceBonus": 0,
+  "Weight": 3,
+  "Walkable": false,
+  "BlocksSight": false,
+  "IdleAnimations": false,
+  "Overlays": true,
+  "Connectable": false
+}

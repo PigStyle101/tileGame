@@ -1,0 +1,14 @@
+{
+  "Mod": "Core",
+  "Title": "Road",
+  "Type": "Terrain",
+  "Description": "A well worn path",
+  "PixelsPerUnit": 64,
+  "DefenceBonus": 0,
+  "Weight": 1,
+  "Walkable": true,
+  "BlocksSight": false,
+  "IdleAnimations": false,
+  "Overlays": false,
+  "Connectable": true
+}

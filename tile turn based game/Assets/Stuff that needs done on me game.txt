@@ -5,9 +5,10 @@ Things that need done:
 -add unit return(a list of units that you keep through battles)
 -Change roads and water so they only try to update if a tile is changed next to them
 -Add function to show loading state when going back to main menu from mod screen
+-Add hashtables for checking mod integrety.(will only be used in multiplayer)
 
 /////////////////////////////////////////// Currnetly working on:
-/////////////////////////////////////////// hero stuff - spells atm (moral and stuff still need done, also debating how to do them, might be a lua. not sure yet.)
+/////////////////////////////////////////// hero stuff - check make sure it is all loading properly and adjust calculations for hero class/race
 
 -Multiplayer?
 -What to do here?

@@ -1,0 +1,14 @@
+{
+  "Mod": "Core",
+  "Title": "Town",
+  "Type": "Building",
+  "Description": "A collection of huts",
+  "PixelsPerUnit": 200,
+  "Health": 10,
+  "DefenceBonus": 10,
+  "Walkable": true,
+  "CanBuildUnits": false,
+  "BlocksSight": false,
+  "OnlyOneAllowed": false,
+  "HeroSpawnPoint": false
+}

@@ -1,0 +1,14 @@
+{
+  "Mod": "Core",
+  "Title": "Grass",
+  "Type": "Terrain",
+  "Description": "A field of grass",
+  "PixelsPerUnit": 64,
+  "DefenceBonus": 0,
+  "Weight": 2,
+  "Walkable": true,
+  "BlocksSight": false,
+  "IdleAnimations": false,
+  "Overlays": false,
+  "Connectable": false
+}

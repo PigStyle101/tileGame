@@ -1,0 +1,14 @@
+{
+  "Mod": "Core",
+  "Title": "MainBase",
+  "Type": "Building",
+  "Description": "Capture this to win",
+  "PixelsPerUnit": 200,
+  "Health": 10,
+  "DefenceBonus": 30,
+  "Walkable": true,
+  "CanBuildUnits": false,
+  "BlocksSight": false,
+  "OnlyOneAllowed": true,
+  "HeroSpawnPoint": true
+}

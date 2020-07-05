@@ -1,0 +1,21 @@
+{
+  "Mod": "Core",
+  "Title": "Barracks",
+  "Type": "Building",
+  "Description": "A unit production building",
+  "PixelsPerUnit": 200,
+  "Health": 10,
+  "DefenceBonus": 20,
+  "Walkable": true,
+  "CanBuildUnits": true,
+  "BlocksSight": false,
+  "OnlyOneAllowed": false,
+  "HeroSpawnPoint": false,
+  "BuildableUnits":
+  [
+  	  "Archer",
+	  "Soldier",
+	  "Militia",
+	  "Mage"
+  ]
+}
