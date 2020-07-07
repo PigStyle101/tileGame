@@ -8,7 +8,7 @@ Things that need done:
 -Add hashtables for checking mod integrety.(will only be used in multiplayer)
 
 /////////////////////////////////////////// Currnetly working on:
-/////////////////////////////////////////// hero stuff - check make sure it is all loading properly and adjust calculations for hero class/race
+/////////////////////////////////////////// change the way new heros are made, adding in the new stats after class modifications
 
 -Multiplayer?
 -What to do here?

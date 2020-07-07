@@ -840,7 +840,7 @@ namespace TileGame
                 {
                     if (!Regex.IsMatch(HeroInputField.text, @"^[a-z][A-Z]+$"))
                     {
-                        GCS.CreateNewHero(NewHeroCurrentlySelected, HeroInputField.text);
+                        GCS.CreateNewHero(NewHeroCurrentlySelected,NewHeroClassCurrentlySelected, HeroInputField.text);
                         NewHeroFeedBackText.text = "New hero created.";
                     }
                     else
@@ -893,10 +893,10 @@ namespace TileGame
 
         public void ChangeNewHeroStats()
         {
-            var intell = DBC.HeroClassDictionary[NewHeroClassCurrentlySelected].IntelliganceModifier + DBC.HeroRaceDictionary[NewHeroCurrentlySelected].BaseIntelligance;
-            var dext = DBC.HeroClassDictionary[NewHeroClassCurrentlySelected].DexterityModifier + DBC.HeroRaceDictionary[NewHeroCurrentlySelected].BaseDexterity;
-            var stren = DBC.HeroClassDictionary[NewHeroClassCurrentlySelected].StrenghtModifier + DBC.HeroRaceDictionary[NewHeroCurrentlySelected].BaseStrenght;
-            var charis = DBC.HeroClassDictionary[NewHeroClassCurrentlySelected].CharismaModifier + DBC.HeroRaceDictionary[NewHeroCurrentlySelected].BaseCharisma;
+            var intell = DBC.HeroClassDictionary[NewHeroClassCurrentlySelected].IntelliganceModifier + DBC.HeroRaceDictionary[NewHeroCurrentlySelected].Intelligance;
+            var dext = DBC.HeroClassDictionary[NewHeroClassCurrentlySelected].DexterityModifier + DBC.HeroRaceDictionary[NewHeroCurrentlySelected].Dexterity;
+            var stren = DBC.HeroClassDictionary[NewHeroClassCurrentlySelected].StrenghtModifier + DBC.HeroRaceDictionary[NewHeroCurrentlySelected].Strenght;
+            var charis = DBC.HeroClassDictionary[NewHeroClassCurrentlySelected].CharismaModifier + DBC.HeroRaceDictionary[NewHeroCurrentlySelected].Charisma;
             if (intell < 0)
             {
                 intell = 0;

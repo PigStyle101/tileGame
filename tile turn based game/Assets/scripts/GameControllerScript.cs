@@ -858,7 +858,7 @@ namespace TileGame
         /// <param name="SaveName">String for file name.</param>
         public void SaveMap(Dictionary<Vector2, GameObject> TP, Dictionary<Vector2, GameObject> UP, Dictionary<Vector2, GameObject> BP, string SaveName)
         {
-            if (!System.IO.File.Exists(Application.dataPath + "/StreamingAssets/Maps/" + SaveName + ".json"))
+            if (!File.Exists(Application.dataPath + "/StreamingAssets/Maps/" + SaveName + ".json"))
             {
                 if (SaveName != "")
                 {
@@ -1798,20 +1798,16 @@ namespace TileGame
             SpriteUpdateActivator();
         }
 
-        public void CreateNewHero(int ID, string name)
+        public void CreateNewHero(int RaceID,int ClassID, string name)
         {
             Hero h = new Hero();
             h.Name = name;
             h.Level = 0;
             h.XP = 0;
-            h.Intelligance = h.BaseIntelligance;
-            h.Strenght = h.BaseStrenght;
-            h.Dexterity = h.BaseDexterity;
-            h.Charisma = h.BaseCharisma;
-            h.Intelligance = h.BaseIntelligance;
-            h.Strenght = h.BaseStrenght;
-            h.Dexterity = h.BaseDexterity;
-            h.Charisma = h.BaseCharisma;
+            h.Intelligance = DBC.HeroRaceDictionary[RaceID].Intelligance + DBC.HeroClassDictionary[ClassID].IntelliganceModifier;
+            h.Strenght = DBC.HeroRaceDictionary[RaceID].Strenght + DBC.HeroClassDictionary[ClassID].StrenghtModifier;
+            h.Dexterity = DBC.HeroRaceDictionary[RaceID].Dexterity + DBC.HeroClassDictionary[ClassID].DexterityModifier;
+            h.Charisma = DBC.HeroRaceDictionary[RaceID].Charisma + DBC.HeroClassDictionary[ClassID].CharismaModifier;
             h.Attack = h.Strenght + 1;
             h.MaxHealth = h.Strenght + 1;
             h.HealthRegen = (int)Math.Ceiling((double)h.Strenght / 3);
@@ -1821,7 +1817,9 @@ namespace TileGame
             h.Mana = h.Intelligance;
             h.ManaRegen = (int)Math.Ceiling((double)h.Intelligance / 3) + 1;
             DBC.HeroDictionary.Add(h.Name, h);
+            DBC.SaveHeroToFile(h);
             //Working on this, Thinking for now we will save to a json file.
+            /*
             string tempjson = JsonUtility.ToJson(h, true);
             FileStream fs = File.Create(Application.dataPath + "/StreamingAssets/HeroList/" + name + ".json");
             StreamWriter sr = new StreamWriter(fs);
@@ -1829,19 +1827,14 @@ namespace TileGame
             sr.Close();
             sr.Dispose();
             fs.Close();
-            fs.Dispose();
+            fs.Dispose();*/
             GameObject.Find("Canvas").GetComponent<MenueController>().NewHeroFeedBackText.text = "File saved as: " + name;
 
         }
 
         public void PopulateHeroList()
         {
-            foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/HeroList/", "*.json")))
-            {
-                var Tempstring = File.ReadAllText(file); //temp string to hold the json data
-                Hero tempjson = JsonUtility.FromJson<Hero>(Tempstring); //this converts from json string to unity object
-                DBC.HeroDictionary.Add(tempjson.Name, tempjson);
-            }
+            DBC.LoadHerosFromFile();
         }
 
         /// <summary>

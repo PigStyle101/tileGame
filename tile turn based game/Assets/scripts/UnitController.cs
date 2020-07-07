@@ -658,123 +658,248 @@ namespace TileGame
         [MoonSharpHidden]
         public void AnimationTimers()
         {
-            if (UnitIdleAnimation && !Attacking && !Dying && !Hurt && !Moving)
+            if (!Hero)
             {
-                IdleTimerFloat += Time.deltaTime;
-                if (IdleTimerFloat >= IdleAnimationSpeed)
+                if (UnitIdleAnimation && !Attacking && !Dying && !Hurt && !Moving)
                 {
-                    if ((DBC.UnitDictionary[ID].IdleAnimationDirectory.Count - 1) > IdleState)
+                    IdleTimerFloat += Time.deltaTime;
+                    if (IdleTimerFloat >= IdleAnimationSpeed)
                     {
-                        gameObject.GetComponent<SpriteRenderer>().sprite = DBC.UnitDictionary[ID].IdleAnimationDirectory[IdleState];
-                        IdleState = IdleState + 1;
+                        if ((DBC.UnitDictionary[ID].IdleAnimationDirectory.Count - 1) > IdleState)
+                        {
+                            gameObject.GetComponent<SpriteRenderer>().sprite = DBC.UnitDictionary[ID].IdleAnimationDirectory[IdleState];
+                            IdleState = IdleState + 1;
+                        }
+                        else
+                        {
+                            gameObject.GetComponent<SpriteRenderer>().sprite = DBC.UnitDictionary[ID].IdleAnimationDirectory[IdleState];
+                            IdleState = 0;
+                        }
+                        IdleTimerFloat = 0;
                     }
-                    else
-                    {
-                        gameObject.GetComponent<SpriteRenderer>().sprite = DBC.UnitDictionary[ID].IdleAnimationDirectory[IdleState];
-                        IdleState = 0;
-                    }
-                    IdleTimerFloat = 0;
                 }
-            }
-            if (Attacking)
-            {
-                AttackTimerFloat += Time.deltaTime;
-                if (AttackTimerFloat >= AttackAnimationSpeed && UnitAttackAnimation)
+                if (Attacking)
                 {
-                    if ((DBC.UnitDictionary[ID].AttackAnimationDirectory.Count - 1) > AttackState)
+                    AttackTimerFloat += Time.deltaTime;
+                    if (AttackTimerFloat >= AttackAnimationSpeed && UnitAttackAnimation)
                     {
-                        gameObject.GetComponent<SpriteRenderer>().sprite = DBC.UnitDictionary[ID].AttackAnimationDirectory[AttackState];
-                        AttackState = AttackState + 1;
+                        if ((DBC.UnitDictionary[ID].AttackAnimationDirectory.Count - 1) > AttackState)
+                        {
+                            gameObject.GetComponent<SpriteRenderer>().sprite = DBC.UnitDictionary[ID].AttackAnimationDirectory[AttackState];
+                            AttackState = AttackState + 1;
+                        }
+                        else
+                        {
+                            AttackState = 0;
+                            Attacking = false;
+                        }
+                        AttackTimerFloat = 0;
                     }
-                    else
+                    else if (!UnitAttackAnimation)
                     {
-                        AttackState = 0;
                         Attacking = false;
                     }
-                    AttackTimerFloat = 0;
                 }
-                else if (!UnitAttackAnimation)
+                if (Hurt)
                 {
-                    Attacking = false;
-                }
-            }
-            if (Hurt)
-            {
-                HurtTimerFloat += Time.deltaTime;
-                if (HurtTimerFloat >= HurtAnimationSpeed && UnitHurtAnimation)
-                {
-                    if ((DBC.UnitDictionary[ID].HurtAnimationDirectory.Count - 1) > HurtState)
+                    HurtTimerFloat += Time.deltaTime;
+                    if (HurtTimerFloat >= HurtAnimationSpeed && UnitHurtAnimation)
                     {
-                        gameObject.GetComponent<SpriteRenderer>().sprite = DBC.UnitDictionary[ID].HurtAnimationDirectory[HurtState];
-                        HurtState = HurtState + 1;
+                        if ((DBC.UnitDictionary[ID].HurtAnimationDirectory.Count - 1) > HurtState)
+                        {
+                            gameObject.GetComponent<SpriteRenderer>().sprite = DBC.UnitDictionary[ID].HurtAnimationDirectory[HurtState];
+                            HurtState = HurtState + 1;
+                        }
+                        else
+                        {
+                            HurtState = 0;
+                            Hurt = false;
+                        }
+                        HurtTimerFloat = 0;
                     }
-                    else
+                    else if (!UnitHurtAnimation)
                     {
-                        HurtState = 0;
                         Hurt = false;
                     }
-                    HurtTimerFloat = 0;
                 }
-                else if (!UnitHurtAnimation)
+                if (Dying && !Hurt)
                 {
-                    Hurt = false;
-                }
-            }
-            if (Dying && !Hurt)
-            {
-                DiedTimerFloat += Time.deltaTime;
-                if (DiedTimerFloat >= DiedAnimationSpeed && UnitDiedAnimation)
-                {
-                    if ((DBC.UnitDictionary[ID].DiedAnimationDirectory.Count - 1) > DiedState)
+                    DiedTimerFloat += Time.deltaTime;
+                    if (DiedTimerFloat >= DiedAnimationSpeed && UnitDiedAnimation)
                     {
-                        gameObject.GetComponent<SpriteRenderer>().sprite = DBC.UnitDictionary[ID].DiedAnimationDirectory[DiedState];
-                        DiedState = DiedState + 1;
+                        if ((DBC.UnitDictionary[ID].DiedAnimationDirectory.Count - 1) > DiedState)
+                        {
+                            gameObject.GetComponent<SpriteRenderer>().sprite = DBC.UnitDictionary[ID].DiedAnimationDirectory[DiedState];
+                            DiedState = DiedState + 1;
+                        }
+                        else
+                        {
+                            DiedState = 0;
+                            Dying = false;
+                            Destroy(gameObject);
+                        }
+                        DiedTimerFloat = 0;
                     }
-                    else
+                    else if (!UnitDiedAnimation)
                     {
-                        DiedState = 0;
-                        Dying = false;
                         Destroy(gameObject);
                     }
-                    DiedTimerFloat = 0;
                 }
-                else if (!UnitDiedAnimation)
+                if (Moving)
                 {
-                    Destroy(gameObject);
-                }
-            }
-            if (Moving)
+                    transform.position = Vector2.Lerp(transform.position, vectorlist[VectorState], MoveAnimationSpeed);
+                    MoveAnimationTimerFloat += Time.deltaTime;
+                    if (MoveAnimationTimerFloat >= MoveAnimationSpeed * MoveAnimationOffset)
+                    {
+                        if ((vectorlist.Count - 1) > VectorState)
+                        {
+                            VectorState += 1;
+                        }
+                        else
+                        {
+                            VectorState = 0;
+                            Moving = false;
+                            transform.position = Position;
+                        }
+                        MoveAnimationTimerFloat = 0;
+                    }
+                    MoveTimerFloat += Time.deltaTime;
+                    if (MoveTimerFloat >= MoveAnimationSpeed && UnitMoveAnimation)
+                    {
+                        if ((DBC.UnitDictionary[ID].MoveAnimationDirectory.Count - 1) > MoveState)
+                        {
+                            gameObject.GetComponent<SpriteRenderer>().sprite = DBC.UnitDictionary[ID].MoveAnimationDirectory[MoveState];
+                            MoveState = MoveState + 1;
+                        }
+                        else
+                        {
+                            gameObject.GetComponent<SpriteRenderer>().sprite = DBC.UnitDictionary[ID].MoveAnimationDirectory[MoveState];
+                            MoveState = 0;
+                        }
+                        MoveTimerFloat = 0;
+                    }
+                } 
+            } 
+            else
             {
-                transform.position = Vector2.Lerp(transform.position, vectorlist[VectorState], MoveAnimationSpeed);
-                MoveAnimationTimerFloat += Time.deltaTime;
-                if (MoveAnimationTimerFloat >= MoveAnimationSpeed * MoveAnimationOffset)
+                if (UnitIdleAnimation && !Attacking && !Dying && !Hurt && !Moving)
                 {
-                    if ((vectorlist.Count - 1) > VectorState)
+                    IdleTimerFloat += Time.deltaTime;
+                    if (IdleTimerFloat >= IdleAnimationSpeed)
                     {
-                        VectorState += 1;
+                        if ((DBC.HeroRaceDictionary[ID].IdleAnimationDirectory.Count - 1) > IdleState)
+                        {
+                            gameObject.GetComponent<SpriteRenderer>().sprite = DBC.HeroRaceDictionary[ID].IdleAnimationDirectory[IdleState];
+                            IdleState = IdleState + 1;
+                        }
+                        else
+                        {
+                            gameObject.GetComponent<SpriteRenderer>().sprite = DBC.HeroRaceDictionary[ID].IdleAnimationDirectory[IdleState];
+                            IdleState = 0;
+                        }
+                        IdleTimerFloat = 0;
                     }
-                    else
-                    {
-                        VectorState = 0;
-                        Moving = false;
-                        transform.position = Position;
-                    }
-                    MoveAnimationTimerFloat = 0;
                 }
-                MoveTimerFloat += Time.deltaTime;
-                if (MoveTimerFloat >= MoveAnimationSpeed && UnitMoveAnimation)
+                if (Attacking)
                 {
-                    if ((DBC.UnitDictionary[ID].MoveAnimationDirectory.Count - 1) > MoveState)
+                    AttackTimerFloat += Time.deltaTime;
+                    if (AttackTimerFloat >= AttackAnimationSpeed && UnitAttackAnimation)
                     {
-                        gameObject.GetComponent<SpriteRenderer>().sprite = DBC.UnitDictionary[ID].MoveAnimationDirectory[MoveState];
-                        MoveState = MoveState + 1;
+                        if ((DBC.HeroRaceDictionary[ID].AttackAnimationDirectory.Count - 1) > AttackState)
+                        {
+                            gameObject.GetComponent<SpriteRenderer>().sprite = DBC.HeroRaceDictionary[ID].AttackAnimationDirectory[AttackState];
+                            AttackState = AttackState + 1;
+                        }
+                        else
+                        {
+                            AttackState = 0;
+                            Attacking = false;
+                        }
+                        AttackTimerFloat = 0;
                     }
-                    else
+                    else if (!UnitAttackAnimation)
                     {
-                        gameObject.GetComponent<SpriteRenderer>().sprite = DBC.UnitDictionary[ID].MoveAnimationDirectory[MoveState];
-                        MoveState = 0;
+                        Attacking = false;
                     }
-                    MoveTimerFloat = 0;
+                }
+                if (Hurt)
+                {
+                    HurtTimerFloat += Time.deltaTime;
+                    if (HurtTimerFloat >= HurtAnimationSpeed && UnitHurtAnimation)
+                    {
+                        if ((DBC.HeroRaceDictionary[ID].HurtAnimationDirectory.Count - 1) > HurtState)
+                        {
+                            gameObject.GetComponent<SpriteRenderer>().sprite = DBC.HeroRaceDictionary[ID].HurtAnimationDirectory[HurtState];
+                            HurtState = HurtState + 1;
+                        }
+                        else
+                        {
+                            HurtState = 0;
+                            Hurt = false;
+                        }
+                        HurtTimerFloat = 0;
+                    }
+                    else if (!UnitHurtAnimation)
+                    {
+                        Hurt = false;
+                    }
+                }
+                if (Dying && !Hurt)
+                {
+                    DiedTimerFloat += Time.deltaTime;
+                    if (DiedTimerFloat >= DiedAnimationSpeed && UnitDiedAnimation)
+                    {
+                        if ((DBC.HeroRaceDictionary[ID].DiedAnimationDirectory.Count - 1) > DiedState)
+                        {
+                            gameObject.GetComponent<SpriteRenderer>().sprite = DBC.HeroRaceDictionary[ID].DiedAnimationDirectory[DiedState];
+                            DiedState = DiedState + 1;
+                        }
+                        else
+                        {
+                            DiedState = 0;
+                            Dying = false;
+                            Destroy(gameObject);
+                        }
+                        DiedTimerFloat = 0;
+                    }
+                    else if (!UnitDiedAnimation)
+                    {
+                        Destroy(gameObject);
+                    }
+                }
+                if (Moving)
+                {
+                    transform.position = Vector2.Lerp(transform.position, vectorlist[VectorState], MoveAnimationSpeed);
+                    MoveAnimationTimerFloat += Time.deltaTime;
+                    if (MoveAnimationTimerFloat >= MoveAnimationSpeed * MoveAnimationOffset)
+                    {
+                        if ((vectorlist.Count - 1) > VectorState)
+                        {
+                            VectorState += 1;
+                        }
+                        else
+                        {
+                            VectorState = 0;
+                            Moving = false;
+                            transform.position = Position;
+                        }
+                        MoveAnimationTimerFloat = 0;
+                    }
+                    MoveTimerFloat += Time.deltaTime;
+                    if (MoveTimerFloat >= MoveAnimationSpeed && UnitMoveAnimation)
+                    {
+                        if ((DBC.HeroRaceDictionary[ID].MoveAnimationDirectory.Count - 1) > MoveState)
+                        {
+                            gameObject.GetComponent<SpriteRenderer>().sprite = DBC.HeroRaceDictionary[ID].MoveAnimationDirectory[MoveState];
+                            MoveState = MoveState + 1;
+                        }
+                        else
+                        {
+                            gameObject.GetComponent<SpriteRenderer>().sprite = DBC.HeroRaceDictionary[ID].MoveAnimationDirectory[MoveState];
+                            MoveState = 0;
+                        }
+                        MoveTimerFloat = 0;
+                    }
                 }
             }
         }

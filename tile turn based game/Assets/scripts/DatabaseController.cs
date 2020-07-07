@@ -4,6 +4,8 @@ using UnityEngine;
 using System.IO;
 using UnityEngine.UI;
 using MoonSharp.Interpreter;
+using System.Runtime.Serialization.Formatters.Binary;
+using System;
 
 namespace TileGame
 {
@@ -658,6 +660,39 @@ namespace TileGame
             TGO.GetComponent<UnitController>().TeamSpriteController();
             return TGO;
         } //used to spawn units form database
+
+        /// <summary>
+        /// Saves Hero data by serializing it to binary and then savinf it to text file
+        /// </summary>
+        /// <param name="h">Hero to be saved</param>
+        public void SaveHeroToFile(Hero h)
+        {
+            if (!File.Exists(Application.dataPath + "/StreamingAssets/HeroList/" + h.Name + ".json"))
+            {
+                FileStream fs = new FileStream(Application.dataPath + "/StreamingAssets/HeroList/" + h.Name + ".txt", FileMode.Create);
+                BinaryFormatter bf = new BinaryFormatter();
+                bf.Serialize(fs, h);
+                fs.Flush();
+                fs.Close();
+            }
+        }
+
+        /// <summary>
+        /// Loads all the heros from file, deserializes them and then adds them to dictionary
+        /// </summary>
+        public void LoadHerosFromFile()
+        {
+            foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/HeroList/", "*.txt")))
+            {
+                BinaryFormatter bf = new BinaryFormatter();
+                FileStream fs = new FileStream(file,FileMode.Open);
+                Hero h = (Hero)bf.Deserialize(fs);
+                fs.Flush();
+                fs.Close();
+                HeroDictionary.Add(h.Name, h);
+                GCS.HeroCurrentlySelectedP1 = h;
+            }
+        }
     }
 
     [MoonSharpUserData]
@@ -924,7 +959,7 @@ namespace TileGame
         }
     }//same use as terrian class
 
-    [System.Serializable]
+    [Serializable]
     public class Master
     {
         public int DragSpeed;
@@ -932,6 +967,7 @@ namespace TileGame
         public string HeroSelectedWhenGameClosed;
     }
 
+    [Serializable]
     public class Hero
     {
         //Populated by GetHeroesJson();
@@ -973,12 +1009,6 @@ namespace TileGame
         public bool HurtAnimations;
         public bool DiedAnimations;
         public bool MoveAnimations;
-        public Sprite IconSprite;
-        public List<Sprite> IdleAnimationDirectory = new List<Sprite>();
-        public List<Sprite> AttackAnimationDirectory = new List<Sprite>();
-        public List<Sprite> HurtAnimationDirectory = new List<Sprite>();
-        public List<Sprite> DiedAnimationDirectory = new List<Sprite>();
-        public List<Sprite> MoveAnimationDirectory = new List<Sprite>();
         public float IdleAnimationSpeed;
         public float AttackAnimationSpeed;
         public float HurtAnimationSpeed;
@@ -1023,10 +1053,6 @@ namespace TileGame
         public int ManaRegen;
         public bool CanConvert;
         public bool CanMoveAndAttack;
-        public int BaseIntelligance;
-        public int BaseStrenght;
-        public int BaseDexterity;
-        public int BaseCharisma;
         public bool IdleAnimations;
         public bool AttackAnimations;
         public bool HurtAnimations;
