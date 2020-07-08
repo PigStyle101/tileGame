@@ -870,7 +870,7 @@ namespace TileGame
         {
             YesDeleteHero.SetActive(false);
             DeleteHeroNeverMind.SetActive(false);
-            File.Delete(Application.dataPath + "/StreamingAssets/HeroList/" + GCS.HeroCurrentlySelectedP1.Name + ".json");
+            File.Delete(Application.dataPath + "/StreamingAssets/HeroList/" + GCS.HeroCurrentlySelectedP1.Name + ".txt");
             DBC.HeroDictionary.Remove(GCS.HeroCurrentlySelectedP1.Name);
             GCS.HeroCurrentlySelectedP1 = null;
             LoadHeroFeedBackText.text = "Current hero selected: None";

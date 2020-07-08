@@ -8,7 +8,7 @@ Things that need done:
 -Add hashtables for checking mod integrety.(will only be used in multiplayer)
 
 /////////////////////////////////////////// Currnetly working on:
-/////////////////////////////////////////// change the way new heros are made, adding in the new stats after class modifications
+/////////////////////////////////////////// Update hero save updates, change so that hero gets xp from any units killed(not just ones he kills)
 
 -Multiplayer?
 -What to do here?

@@ -627,7 +627,7 @@ namespace TileGame
                 {
                     if (!templist.Contains(item.Value.GetComponent<UnitController>().HClass.Name))
                     {
-                        GCS.SaveHeroData(item.Value.GetComponent<UnitController>().HClass.Name);
+                        //GCS.SaveHeroData(item.Value.GetComponent<UnitController>().HClass.Name);
                         templist.Add(item.Value.GetComponent<UnitController>().HClass.Name);
                     }
                 }

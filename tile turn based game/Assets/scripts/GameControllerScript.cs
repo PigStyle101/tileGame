@@ -1686,7 +1686,7 @@ namespace TileGame
                 if (kvp.Value.GetComponent<UnitController>().Hero)
                 {
                     kvp.Value.GetComponent<UnitController>().UpdateHeroStats();
-                    SaveHeroData(kvp.Value.GetComponent<UnitController>().HClass.Name);
+                    //SaveHeroData(kvp.Value.GetComponent<UnitController>().HClass.Name);
                     SaveableUnit SH = new SaveableUnit();
                     SH.Health = kvp.Value.GetComponent<UnitController>().Health;
                     SH.Team = kvp.Value.GetComponent<UnitController>().Team;
@@ -1732,7 +1732,7 @@ namespace TileGame
             fs.Dispose();
         }
 
-        public void SaveHeroData(string Name)
+        /*public void SaveHeroData(string Name)
         {
             if (!File.Exists(Application.dataPath + "/StreamingAssets/HeroList/" + Name + ".json"))
             {
@@ -1746,7 +1746,7 @@ namespace TileGame
                 FStream.Close();
                 FStream.Dispose();
             }
-        }
+        }*/
 
         /// <summary>
         /// Loads file and sets up variables
@@ -1801,13 +1801,26 @@ namespace TileGame
         public void CreateNewHero(int RaceID,int ClassID, string name)
         {
             Hero h = new Hero();
+            h.RaceID = RaceID;
+            h.ClassID = ClassID;
             h.Name = name;
-            h.Level = 0;
+            h.Level = 1;
             h.XP = 0;
+            h.Description = DBC.HeroRaceDictionary[RaceID].Description;
+            h.CanConvert = DBC.HeroRaceDictionary[RaceID].CanConvert;
+            h.CanMoveAndAttack = DBC.HeroRaceDictionary[RaceID].CanMoveAndAttack;
+            h.Mod = DBC.HeroRaceDictionary[RaceID].Mod;
+            h.Slug = DBC.HeroRaceDictionary[RaceID].Slug;
+            h.Type = DBC.HeroRaceDictionary[RaceID].Type;
+            h.Title = DBC.HeroRaceDictionary[RaceID].Title;
             h.Intelligance = DBC.HeroRaceDictionary[RaceID].Intelligance + DBC.HeroClassDictionary[ClassID].IntelliganceModifier;
             h.Strenght = DBC.HeroRaceDictionary[RaceID].Strenght + DBC.HeroClassDictionary[ClassID].StrenghtModifier;
             h.Dexterity = DBC.HeroRaceDictionary[RaceID].Dexterity + DBC.HeroClassDictionary[ClassID].DexterityModifier;
             h.Charisma = DBC.HeroRaceDictionary[RaceID].Charisma + DBC.HeroClassDictionary[ClassID].CharismaModifier;
+            h.BaseCharisma = DBC.HeroRaceDictionary[RaceID].Charisma;
+            h.BaseDexterity = DBC.HeroRaceDictionary[RaceID].Dexterity;
+            h.BaseIntelligance = DBC.HeroRaceDictionary[RaceID].Intelligance;
+            h.BaseStrenght = DBC.HeroRaceDictionary[RaceID].Strenght;
             h.Attack = h.Strenght + 1;
             h.MaxHealth = h.Strenght + 1;
             h.HealthRegen = (int)Math.Ceiling((double)h.Strenght / 3);

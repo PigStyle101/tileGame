@@ -105,19 +105,19 @@
         {
             "ID": 0,
             "Team": 1,
-            "Health": 3,
-            "Name": "dead",
+            "Health": 1,
+            "Name": "test",
             "Hero": true,
             "Location": {
                 "x": 0.0,
-                "y": 10.0
+                "y": 9.0
             }
         },
         {
             "ID": 0,
             "Team": 2,
-            "Health": 3,
-            "Name": "dead",
+            "Health": 1,
+            "Name": "test",
             "Hero": true,
             "Location": {
                 "x": 10.0,
@@ -128,7 +128,7 @@
     "BuildingList": [
         {
             "Team": 1,
-            "Health": 20,
+            "Health": 10,
             "MainBase": false,
             "ID": 1,
             "Location": {
@@ -138,7 +138,7 @@
         },
         {
             "Team": 2,
-            "Health": 20,
+            "Health": 10,
             "MainBase": false,
             "ID": 1,
             "Location": {
@@ -1136,7 +1136,7 @@
             }
         }
     ],
-    "CurrentTeamsTurn": 1,
+    "CurrentTeamsTurn": 2,
     "Mods": [
         "Core"
     ]

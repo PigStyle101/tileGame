@@ -667,7 +667,7 @@ namespace TileGame
         /// <param name="h">Hero to be saved</param>
         public void SaveHeroToFile(Hero h)
         {
-            if (!File.Exists(Application.dataPath + "/StreamingAssets/HeroList/" + h.Name + ".json"))
+            if (!File.Exists(Application.dataPath + "/StreamingAssets/HeroList/" + h.Name + ".txt"))
             {
                 FileStream fs = new FileStream(Application.dataPath + "/StreamingAssets/HeroList/" + h.Name + ".txt", FileMode.Create);
                 BinaryFormatter bf = new BinaryFormatter();
