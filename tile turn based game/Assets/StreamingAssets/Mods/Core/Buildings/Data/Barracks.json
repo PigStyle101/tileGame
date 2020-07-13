@@ -17,5 +17,6 @@
 	  "Soldier",
 	  "Militia",
 	  "Mage"
-  ]
+  ],
+  "MainBase": false
 }

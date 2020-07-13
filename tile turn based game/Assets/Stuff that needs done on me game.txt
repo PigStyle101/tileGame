@@ -1,14 +1,12 @@
 Things that need done:
 -add settings menu
--Add hero stuff (currently working on this)
---What to do about hero classes? thinking that will be the hero json files and then the art will correlat to a class, that way json can be used to define hero properties
 -add unit return(a list of units that you keep through battles)
 -Change roads and water so they only try to update if a tile is changed next to them
 -Add function to show loading state when going back to main menu from mod screen
 -Add hashtables for checking mod integrety.(will only be used in multiplayer)
 
 /////////////////////////////////////////// Currnetly working on:
-/////////////////////////////////////////// Update hero save updates, change so that hero gets xp from any units killed(not just ones he kills)
+/////////////////////////////////////////// 
 
 -Multiplayer?
 -What to do here?

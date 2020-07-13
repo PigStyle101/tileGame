@@ -45,7 +45,7 @@ namespace TileGame
         public int XP;
         [HideInInspector]
         public int Level;
-        [HideInInspector]
+        //[HideInInspector]
         public int ConversionSpeed;
         [HideInInspector]
         public bool CanConvert;
@@ -71,10 +71,15 @@ namespace TileGame
         [HideInInspector]
         private bool AttackOverlay = false;
         //Animations stuff
+        [HideInInspector]
         public bool UnitIdleAnimation;
+        [HideInInspector]
         public bool UnitAttackAnimation;
+        [HideInInspector]
         public bool UnitHurtAnimation;
+        [HideInInspector]
         public bool UnitDiedAnimation;
+        [HideInInspector]
         public bool UnitMoveAnimation;
         private float IdleTimerFloat;
         private float AttackTimerFloat;
@@ -87,10 +92,15 @@ namespace TileGame
         private int HurtState;
         private int DiedState;
         private int MoveState;
+        [HideInInspector]
         public float IdleAnimationSpeed;
+        [HideInInspector]
         public float AttackAnimationSpeed;
+        [HideInInspector]
         public float HurtAnimationSpeed;
+        [HideInInspector]
         public float DiedAnimationSpeed;
+        [HideInInspector]
         public float MoveAnimationSpeed;
         private bool Attacking;
         private bool Moving;
@@ -1009,11 +1019,11 @@ namespace TileGame
         public bool DoDamage(int damage)
         {
             Health = Health - damage;
-            if (Health >= 0)
+            if (Health > 0)
             {
-                return true;
+                return false;
             }
-            return false;
+            return true;
         }
 
         public void StartAttackAnimation()

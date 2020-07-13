@@ -596,6 +596,7 @@ namespace TileGame
                 if (kvp.Value.GetComponent<TerrainController>().ID != SelectedButtonDR)
                 {
                     kvp.Value.GetComponent<TerrainController>().ChangeTile();
+                    kvp.Value.GetComponent<TerrainController>().ChangeSpritesAroundThisTile();
                 }
             }
             GCS.SpriteUpdateActivator();

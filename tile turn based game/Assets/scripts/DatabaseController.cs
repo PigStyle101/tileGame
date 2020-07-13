@@ -577,6 +577,7 @@ namespace TileGame
             TGO.GetComponent<UnitController>().UnitHurtAnimation = HeroRaceDictionary[thero.RaceID].HurtAnimations;
             TGO.GetComponent<UnitController>().UnitMoveAnimation = HeroRaceDictionary[thero.RaceID].MoveAnimations;
             TGO.GetComponent<UnitController>().UnitDiedAnimation = HeroRaceDictionary[thero.RaceID].DiedAnimations;
+            TGO.GetComponent<UnitController>().ConversionSpeed = HeroDictionary[Hname].ConversionSpeed;
             TGO.GetComponent<UnitController>().ID = thero.RaceID;
             TGO.GetComponent<UnitController>().UpdateHeroStats();
             TGO.GetComponent<UnitController>().Position = location;
@@ -603,7 +604,7 @@ namespace TileGame
             }
             if (HeroRaceDictionary[thero.RaceID].CanConvert)
             {
-                TGO.GetComponent<UnitController>().ConversionSpeed = HeroRaceDictionary[thero.RaceID].ConversionSpeed;
+                TGO.GetComponent<UnitController>().ConversionSpeed = HeroDictionary[thero.Name].ConversionSpeed;
             }
             TGO.tag = HeroRaceDictionary[thero.RaceID].Type;
             TGO.transform.position = location;
@@ -675,6 +676,15 @@ namespace TileGame
                 fs.Flush();
                 fs.Close();
             }
+            else
+            {
+                File.Delete(Application.dataPath + "/StreamingAssets/HeroList/" + h.Name + ".txt");
+                FileStream fs = new FileStream(Application.dataPath + "/StreamingAssets/HeroList/" + h.Name + ".txt", FileMode.Create);
+                BinaryFormatter bf = new BinaryFormatter();
+                bf.Serialize(fs, h);
+                fs.Flush();
+                fs.Close();
+            }
         }
 
         /// <summary>
@@ -690,7 +700,7 @@ namespace TileGame
                 fs.Flush();
                 fs.Close();
                 HeroDictionary.Add(h.Name, h);
-                GCS.HeroCurrentlySelectedP1 = h;
+                //GCS.HeroCurrentlySelectedP1 = h;
             }
         }
     }

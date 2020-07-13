@@ -10,5 +10,6 @@
   "CanBuildUnits": false,
   "BlocksSight": false,
   "OnlyOneAllowed": true,
-  "HeroSpawnPoint": true
+  "HeroSpawnPoint": true,
+  "MainBase": true
 }

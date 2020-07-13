@@ -76,6 +76,11 @@ namespace TileGame
         public Hero HeroCurrentlySelectedP2;
         public Hero HeroCurrentlySelectedP3;
         public Hero HeroCurrentlySelectedP4;
+        public Hero HeroCurrentlySelectedP5;
+        public Hero HeroCurrentlySelectedP6;
+        public Hero HeroCurrentlySelectedP7;
+        public Hero HeroCurrentlySelectedP8;
+        public Hero HeroCurrentlySelectedP9;
 
         private void Awake()
         {
@@ -339,6 +344,7 @@ namespace TileGame
                                     TC.ChangeTile(); //change tile to new terrain tile
                                     AddTilesToDictionary(hit.transform.gameObject);
                                     SpriteUpdateActivator();
+                                    TC.ChangeSpritesAroundThisTile();
                                 }
                             }
                             else if (hit.transform.tag == DBC.UnitDictionary[0].Type) //is the hit a unit?
@@ -786,6 +792,13 @@ namespace TileGame
                                             KillUnitPlayScene(hit.transform.gameObject);
                                             HitUC.StartDeadAnimation();
                                             UC.KilledEnemyUnit(hit.transform.GetComponent<UnitController>());
+                                            foreach (var kvp in UnitPos) //any unit killed will give hero xp no matter what
+                                            {
+                                                if (kvp.Value.GetComponent<UnitController>().Hero && kvp.Value.GetComponent<UnitController>().Team == UC.Team)
+                                                {
+                                                    kvp.Value.GetComponent<UnitController>().KilledEnemyUnit(hit.transform.GetComponent<UnitController>());
+                                                }
+                                            }
                                         }
                                         else
                                         {
@@ -1063,13 +1076,57 @@ namespace TileGame
                 BuildingPos.Add(item.Location, TGO);
                 if (DBC.BuildingDictionary[TGO.GetComponent<BuildingController>().ID].HeroSpawnPoint)
                 {
-                    GameObject HGO = DBC.CreateAndSpawnHero(item.Location, HeroCurrentlySelectedP1.Name, item.Team);
-                    UnitPos.Add(item.Location, HGO);
+                    switch (item.Team)
+                    {
+                        case 0: 
+
+                            break;
+                        case 1:
+                            GameObject HGO1 = DBC.CreateAndSpawnHero(item.Location, HeroCurrentlySelectedP1.Name, item.Team);
+                            UnitPos.Add(item.Location, HGO1);
+                            break;
+                        case 2:
+                            GameObject HGO2 = DBC.CreateAndSpawnHero(item.Location, HeroCurrentlySelectedP2.Name, item.Team);
+                            UnitPos.Add(item.Location, HGO2);
+                            break;
+                        case 3:
+                            GameObject HGO3 = DBC.CreateAndSpawnHero(item.Location, HeroCurrentlySelectedP3.Name, item.Team);
+                            UnitPos.Add(item.Location, HGO3);
+                            break;
+                        case 4:
+                            GameObject HGO4 = DBC.CreateAndSpawnHero(item.Location, HeroCurrentlySelectedP4.Name, item.Team);
+                            UnitPos.Add(item.Location, HGO4);
+                            break;
+                        case 5:
+                            GameObject HGO5 = DBC.CreateAndSpawnHero(item.Location, HeroCurrentlySelectedP5.Name, item.Team);
+                            UnitPos.Add(item.Location, HGO5);
+                            break;
+                        case 6:
+                            GameObject HGO6 = DBC.CreateAndSpawnHero(item.Location, HeroCurrentlySelectedP6.Name, item.Team);
+                            UnitPos.Add(item.Location, HGO6);
+                            break;
+                        case 7:
+                            GameObject HGO7 = DBC.CreateAndSpawnHero(item.Location, HeroCurrentlySelectedP7.Name, item.Team);
+                            UnitPos.Add(item.Location, HGO7);
+                            break;
+                        case 8:
+                            GameObject HGO8 = DBC.CreateAndSpawnHero(item.Location, HeroCurrentlySelectedP8.Name, item.Team);
+                            UnitPos.Add(item.Location, HGO8);
+                            break;
+                        case 9:
+                            GameObject HGO9 = DBC.CreateAndSpawnHero(item.Location, HeroCurrentlySelectedP9.Name, item.Team);
+                            UnitPos.Add(item.Location, HGO9);
+                            break;
+                    }
+                    
                 }
             }
             CameraVar = GameObject.Find("MainCamera");
             CameraVar.transform.position = new Vector3(PlayMapSize / 2 - .5f, PlayMapSize / 2 - .5f, PlayMapSize * -1);
-            SpriteUpdateActivator();
+            foreach(var kvp in TilePos)
+            {
+                kvp.Value.GetComponent<TerrainController>().ChangeSpritesAroundThisTile();
+            }
         }
 
         /// <summary>
@@ -1079,8 +1136,8 @@ namespace TileGame
         {
             foreach (var kvp in TilePos)
             {
-                kvp.Value.GetComponent<TerrainController>().WaterSpriteController();
-                kvp.Value.GetComponent<TerrainController>().RoadSpriteController();
+                //kvp.Value.GetComponent<TerrainController>().WaterSpriteController();
+                //kvp.Value.GetComponent<TerrainController>().RoadSpriteController();
             }
             foreach (var kvp in UnitPos)
             {
@@ -1795,7 +1852,10 @@ namespace TileGame
             CurrentTeamsTurn = TeamList[LoadingFile.CurrentTeamsTurn];
             CameraVar = GameObject.Find("MainCamera");
             CameraVar.transform.position = new Vector3(PlayMapSize / 2 - .5f, PlayMapSize / 2 - .5f, PlayMapSize * -1);
-            SpriteUpdateActivator();
+            foreach (var kvp in TilePos)
+            {
+                kvp.Value.GetComponent<TerrainController>().ChangeSpritesAroundThisTile();
+            }
         }
 
         public void CreateNewHero(int RaceID,int ClassID, string name)

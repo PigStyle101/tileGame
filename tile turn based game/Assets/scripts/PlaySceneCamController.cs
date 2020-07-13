@@ -475,7 +475,7 @@ namespace TileGame
                     for (int i = 0; i < hits.Length; i++) // GO THROUGH THEM RAYS
                     {
                         RaycastHit hit = hits[i];
-                        if (hit.transform.tag == DBC.UnitDictionary[0].Type && !GCS.TilePos[(Vector2)hit.transform.position].GetComponent<TerrainController>().FogOfWarBool) //did we hit a unit?
+                        if (hit.transform.tag == DBC.UnitDictionary[0].Type && !GCS.TilePos[hit.transform.position].GetComponent<TerrainController>().FogOfWarBool) //did we hit a unit?
                         {
                             UnitController UC = hit.transform.GetComponent<UnitController>();
                             Unit TUnit = DBC.UnitDictionary[UC.ID];
@@ -627,7 +627,7 @@ namespace TileGame
                 {
                     if (!templist.Contains(item.Value.GetComponent<UnitController>().HClass.Name))
                     {
-                        //GCS.SaveHeroData(item.Value.GetComponent<UnitController>().HClass.Name);
+                        DBC.SaveHeroToFile(item.Value.GetComponent<UnitController>().HClass);
                         templist.Add(item.Value.GetComponent<UnitController>().HClass.Name);
                     }
                 }

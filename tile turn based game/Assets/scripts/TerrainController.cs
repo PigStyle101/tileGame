@@ -57,6 +57,7 @@ namespace TileGame
         public List<Sprite> IdleAnimationsDirectory;
         private DatabaseController DBC;
         private GameControllerScript GCS;
+        private Camera cam;
 
         private void Awake()
         {
@@ -74,19 +75,36 @@ namespace TileGame
 
         void Start()
         {
-
+            if(GCS.CurrentScene == "MapEditorScene")
+            {
+                cam = MEMCC.GetComponent<Camera>();
+            }else
+            if(GCS.CurrentScene == "PlayScene")
+            {
+                cam = Camera.main;
+            }
         }
 
         void Update()
         {
-            MouseOverlayRayCaster();
-            if (LastHitThis || AttackOverlay)
+            Vector3 screenpoint = cam.WorldToViewportPoint(gameObject.transform.position);
+            bool onScreen = screenpoint.z > 0 && screenpoint.x > -.2 && screenpoint.x < 1.2 && screenpoint.y > -.2 && screenpoint.y < 1.2;
+            if (onScreen)
             {
-                MouseOverlaySelectedSpriteRender.enabled = true;
+                gameObject.GetComponent<SpriteRenderer>().enabled = true;
+                MouseOverlayRayCaster();
+                if (LastHitThis || AttackOverlay)
+                {
+                    MouseOverlaySelectedSpriteRender.enabled = true;
+                }
+                else
+                {
+                    MouseOverlaySelectedSpriteRender.enabled = false;
+                } 
             }
             else
             {
-                MouseOverlaySelectedSpriteRender.enabled = false;
+                gameObject.GetComponent<SpriteRenderer>().enabled = false;
             }
         }
 
@@ -653,5 +671,51 @@ namespace TileGame
 
             }
         } //currently used to control idle animations for water, will need polished later when other idle animations are added. can use for referance for making unit and building animations
+
+        public void ChangeSpritesAroundThisTile()
+        {
+            if (GCS.TilePos.ContainsKey((Vector2)gameObject.transform.position + new Vector2(1,0)))
+            {
+                GCS.TilePos[(Vector2)gameObject.transform.position + new Vector2(1, 0)].GetComponent<TerrainController>().WaterSpriteController();
+                GCS.TilePos[(Vector2)gameObject.transform.position + new Vector2(1, 0)].GetComponent<TerrainController>().RoadSpriteController();
+            }
+            if (GCS.TilePos.ContainsKey((Vector2)gameObject.transform.position + new Vector2(1, 1)))
+            {
+                GCS.TilePos[(Vector2)gameObject.transform.position + new Vector2(1, 1)].GetComponent<TerrainController>().WaterSpriteController();
+                GCS.TilePos[(Vector2)gameObject.transform.position + new Vector2(1, 1)].GetComponent<TerrainController>().RoadSpriteController();
+            }
+            if (GCS.TilePos.ContainsKey((Vector2)gameObject.transform.position + new Vector2(1, -1)))
+            {
+                GCS.TilePos[(Vector2)gameObject.transform.position + new Vector2(1, -1)].GetComponent<TerrainController>().WaterSpriteController();
+                GCS.TilePos[(Vector2)gameObject.transform.position + new Vector2(1, -1)].GetComponent<TerrainController>().RoadSpriteController();
+            }
+            if (GCS.TilePos.ContainsKey((Vector2)gameObject.transform.position + new Vector2(-1, 0)))
+            {
+                GCS.TilePos[(Vector2)gameObject.transform.position + new Vector2(-1, 0)].GetComponent<TerrainController>().WaterSpriteController();
+                GCS.TilePos[(Vector2)gameObject.transform.position + new Vector2(-1, 0)].GetComponent<TerrainController>().RoadSpriteController();
+            }
+            if (GCS.TilePos.ContainsKey((Vector2)gameObject.transform.position + new Vector2(-1, 1)))
+            {
+                GCS.TilePos[(Vector2)gameObject.transform.position + new Vector2(-1, 1)].GetComponent<TerrainController>().WaterSpriteController();
+                GCS.TilePos[(Vector2)gameObject.transform.position + new Vector2(-1, 1)].GetComponent<TerrainController>().RoadSpriteController();
+            }
+            if (GCS.TilePos.ContainsKey((Vector2)gameObject.transform.position + new Vector2(-1, -1)))
+            {
+                GCS.TilePos[(Vector2)gameObject.transform.position + new Vector2(-1, -1)].GetComponent<TerrainController>().WaterSpriteController();
+                GCS.TilePos[(Vector2)gameObject.transform.position + new Vector2(-1, -1)].GetComponent<TerrainController>().RoadSpriteController();
+            }
+            if (GCS.TilePos.ContainsKey((Vector2)gameObject.transform.position + new Vector2(0, 1)))
+            {
+                GCS.TilePos[(Vector2)gameObject.transform.position + new Vector2(0, 1)].GetComponent<TerrainController>().WaterSpriteController();
+                GCS.TilePos[(Vector2)gameObject.transform.position + new Vector2(0, 1)].GetComponent<TerrainController>().RoadSpriteController();
+            }
+            if (GCS.TilePos.ContainsKey((Vector2)gameObject.transform.position + new Vector2(0, -1)))
+            {
+                GCS.TilePos[(Vector2)gameObject.transform.position + new Vector2(0, -1)].GetComponent<TerrainController>().WaterSpriteController();
+                GCS.TilePos[(Vector2)gameObject.transform.position + new Vector2(0, -1)].GetComponent<TerrainController>().RoadSpriteController();
+            }
+            WaterSpriteController();
+            RoadSpriteController();
+        }
     }
 }

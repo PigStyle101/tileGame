@@ -63,6 +63,15 @@ namespace TileGame
         private GameObject Team7Dropdown;
         private GameObject Team8Dropdown;
         private GameObject Team9Dropdown;
+        private GameObject Team1HeroDropdown;
+        private GameObject Team2HeroDropdown;
+        private GameObject Team3HeroDropdown;
+        private GameObject Team4HeroDropdown;
+        private GameObject Team5HeroDropdown;
+        private GameObject Team6HeroDropdown;
+        private GameObject Team7HeroDropdown;
+        private GameObject Team8HeroDropdown;
+        private GameObject Team9HeroDropdown;
         private Dropdown ClassDropDown;
         private GameObject CurrentlySellectedLoadObject;
         private string SaveGameSelectedString;
@@ -78,6 +87,7 @@ namespace TileGame
         // everything in here is pretty self explanitory.
         void Start()
         {
+            ClassDropDown.onValueChanged.AddListener(delegate { ClassDropDownChanged(ClassDropDown); });
             ClassDropDown.onValueChanged.AddListener(delegate { ClassDropDownChanged(ClassDropDown); });
             MainMenueButtonClicked();
             if (DBC.MasterData.HeroSelectedWhenGameClosed != "" && DBC.HeroDictionary.ContainsKey(DBC.MasterData.HeroSelectedWhenGameClosed))
@@ -149,6 +159,15 @@ namespace TileGame
             Team7Dropdown = gameObject.transform.Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team7Dropdown").gameObject;
             Team8Dropdown = gameObject.transform.Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team8Dropdown").gameObject;
             Team9Dropdown = gameObject.transform.Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team9Dropdown").gameObject;
+            Team1HeroDropdown = gameObject.transform.Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team1HeroDropdown").gameObject;
+            Team2HeroDropdown = gameObject.transform.Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team2HeroDropdown").gameObject;
+            Team3HeroDropdown = gameObject.transform.Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team3HeroDropdown").gameObject;
+            Team4HeroDropdown = gameObject.transform.Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team4HeroDropdown").gameObject;
+            Team5HeroDropdown = gameObject.transform.Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team5HeroDropdown").gameObject;
+            Team6HeroDropdown = gameObject.transform.Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team6HeroDropdown").gameObject;
+            Team7HeroDropdown = gameObject.transform.Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team7HeroDropdown").gameObject;
+            Team8HeroDropdown = gameObject.transform.Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team8HeroDropdown").gameObject;
+            Team9HeroDropdown = gameObject.transform.Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team9HeroDropdown").gameObject;
             ClassDropDown = gameObject.transform.Find("MainPanel").Find("NewHeroPanel").Find("ClassDropDown").GetComponent<Dropdown>();
         }
 
@@ -271,7 +290,7 @@ namespace TileGame
             ModPanel.SetActive(false);
             NewHeroPanel.SetActive(false);
             LoadHeroPanel.SetActive(false);
-            GetMapsForLoadGameWindow();
+            GetMapsFornewGameWindow();
             Team1Image.SetActive(false);
             Team2Image.SetActive(false);
             Team3Image.SetActive(false);
@@ -290,6 +309,15 @@ namespace TileGame
             Team7Dropdown.SetActive(false);
             Team8Dropdown.SetActive(false);
             Team9Dropdown.SetActive(false);
+            Team1HeroDropdown.SetActive(false);
+            Team2HeroDropdown.SetActive(false);
+            Team3HeroDropdown.SetActive(false);
+            Team4HeroDropdown.SetActive(false);
+            Team5HeroDropdown.SetActive(false);
+            Team6HeroDropdown.SetActive(false);
+            Team7HeroDropdown.SetActive(false);
+            Team8HeroDropdown.SetActive(false);
+            Team9HeroDropdown.SetActive(false);
         }
 
         public void LoadGameButtonClicked()
@@ -384,7 +412,7 @@ namespace TileGame
 
         }
 
-        public void GetMapsForLoadGameWindow()
+        public void GetMapsFornewGameWindow()
         {
             var childcount = ContentWindowNewGame.transform.childCount;
             for (int i = 0; i < childcount; i++)
@@ -564,6 +592,49 @@ namespace TileGame
             ChangeNewHeroStats();
         }
 
+        public void GetHeroesForNewGame(GameObject dropGM, int team)
+        {
+            Dropdown drop = dropGM.GetComponent<Dropdown>();
+            drop.ClearOptions();
+            foreach (var kvp in DBC.HeroDictionary)
+            {
+                //Debug.Log("Adding:" + kvp.Value.Title);
+                drop.options.Add(new Dropdown.OptionData() { text = kvp.Value.Name });
+            }
+            drop.RefreshShownValue();
+            switch (team)
+            {
+                case 1:
+                    GCS.HeroCurrentlySelectedP1 = DBC.HeroDictionary[drop.options[0].text];
+                    break;
+                case 2:
+                    GCS.HeroCurrentlySelectedP2 = DBC.HeroDictionary[drop.options[0].text];
+                    break;
+                case 3:
+                    GCS.HeroCurrentlySelectedP3 = DBC.HeroDictionary[drop.options[0].text];
+                    break;
+                case 4:
+                    GCS.HeroCurrentlySelectedP4 = DBC.HeroDictionary[drop.options[0].text];
+                    break;
+                case 5:
+                    GCS.HeroCurrentlySelectedP5 = DBC.HeroDictionary[drop.options[0].text];
+                    break;
+                case 6:
+                    GCS.HeroCurrentlySelectedP6 = DBC.HeroDictionary[drop.options[0].text];
+                    break;
+                case 7:
+                    GCS.HeroCurrentlySelectedP7 = DBC.HeroDictionary[drop.options[0].text];
+                    break;
+                case 8:
+                    GCS.HeroCurrentlySelectedP8 = DBC.HeroDictionary[drop.options[0].text];
+                    break;
+                case 9:
+                    GCS.HeroCurrentlySelectedP9 = DBC.HeroDictionary[drop.options[0].text];
+                    break;
+            }
+
+        }
+
         public void GetHeroesLoad()
         {
             var childcount = ContentWindowLoadHero.transform.childCount;
@@ -727,91 +798,118 @@ namespace TileGame
             {
                 Team1Image.SetActive(true);
                 Team1Dropdown.SetActive(true);
+                Team1HeroDropdown.SetActive(true);
+                GetHeroesForNewGame(Team1HeroDropdown, 1);
             }
             else
             {
                 Team1Image.SetActive(false);
                 Team1Dropdown.SetActive(false);
+                Team1HeroDropdown.SetActive(false);
             }
             if (GCS.TeamList[2].Active)
             {
                 Team2Image.SetActive(true);
                 Team2Dropdown.SetActive(true);
+                Team2HeroDropdown.SetActive(true);
+                GetHeroesForNewGame(Team2HeroDropdown, 2);
             }
             else
             {
                 Team2Image.SetActive(false);
                 Team2Dropdown.SetActive(false);
+                Team2HeroDropdown.SetActive(false);
             }
             if (GCS.TeamList[3].Active)
             {
                 Team3Image.SetActive(true);
                 Team3Dropdown.SetActive(true);
+                Team3HeroDropdown.SetActive(true);
+                GetHeroesForNewGame(Team3HeroDropdown, 3);
             }
             else
             {
                 Team3Image.SetActive(false);
                 Team3Dropdown.SetActive(false);
+                Team3HeroDropdown.SetActive(false);
             }
             if (GCS.TeamList[4].Active)
             {
                 Team4Image.SetActive(true);
                 Team4Dropdown.SetActive(true);
+                Team4HeroDropdown.SetActive(true);
+                GetHeroesForNewGame(Team4HeroDropdown, 4);
             }
             else
             {
                 Team4Image.SetActive(false);
                 Team4Dropdown.SetActive(false);
+                Team4HeroDropdown.SetActive(false);
             }
             if (GCS.TeamList[5].Active)
             {
                 Team5Image.SetActive(true);
                 Team5Dropdown.SetActive(true);
+                Team5HeroDropdown.SetActive(true);
+                GetHeroesForNewGame(Team5HeroDropdown, 5);
             }
             else
             {
                 Team5Image.SetActive(false);
                 Team5Dropdown.SetActive(false);
+                Team5HeroDropdown.SetActive(false);
             }
             if (GCS.TeamList[6].Active)
             {
                 Team6Image.SetActive(true);
                 Team6Dropdown.SetActive(true);
+                Team6HeroDropdown.SetActive(true);
+                GetHeroesForNewGame(Team6HeroDropdown, 6);
             }
             else
             {
                 Team6Image.SetActive(false);
                 Team6Dropdown.SetActive(false);
+                Team6HeroDropdown.SetActive(false);
             }
             if (GCS.TeamList[7].Active)
             {
                 Team7Image.SetActive(true);
                 Team7Dropdown.SetActive(true);
+                Team7HeroDropdown.SetActive(true);
+                GetHeroesForNewGame(Team7HeroDropdown, 7);
             }
             else
             {
                 Team7Image.SetActive(false);
                 Team7Dropdown.SetActive(false);
+                Team7HeroDropdown.SetActive(false);
             }
             if (GCS.TeamList[8].Active)
             {
                 Team8Image.SetActive(true);
                 Team8Dropdown.SetActive(true);
+                Team8HeroDropdown.SetActive(true);
+                GetHeroesForNewGame(Team8HeroDropdown, 8);
             }
             else
             {
                 Team8Image.SetActive(false);
                 Team8Dropdown.SetActive(false);
+                Team8HeroDropdown.SetActive(false);
             }
             if (GCS.TeamList[9].Active)
             {
                 Team9Image.SetActive(true);
                 Team9Dropdown.SetActive(true);
+                Team9HeroDropdown.SetActive(true);
+                GetHeroesForNewGame(Team9HeroDropdown, 9);
             }
             else
             {
                 Team9Image.SetActive(false);
                 Team9Dropdown.SetActive(false);
+                Team9HeroDropdown.SetActive(false);
             }
         }
 
@@ -834,7 +932,7 @@ namespace TileGame
 
         public void NewHeroCreateButtonClicked()
         {
-            if (!File.Exists(Application.dataPath + "/StreamingAssets/HeroList/" + HeroInputField.text + ".json"))
+            if (!File.Exists(Application.dataPath + "/StreamingAssets/HeroList/" + HeroInputField.text + ".txt"))
             {
                 if (HeroInputField.text != "")
                 {
@@ -1025,6 +1123,51 @@ namespace TileGame
             {
                 GCS.TeamList[9].IsAi = false;
             }
+        }
+
+        public void Team1HeroDropdownController(int index)
+        {
+            GCS.HeroCurrentlySelectedP1 = DBC.HeroDictionary[Team1HeroDropdown.GetComponent<Dropdown>().options[index].text];
+        }
+
+        public void Team2HeroDropdownController(int index)
+        {
+            GCS.HeroCurrentlySelectedP2 = DBC.HeroDictionary[Team2HeroDropdown.GetComponent<Dropdown>().options[index].text];
+        }
+
+        public void Team3HeroDropdownController(int index)
+        {
+            GCS.HeroCurrentlySelectedP3 = DBC.HeroDictionary[Team3HeroDropdown.GetComponent<Dropdown>().options[index].text];
+        }
+
+        public void Team4HeroDropdownController(int index)
+        {
+            GCS.HeroCurrentlySelectedP4 = DBC.HeroDictionary[Team4HeroDropdown.GetComponent<Dropdown>().options[index].text];
+        }
+
+        public void Team5HeroDropdownController(int index)
+        {
+            GCS.HeroCurrentlySelectedP5 = DBC.HeroDictionary[Team5HeroDropdown.GetComponent<Dropdown>().options[index].text];
+        }
+
+        public void Team6HeroDropdownController(int index)
+        {
+            GCS.HeroCurrentlySelectedP6 = DBC.HeroDictionary[Team6HeroDropdown.GetComponent<Dropdown>().options[index].text];
+        }
+
+        public void Team7HeroDropdownController(int index)
+        {
+            GCS.HeroCurrentlySelectedP7 = DBC.HeroDictionary[Team7HeroDropdown.GetComponent<Dropdown>().options[index].text];
+        }
+
+        public void Team8HeroDropdownController(int index)
+        {
+            GCS.HeroCurrentlySelectedP8 = DBC.HeroDictionary[Team8HeroDropdown.GetComponent<Dropdown>().options[index].text];
+        }
+
+        public void Team9HeroDropdownController(int index)
+        {
+            GCS.HeroCurrentlySelectedP9 = DBC.HeroDictionary[Team9HeroDropdown.GetComponent<Dropdown>().options[index].text];
         }
     }
 }
