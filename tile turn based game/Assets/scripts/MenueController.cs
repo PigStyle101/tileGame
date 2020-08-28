@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using System.IO;
 using UnityEngine.EventSystems;
 using System.Text.RegularExpressions;
+using MoonSharp.Interpreter;
 
 namespace TileGame
 {
@@ -28,6 +29,8 @@ namespace TileGame
         private Text LoadHeroStrValue;
         private Text LoadHeroDexValue;
         private Text LoadHeroCharValue;
+        private Text LoadHeroClassText;
+        private Text LoadHeroRaceText;
         private GameObject MainMenuePanel;
         private GameObject MapEditorMenuePanel;
         private GameObject NewGameMenuePanel;
@@ -35,6 +38,7 @@ namespace TileGame
         private GameObject ModPanel;
         private GameObject NewHeroPanel;
         private GameObject LoadHeroPanel;
+        private GameObject LoadingModsPanels;
         public GameObject LoadMenueButtonPrefab;
         public GameObject ModsButtonPrefab;
         private GameObject ContentWindowLoad;
@@ -83,6 +87,8 @@ namespace TileGame
         private List<string> ModsList = new List<string>();
         private GameControllerScript GCS;
         private DatabaseController DBC;
+        public int LoadState;
+        private bool Loading;
 
         // everything in here is pretty self explanitory.
         void Start()
@@ -107,68 +113,97 @@ namespace TileGame
             GetObjectReferances();
         }
 
+        private void Update()
+        {
+            if (Loading)
+            {
+                switch (LoadState)
+                {
+                    case 0:
+                        ModLoadingUpdater(0f, "Getting Terrain data");
+                        break;
+                    case 1:
+                        ModLoadingUpdater(.1f, "Getting Unit data");
+                        break;
+                    case 2:
+                        ModLoadingUpdater(.2f, "Getting Hero data");
+                        break;
+                    case 3:
+                        ModLoadingUpdater(.3f, "Looking for bugs");
+                        break;
+                    case 4:
+                        ModLoadingUpdater(1f, "Anything start smoking?");
+                        Loading = false;
+                        break;
+                }
+            }
+        }
+
         public void GetObjectReferances()
         {
-            MainMenuePanel = gameObject.transform.Find("MainPanel").Find("MainMenuePanel").gameObject;
-            MapEditorMenuePanel = gameObject.transform.Find("MainPanel").Find("MapEditorMenuePanel").gameObject;
-            NewGameMenuePanel = gameObject.transform.Find("MainPanel").Find("NewGamePanel").gameObject;
-            LoadGamePanel = gameObject.transform.Find("MainPanel").Find("LoadGamePanel").gameObject;
-            NewHeroPanel = gameObject.transform.Find("MainPanel").Find("NewHeroPanel").gameObject;
-            LoadHeroPanel = gameObject.transform.Find("MainPanel").Find("LoadHeroPanel").gameObject;
-            ModPanel = gameObject.transform.Find("MainPanel").Find("ModsPanel").gameObject;
-            DeleteHeroNeverMind = gameObject.transform.Find("MainPanel").Find("LoadHeroPanel").Find("DeleteNoButton").gameObject;
-            YesDeleteHero = gameObject.transform.Find("MainPanel").Find("LoadHeroPanel").Find("DeleteYesButon").gameObject;
-            NewHeroPreview = gameObject.transform.Find("MainPanel").Find("NewHeroPanel").Find("Preview").GetComponent<Image>();
-            LoadHeroPreview = gameObject.transform.Find("MainPanel").Find("LoadHeroPanel").Find("Preview").GetComponent<Image>();
-            mapsizeIF = gameObject.transform.Find("MainPanel").Find("MapEditorMenuePanel").Find("InputFieldSize").GetComponent<InputField>();
-            HeroInputField = gameObject.transform.Find("MainPanel").Find("NewHeroPanel").Find("HeroInputField").GetComponent<InputField>();
-            FeedBackNewGame = gameObject.transform.Find("MainPanel").Find("NewGamePanel").Find("FeedBackText").GetComponent<Text>();
-            LoadHeroFeedBackText = gameObject.transform.Find("MainPanel").Find("LoadHeroPanel").Find("LoadHeroFeedback").GetComponent<Text>();
-            errorTextField = gameObject.transform.Find("MainPanel").Find("MapEditorMenuePanel").Find("ErrorHandlertext").GetComponent<Text>();
-            ModDescriptionText = gameObject.transform.Find("MainPanel").Find("ModsPanel").Find("DescriptionText").gameObject.GetComponent<Text>();
-            NewHeroFeedBackText = gameObject.transform.Find("MainPanel").Find("NewHeroPanel").Find("FeedbackText").gameObject.GetComponent<Text>();
-            NewHeroIntValue = gameObject.transform.Find("MainPanel").Find("NewHeroPanel").Find("IntImage").Find("IntValue").gameObject.GetComponent<Text>();
-            NewHeroStrValue = gameObject.transform.Find("MainPanel").Find("NewHeroPanel").Find("StrImage").Find("StrValue").gameObject.GetComponent<Text>();
-            NewHeroDexValue = gameObject.transform.Find("MainPanel").Find("NewHeroPanel").Find("DexImage").Find("DexValue").gameObject.GetComponent<Text>();
-            NewHeroCharValue = gameObject.transform.Find("MainPanel").Find("NewHeroPanel").Find("CharImage").Find("CharValue").gameObject.GetComponent<Text>();
-            LoadHeroIntValue = gameObject.transform.Find("MainPanel").Find("LoadHeroPanel").Find("IntImage").Find("IntValue").gameObject.GetComponent<Text>();
-            LoadHeroStrValue = gameObject.transform.Find("MainPanel").Find("LoadHeroPanel").Find("StrImage").Find("StrValue").gameObject.GetComponent<Text>();
-            LoadHeroDexValue = gameObject.transform.Find("MainPanel").Find("LoadHeroPanel").Find("DexImage").Find("DexValue").gameObject.GetComponent<Text>();
-            LoadHeroCharValue = gameObject.transform.Find("MainPanel").Find("LoadHeroPanel").Find("CharImage").Find("CharValue").gameObject.GetComponent<Text>();
-            ContentWindowLoad = gameObject.transform.Find("MainPanel").Find("LoadGamePanel").Find("LoadGameScrollView").Find("Viewport").Find("LoadGameContent").gameObject;
-            ContentWindowNewGame = gameObject.transform.Find("MainPanel").Find("NewGamePanel").Find("NewGameScrollView").Find("Viewport").Find("NewGameContent").gameObject;
-            ContentWindowMods = gameObject.transform.Find("MainPanel").Find("ModsPanel").Find("ModsScrollView").Find("ModsViewport").Find("ModsContent").gameObject;
-            ContentWindowMapEditor = gameObject.transform.Find("MainPanel").Find("MapEditorMenuePanel").Find("MapEditorScrollView").Find("Viewport").Find("MapEditorContent").gameObject;
-            ContentWindowLoadHero = gameObject.transform.Find("MainPanel").Find("LoadHeroPanel").Find("LoadHeroScrollView").Find("HeroViewport").Find("LoadHeroContent").gameObject;
-            ContentWindowNewHero = gameObject.transform.Find("MainPanel").Find("NewHeroPanel").Find("NewHeroScrollView").Find("HeroViewport").Find("NewHeroContent").gameObject;
-            Team1Image = gameObject.transform.Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team1Image").gameObject;
-            Team2Image = gameObject.transform.Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team2Image").gameObject;
-            Team3Image = gameObject.transform.Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team3Image").gameObject;
-            Team4Image = gameObject.transform.Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team4Image").gameObject;
-            Team5Image = gameObject.transform.Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team5Image").gameObject;
-            Team6Image = gameObject.transform.Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team6Image").gameObject;
-            Team7Image = gameObject.transform.Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team7Image").gameObject;
-            Team8Image = gameObject.transform.Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team8Image").gameObject;
-            Team9Image = gameObject.transform.Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team9Image").gameObject;
-            Team1Dropdown = gameObject.transform.Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team1Dropdown").gameObject;
-            Team2Dropdown = gameObject.transform.Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team2Dropdown").gameObject;
-            Team3Dropdown = gameObject.transform.Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team3Dropdown").gameObject;
-            Team4Dropdown = gameObject.transform.Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team4Dropdown").gameObject;
-            Team5Dropdown = gameObject.transform.Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team5Dropdown").gameObject;
-            Team6Dropdown = gameObject.transform.Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team6Dropdown").gameObject;
-            Team7Dropdown = gameObject.transform.Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team7Dropdown").gameObject;
-            Team8Dropdown = gameObject.transform.Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team8Dropdown").gameObject;
-            Team9Dropdown = gameObject.transform.Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team9Dropdown").gameObject;
-            Team1HeroDropdown = gameObject.transform.Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team1HeroDropdown").gameObject;
-            Team2HeroDropdown = gameObject.transform.Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team2HeroDropdown").gameObject;
-            Team3HeroDropdown = gameObject.transform.Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team3HeroDropdown").gameObject;
-            Team4HeroDropdown = gameObject.transform.Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team4HeroDropdown").gameObject;
-            Team5HeroDropdown = gameObject.transform.Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team5HeroDropdown").gameObject;
-            Team6HeroDropdown = gameObject.transform.Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team6HeroDropdown").gameObject;
-            Team7HeroDropdown = gameObject.transform.Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team7HeroDropdown").gameObject;
-            Team8HeroDropdown = gameObject.transform.Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team8HeroDropdown").gameObject;
-            Team9HeroDropdown = gameObject.transform.Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team9HeroDropdown").gameObject;
-            ClassDropDown = gameObject.transform.Find("MainPanel").Find("NewHeroPanel").Find("ClassDropDown").GetComponent<Dropdown>();
+            MainMenuePanel = transform.Find("Canvas").Find("MainPanel").Find("MainMenuePanel").gameObject;
+            MapEditorMenuePanel = transform.Find("Canvas").Find("MainPanel").Find("MapEditorMenuePanel").gameObject;
+            NewGameMenuePanel = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").gameObject;
+            LoadGamePanel = transform.Find("Canvas").Find("MainPanel").Find("LoadGamePanel").gameObject;
+            NewHeroPanel = transform.Find("Canvas").Find("MainPanel").Find("NewHeroPanel").gameObject;
+            LoadHeroPanel = transform.Find("Canvas").Find("MainPanel").Find("LoadHeroPanel").gameObject;
+            LoadingModsPanels = transform.Find("Canvas").Find("MainPanel").Find("LoadingModsPanel").gameObject;
+            ModPanel = transform.Find("Canvas").Find("MainPanel").Find("ModsPanel").gameObject;
+            DeleteHeroNeverMind = transform.Find("Canvas").Find("MainPanel").Find("LoadHeroPanel").Find("DeleteNoButton").gameObject;
+            YesDeleteHero = transform.Find("Canvas").Find("MainPanel").Find("LoadHeroPanel").Find("DeleteYesButon").gameObject;
+            NewHeroPreview = transform.Find("Canvas").Find("MainPanel").Find("NewHeroPanel").Find("Preview").GetComponent<Image>();
+            LoadHeroPreview = transform.Find("Canvas").Find("MainPanel").Find("LoadHeroPanel").Find("Preview").GetComponent<Image>();
+            mapsizeIF = transform.Find("Canvas").Find("MainPanel").Find("MapEditorMenuePanel").Find("InputFieldSize").GetComponent<InputField>();
+            HeroInputField = transform.Find("Canvas").Find("MainPanel").Find("NewHeroPanel").Find("HeroInputField").GetComponent<InputField>();
+            FeedBackNewGame = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").Find("FeedBackText").GetComponent<Text>();
+            LoadHeroFeedBackText = transform.Find("Canvas").Find("MainPanel").Find("LoadHeroPanel").Find("LoadHeroFeedback").GetComponent<Text>();
+            LoadHeroClassText = transform.Find("Canvas").Find("MainPanel").Find("LoadHeroPanel").Find("RaceImage").Find("LoadHeroClassText").GetComponent<Text>();
+            LoadHeroRaceText = transform.Find("Canvas").Find("MainPanel").Find("LoadHeroPanel").Find("ClassImage").Find("LoadHeroRaceText").GetComponent<Text>();
+            errorTextField = transform.Find("Canvas").Find("MainPanel").Find("MapEditorMenuePanel").Find("ErrorHandlertext").GetComponent<Text>();
+            ModDescriptionText = transform.Find("Canvas").Find("MainPanel").Find("ModsPanel").Find("DescriptionText").gameObject.GetComponent<Text>();
+            NewHeroFeedBackText = transform.Find("Canvas").Find("MainPanel").Find("NewHeroPanel").Find("FeedbackText").gameObject.GetComponent<Text>();
+            NewHeroIntValue = transform.Find("Canvas").Find("MainPanel").Find("NewHeroPanel").Find("IntImage").Find("IntValue").gameObject.GetComponent<Text>();
+            NewHeroStrValue = transform.Find("Canvas").Find("MainPanel").Find("NewHeroPanel").Find("StrImage").Find("StrValue").gameObject.GetComponent<Text>();
+            NewHeroDexValue = transform.Find("Canvas").Find("MainPanel").Find("NewHeroPanel").Find("DexImage").Find("DexValue").gameObject.GetComponent<Text>();
+            NewHeroCharValue = transform.Find("Canvas").Find("MainPanel").Find("NewHeroPanel").Find("CharImage").Find("CharValue").gameObject.GetComponent<Text>();
+            LoadHeroIntValue = transform.Find("Canvas").Find("MainPanel").Find("LoadHeroPanel").Find("IntImage").Find("IntValue").gameObject.GetComponent<Text>();
+            LoadHeroStrValue = transform.Find("Canvas").Find("MainPanel").Find("LoadHeroPanel").Find("StrImage").Find("StrValue").gameObject.GetComponent<Text>();
+            LoadHeroDexValue = transform.Find("Canvas").Find("MainPanel").Find("LoadHeroPanel").Find("DexImage").Find("DexValue").gameObject.GetComponent<Text>();
+            LoadHeroCharValue = transform.Find("Canvas").Find("MainPanel").Find("LoadHeroPanel").Find("CharImage").Find("CharValue").gameObject.GetComponent<Text>();
+            ContentWindowLoad = transform.Find("Canvas").Find("MainPanel").Find("LoadGamePanel").Find("LoadGameScrollView").Find("Viewport").Find("LoadGameContent").gameObject;
+            ContentWindowNewGame = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").Find("NewGameScrollView").Find("Viewport").Find("NewGameContent").gameObject;
+            ContentWindowMods = transform.Find("Canvas").Find("MainPanel").Find("ModsPanel").Find("ModsScrollView").Find("ModsViewport").Find("ModsContent").gameObject;
+            ContentWindowMapEditor = transform.Find("Canvas").Find("MainPanel").Find("MapEditorMenuePanel").Find("MapEditorScrollView").Find("Viewport").Find("MapEditorContent").gameObject;
+            ContentWindowLoadHero = transform.Find("Canvas").Find("MainPanel").Find("LoadHeroPanel").Find("LoadHeroScrollView").Find("HeroViewport").Find("LoadHeroContent").gameObject;
+            ContentWindowNewHero = transform.Find("Canvas").Find("MainPanel").Find("NewHeroPanel").Find("NewHeroScrollView").Find("HeroViewport").Find("NewHeroContent").gameObject;
+            Team1Image = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team1Image").gameObject;
+            Team2Image = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team2Image").gameObject;
+            Team3Image = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team3Image").gameObject;
+            Team4Image = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team4Image").gameObject;
+            Team5Image = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team5Image").gameObject;
+            Team6Image = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team6Image").gameObject;
+            Team7Image = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team7Image").gameObject;
+            Team8Image = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team8Image").gameObject;
+            Team9Image = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team9Image").gameObject;
+            Team1Dropdown = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team1Dropdown").gameObject;
+            Team2Dropdown = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team2Dropdown").gameObject;
+            Team3Dropdown = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team3Dropdown").gameObject;
+            Team4Dropdown = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team4Dropdown").gameObject;
+            Team5Dropdown = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team5Dropdown").gameObject;
+            Team6Dropdown = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team6Dropdown").gameObject;
+            Team7Dropdown = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team7Dropdown").gameObject;
+            Team8Dropdown = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team8Dropdown").gameObject;
+            Team9Dropdown = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team9Dropdown").gameObject;
+            Team1HeroDropdown = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team1HeroDropdown").gameObject;
+            Team2HeroDropdown = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team2HeroDropdown").gameObject;
+            Team3HeroDropdown = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team3HeroDropdown").gameObject;
+            Team4HeroDropdown = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team4HeroDropdown").gameObject;
+            Team5HeroDropdown = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team5HeroDropdown").gameObject;
+            Team6HeroDropdown = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team6HeroDropdown").gameObject;
+            Team7HeroDropdown = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team7HeroDropdown").gameObject;
+            Team8HeroDropdown = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team8HeroDropdown").gameObject;
+            Team9HeroDropdown = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team9HeroDropdown").gameObject;
+            ClassDropDown = transform.Find("Canvas").Find("MainPanel").Find("NewHeroPanel").Find("ClassDropDown").GetComponent<Dropdown>();
         }
 
         public void MapEditorButtonClicked()
@@ -192,6 +227,42 @@ namespace TileGame
             ModPanel.SetActive(false);
             NewHeroPanel.SetActive(false);
             LoadHeroPanel.SetActive(false);
+            LoadingModsPanels.SetActive(false);
+        }
+
+        [MoonSharpHidden]
+        public IEnumerator ModLoader()
+        {
+            Loading = true;
+            foreach (string Mod in ModsList)
+            {
+                LoadState = 0;
+                yield return null;
+                DBC.GetTerrianData(Mod);
+                LoadState = 1;
+                yield return null;
+                DBC.GetUnitData(Mod);
+                LoadState = 2;
+                yield return null;
+                DBC.GetBuildingData(Mod);
+                LoadState = 3;
+                yield return null;
+                DBC.ModsLoaded.Add(Mod);
+                LoadState = 4;
+                yield return null;
+            }
+            Loading = false;
+            LoadState = 0;
+            LoadingModsPanels.SetActive(false);
+            LoadingModsFinished();
+        }
+
+        public void ModLoadingUpdater(float f, string State)
+        {
+            Slider LoadingSlider = LoadingModsPanels.transform.Find("Slider").GetComponent<Slider>();
+            Text LoadingText = LoadingModsPanels.transform.Find("Text").GetComponent<Text>();
+            LoadingSlider.value = f;
+            LoadingText.text = State;
         }
 
         public void MainMenueButtonClickedFromModScreen()
@@ -222,47 +293,9 @@ namespace TileGame
                     DBC.ModsLoaded.Clear();
                     DBC.ResetNextIndexes();
                     ModsList.Sort();
-                    foreach (string Mod in ModsList)
-                    {
-                        DBC.GetTerrianData(Mod);
-                        DBC.GetUnitData(Mod);
-                        DBC.GetBuildingData(Mod);
-                        DBC.ModsLoaded.Add(Mod);
-                    }
-                    bool HasMainBase = false;
-                    bool HasHeroSP = false;
-                    foreach (var kvp in DBC.BuildingDictionary)
-                    {
-                        if (kvp.Value.MainBase && !HasMainBase)
-                        {
-                            HasMainBase = true;
-                        }
-                        if (kvp.Value.HeroSpawnPoint && !HasHeroSP)
-                        {
-                            HasHeroSP = true;
-                        }
-                    }
-                    if (HasMainBase)
-                    {
-                        if (HasHeroSP)
-                        {
-                            MainMenuePanel.SetActive(true);
-                            MapEditorMenuePanel.SetActive(false);
-                            NewGameMenuePanel.SetActive(false);
-                            LoadGamePanel.SetActive(false);
-                            ModPanel.SetActive(false);
-                            NewHeroPanel.SetActive(false);
-                            LoadHeroPanel.SetActive(false);
-                        }
-                        else
-                        {
-                            ModDescriptionText.text = "Must have at least one building with property HeroSpawnPoint = true";
-                        }
-                    }
-                    else
-                    {
-                        ModDescriptionText.text = "Must have at least one building with property MainBase = true";
-                    }
+                    LoadingModsPanels.SetActive(true);
+                    StartCoroutine(ModLoader());
+                    ModLoader();
                 }
                 else
                 {
@@ -278,6 +311,44 @@ namespace TileGame
             else
             {
                 ModDescriptionText.text = "Must have at least one mod loaded!";
+            }
+        }
+
+        public void LoadingModsFinished()
+        {
+            bool HasMainBase = false;
+            bool HasHeroSP = false;
+            foreach (var kvp in DBC.BuildingDictionary)
+            {
+                if (kvp.Value.MainBase && !HasMainBase)
+                {
+                    HasMainBase = true;
+                }
+                if (kvp.Value.HeroSpawnPoint && !HasHeroSP)
+                {
+                    HasHeroSP = true;
+                }
+            }
+            if (HasMainBase)
+            {
+                if (HasHeroSP)
+                {
+                    MainMenuePanel.SetActive(true);
+                    MapEditorMenuePanel.SetActive(false);
+                    NewGameMenuePanel.SetActive(false);
+                    LoadGamePanel.SetActive(false);
+                    ModPanel.SetActive(false);
+                    NewHeroPanel.SetActive(false);
+                    LoadHeroPanel.SetActive(false);
+                }
+                else
+                {
+                    ModDescriptionText.text = "Must have at least one building with property HeroSpawnPoint = true";
+                }
+            }
+            else
+            {
+                ModDescriptionText.text = "Must have at least one building with property MainBase = true";
             }
         }
 
@@ -347,7 +418,10 @@ namespace TileGame
         public void QuitGameButtonClicked()
         {
             Master m = JsonUtility.FromJson<Master>(File.ReadAllText(Application.dataPath + "/StreamingAssets/MasterData/Master.json"));
-            m.HeroSelectedWhenGameClosed = GCS.HeroCurrentlySelectedP1.Name;
+            if (GCS.HeroCurrentlySelectedP1 != null)
+            {
+                m.HeroSelectedWhenGameClosed = GCS.HeroCurrentlySelectedP1.Name; 
+            }
             string tempjson = JsonUtility.ToJson(m, true);
             FileStream fs = File.Create(Application.dataPath + "/StreamingAssets/MasterData/Master.json");
             StreamWriter sr = new StreamWriter(fs);
@@ -391,7 +465,7 @@ namespace TileGame
             GetHeroesLoad();
         }
 
-        public void SettingMapSize()
+        public void CreateMapButtonClickedMapEditorScreen()
         {
             int tempMapSize = new int();
             if (int.TryParse(mapsizeIF.text, out tempMapSize))
@@ -657,6 +731,8 @@ namespace TileGame
                 LoadHeroDexValue.text = DBC.HeroDictionary[GCS.HeroCurrentlySelectedP1.Name].Dexterity.ToString();
                 LoadHeroCharValue.text = DBC.HeroDictionary[GCS.HeroCurrentlySelectedP1.Name].Charisma.ToString();
                 LoadHeroFeedBackText.text = "Current hero selected: " + GCS.HeroCurrentlySelectedP1.Name;
+                LoadHeroRaceText.text = "Race:" + DBC.HeroRaceDictionary[GCS.HeroCurrentlySelectedP1.RaceID].Title;
+                LoadHeroClassText.text = "Class:" + DBC.HeroClassDictionary[GCS.HeroCurrentlySelectedP1.ClassID].Title;
             }
         }
 
@@ -676,6 +752,8 @@ namespace TileGame
             LoadHeroDexValue.text = DBC.HeroDictionary[GCS.HeroCurrentlySelectedP1.Name].Dexterity.ToString();
             LoadHeroCharValue.text = DBC.HeroDictionary[GCS.HeroCurrentlySelectedP1.Name].Charisma.ToString();
             LoadHeroFeedBackText.text = "Current hero selected: " + GCS.HeroCurrentlySelectedP1.Name;
+            LoadHeroRaceText.text = "Race:" + DBC.HeroRaceDictionary[GCS.HeroCurrentlySelectedP1.RaceID].Title;
+            LoadHeroClassText.text = "Class:" + DBC.HeroClassDictionary[GCS.HeroCurrentlySelectedP1.ClassID].Title;
         }
 
         public void SaveGameSelected()
@@ -918,7 +996,7 @@ namespace TileGame
             SelectedMapForMapEditor = EventSystem.current.currentSelectedGameObject.name;
         }
 
-        public void LoadMapMapEditor()
+        public void LoadMapButtonClickedMapEditorScreen()
         {
             if (SelectedMapForMapEditor != null)
             {
@@ -1015,6 +1093,11 @@ namespace TileGame
             NewHeroDexValue.text = dext.ToString();
             NewHeroStrValue.text = stren.ToString();
             NewHeroCharValue.text = charis.ToString();
+        }
+
+        public void ReloadDataButonClicked()
+        {
+            DBC.ReloadDataOnly();
         }
 
         public void DropdownTeam1Controller(int index)

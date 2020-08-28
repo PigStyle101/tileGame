@@ -17,7 +17,7 @@ namespace TileGame
         public bool Hero;
         [HideInInspector]
         public Hero HClass;
-        //[HideInInspector]
+        [HideInInspector]
         public int Team;
         [HideInInspector]
         public int ID;
@@ -52,7 +52,7 @@ namespace TileGame
         [HideInInspector]
         public bool CanMoveAndAttack;
         //[HideInInspector]
-        public float MoveAnimationOffset;
+        public float MoveAnimationTime;
         //method stuff
         public Dictionary<Vector2, int> TilesWeights = new Dictionary<Vector2, int>();
         public Dictionary<Vector2, int> SightTiles = new Dictionary<Vector2, int>();
@@ -75,9 +75,9 @@ namespace TileGame
         public bool UnitIdleAnimation;
         [HideInInspector]
         public bool UnitAttackAnimation;
-        [HideInInspector]
+        //[HideInInspector]
         public bool UnitHurtAnimation;
-        [HideInInspector]
+        //[HideInInspector]
         public bool UnitDiedAnimation;
         [HideInInspector]
         public bool UnitMoveAnimation;
@@ -104,8 +104,9 @@ namespace TileGame
         public float MoveAnimationSpeed;
         private bool Attacking;
         private bool Moving;
-        private bool Dying;
-        private bool Hurt;
+        public bool Dying;
+        public bool Hurt;
+        public bool UseOwnUpdate;
         //Script stuff
         private DatabaseController DBC;
         private GameControllerScript GCS;
@@ -125,9 +126,18 @@ namespace TileGame
             Directions.Add(new Vector2(1, 0));
             Directions.Add(new Vector2(0, -1));
             Directions.Add(new Vector2(-1, 0));
+            UseOwnUpdate = false;
         }
         [MoonSharpHidden]
         private void Update()
+        {
+            if (UseOwnUpdate)
+            {
+                AnimationTimers();
+                RayCastForAttackRange();
+            }
+        }
+        public void CustomUpdate()
         {
             AnimationTimers();
             RayCastForAttackRange();
@@ -688,7 +698,7 @@ namespace TileGame
                         IdleTimerFloat = 0;
                     }
                 }
-                if (Attacking)
+                else if (Attacking)
                 {
                     AttackTimerFloat += Time.deltaTime;
                     if (AttackTimerFloat >= AttackAnimationSpeed && UnitAttackAnimation)
@@ -710,7 +720,7 @@ namespace TileGame
                         Attacking = false;
                     }
                 }
-                if (Hurt)
+                else if (Hurt)
                 {
                     HurtTimerFloat += Time.deltaTime;
                     if (HurtTimerFloat >= HurtAnimationSpeed && UnitHurtAnimation)
@@ -732,7 +742,7 @@ namespace TileGame
                         Hurt = false;
                     }
                 }
-                if (Dying && !Hurt)
+                else if (Dying)
                 {
                     DiedTimerFloat += Time.deltaTime;
                     if (DiedTimerFloat >= DiedAnimationSpeed && UnitDiedAnimation)
@@ -755,11 +765,12 @@ namespace TileGame
                         Destroy(gameObject);
                     }
                 }
-                if (Moving)
+                else if (Moving)
                 {
-                    transform.position = Vector2.Lerp(transform.position, vectorlist[VectorState], MoveAnimationSpeed);
-                    MoveAnimationTimerFloat += Time.deltaTime;
-                    if (MoveAnimationTimerFloat >= MoveAnimationSpeed * MoveAnimationOffset)
+                    float step = MoveAnimationTime * Time.deltaTime; //get time that we want to move for
+                    transform.position = Vector2.MoveTowards(transform.position, vectorlist[VectorState], step); //apply move
+                    MoveAnimationTimerFloat += Time.deltaTime; // getting current time that we have moved for
+                    if (MoveAnimationTimerFloat >= 1/MoveAnimationTime) //have we moved to this position for the required time?
                     {
                         if ((vectorlist.Count - 1) > VectorState)
                         {
@@ -810,7 +821,7 @@ namespace TileGame
                         IdleTimerFloat = 0;
                     }
                 }
-                if (Attacking)
+                else if (Attacking)
                 {
                     AttackTimerFloat += Time.deltaTime;
                     if (AttackTimerFloat >= AttackAnimationSpeed && UnitAttackAnimation)
@@ -832,7 +843,7 @@ namespace TileGame
                         Attacking = false;
                     }
                 }
-                if (Hurt)
+                else if (Hurt)
                 {
                     HurtTimerFloat += Time.deltaTime;
                     if (HurtTimerFloat >= HurtAnimationSpeed && UnitHurtAnimation)
@@ -854,7 +865,7 @@ namespace TileGame
                         Hurt = false;
                     }
                 }
-                if (Dying && !Hurt)
+                else if (Dying && !Hurt)
                 {
                     DiedTimerFloat += Time.deltaTime;
                     if (DiedTimerFloat >= DiedAnimationSpeed && UnitDiedAnimation)
@@ -867,7 +878,7 @@ namespace TileGame
                         else
                         {
                             DiedState = 0;
-                            Dying = false;
+                            //Dying = false;
                             Destroy(gameObject);
                         }
                         DiedTimerFloat = 0;
@@ -877,11 +888,12 @@ namespace TileGame
                         Destroy(gameObject);
                     }
                 }
-                if (Moving)
+                else if (Moving)
                 {
-                    transform.position = Vector2.Lerp(transform.position, vectorlist[VectorState], MoveAnimationSpeed);
+                    float step = MoveAnimationTime * Time.deltaTime; //get time that we want to move for
+                    transform.position = Vector2.Lerp(transform.position, vectorlist[VectorState], step);
                     MoveAnimationTimerFloat += Time.deltaTime;
-                    if (MoveAnimationTimerFloat >= MoveAnimationSpeed * MoveAnimationOffset)
+                    if (MoveAnimationTimerFloat >= 1/MoveAnimationTime)
                     {
                         if ((vectorlist.Count - 1) > VectorState)
                         {

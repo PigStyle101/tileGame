@@ -328,7 +328,7 @@ namespace TileGame
             if (File.Exists(FilePath))
             {
                 FileData = File.ReadAllBytes(FilePath);
-                Tex2D = new Texture2D(64, 64); // Create new "empty" texture, this requires the size to be added, it get changed in teh next method
+                Tex2D = new Texture2D(64, 64,TextureFormat.DXT1,false); // Create new "empty" texture, this requires the size to be added, it get changed in teh next method
                 Tex2D.LoadImage(FileData);// Load the imagedata into the texture (size is set automatically)
                 TempSprite = Sprite.Create(Tex2D, new Rect(0, 0, Tex2D.width, Tex2D.height), new Vector2(0.5f, 0.5f), PPU);
                 return TempSprite;
@@ -471,7 +471,7 @@ namespace TileGame
             TGO.GetComponent<UnitController>().UnitMoveAnimation = UnitDictionary[index].MoveAnimations;
             TGO.GetComponent<UnitController>().UnitDiedAnimation = UnitDictionary[index].DiedAnimations;
             TGO.GetComponent<UnitController>().MoveAnimationSpeed = UnitDictionary[index].MoveAnimationSpeed;
-            TGO.GetComponent<UnitController>().MoveAnimationOffset = UnitDictionary[index].MoveAnimationOffset;
+            TGO.GetComponent<UnitController>().MoveAnimationTime = UnitDictionary[index].MoveAnimationTime;
             TGO.GetComponent<UnitController>().Position = location;
             TGO.GetComponent<UnitController>().ID = index;
             if (UnitDictionary[index].IdleAnimations)
@@ -600,7 +600,7 @@ namespace TileGame
             if (HeroRaceDictionary[thero.RaceID].MoveAnimations)
             {
                 TGO.GetComponent<UnitController>().MoveAnimationSpeed = HeroRaceDictionary[thero.RaceID].MoveAnimationSpeed;
-                TGO.GetComponent<UnitController>().MoveAnimationOffset = HeroRaceDictionary[thero.RaceID].MoveAnimationOffset;
+                TGO.GetComponent<UnitController>().MoveAnimationTime = HeroRaceDictionary[thero.RaceID].MoveAnimationTime;
             }
             if (HeroRaceDictionary[thero.RaceID].CanConvert)
             {
@@ -703,6 +703,50 @@ namespace TileGame
                 //GCS.HeroCurrentlySelectedP1 = h;
             }
         }
+
+        public void ReloadDataOnly()
+        {
+            foreach (var Mod in ModsLoaded)
+            {
+                if (Directory.Exists(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Units"))
+                {
+                    //Debug.log("Fetching json unit files");
+                    foreach (string file in Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Units/Data/", "*.json")) //gets only json files form this path
+                    {
+                        var Tempstring = File.ReadAllText(file); //temp string to hold the json data
+                        Unit u = JsonUtility.FromJson<Unit>(Tempstring);
+                        //u.ID = NextUnitDicIndex;
+                        //u.GetSprites();
+                        //UnitDictionary.Add(u.ID, u);
+                        //NextUnitDicIndex += 1;
+                        foreach (var kvp in UnitDictionary)
+                        {
+                            if (kvp.Value.Title == u.Title)
+                            {
+                                kvp.Value.Attack = u.Attack;
+                                kvp.Value.AttackAnimationSpeed = u.AttackAnimationSpeed;
+                                kvp.Value.AttackRange = u.AttackRange;
+                                kvp.Value.CanConvert = u.CanConvert;
+                                kvp.Value.CanMoveAndAttack = u.CanMoveAndAttack;
+                                kvp.Value.ConversionSpeed = u.ConversionSpeed;
+                                kvp.Value.Cost = u.Cost;
+                                kvp.Value.Defence = u.Defence;
+                                kvp.Value.Description = u.Description;
+                                kvp.Value.DiedAnimationSpeed = u.DiedAnimationSpeed;
+                                kvp.Value.Health = u.Health;
+                                kvp.Value.HurtAnimationSpeed = u.HurtAnimationSpeed;
+                                kvp.Value.IdleAnimationSpeed = u.IdleAnimationSpeed;
+                                kvp.Value.MoveAnimationSpeed = u.MoveAnimationSpeed;
+                                kvp.Value.MoveAnimationTime = u.MoveAnimationTime;
+                                kvp.Value.MovePoints = u.MovePoints;
+                                kvp.Value.PixelsPerUnit = u.PixelsPerUnit;
+                                kvp.Value.SightRange = u.SightRange;
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     [MoonSharpUserData]
@@ -793,7 +837,7 @@ namespace TileGame
         public float HurtAnimationSpeed;
         public float DiedAnimationSpeed;
         public float MoveAnimationSpeed; //controls how fast the animation plays
-        public float MoveAnimationOffset; //controls how long the moving animation plays for
+        public float MoveAnimationTime; //controls how long the moving animation plays for and how fast the unit moves
         public int Team;
         public int ConversionSpeed;
         public int PixelsPerUnit;
@@ -1024,7 +1068,7 @@ namespace TileGame
         public float HurtAnimationSpeed;
         public float DiedAnimationSpeed;
         public float MoveAnimationSpeed;
-        public float MoveAnimationOffset;
+        public float MoveAnimationTime;
         //Blank tell used in game
         public int Team;
         public int Level;
@@ -1079,7 +1123,7 @@ namespace TileGame
         public float HurtAnimationSpeed;
         public float DiedAnimationSpeed;
         public float MoveAnimationSpeed;
-        public float MoveAnimationOffset;
+        public float MoveAnimationTime;
         //Blank tell used in game
         public int Team;
         public int Level;

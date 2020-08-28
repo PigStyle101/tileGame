@@ -269,7 +269,7 @@ namespace TileGame
 
             transform.Translate(new Vector3(0, 0, z), Space.World);
 
-            if (gameObject.transform.position.z > -1) { gameObject.transform.position = new Vector3(transform.position.x, transform.position.y, -1); }
+            if (gameObject.transform.position.z > -5) { gameObject.transform.position = new Vector3(transform.position.x, transform.position.y, -5); }
             if (gameObject.transform.position.z < -GCS.PlayMapSize * 2) { gameObject.transform.position = new Vector3(transform.position.x, transform.position.y, -GCS.PlayMapSize * 2); }
 
         }//controls camera z movement //Potential lua code

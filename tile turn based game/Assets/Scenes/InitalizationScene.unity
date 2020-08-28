@@ -504,6 +504,7 @@ GameObject:
   - component: {fileID: 1259027380}
   - component: {fileID: 1259027383}
   - component: {fileID: 1259027384}
+  - component: {fileID: 1259027385}
   m_Layer: 5
   m_Name: GameController
   m_TagString: GameController
@@ -576,6 +577,411 @@ MonoBehaviour:
   EchoToConsole: 1
   AddTimeStamp: 1
   IdleState: 0
+  HeroCurrentlySelectedP1:
+    RaceID: 0
+    ClassID: 0
+    Name: 
+    MaxHealth: 0
+    Intelligance: 0
+    Strenght: 0
+    Dexterity: 0
+    Charisma: 0
+    Title: 
+    Slug: 
+    Description: 
+    Type: 
+    Mod: 
+    PixelsPerUnit: 0
+    Attack: 0
+    Defence: 0
+    Health: 0
+    AttackRange: 0
+    MovePoints: 0
+    ConversionSpeed: 0
+    SightRange: 0
+    Mana: 0
+    HealthRegen: 0
+    ManaRegen: 0
+    CanConvert: 0
+    CanMoveAndAttack: 0
+    BaseIntelligance: 0
+    BaseStrenght: 0
+    BaseDexterity: 0
+    BaseCharisma: 0
+    IdleAnimations: 0
+    AttackAnimations: 0
+    HurtAnimations: 0
+    DiedAnimations: 0
+    MoveAnimations: 0
+    IdleAnimationSpeed: 0
+    AttackAnimationSpeed: 0
+    HurtAnimationSpeed: 0
+    DiedAnimationSpeed: 0
+    MoveAnimationSpeed: 0
+    MoveAnimationOffset: 0
+    Team: 0
+    Level: 0
+    XP: 0
+  HeroCurrentlySelectedP2:
+    RaceID: 0
+    ClassID: 0
+    Name: 
+    MaxHealth: 0
+    Intelligance: 0
+    Strenght: 0
+    Dexterity: 0
+    Charisma: 0
+    Title: 
+    Slug: 
+    Description: 
+    Type: 
+    Mod: 
+    PixelsPerUnit: 0
+    Attack: 0
+    Defence: 0
+    Health: 0
+    AttackRange: 0
+    MovePoints: 0
+    ConversionSpeed: 0
+    SightRange: 0
+    Mana: 0
+    HealthRegen: 0
+    ManaRegen: 0
+    CanConvert: 0
+    CanMoveAndAttack: 0
+    BaseIntelligance: 0
+    BaseStrenght: 0
+    BaseDexterity: 0
+    BaseCharisma: 0
+    IdleAnimations: 0
+    AttackAnimations: 0
+    HurtAnimations: 0
+    DiedAnimations: 0
+    MoveAnimations: 0
+    IdleAnimationSpeed: 0
+    AttackAnimationSpeed: 0
+    HurtAnimationSpeed: 0
+    DiedAnimationSpeed: 0
+    MoveAnimationSpeed: 0
+    MoveAnimationOffset: 0
+    Team: 0
+    Level: 0
+    XP: 0
+  HeroCurrentlySelectedP3:
+    RaceID: 0
+    ClassID: 0
+    Name: 
+    MaxHealth: 0
+    Intelligance: 0
+    Strenght: 0
+    Dexterity: 0
+    Charisma: 0
+    Title: 
+    Slug: 
+    Description: 
+    Type: 
+    Mod: 
+    PixelsPerUnit: 0
+    Attack: 0
+    Defence: 0
+    Health: 0
+    AttackRange: 0
+    MovePoints: 0
+    ConversionSpeed: 0
+    SightRange: 0
+    Mana: 0
+    HealthRegen: 0
+    ManaRegen: 0
+    CanConvert: 0
+    CanMoveAndAttack: 0
+    BaseIntelligance: 0
+    BaseStrenght: 0
+    BaseDexterity: 0
+    BaseCharisma: 0
+    IdleAnimations: 0
+    AttackAnimations: 0
+    HurtAnimations: 0
+    DiedAnimations: 0
+    MoveAnimations: 0
+    IdleAnimationSpeed: 0
+    AttackAnimationSpeed: 0
+    HurtAnimationSpeed: 0
+    DiedAnimationSpeed: 0
+    MoveAnimationSpeed: 0
+    MoveAnimationOffset: 0
+    Team: 0
+    Level: 0
+    XP: 0
+  HeroCurrentlySelectedP4:
+    RaceID: 0
+    ClassID: 0
+    Name: 
+    MaxHealth: 0
+    Intelligance: 0
+    Strenght: 0
+    Dexterity: 0
+    Charisma: 0
+    Title: 
+    Slug: 
+    Description: 
+    Type: 
+    Mod: 
+    PixelsPerUnit: 0
+    Attack: 0
+    Defence: 0
+    Health: 0
+    AttackRange: 0
+    MovePoints: 0
+    ConversionSpeed: 0
+    SightRange: 0
+    Mana: 0
+    HealthRegen: 0
+    ManaRegen: 0
+    CanConvert: 0
+    CanMoveAndAttack: 0
+    BaseIntelligance: 0
+    BaseStrenght: 0
+    BaseDexterity: 0
+    BaseCharisma: 0
+    IdleAnimations: 0
+    AttackAnimations: 0
+    HurtAnimations: 0
+    DiedAnimations: 0
+    MoveAnimations: 0
+    IdleAnimationSpeed: 0
+    AttackAnimationSpeed: 0
+    HurtAnimationSpeed: 0
+    DiedAnimationSpeed: 0
+    MoveAnimationSpeed: 0
+    MoveAnimationOffset: 0
+    Team: 0
+    Level: 0
+    XP: 0
+  HeroCurrentlySelectedP5:
+    RaceID: 0
+    ClassID: 0
+    Name: 
+    MaxHealth: 0
+    Intelligance: 0
+    Strenght: 0
+    Dexterity: 0
+    Charisma: 0
+    Title: 
+    Slug: 
+    Description: 
+    Type: 
+    Mod: 
+    PixelsPerUnit: 0
+    Attack: 0
+    Defence: 0
+    Health: 0
+    AttackRange: 0
+    MovePoints: 0
+    ConversionSpeed: 0
+    SightRange: 0
+    Mana: 0
+    HealthRegen: 0
+    ManaRegen: 0
+    CanConvert: 0
+    CanMoveAndAttack: 0
+    BaseIntelligance: 0
+    BaseStrenght: 0
+    BaseDexterity: 0
+    BaseCharisma: 0
+    IdleAnimations: 0
+    AttackAnimations: 0
+    HurtAnimations: 0
+    DiedAnimations: 0
+    MoveAnimations: 0
+    IdleAnimationSpeed: 0
+    AttackAnimationSpeed: 0
+    HurtAnimationSpeed: 0
+    DiedAnimationSpeed: 0
+    MoveAnimationSpeed: 0
+    MoveAnimationOffset: 0
+    Team: 0
+    Level: 0
+    XP: 0
+  HeroCurrentlySelectedP6:
+    RaceID: 0
+    ClassID: 0
+    Name: 
+    MaxHealth: 0
+    Intelligance: 0
+    Strenght: 0
+    Dexterity: 0
+    Charisma: 0
+    Title: 
+    Slug: 
+    Description: 
+    Type: 
+    Mod: 
+    PixelsPerUnit: 0
+    Attack: 0
+    Defence: 0
+    Health: 0
+    AttackRange: 0
+    MovePoints: 0
+    ConversionSpeed: 0
+    SightRange: 0
+    Mana: 0
+    HealthRegen: 0
+    ManaRegen: 0
+    CanConvert: 0
+    CanMoveAndAttack: 0
+    BaseIntelligance: 0
+    BaseStrenght: 0
+    BaseDexterity: 0
+    BaseCharisma: 0
+    IdleAnimations: 0
+    AttackAnimations: 0
+    HurtAnimations: 0
+    DiedAnimations: 0
+    MoveAnimations: 0
+    IdleAnimationSpeed: 0
+    AttackAnimationSpeed: 0
+    HurtAnimationSpeed: 0
+    DiedAnimationSpeed: 0
+    MoveAnimationSpeed: 0
+    MoveAnimationOffset: 0
+    Team: 0
+    Level: 0
+    XP: 0
+  HeroCurrentlySelectedP7:
+    RaceID: 0
+    ClassID: 0
+    Name: 
+    MaxHealth: 0
+    Intelligance: 0
+    Strenght: 0
+    Dexterity: 0
+    Charisma: 0
+    Title: 
+    Slug: 
+    Description: 
+    Type: 
+    Mod: 
+    PixelsPerUnit: 0
+    Attack: 0
+    Defence: 0
+    Health: 0
+    AttackRange: 0
+    MovePoints: 0
+    ConversionSpeed: 0
+    SightRange: 0
+    Mana: 0
+    HealthRegen: 0
+    ManaRegen: 0
+    CanConvert: 0
+    CanMoveAndAttack: 0
+    BaseIntelligance: 0
+    BaseStrenght: 0
+    BaseDexterity: 0
+    BaseCharisma: 0
+    IdleAnimations: 0
+    AttackAnimations: 0
+    HurtAnimations: 0
+    DiedAnimations: 0
+    MoveAnimations: 0
+    IdleAnimationSpeed: 0
+    AttackAnimationSpeed: 0
+    HurtAnimationSpeed: 0
+    DiedAnimationSpeed: 0
+    MoveAnimationSpeed: 0
+    MoveAnimationOffset: 0
+    Team: 0
+    Level: 0
+    XP: 0
+  HeroCurrentlySelectedP8:
+    RaceID: 0
+    ClassID: 0
+    Name: 
+    MaxHealth: 0
+    Intelligance: 0
+    Strenght: 0
+    Dexterity: 0
+    Charisma: 0
+    Title: 
+    Slug: 
+    Description: 
+    Type: 
+    Mod: 
+    PixelsPerUnit: 0
+    Attack: 0
+    Defence: 0
+    Health: 0
+    AttackRange: 0
+    MovePoints: 0
+    ConversionSpeed: 0
+    SightRange: 0
+    Mana: 0
+    HealthRegen: 0
+    ManaRegen: 0
+    CanConvert: 0
+    CanMoveAndAttack: 0
+    BaseIntelligance: 0
+    BaseStrenght: 0
+    BaseDexterity: 0
+    BaseCharisma: 0
+    IdleAnimations: 0
+    AttackAnimations: 0
+    HurtAnimations: 0
+    DiedAnimations: 0
+    MoveAnimations: 0
+    IdleAnimationSpeed: 0
+    AttackAnimationSpeed: 0
+    HurtAnimationSpeed: 0
+    DiedAnimationSpeed: 0
+    MoveAnimationSpeed: 0
+    MoveAnimationOffset: 0
+    Team: 0
+    Level: 0
+    XP: 0
+  HeroCurrentlySelectedP9:
+    RaceID: 0
+    ClassID: 0
+    Name: 
+    MaxHealth: 0
+    Intelligance: 0
+    Strenght: 0
+    Dexterity: 0
+    Charisma: 0
+    Title: 
+    Slug: 
+    Description: 
+    Type: 
+    Mod: 
+    PixelsPerUnit: 0
+    Attack: 0
+    Defence: 0
+    Health: 0
+    AttackRange: 0
+    MovePoints: 0
+    ConversionSpeed: 0
+    SightRange: 0
+    Mana: 0
+    HealthRegen: 0
+    ManaRegen: 0
+    CanConvert: 0
+    CanMoveAndAttack: 0
+    BaseIntelligance: 0
+    BaseStrenght: 0
+    BaseDexterity: 0
+    BaseCharisma: 0
+    IdleAnimations: 0
+    AttackAnimations: 0
+    HurtAnimations: 0
+    DiedAnimations: 0
+    MoveAnimations: 0
+    IdleAnimationSpeed: 0
+    AttackAnimationSpeed: 0
+    HurtAnimationSpeed: 0
+    DiedAnimationSpeed: 0
+    MoveAnimationSpeed: 0
+    MoveAnimationOffset: 0
+    Team: 0
+    Level: 0
+    XP: 0
 --- !u!224 &1259027382
 RectTransform:
   m_ObjectHideFlags: 0
@@ -708,6 +1114,18 @@ MonoBehaviour:
   MalePrefab: {fileID: 0}
   FemalePrefab: {fileID: 0}
   ClientSpawned: 0
+--- !u!114 &1259027385
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1259027379}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81b54b6f1852dc447a5a92f9f737e07e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1421465099
 GameObject:
   m_ObjectHideFlags: 0
@@ -871,6 +1289,7 @@ GameObject:
   - component: {fileID: 1614499549}
   - component: {fileID: 1614499548}
   - component: {fileID: 1614499547}
+  - component: {fileID: 1614499550}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -896,7 +1315,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -943,6 +1362,15 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!45 &1614499550
+Skybox:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1614499546}
+  m_Enabled: 1
+  m_CustomSkybox: {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
 --- !u!1 &1760234269
 GameObject:
   m_ObjectHideFlags: 0

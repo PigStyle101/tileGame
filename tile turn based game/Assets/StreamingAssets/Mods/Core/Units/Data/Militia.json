@@ -14,7 +14,7 @@
   "MoveAnimationSpeed": 0.02,
   "HurtAnimationSpeed": 0.02,
   "DiedAnimationSpeed": 0.02,
-  "MoveAnimationOffset": 20,
+  "MoveAnimationTime": 3,
   "Attack": 2,
   "Defence": 0,
   "AttackRange": 1,
@@ -25,4 +25,5 @@
   "SightRange": 4,
   "CanConvert": true,
   "CanMoveAndAttack": true
+  
 }

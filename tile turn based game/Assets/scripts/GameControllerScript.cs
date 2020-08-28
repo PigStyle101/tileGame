@@ -27,7 +27,7 @@ namespace TileGame
 
         public static GameControllerScript instance = null;
 
-        private Dictionary<Vector2, string> MapDictionary = new Dictionary<Vector2, string>();// this string needs to be converted to a int id, 
+        private Dictionary<Vector2, string> MapDictionary = new Dictionary<Vector2, string>();// this string needs to be converted to a int id? 
         public Dictionary<Vector2, GameObject> TilePos = new Dictionary<Vector2, GameObject>();
         public Dictionary<Vector2, GameObject> UnitPos = new Dictionary<Vector2, GameObject>();
         public Dictionary<Vector2, GameObject> BuildingPos = new Dictionary<Vector2, GameObject>();
@@ -72,6 +72,7 @@ namespace TileGame
         private float IdleTimerFloat;
         public int IdleState;
         private DatabaseController DBC;
+        private LuaMethods LM;
         public Hero HeroCurrentlySelectedP1;
         public Hero HeroCurrentlySelectedP2;
         public Hero HeroCurrentlySelectedP3;
@@ -99,6 +100,7 @@ namespace TileGame
         {
             UserData.RegisterAssembly();
             DBC = DatabaseController.instance;
+            LM = LuaMethods.instance;
             PopulateHeroList();
         }
 
@@ -112,6 +114,7 @@ namespace TileGame
             RayCastForMapEditor();
             RayCastForPlayScene();
             IdleTimer();
+            UpdateController();
         }
 
         /// <summary>
@@ -153,15 +156,15 @@ namespace TileGame
         /// </summary>
         /// <param name="sceneVar">Name of scene that was loaded</param>
         /// <param name="Mode">Not even sure this is needed</param>
-        private void OnSceneLoaded(Scene sceneVar, LoadSceneMode Mode) //do i need LoadSceneMode here?
+        private void OnSceneLoaded(Scene sceneVar, LoadSceneMode Mode)
         {
             //Debug.log("OnSceneLoaded: " + sceneVar.name);//debug thing
             CurrentScene = sceneVar.name;
             if (sceneVar.name == "MapEditorScene")
             {
+                MEMCC = GameObject.Find("MainCamera").GetComponent<MapEditMenueCamController>();
                 if (MapEditorNewMapBool)
                 {
-                    MEMCC = GameObject.Find("MainCamera").GetComponent<MapEditMenueCamController>();
                     for (int i = 0; i < EditorMapSize; i++)
                     {
                         for (int o = 0; o < EditorMapSize; o++)
@@ -176,7 +179,6 @@ namespace TileGame
                 }
                 else
                 {
-                    MEMCC = GameObject.Find("MainCamera").GetComponent<MapEditMenueCamController>();
                     LoadMapMapEditor(MapToLoadForMapEditor);
                 }
             }
@@ -199,7 +201,7 @@ namespace TileGame
 
             }
             //AudioController(sceneVar.name);
-        }
+        } //do i need LoadSceneMode here?
 
         /// <summary>
         /// Creates the graphical representation of the map and sets the camera to center of map
@@ -278,13 +280,14 @@ namespace TileGame
         /// <param name="Dead">Unit to kill</param>
         public void KillUnitPlayScene(GameObject Dead)
         {
+            Dead.GetComponent<UnitController>().UseOwnUpdate = true;
             UnitPos.Remove(Dead.transform.position);
             if (UnitPos.ContainsKey(Dead.transform.position))
             {
                 throw new Exception("Key was not removed");
             }
             //Destroy(Dead);
-        }
+        } //Can be lua
 
         /// <summary>
         /// Checks if BuildingPos contains building and replaces or adds it.
@@ -789,7 +792,7 @@ namespace TileGame
                                         bool dead = HitUC.DoDamage(attack);
                                         if (dead)
                                         {
-                                            KillUnitPlayScene(hit.transform.gameObject);
+                                            KillUnitPlayScene(HitUC.transform.gameObject);
                                             HitUC.StartDeadAnimation();
                                             UC.KilledEnemyUnit(hit.transform.GetComponent<UnitController>());
                                             foreach (var kvp in UnitPos) //any unit killed will give hero xp no matter what
@@ -1013,6 +1016,7 @@ namespace TileGame
             TilePos.Clear();
             UnitPos.Clear();
             BuildingPos.Clear();
+            EditorMapSize = 0;
             TeamList = LoadingFile.Teamlist;
             foreach (var item in LoadingFile.TerrainList)
             {
@@ -1040,6 +1044,11 @@ namespace TileGame
             CameraVar = GameObject.Find("MainCamera");
             CameraVar.transform.position = new Vector3(EditorMapSize / 2 - .5f, EditorMapSize / 2 - .5f, EditorMapSize * -1);
             SpriteUpdateActivator();
+            foreach (var kvp in TilePos)
+            {
+                kvp.Value.GetComponent<TerrainController>().WaterSpriteController();
+                kvp.Value.GetComponent<TerrainController>().RoadSpriteController();
+            }
         }
 
         /// <summary>
@@ -1172,7 +1181,6 @@ namespace TileGame
             PSCC.CurrentPlayerTurnText.text = "Team turn";
             PSCC.GoldText.text = "Gold:" + TeamList[CurrentTeamsTurn.Team].Gold.ToString();
             AllRoundUpdater();
-            AllRoundUpdater();
             foreach (var kvp in BuildingPos)
             {
                 if (kvp.Value.GetComponent<BuildingController>().Team == CurrentTeamsTurn.Team)
@@ -1183,6 +1191,7 @@ namespace TileGame
                 {
                     kvp.Value.GetComponent<BuildingController>().CanBuild = false;
                 }
+                kvp.Value.GetComponent<BuildingController>().TeamSpriteUpdater(); 
             }
             int TempInt = 0;
             foreach (var kvp in BuildingPos)
@@ -1341,7 +1350,7 @@ namespace TileGame
         {
             if (DBC.LuaCoreScripts.ContainsKey("CancelActionPlayScene"))
             {
-                RunLuaScript(DBC.LuaCoreScripts["CancelActionPlayScene"]); //this works in the lua script(use this example for futur)
+                LM.RunLuaScript(DBC.LuaCoreScripts["CancelActionPlayScene"],CurrentScene); //this works in the lua script(use this example for futur)
             }
             else
             {
@@ -1368,7 +1377,7 @@ namespace TileGame
                 PSCC.AttackButtonSelected = false;
                 PSCC.SetActionButtonsToFalse();
             }
-        } //potential lua
+        } //Can be lua
 
         /// <summary>
         /// Sets picked position as units new position and changes unit Movable variable to false
@@ -1402,7 +1411,7 @@ namespace TileGame
             PSCC.AttackButtonSelected = false;
             PSCC.SetActionButtonsToFalse();
             PSCC.HideOrShowSaveButton(false);
-        } //potential lua
+        } //Can be lua
 
         /// <summary>
         /// Runs when a unit uses the capture action
@@ -1459,7 +1468,7 @@ namespace TileGame
             PSCC.AttackButtonSelected = false;
             SelectedUnitPlayScene = null;
             PSCC.HideOrShowSaveButton(false);
-        } //potential lua
+        } //Can be lua
 
         /// <summary>
         /// Runs when a unit uses the move action
@@ -1590,7 +1599,7 @@ namespace TileGame
                 }
             }
             PSCC.HideOrShowSaveButton(false);
-        } //potential lua
+        } //Can be lua
 
         /// <summary>
         /// Adds a tint to units that this unit can attack
@@ -1610,7 +1619,7 @@ namespace TileGame
             }
             PSCC.WaitButton.SetActive(false);
             //PSCC.CancelButton.SetActive(false);
-        }
+        } //Can be lua
 
         /// <summary>
         /// Simple audio controller to test out audio functionallity
@@ -1858,6 +1867,17 @@ namespace TileGame
             }
         }
 
+        public int IfNegativeMakeZero(int n)
+        {
+            if (n < 0)
+            {
+                return 0;
+            }
+            else
+            {
+                return n;
+            }
+        }
         public void CreateNewHero(int RaceID,int ClassID, string name)
         {
             Hero h = new Hero();
@@ -1877,10 +1897,14 @@ namespace TileGame
             h.Strenght = DBC.HeroRaceDictionary[RaceID].Strenght + DBC.HeroClassDictionary[ClassID].StrenghtModifier;
             h.Dexterity = DBC.HeroRaceDictionary[RaceID].Dexterity + DBC.HeroClassDictionary[ClassID].DexterityModifier;
             h.Charisma = DBC.HeroRaceDictionary[RaceID].Charisma + DBC.HeroClassDictionary[ClassID].CharismaModifier;
-            h.BaseCharisma = DBC.HeroRaceDictionary[RaceID].Charisma;
-            h.BaseDexterity = DBC.HeroRaceDictionary[RaceID].Dexterity;
-            h.BaseIntelligance = DBC.HeroRaceDictionary[RaceID].Intelligance;
-            h.BaseStrenght = DBC.HeroRaceDictionary[RaceID].Strenght;
+            h.Intelligance = IfNegativeMakeZero(h.Intelligance);
+            h.Strenght = IfNegativeMakeZero(h.Strenght);
+            h.Dexterity = IfNegativeMakeZero(h.Dexterity);
+            h.Charisma = IfNegativeMakeZero(h.Charisma);
+            h.BaseCharisma = h.Charisma;
+            h.BaseDexterity = h.Dexterity;
+            h.BaseIntelligance = h.Intelligance;
+            h.BaseStrenght = h.Strenght;
             h.Attack = h.Strenght + 1;
             h.MaxHealth = h.Strenght + 1;
             h.HealthRegen = (int)Math.Ceiling((double)h.Strenght / 3);
@@ -1901,7 +1925,7 @@ namespace TileGame
             sr.Dispose();
             fs.Close();
             fs.Dispose();*/
-            GameObject.Find("Canvas").GetComponent<MenueController>().NewHeroFeedBackText.text = "File saved as: " + name;
+            GameObject.Find("Main Camera").GetComponent<MenueController>().NewHeroFeedBackText.text = "File saved as: " + name;
 
         }
 
@@ -2024,69 +2048,16 @@ namespace TileGame
             }
         } //Need to add varaible to control speed of animation for terrain 
 
-        public UnitController GetUnitController(GameObject Unit)
+        public void UpdateController()
         {
-            if (Unit.GetComponent<UnitController>())
+            foreach (var kvp in TilePos)
             {
-                return Unit.GetComponent<UnitController>();
+                kvp.Value.GetComponent<TerrainController>().CustomUpdate();
             }
-            else
+            foreach (var kvp in UnitPos)
             {
-                Debug.Log(Unit);
-                return null;
+                kvp.Value.GetComponent<UnitController>().CustomUpdate();
             }
-        }
-
-        public TerrainController GetTerrainController(GameObject unit)
-        {
-            return unit.GetComponent<TerrainController>();
-        }
-
-        public void ChangeSpriteColor(GameObject Unit, int r, int g, int b)
-        {
-            Unit.GetComponent<SpriteRenderer>().color = new Color(r, g, b);
-        }
-
-        public void ChangeFOWSpriteColor(GameObject Unit, int r, int g, int b)
-        {
-            Unit.transform.GetChild(1).GetComponent<SpriteRenderer>().color = new Color(r, g, b);
-        }
-
-        public bool VectorCompair(int x1, int y1, int x2, int y2)
-        {
-            if (x1 == x2 && y1 == y2)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        public void PrintDebug(string print)
-        {
-            Debug.Log(print);
-        }
-
-        public Vector2 ChangeVector2(int x, int y)
-        {
-            Vector2 v = new Vector2(x, y);
-            return v;
-        }
-
-        public void RunLuaScript(string s)
-        {
-            Script script = new Script();
-            UserData.RegisterType<GameObject>();
-            UserData.RegisterType<Vector2>();
-            DynValue vec = UserData.Create(new Vector2());
-            DynValue obj = UserData.Create(new GameObject());
-            script.Globals.Set("Vector2", vec);
-            script.Globals.Set("GameObject", obj);
-            script.Globals["GCS"] = this;
-            script.Globals["PSCC"] = PSCC;
-            script.DoString(File.ReadAllText(s));
         }
     }
 

@@ -67,9 +67,13 @@ namespace TileGame
 
         void Update()
         {
+            KeyBoardShortCuts();
+        }
+
+        private void FixedUpdate()
+        {
             MoveScreenXandY();
             MoveScreenZ();
-            KeyBoardShortCuts();
         }
 
         private void GetObjectReferances()
@@ -123,7 +127,7 @@ namespace TileGame
 
             transform.Translate(new Vector3(0, 0, z), Space.World);
 
-            if (gameObject.transform.position.z > -1) { gameObject.transform.position = new Vector3(transform.position.x, transform.position.y, -1); }
+            if (gameObject.transform.position.z > -5) { gameObject.transform.position = new Vector3(transform.position.x, transform.position.y, -5); }
             if (gameObject.transform.position.z < -GCS.EditorMapSize * 2) { gameObject.transform.position = new Vector3(transform.position.x, transform.position.y, -GCS.EditorMapSize * 2); }
 
         }//controls camera z movement

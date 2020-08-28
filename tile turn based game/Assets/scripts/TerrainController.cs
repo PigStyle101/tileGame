@@ -85,10 +85,10 @@ namespace TileGame
             }
         }
 
-        void Update()
+        public void CustomUpdate()
         {
             Vector3 screenpoint = cam.WorldToViewportPoint(gameObject.transform.position);
-            bool onScreen = screenpoint.z > 0 && screenpoint.x > -.2 && screenpoint.x < 1.2 && screenpoint.y > -.2 && screenpoint.y < 1.2;
+            bool onScreen = screenpoint.z > 0.2 && screenpoint.x > -.2 && screenpoint.x < 1.2 && screenpoint.y > -.2 && screenpoint.y < 1.2;
             if (onScreen)
             {
                 gameObject.GetComponent<SpriteRenderer>().enabled = true;
