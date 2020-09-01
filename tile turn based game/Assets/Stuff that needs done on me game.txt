@@ -4,6 +4,8 @@ Things that need done:
 -Add hashtables for checking mod integrety.(will only be used in multiplayer)
 --use lua to run custom scripts on maps
 
+-- learn how to code // Monin
+
 /////////////////////////////////////////// Currnetly working on:
 /////////////////////////////////////////// spell book system
 
