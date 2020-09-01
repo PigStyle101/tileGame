@@ -1,8 +1,0 @@
-System.IO.DirectoryNotFoundException: Could not find a part of the path "C:\Users\Owner\Documents\GitHub\tileGame\tile turn based game\Assets\StreamingAssets\Core\Maps\Eyes of the storm.json".
-  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.Boolean anonymous, System.IO.FileOptions options) [0x00164] in <23c160f925be47d7a4fd083a3a62c920>:0 
-  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize) [0x00000] in <23c160f925be47d7a4fd083a3a62c920>:0 
-  at (wrapper remoting-invoke-with-check) System.IO.FileStream..ctor(string,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare,int)
-  at System.IO.File.Create (System.String path, System.Int32 bufferSize) [0x00000] in <23c160f925be47d7a4fd083a3a62c920>:0 
-  at System.IO.File.Create (System.String path) [0x00000] in <23c160f925be47d7a4fd083a3a62c920>:0 
-  at GameControllerScript.SaveMap (System.Collections.Generic.Dictionary`2[TKey,TValue] TP, System.Collections.Generic.Dictionary`2[TKey,TValue] UP, System.Collections.Generic.Dictionary`2[TKey,TValue] BP, System.String SaveName) [0x00470] in C:\Users\Owner\Documents\GitHub\tileGame\tile turn based game\Assets\scripts\GameControllerScript.cs:716 
-  at MapEditMenueCamController.SavePanelSaveButtonClicked () [0x00002] in C:\Users\Owner\Documents\GitHub\tileGame\tile turn based game\Assets\scripts\MapEditMenueCamController.cs:385 

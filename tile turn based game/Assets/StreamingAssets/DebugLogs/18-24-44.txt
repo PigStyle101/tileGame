@@ -1,2 +1,0 @@
-System.NullReferenceException: Object reference not set to an instance of an object
-  at GameControllerScript.RayCastForPlayScene () [0x0061e] in C:\Users\Owner\Documents\GitHub\tileGame\tile turn based game\Assets\scripts\GameControllerScript.cs:557 

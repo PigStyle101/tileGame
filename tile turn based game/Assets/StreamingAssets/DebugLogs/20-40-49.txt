@@ -1,4 +1,0 @@
-System.Collections.Generic.KeyNotFoundException: The given key was not present in the dictionary.
-  at System.Collections.Generic.Dictionary`2[TKey,TValue].get_Item (TKey key) [0x0001e] in <23c160f925be47d7a4fd083a3a62c920>:0 
-  at GameControllerScript.PlaySceneNewGameInitalizer () [0x0003e] in C:\Users\Owner\Documents\GitHub\tileGame\tile turn based game\Assets\scripts\GameControllerScript.cs:912 
-  at GameControllerScript.OnSceneLoaded (UnityEngine.SceneManagement.Scene sceneVar, UnityEngine.SceneManagement.LoadSceneMode Mode) [0x00114] in C:\Users\Owner\Documents\GitHub\tileGame\tile turn based game\Assets\scripts\GameControllerScript.cs:164 

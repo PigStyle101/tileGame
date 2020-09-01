@@ -1,12 +1,11 @@
 Things that need done:
 -add settings menu
 -add unit return(a list of units that you keep through battles)
--Add function to show loading state when going back to main menu from mod screen
 -Add hashtables for checking mod integrety.(will only be used in multiplayer)
 --use lua to run custom scripts on maps
 
 /////////////////////////////////////////// Currnetly working on:
-/////////////////////////////////////////// working on making unit movement look better, units work, need to fix heroes
+/////////////////////////////////////////// spell book system
 
 -Multiplayer?
 -What to do here?

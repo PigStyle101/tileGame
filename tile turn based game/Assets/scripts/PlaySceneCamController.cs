@@ -146,6 +146,7 @@ namespace TileGame
         /// </summary>
         private void GetObjectReferances()
         {
+            try { 
             EndGameText = transform.Find("Canvas").Find("Panel").Find("EndGamePanel").Find("EndGameText").GetComponent<Text>();
             CurrentPlayerTurnText = transform.Find("Canvas").Find("Panel").Find("CurrentPlayerTurnImage").Find("CurrentPlayerTurnText").GetComponent<Text>();
             GoldText = transform.Find("Canvas").Find("Panel").Find("GoldImage").Find("GoldText").GetComponent<Text>();
@@ -230,6 +231,12 @@ namespace TileGame
             InputFieldSaveMenu = transform.Find("Canvas").Find("SavePanel").Find("InputField").GetComponent<InputField>();
             SavePanel = transform.Find("Canvas").Find("SavePanel").gameObject;
             MovableUnitsCountText = transform.Find("Canvas").Find("Panel").Find("MovableUnitsImage").Find("MovableUnitsText").GetComponent<Text>();
+            }
+            catch (Exception e)
+            {
+                GCS.LogController(e.ToString());
+                throw;
+            }
         }
 
         /// <summary>
@@ -237,6 +244,7 @@ namespace TileGame
         /// </summary>
         private void MoveScreenXandY()
         {
+            try { 
             if (Input.GetMouseButtonDown(1))
             {
                 dragOrigin = Input.mousePosition;
@@ -255,7 +263,12 @@ namespace TileGame
             if (gameObject.transform.position.y > GCS.PlayMapSize) { gameObject.transform.position = new Vector3(transform.position.x, GCS.PlayMapSize, transform.position.z); }
             if (gameObject.transform.position.x < 0) { gameObject.transform.position = new Vector3(0, transform.position.y, transform.position.z); }
             if (gameObject.transform.position.y < 0) { gameObject.transform.position = new Vector3(transform.position.x, 0, transform.position.z); }
-
+            }
+            catch (Exception e)
+            {
+                GCS.LogController(e.ToString());
+                throw;
+            }
         } //controls camera movment y and x //Potential lua code
 
         /// <summary>
@@ -263,6 +276,7 @@ namespace TileGame
         /// </summary>
         private void MoveScreenZ()
         {
+            try { 
             int z = new int();
             if (Input.GetAxis("Mouse ScrollWheel") > 0) { z = DBC.scrollSpeed; }
             if (Input.GetAxis("Mouse ScrollWheel") < 0) { z = -DBC.scrollSpeed; }
@@ -271,7 +285,12 @@ namespace TileGame
 
             if (gameObject.transform.position.z > -5) { gameObject.transform.position = new Vector3(transform.position.x, transform.position.y, -5); }
             if (gameObject.transform.position.z < -GCS.PlayMapSize * 2) { gameObject.transform.position = new Vector3(transform.position.x, transform.position.y, -GCS.PlayMapSize * 2); }
-
+            }
+            catch (Exception e)
+            {
+                GCS.LogController(e.ToString());
+                throw;
+            }
         }//controls camera z movement //Potential lua code
 
         /// <summary>
@@ -279,6 +298,7 @@ namespace TileGame
         /// </summary>
         public void EndTurnButtonClicked()
         {
+            try { 
             BuildingPanel.SetActive(false);
             if (GCS.SelectedUnitPlayScene != null)
             {
@@ -288,6 +308,12 @@ namespace TileGame
             UpdateTurnImageColor(GCS.CurrentTeamsTurn.Team);
             EventSystem.current.SetSelectedGameObject(null);
             MoveableUnitCount();
+            }
+            catch (Exception e)
+            {
+                GCS.LogController(e.ToString());
+                throw;
+            }
         }
 
         /// <summary>
@@ -296,6 +322,7 @@ namespace TileGame
         /// <param name="enemyCount">Number of units in range</param>
         public void AttackButtonController(int enemyCount)
         {
+            try { 
             if (enemyCount >= 1)
             {
                 AttackButton.SetActive(true);
@@ -305,6 +332,12 @@ namespace TileGame
                 AttackButton.SetActive(false);
             }
             WaitButton.SetActive(true);
+            }
+            catch (Exception e)
+            {
+                GCS.LogController(e.ToString());
+                throw;
+            }
         }
 
         /// <summary>
@@ -312,8 +345,15 @@ namespace TileGame
         /// </summary>
         public void WaitButtonClicked()
         {
+            try { 
             GCS.WaitActionPlayScene();
             MoveableUnitCount();
+            }
+            catch (Exception e)
+            {
+                GCS.LogController(e.ToString());
+                throw;
+            }
         }
 
         /// <summary>
@@ -321,9 +361,15 @@ namespace TileGame
         /// </summary>
         public void AttackButtonClicked()
         {
+            try { 
             GCS.AttackActionPlayScene();
             AttackButtonSelected = true;
-
+            }
+            catch (Exception e)
+            {
+                GCS.LogController(e.ToString());
+                throw;
+            }
         }
 
         /// <summary>
@@ -331,15 +377,28 @@ namespace TileGame
         /// </summary>
         public void CancelButtonClicked()
         {
+            try { 
             GCS.CancelActionPlayScene();
             AttackButtonSelected = false;
-
+            }
+            catch (Exception e)
+            {
+                GCS.LogController(e.ToString());
+                throw;
+            }
         }
 
         public void CaptureButtonClicked()
         {
+            try { 
             GCS.CaptureActionPlayScene();
             MoveableUnitCount();
+            }
+            catch (Exception e)
+            {
+                GCS.LogController(e.ToString());
+                throw;
+            }
         }
 
         /// <summary>
@@ -347,12 +406,19 @@ namespace TileGame
         /// </summary>
         public void SetActionButtonsToFalse()
         {
+            try { 
             AttackButton.SetActive(false);
             WaitButton.SetActive(false);
             CancelButton.SetActive(false);
             CaptureButton.SetActive(false);
             MoveButton.SetActive(false);
             MoveableUnitCount();
+            }
+            catch (Exception e)
+            {
+                GCS.LogController(e.ToString());
+                throw;
+            }
         }
 
         /// <summary>
@@ -360,6 +426,7 @@ namespace TileGame
         /// </summary>
         public void RayCasterForPlayScene()
         {
+            try { 
             if (Input.GetMouseButtonDown(0))
             {
                 if (!EventSystem.current.IsPointerOverGameObject()) //dont want to click through menus
@@ -409,12 +476,12 @@ namespace TileGame
                             UnitImage.GetComponent<Image>().sprite = DBC.HeroRaceDictionary[UC.ID].IconSprite;
                             UnitText.text = THero.Title;
                             UnitDescription.text = THero.Description;
-                            UnitToolTipAttack.text = "Attack:" + THero.Attack;
-                            UnitToolTipDefence.text = "Defence:" + THero.Defence;
+                            UnitToolTipAttack.text = "Attack:" + UC.Attack;
+                            UnitToolTipDefence.text = "Defence:" + UC.Defence;
                             UnitToolTipAttackRange.text = "Attack Range:" + UC.AttackRange;
-                            UnitToolTipMovePoints.text = "Move Points:" + THero.MovePoints;
+                            UnitToolTipMovePoints.text = "Move Points:" + UC.MovePoints;
                             UnitToolTipSightRange.text = "Sight Range:" + UC.SightRange;
-                            UnitToolTipConversionSpeed.text = "Conversion Speed:" + THero.ConversionSpeed;
+                            UnitToolTipConversionSpeed.text = "Conversion Speed:" + UC.ConversionSpeed;
                         }
                         if (hit.transform.tag == DBC.BuildingDictionary[0].Type && !GCS.TilePos[(Vector2)hit.transform.position].GetComponent<TerrainController>().FogOfWarBool) //did we hit a building?
                         {
@@ -512,12 +579,12 @@ namespace TileGame
                             DescriptionText.text = "Description:" + THero.Description;
                             LevelText.text = "Level:" + UC.Level;
                             XPText.text = "XP:" + UC.XP;
-                            AttackText.text = "Attack:" + THero.Attack;
-                            DefenceText.text = "Defence:" + THero.Defence;
-                            HealthText.text = "Health:" + THero.Health;
+                            AttackText.text = "Attack:" + UC.Attack;
+                            DefenceText.text = "Defence:" + UC.Defence;
+                            HealthText.text = "Health:" + UC.Health;
                             AttackRangeText.text = "Attack Range:" + UC.AttackRange;
-                            MovePointsText.text = "Move Points:" + THero.MovePoints;
-                            ConversionSpeedText.text = "Conversion Speed:" + THero.ConversionSpeed;
+                            MovePointsText.text = "Move Points:" + UC.MovePoints;
+                            ConversionSpeedText.text = "Conversion Speed:" + UC.ConversionSpeed;
                             SightRangeText.text = "Sight Range:" + UC.SightRange;
 
                             StrenghtText.text = "Strenght:" + THero.Strenght;
@@ -534,18 +601,24 @@ namespace TileGame
                             IntelligancePerLvlText.text = "Intelligance per lvl:" + THero.BaseIntelligance;
                             HeroManaRegenText.text = "Mana Regen:" + THero.ManaRegen;
                             HeroMaxManaText.text = "Max Mana:" + THero.Mana;
-                            HeroXpGainText.text = "Xp Gain:"; //need to set this up still
+                            HeroXpGainText.text = "Xp Gain:" + THero.XPGain; //need to set this up still
                             CharismaText.text = "Charisma:" + THero.Charisma;
                             CharismaPerLvlText.text = "Charisma per lvl:" + THero.BaseCharisma;
-                            HeroUnitCostText.text = "Unit Cost:"; //need to set this up still
-                            MoraleText.text = "Morale:"; //need to set this up still
-                            ReturnLimitText.text = "Return Limit:"; //need to set this up still
+                            HeroUnitCostText.text = "Unit Cost:" + THero.UnitCost; //need to set this up still
+                            MoraleText.text = "Morale:" + THero.MoralBonus; //need to set this up still
+                            ReturnLimitText.text = "Return Limit:" + THero.ReturnAmount; //need to set this up still
                             InfoAndStatsPanel.SetActive(true);
                             InfoButtonClicked();
                             HeroStatButton.SetActive(true);
                         }
                     }
                 }
+            }
+            }
+            catch (Exception e)
+            {
+                GCS.LogController(e.ToString());
+                throw;
             }
         }
 
@@ -554,6 +627,7 @@ namespace TileGame
         /// </summary>
         private void AddUnitButtonsToBuildContent(BuildingController BuildingHit)
         {
+            try { 
             var childcount = ContentWindowBuilding.transform.childCount;
             for (int i = 0; i < childcount; i++)
             {
@@ -573,7 +647,12 @@ namespace TileGame
                     tempbutton.GetComponent<ButtonProperties>().ID = kvp.Key;
                 }
             }
-
+            }
+            catch (Exception e)
+            {
+                GCS.LogController(e.ToString());
+                throw;
+            }
         }
 
         /// <summary>
@@ -581,6 +660,7 @@ namespace TileGame
         /// </summary>
         public void BuyUnitController()
         {
+            try { 
             if (EventSystem.current.currentSelectedGameObject != null) //make sure player clicked on the unit button and did not use keyboard shortcut
             {
                 SelectedUnitDR = EventSystem.current.currentSelectedGameObject.GetComponent<ButtonProperties>().ID;
@@ -612,6 +692,12 @@ namespace TileGame
             {
                 FeedBackText.text = "Not enough gold to buy that unit";
             }
+            }
+            catch (Exception e)
+            {
+                GCS.LogController(e.ToString());
+                throw;
+            }
         }  //potential lua method
 
         /// <summary>
@@ -620,6 +706,7 @@ namespace TileGame
         /// <param name="Team"></param>
         public void GameEndController(int Team)
         {
+            try { 
             List<string> templist = new List<string>();
             foreach (var item in GCS.UnitPos)
             {
@@ -640,7 +727,12 @@ namespace TileGame
             EndGamePanel.SetActive(true);
             SaveButton.SetActive(false);
             EndGameText.text = "Team: " + Team.ToString() + " has won the game.";
-
+            }
+            catch (Exception e)
+            {
+                GCS.LogController(e.ToString());
+                throw;
+            }
         } //potential lua method
 
         /// <summary>
@@ -648,6 +740,7 @@ namespace TileGame
         /// </summary>
         public void MainMenuButtonClicked()
         {
+            try { 
             foreach (var GO in GameObject.FindGameObjectsWithTag("Terrain"))
             {
                 Destroy(GO);
@@ -664,7 +757,12 @@ namespace TileGame
             GCS.TilePos = new Dictionary<Vector2, GameObject>();
             GCS.UnitPos = new Dictionary<Vector2, GameObject>();
             SceneManager.LoadScene("MainMenuScene");
-
+            }
+            catch (Exception e)
+            {
+                GCS.LogController(e.ToString());
+                throw;
+            }
         }
 
         /// <summary>
@@ -672,6 +770,7 @@ namespace TileGame
         /// </summary>
         public void ReplayButtonClicked()
         {
+            try { 
             foreach (var t in GCS.TeamList)
             {
                 if (t.Active)
@@ -702,6 +801,12 @@ namespace TileGame
             TooltipPanel.SetActive(true);
             ActionPanel.SetActive(true);
             EndGamePanel.SetActive(false);
+            }
+            catch (Exception e)
+            {
+                GCS.LogController(e.ToString());
+                throw;
+            }
         }
 
         /// <summary>
@@ -714,6 +819,7 @@ namespace TileGame
 
         public void UpdateTurnImageColor(int team)
         {
+            try { 
             //Black,Blue,Cyan,Gray,Green,Magenta,Red,White,Yellow
             switch (team)
             {
@@ -754,6 +860,12 @@ namespace TileGame
                     CurrentPlayerTurnText.color = Color.black;
                     break;
             }
+            }
+            catch (Exception e)
+            {
+                GCS.LogController(e.ToString());
+                throw;
+            }
         }
 
         public void HideInfoPanel()
@@ -785,6 +897,7 @@ namespace TileGame
 
         public void SaveButtonSavePanelController()
         {
+            try { 
             string SaveGameName = InputFieldSaveMenu.text;
             if (!System.IO.File.Exists(Application.dataPath + "/StreamingAssets/Saves/" + SaveGameName + ".json"))
             {
@@ -809,6 +922,12 @@ namespace TileGame
             {
                 FeedbackSaveMenu.text = "A save file with that name already exist, pick a new one or delete old one.";
             }
+            }
+            catch (Exception e)
+            {
+                GCS.LogController(e.ToString());
+                throw;
+            }
         }
 
         public void MoveButtonClicked()
@@ -822,6 +941,7 @@ namespace TileGame
         /// </summary>
         public void KeyBoardShortcuts()
         {
+            try { 
             if (Input.GetKeyDown(KeyCode.Q) && AttackButton.activeSelf && !MoveButton.activeSelf)
             {
                 AttackButtonClicked();
@@ -881,10 +1001,17 @@ namespace TileGame
                     }
                 }
             }
+            }
+            catch (Exception e)
+            {
+                GCS.LogController(e.ToString());
+                throw;
+            }
         } //potential lua code
 
         public void MoveableUnitCount()
         {
+            try { 
             MovableUnits = 0;
             foreach (var kvp in GCS.UnitPos)
             {
@@ -897,6 +1024,12 @@ namespace TileGame
                 }
             }
             MovableUnitsCountText.text = MovableUnits.ToString();
+            }
+            catch (Exception e)
+            {
+                GCS.LogController(e.ToString());
+                throw;
+            }
         }
 
         public void CloseInfoStatPanel()

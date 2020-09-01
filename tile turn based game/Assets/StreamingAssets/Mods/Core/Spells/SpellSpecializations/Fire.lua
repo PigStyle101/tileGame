@@ -10,7 +10,7 @@ FireSpells.FireBall = FireBall
 FireSpells.FireBall.name = 'FireBall'
 FireSpells.FireBall.cost = 5
 FireSpells.Cauterize = Cauterize
-FireSpells.Cauterize.name = 'Caut'
+FireSpells.Cauterize.name = 'Cauterize'
 FireSpells.Cauterize.cost =2
 
 HolySpells.Heal = Heal
@@ -23,9 +23,9 @@ HolySpells.Smite.cost = 3
 function CastSpell(name,mana)
   if name == FireSpells.Cauterize.name then
     if mana >= FireSpells.Cauterize.cost then
-    print('Casting Caut')
+    print('Casting Cauterize')
     else
-    print('Need more mana for caut')
+    print('Need more mana for Cauterize')
     end
   elseif name == FireSpells.FireBall.name then
     if mana >= FireSpells.FireBall.cost then

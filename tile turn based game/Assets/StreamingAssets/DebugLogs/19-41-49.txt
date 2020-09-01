@@ -1,7 +1,0 @@
-System.ArgumentException: GetComponent requires that the requested component 'GameObject' derives from MonoBehaviour or Component or is an interface.
-  at (wrapper managed-to-native) UnityEngine.GameObject.GetComponentsInternal(UnityEngine.GameObject,System.Type,bool,bool,bool,bool,object)
-  at UnityEngine.GameObject.GetComponents[T] () [0x00011] in C:\buildslave\unity\build\Runtime\Export\Scripting\GameObject.bindings.cs:92 
-  at UnityEngine.Component.GetComponents[T] () [0x00007] in C:\buildslave\unity\build\Runtime\Export\Scripting\Component.bindings.cs:181 
-  at PlaySceneCamController.AddUnitButtonsToBuildContent (System.String BuildingMod) [0x00153] in C:\Users\Owner\Documents\GitHub\tileGame\tile turn based game\Assets\scripts\PlaySceneCamController.cs:430 
-  at PlaySceneCamController.RayCasterForPlayScene () [0x00657] in C:\Users\Owner\Documents\GitHub\tileGame\tile turn based game\Assets\scripts\PlaySceneCamController.cs:399 
-  at PlaySceneCamController.Update () [0x00010] in C:\Users\Owner\Documents\GitHub\tileGame\tile turn based game\Assets\scripts\PlaySceneCamController.cs:88 

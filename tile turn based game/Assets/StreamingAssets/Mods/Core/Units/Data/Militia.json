@@ -14,7 +14,7 @@
   "MoveAnimationSpeed": 0.02,
   "HurtAnimationSpeed": 0.02,
   "DiedAnimationSpeed": 0.02,
-  "MoveAnimationTime": 3,
+  "MoveAnimationTime": 5,
   "Attack": 2,
   "Defence": 0,
   "AttackRange": 1,

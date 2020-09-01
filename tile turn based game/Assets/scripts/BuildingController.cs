@@ -47,6 +47,7 @@ namespace TileGame
 
         public void TeamSpriteUpdater()
         {
+            try { 
             //gameObject.GetComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.BuildingDictionary[ID].ArtworkDirectory[Team], DBC.BuildingDictionary[ID].PixelsPerUnit);
             switch (Team)
             {
@@ -92,10 +93,17 @@ namespace TileGame
                     gameObject.transform.Find("BuildingHealthOverlay(Clone)").Find("Image").Find("Text").GetComponent<Text>().color = Color.black;
                     break;
             }
+            }
+            catch (Exception e)
+            {
+                GCS.LogController(e.ToString());
+                throw;
+            }
         }
 
         public void ChangeBuilding()
         {
+            try { 
             if (MEMCC.SelectedButtonDR == -1)
             {
                 //Debug.log("Deleting Building");
@@ -119,10 +127,17 @@ namespace TileGame
                     MEMCC.CurrentSelectedButtonText.text = "Cannot have unit on hero spawn point";
                 }
             }
+            }
+            catch (Exception e)
+            {
+                GCS.LogController(e.ToString());
+                throw;
+            }
         }
 
         public void BuildingRoundUpdater()
         {
+            try { 
             if (GCS.UnitPos.ContainsKey((Vector2)gameObject.transform.position))
             {
                 Occupied = true;
@@ -130,6 +145,12 @@ namespace TileGame
             else
             {
                 Occupied = false;
+            }
+            }
+            catch (Exception e)
+            {
+                GCS.LogController(e.ToString());
+                throw;
             }
         }
 
@@ -156,6 +177,7 @@ namespace TileGame
 
         public void HealIfFriendlyUnitOnBuilding()
         {
+            try { 
             if (GCS.UnitPos.ContainsKey(gameObject.transform.position))
             {
                 if (Health < MaxHealth && GCS.UnitPos[gameObject.transform.position].GetComponent<UnitController>().Team == Team)
@@ -163,6 +185,12 @@ namespace TileGame
                     Health = Health + 1;
                     gameObject.GetComponentInChildren<Text>().text = Health.ToString();
                 }
+            }
+            }
+            catch (Exception e)
+            {
+                GCS.LogController(e.ToString());
+                throw;
             }
         }
     }

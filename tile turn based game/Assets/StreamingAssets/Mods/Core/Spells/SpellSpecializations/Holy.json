@@ -8,11 +8,5 @@
   	  "Heal",
 	  "Smite",
       "GroupHeal"
-  ],
-  "SpellsLevels":
-  [
-  	  1,
-	  2,
-      3
   ]
 }

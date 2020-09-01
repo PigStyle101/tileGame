@@ -2,7 +2,6 @@
   "Title": "Fire Ball",
   "Description": "Sends a fire ball at an enemy in range.",
   "Type": "Spell",
-  "Specialization": "Fire",
   "Mod": "Core",
   "Effects":
   [

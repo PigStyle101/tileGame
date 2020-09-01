@@ -75,11 +75,12 @@ namespace TileGame
 
         void Start()
         {
-            if(GCS.CurrentScene == "MapEditorScene")
+            if (GCS.CurrentScene == "MapEditorScene")
             {
                 cam = MEMCC.GetComponent<Camera>();
-            }else
-            if(GCS.CurrentScene == "PlayScene")
+            }
+            else
+            if (GCS.CurrentScene == "PlayScene")
             {
                 cam = Camera.main;
             }
@@ -87,635 +88,708 @@ namespace TileGame
 
         public void CustomUpdate()
         {
-            Vector3 screenpoint = cam.WorldToViewportPoint(gameObject.transform.position);
-            bool onScreen = screenpoint.z > 0.2 && screenpoint.x > -.2 && screenpoint.x < 1.2 && screenpoint.y > -.2 && screenpoint.y < 1.2;
-            if (onScreen)
+            try
             {
-                gameObject.GetComponent<SpriteRenderer>().enabled = true;
-                MouseOverlayRayCaster();
-                if (LastHitThis || AttackOverlay)
+                Vector3 screenpoint = cam.WorldToViewportPoint(gameObject.transform.position);
+                bool onScreen = screenpoint.z > 0.2 && screenpoint.x > -.2 && screenpoint.x < 1.2 && screenpoint.y > -.2 && screenpoint.y < 1.2;
+                if (onScreen)
                 {
-                    MouseOverlaySelectedSpriteRender.enabled = true;
+                    gameObject.GetComponent<SpriteRenderer>().enabled = true;
+                    MouseOverlayRayCaster();
+                    if (LastHitThis || AttackOverlay)
+                    {
+                        MouseOverlaySelectedSpriteRender.enabled = true;
+                    }
+                    else
+                    {
+                        MouseOverlaySelectedSpriteRender.enabled = false;
+                    }
                 }
                 else
                 {
-                    MouseOverlaySelectedSpriteRender.enabled = false;
-                } 
+                    gameObject.GetComponent<SpriteRenderer>().enabled = false;
+                }
             }
-            else
+            catch (Exception e)
             {
-                gameObject.GetComponent<SpriteRenderer>().enabled = false;
+                GCS.LogController(e.ToString());
+                throw;
             }
         }
 
         public void TerrainRoundUpdater()
         {
-            if (GCS.UnitPos.ContainsKey(gameObject.transform.position))
+            try
             {
-                Occupied = true;
+                if (GCS.UnitPos.ContainsKey(gameObject.transform.position))
+                {
+                    Occupied = true;
+                }
+                else
+                {
+                    Occupied = false;
+                }
             }
-            else
+            catch (Exception e)
             {
-                Occupied = false;
+                GCS.LogController(e.ToString());
+                throw;
             }
         }
 
         public void ChangeTile()
         {
-            //Debug.Log("Changing tile to " + kvp.Value.Title);
-            gameObject.name = DBC.TerrainDictionary[MEMCC.SelectedButtonDR].Title;//change name of tile
-            gameObject.GetComponent<SpriteRenderer>().sprite = DBC.TerrainDictionary[MEMCC.SelectedButtonDR].ArtworkDirectory[0]; //change sprite of tile
-            gameObject.transform.eulerAngles = new Vector3(0, 0, 0);
-            ID = DBC.TerrainDictionary[MEMCC.SelectedButtonDR].ID;
-            Overlays = DBC.TerrainDictionary[MEMCC.SelectedButtonDR].Overlays;
-            Connectable = DBC.TerrainDictionary[MEMCC.SelectedButtonDR].Connectable;
-            IdleAnimations = DBC.TerrainDictionary[MEMCC.SelectedButtonDR].IdleAnimations;
-            Walkable = DBC.TerrainDictionary[MEMCC.SelectedButtonDR].Walkable;
-            if (IdleAnimations)
+            try
             {
-                IdleAnimationsDirectory = DBC.TerrainDictionary[MEMCC.SelectedButtonDR].IdleAnimationDirectory;
+                //Debug.Log("Changing tile to " + kvp.Value.Title);
+                gameObject.name = DBC.TerrainDictionary[MEMCC.SelectedButtonDR].Title;//change name of tile
+                gameObject.GetComponent<SpriteRenderer>().sprite = DBC.TerrainDictionary[MEMCC.SelectedButtonDR].ArtworkDirectory[0]; //change sprite of tile
+                gameObject.transform.eulerAngles = new Vector3(0, 0, 0);
+                ID = DBC.TerrainDictionary[MEMCC.SelectedButtonDR].ID;
+                Overlays = DBC.TerrainDictionary[MEMCC.SelectedButtonDR].Overlays;
+                Connectable = DBC.TerrainDictionary[MEMCC.SelectedButtonDR].Connectable;
+                IdleAnimations = DBC.TerrainDictionary[MEMCC.SelectedButtonDR].IdleAnimations;
+                Walkable = DBC.TerrainDictionary[MEMCC.SelectedButtonDR].Walkable;
+                if (IdleAnimations)
+                {
+                    IdleAnimationsDirectory = DBC.TerrainDictionary[MEMCC.SelectedButtonDR].IdleAnimationDirectory;
+                }
+                if (GCS.UnitPos.ContainsKey(gameObject.transform.position) && DBC.TerrainDictionary[MEMCC.SelectedButtonDR].Walkable == false)
+                {
+                    Destroy(GCS.UnitPos[gameObject.transform.position]);
+                    GCS.UnitPos.Remove(gameObject.transform.position);
+                }
+                if (GCS.BuildingPos.ContainsKey(gameObject.transform.position) && DBC.TerrainDictionary[MEMCC.SelectedButtonDR].Walkable == false)
+                {
+                    Destroy(GCS.BuildingPos[gameObject.transform.position]);
+                    GCS.BuildingPos.Remove(gameObject.transform.position);
+                }
             }
-            if (GCS.UnitPos.ContainsKey(gameObject.transform.position) && DBC.TerrainDictionary[MEMCC.SelectedButtonDR].Walkable == false)
+            catch (Exception e)
             {
-                Destroy(GCS.UnitPos[gameObject.transform.position]);
-                GCS.UnitPos.Remove(gameObject.transform.position);
-            }
-            if (GCS.BuildingPos.ContainsKey(gameObject.transform.position) && DBC.TerrainDictionary[MEMCC.SelectedButtonDR].Walkable == false)
-            {
-                Destroy(GCS.BuildingPos[gameObject.transform.position]);
-                GCS.BuildingPos.Remove(gameObject.transform.position);
+                GCS.LogController(e.ToString());
+                throw;
             }
         } //Potential lua method
 
         private void MouseOverlayRayCaster()
         {
-            if (!EventSystem.current.IsPointerOverGameObject())
+            try
             {
-                Ray ray = GameObject.Find("MainCamera").GetComponent<Camera>().ScreenPointToRay(Input.mousePosition); //find all objects under mouse
-                RaycastHit[] hits;
-                hits = Physics.RaycastAll(ray); //add them to array
-                foreach (var hit in hits)
+                if (!EventSystem.current.IsPointerOverGameObject())
                 {
-                    if (hit.transform == transform) //was last hit this?
+                    Ray ray = GameObject.Find("MainCamera").GetComponent<Camera>().ScreenPointToRay(Input.mousePosition); //find all objects under mouse
+                    RaycastHit[] hits;
+                    hits = Physics.RaycastAll(ray); //add them to array
+                    foreach (var hit in hits)
                     {
-                        MouseOverlaySpriteRender.enabled = true;
-                        if (Input.GetMouseButtonDown(0))
+                        if (hit.transform == transform) //was last hit this?
                         {
-                            LastHitThis = true;
+                            MouseOverlaySpriteRender.enabled = true;
+                            if (Input.GetMouseButtonDown(0))
+                            {
+                                LastHitThis = true;
+                            }
                         }
-                    }
-                    else if (hit.transform.tag != DBC.TerrainDictionary[ID].Type)
-                    {
-                        //if tag is a unit or building do nothing.
-                    }
-                    else //else disable overlay
-                    {
-                        MouseOverlaySpriteRender.enabled = false;
-                        if (Input.GetMouseButtonDown(0))
+                        else if (hit.transform.tag != DBC.TerrainDictionary[ID].Type)
                         {
-                            LastHitThis = false;
+                            //if tag is a unit or building do nothing.
+                        }
+                        else //else disable overlay
+                        {
+                            MouseOverlaySpriteRender.enabled = false;
+                            if (Input.GetMouseButtonDown(0))
+                            {
+                                LastHitThis = false;
+                            }
                         }
                     }
                 }
+            }
+            catch (Exception e)
+            {
+                GCS.LogController(e.ToString());
+                throw;
             }
         } //checks if mouse is over tile, activates mouseoverlay if it is.
 
         public void WaterSpriteController()
         {
-            if (Overlays)
+            try
             {
-                //UnityEngine.//Debug.Log("Starting Water Sprite Controller");
-                var currentPos = (Vector2)transform.position;
-                Vector2 topLeftPos = currentPos + new Vector2(-1, 1);
-                Vector2 topPos = currentPos + new Vector2(0, 1);
-                Vector2 topRightPos = currentPos + new Vector2(1, 1);
-                Vector2 rightPos = currentPos + new Vector2(1, 0);
-                Vector2 bottomRightPos = currentPos + new Vector2(1, -1);
-                Vector2 bottomPos = currentPos + new Vector2(0, -1);
-                Vector2 bottomLeftPos = currentPos + new Vector2(-1, -1);
-                Vector2 leftPos = currentPos + new Vector2(-1, 0);
-                //UnityEngine.//Debug.Log("Starting if Statments");
-                if (GCS.TilePos.ContainsKey(topPos))
+                if (Overlays)
                 {
-                    //Debug.Log("tile pos contains key");
-                    if (GCS.TilePos[topPos].name != gameObject.name)//is the tle above this one not water?
+                    //UnityEngine.//Debug.Log("Starting Water Sprite Controller");
+                    var currentPos = (Vector2)transform.position;
+                    Vector2 topLeftPos = currentPos + new Vector2(-1, 1);
+                    Vector2 topPos = currentPos + new Vector2(0, 1);
+                    Vector2 topRightPos = currentPos + new Vector2(1, 1);
+                    Vector2 rightPos = currentPos + new Vector2(1, 0);
+                    Vector2 bottomRightPos = currentPos + new Vector2(1, -1);
+                    Vector2 bottomPos = currentPos + new Vector2(0, -1);
+                    Vector2 bottomLeftPos = currentPos + new Vector2(-1, -1);
+                    Vector2 leftPos = currentPos + new Vector2(-1, 0);
+                    //UnityEngine.//Debug.Log("Starting if Statments");
+                    if (GCS.TilePos.ContainsKey(topPos))
                     {
-                        if (WaterOverlays.ContainsKey("TopLandOverlay"))//does the dictionary contain a key for this already?
+                        //Debug.Log("tile pos contains key");
+                        if (GCS.TilePos[topPos].name != gameObject.name)//is the tle above this one not water?
                         {
-                            //Debug.Log("wo contains key");
+                            if (WaterOverlays.ContainsKey("TopLandOverlay"))//does the dictionary contain a key for this already?
+                            {
+                                //Debug.Log("wo contains key");
+                            }
+                            else
+                            {
+                                //Debug.Log("wo does not");
+                                GameObject RLO = new GameObject();
+                                RLO.name = "TopLandOverlay";
+                                RLO.transform.position = gameObject.transform.position;
+                                RLO.AddComponent<SpriteRenderer>().sprite = DBC.TerrainDictionary[ID].OverlayArtworkDirectory[1];
+                                RLO.GetComponent<SpriteRenderer>().sortingLayerName = "Terrain";
+                                RLO.GetComponent<SpriteRenderer>().sortingOrder = 2;
+                                RLO.transform.parent = gameObject.transform;
+                                RLO.transform.eulerAngles = TopRotOffest;
+                                WaterOverlays.Add(RLO.name, RLO);
+                            }
                         }
-                        else
+                        else//remove overlay if water is above
                         {
-                            //Debug.Log("wo does not");
-                            GameObject RLO = new GameObject();
-                            RLO.name = "TopLandOverlay";
-                            RLO.transform.position = gameObject.transform.position;
-                            RLO.AddComponent<SpriteRenderer>().sprite = DBC.TerrainDictionary[ID].OverlayArtworkDirectory[1];
-                            RLO.GetComponent<SpriteRenderer>().sortingLayerName = "Terrain";
-                            RLO.GetComponent<SpriteRenderer>().sortingOrder = 2;
-                            RLO.transform.parent = gameObject.transform;
-                            RLO.transform.eulerAngles = TopRotOffest;
-                            WaterOverlays.Add(RLO.name, RLO);
+                            if (WaterOverlays.ContainsKey("TopLandOverlay"))
+                            {
+                                Destroy(WaterOverlays["TopLandOverlay"]);
+                                WaterOverlays.Remove("TopLandOverlay");
+                            }
                         }
                     }
-                    else//remove overlay if water is above
+                    if (GCS.TilePos.ContainsKey(topRightPos))
                     {
-                        if (WaterOverlays.ContainsKey("TopLandOverlay"))
+                        //Debug.Log("tile pos contains key");
+                        if (GCS.TilePos[topRightPos].name != gameObject.name)//is the tle above this one not water?
                         {
-                            Destroy(WaterOverlays["TopLandOverlay"]);
-                            WaterOverlays.Remove("TopLandOverlay");
+                            if (WaterOverlays.ContainsKey("TopRightLandOverlay"))//does the dictionary contain a key for this already?
+                            {
+                                //Debug.Log("wo contains key");
+                            }
+                            else
+                            {
+                                //Debug.Log("wo does not");
+                                GameObject RLO = new GameObject();
+                                RLO.name = "TopRightLandOverlay";
+                                RLO.transform.position = gameObject.transform.position;
+                                RLO.AddComponent<SpriteRenderer>().sprite = DBC.TerrainDictionary[ID].OverlayArtworkDirectory[0];
+                                RLO.GetComponent<SpriteRenderer>().sortingLayerName = "Terrain";
+                                RLO.GetComponent<SpriteRenderer>().sortingOrder = 2;
+                                RLO.transform.parent = gameObject.transform;
+                                WaterOverlays.Add(RLO.name, RLO);
+                            }
+                        }
+                        else//remove overlay if water is above
+                        {
+                            if (WaterOverlays.ContainsKey("TopRightLandOverlay"))
+                            {
+                                Destroy(WaterOverlays["TopRightLandOverlay"]);
+                                WaterOverlays.Remove("TopRightLandOverlay");
+                            }
                         }
                     }
-                }
-                if (GCS.TilePos.ContainsKey(topRightPos))
-                {
-                    //Debug.Log("tile pos contains key");
-                    if (GCS.TilePos[topRightPos].name != gameObject.name)//is the tle above this one not water?
+                    if (GCS.TilePos.ContainsKey(rightPos))
                     {
-                        if (WaterOverlays.ContainsKey("TopRightLandOverlay"))//does the dictionary contain a key for this already?
+                        //Debug.Log("tile pos contains key");
+                        if (GCS.TilePos[rightPos].name != gameObject.name)//is the tle above this one not water?
                         {
-                            //Debug.Log("wo contains key");
+                            if (WaterOverlays.ContainsKey("RightLandOverlay"))//does the dictionary contain a key for this already?
+                            {
+                                //Debug.Log("wo contains key");
+                            }
+                            else
+                            {
+                                //Debug.Log("wo does not");
+                                GameObject RLO = new GameObject();
+                                RLO.name = "RightLandOverlay";
+                                RLO.transform.position = gameObject.transform.position;
+                                RLO.AddComponent<SpriteRenderer>().sprite = DBC.TerrainDictionary[ID].OverlayArtworkDirectory[1];
+                                RLO.GetComponent<SpriteRenderer>().sortingLayerName = "Terrain";
+                                RLO.GetComponent<SpriteRenderer>().sortingOrder = 2;
+                                RLO.transform.parent = gameObject.transform;
+                                WaterOverlays.Add(RLO.name, RLO);
+                            }
                         }
-                        else
+                        else//remove overlay if water is above
                         {
-                            //Debug.Log("wo does not");
-                            GameObject RLO = new GameObject();
-                            RLO.name = "TopRightLandOverlay";
-                            RLO.transform.position = gameObject.transform.position;
-                            RLO.AddComponent<SpriteRenderer>().sprite = DBC.TerrainDictionary[ID].OverlayArtworkDirectory[0];
-                            RLO.GetComponent<SpriteRenderer>().sortingLayerName = "Terrain";
-                            RLO.GetComponent<SpriteRenderer>().sortingOrder = 2;
-                            RLO.transform.parent = gameObject.transform;
-                            WaterOverlays.Add(RLO.name, RLO);
+                            if (WaterOverlays.ContainsKey("RightLandOverlay"))
+                            {
+                                Destroy(WaterOverlays["RightLandOverlay"]);
+                                WaterOverlays.Remove("RightLandOverlay");
+                            }
                         }
                     }
-                    else//remove overlay if water is above
+                    if (GCS.TilePos.ContainsKey(bottomRightPos))
                     {
-                        if (WaterOverlays.ContainsKey("TopRightLandOverlay"))
+                        //Debug.Log("tile pos contains key");
+                        if (GCS.TilePos[bottomRightPos].name != gameObject.name)//is the tle above this one not water?
                         {
-                            Destroy(WaterOverlays["TopRightLandOverlay"]);
-                            WaterOverlays.Remove("TopRightLandOverlay");
+                            if (WaterOverlays.ContainsKey("BottomRightLandOverlay"))//does the dictionary contain a key for this already?
+                            {
+                                //Debug.Log("wo contains key");
+                            }
+                            else
+                            {
+                                //Debug.Log("wo does not");
+                                GameObject RLO = new GameObject();
+                                RLO.name = "BottomRightLandOverlay";
+                                RLO.transform.position = gameObject.transform.position;
+                                RLO.AddComponent<SpriteRenderer>().sprite = DBC.TerrainDictionary[ID].OverlayArtworkDirectory[0];
+                                RLO.GetComponent<SpriteRenderer>().sortingLayerName = "Terrain";
+                                RLO.GetComponent<SpriteRenderer>().sortingOrder = 2;
+                                RLO.transform.parent = gameObject.transform;
+                                RLO.transform.eulerAngles = BottomRightRotOffset;
+                                WaterOverlays.Add(RLO.name, RLO);
+                            }
+                        }
+                        else//remove overlay if water is above
+                        {
+                            if (WaterOverlays.ContainsKey("BottomRightLandOverlay"))
+                            {
+                                Destroy(WaterOverlays["BottomRightLandOverlay"]);
+                                WaterOverlays.Remove("BottomRightLandOverlay");
+                            }
                         }
                     }
-                }
-                if (GCS.TilePos.ContainsKey(rightPos))
-                {
-                    //Debug.Log("tile pos contains key");
-                    if (GCS.TilePos[rightPos].name != gameObject.name)//is the tle above this one not water?
+                    if (GCS.TilePos.ContainsKey(bottomPos))
                     {
-                        if (WaterOverlays.ContainsKey("RightLandOverlay"))//does the dictionary contain a key for this already?
+                        //Debug.Log("tile pos contains key");
+                        if (GCS.TilePos[bottomPos].name != gameObject.name)//is the tle above this one not water?
                         {
-                            //Debug.Log("wo contains key");
+                            if (WaterOverlays.ContainsKey("BottomLandOverlay"))//does the dictionary contain a key for this already?
+                            {
+                                //Debug.Log("wo contains key");
+                            }
+                            else
+                            {
+                                //Debug.Log("wo does not");
+                                GameObject RLO = new GameObject();
+                                RLO.name = "BottomLandOverlay";
+                                RLO.transform.position = gameObject.transform.position;
+                                RLO.AddComponent<SpriteRenderer>().sprite = DBC.TerrainDictionary[ID].OverlayArtworkDirectory[1];
+                                RLO.GetComponent<SpriteRenderer>().sortingLayerName = "Terrain";
+                                RLO.GetComponent<SpriteRenderer>().sortingOrder = 2;
+                                RLO.transform.parent = gameObject.transform;
+                                RLO.transform.eulerAngles = BottomRotOffset;
+                                WaterOverlays.Add(RLO.name, RLO);
+                            }
                         }
-                        else
+                        else//remove overlay if water is above
                         {
-                            //Debug.Log("wo does not");
-                            GameObject RLO = new GameObject();
-                            RLO.name = "RightLandOverlay";
-                            RLO.transform.position = gameObject.transform.position;
-                            RLO.AddComponent<SpriteRenderer>().sprite = DBC.TerrainDictionary[ID].OverlayArtworkDirectory[1];
-                            RLO.GetComponent<SpriteRenderer>().sortingLayerName = "Terrain";
-                            RLO.GetComponent<SpriteRenderer>().sortingOrder = 2;
-                            RLO.transform.parent = gameObject.transform;
-                            WaterOverlays.Add(RLO.name, RLO);
+                            if (WaterOverlays.ContainsKey("BottomLandOverlay"))
+                            {
+                                Destroy(WaterOverlays["BottomLandOverlay"]);
+                                WaterOverlays.Remove("BottomLandOverlay");
+                            }
                         }
                     }
-                    else//remove overlay if water is above
+                    if (GCS.TilePos.ContainsKey(bottomLeftPos))
                     {
-                        if (WaterOverlays.ContainsKey("RightLandOverlay"))
+                        //Debug.Log("tile pos contains key");
+                        if (GCS.TilePos[bottomLeftPos].name != gameObject.name)//is the tle above this one not water?
                         {
-                            Destroy(WaterOverlays["RightLandOverlay"]);
-                            WaterOverlays.Remove("RightLandOverlay");
+                            if (WaterOverlays.ContainsKey("BottomLeftLandOverlay"))//does the dictionary contain a key for this already?
+                            {
+                                //Debug.Log("wo contains key");
+                            }
+                            else
+                            {
+                                //Debug.Log("wo does not");
+                                GameObject RLO = new GameObject();
+                                RLO.name = "BottomLeftLandOverlay";
+                                RLO.transform.position = gameObject.transform.position;
+                                RLO.AddComponent<SpriteRenderer>().sprite = DBC.TerrainDictionary[ID].OverlayArtworkDirectory[0];
+                                RLO.GetComponent<SpriteRenderer>().sortingLayerName = "Terrain";
+                                RLO.GetComponent<SpriteRenderer>().sortingOrder = 2;
+                                RLO.transform.parent = gameObject.transform;
+                                RLO.transform.eulerAngles = BottomLeftRotOffset;
+                                WaterOverlays.Add(RLO.name, RLO);
+                            }
+                        }
+                        else//remove overlay if water is above
+                        {
+                            if (WaterOverlays.ContainsKey("BottomLeftLandOverlay"))
+                            {
+                                Destroy(WaterOverlays["BottomLeftLandOverlay"]);
+                                WaterOverlays.Remove("BottomLeftLandOverlay");
+                            }
                         }
                     }
-                }
-                if (GCS.TilePos.ContainsKey(bottomRightPos))
-                {
-                    //Debug.Log("tile pos contains key");
-                    if (GCS.TilePos[bottomRightPos].name != gameObject.name)//is the tle above this one not water?
+                    if (GCS.TilePos.ContainsKey(leftPos))
                     {
-                        if (WaterOverlays.ContainsKey("BottomRightLandOverlay"))//does the dictionary contain a key for this already?
+                        //Debug.Log("tile pos contains key");
+                        if (GCS.TilePos[leftPos].name != gameObject.name)//is the tle above this one not water?
                         {
-                            //Debug.Log("wo contains key");
+                            if (WaterOverlays.ContainsKey("LeftLandOverlay"))//does the dictionary contain a key for this already?
+                            {
+                                //Debug.Log("wo contains key");
+                            }
+                            else
+                            {
+                                //Debug.Log("wo does not");
+                                GameObject RLO = new GameObject();
+                                RLO.name = "LeftLandOverlay";
+                                RLO.transform.position = gameObject.transform.position;
+                                RLO.AddComponent<SpriteRenderer>().sprite = DBC.TerrainDictionary[ID].OverlayArtworkDirectory[1];
+                                RLO.GetComponent<SpriteRenderer>().sortingLayerName = "Terrain";
+                                RLO.GetComponent<SpriteRenderer>().sortingOrder = 2;
+                                RLO.transform.parent = gameObject.transform;
+                                RLO.transform.eulerAngles = LeftRotOffset;
+                                WaterOverlays.Add(RLO.name, RLO);
+                            }
                         }
-                        else
+                        else//remove overlay if water is above
                         {
-                            //Debug.Log("wo does not");
-                            GameObject RLO = new GameObject();
-                            RLO.name = "BottomRightLandOverlay";
-                            RLO.transform.position = gameObject.transform.position;
-                            RLO.AddComponent<SpriteRenderer>().sprite = DBC.TerrainDictionary[ID].OverlayArtworkDirectory[0];
-                            RLO.GetComponent<SpriteRenderer>().sortingLayerName = "Terrain";
-                            RLO.GetComponent<SpriteRenderer>().sortingOrder = 2;
-                            RLO.transform.parent = gameObject.transform;
-                            RLO.transform.eulerAngles = BottomRightRotOffset;
-                            WaterOverlays.Add(RLO.name, RLO);
+                            if (WaterOverlays.ContainsKey("LeftLandOverlay"))
+                            {
+                                Destroy(WaterOverlays["LeftLandOverlay"]);
+                                WaterOverlays.Remove("LeftLandOverlay");
+                            }
                         }
                     }
-                    else//remove overlay if water is above
+                    if (GCS.TilePos.ContainsKey(topLeftPos))
                     {
-                        if (WaterOverlays.ContainsKey("BottomRightLandOverlay"))
+                        //Debug.Log("tile pos contains key");
+                        if (GCS.TilePos[topLeftPos].name != "Water")//is the tle above this one not water?
                         {
-                            Destroy(WaterOverlays["BottomRightLandOverlay"]);
-                            WaterOverlays.Remove("BottomRightLandOverlay");
+                            if (WaterOverlays.ContainsKey("TopLeftLandOverlay"))//does the dictionary contain a key for this already?
+                            {
+                                //Debug.Log("wo contains key");
+                            }
+                            else
+                            {
+                                //Debug.Log("wo does not");
+                                GameObject RLO = new GameObject();
+                                RLO.name = "TopLeftLandOverlay";
+                                RLO.transform.position = gameObject.transform.position;
+                                RLO.AddComponent<SpriteRenderer>().sprite = DBC.TerrainDictionary[ID].OverlayArtworkDirectory[0];
+                                RLO.GetComponent<SpriteRenderer>().sortingLayerName = "Terrain";
+                                RLO.GetComponent<SpriteRenderer>().sortingOrder = 2;
+                                RLO.transform.parent = gameObject.transform;
+                                RLO.transform.eulerAngles = TopLeftRotOffset;
+                                WaterOverlays.Add(RLO.name, RLO);
+                            }
+                        }
+                        else//remove overlay if water is above
+                        {
+                            if (WaterOverlays.ContainsKey("TopLeftLandOverlay"))
+                            {
+                                Destroy(WaterOverlays["TopLeftLandOverlay"]);
+                                WaterOverlays.Remove("TopLeftLandOverlay");
+                            }
                         }
                     }
-                }
-                if (GCS.TilePos.ContainsKey(bottomPos))
-                {
-                    //Debug.Log("tile pos contains key");
-                    if (GCS.TilePos[bottomPos].name != gameObject.name)//is the tle above this one not water?
-                    {
-                        if (WaterOverlays.ContainsKey("BottomLandOverlay"))//does the dictionary contain a key for this already?
-                        {
-                            //Debug.Log("wo contains key");
-                        }
-                        else
-                        {
-                            //Debug.Log("wo does not");
-                            GameObject RLO = new GameObject();
-                            RLO.name = "BottomLandOverlay";
-                            RLO.transform.position = gameObject.transform.position;
-                            RLO.AddComponent<SpriteRenderer>().sprite = DBC.TerrainDictionary[ID].OverlayArtworkDirectory[1];
-                            RLO.GetComponent<SpriteRenderer>().sortingLayerName = "Terrain";
-                            RLO.GetComponent<SpriteRenderer>().sortingOrder = 2;
-                            RLO.transform.parent = gameObject.transform;
-                            RLO.transform.eulerAngles = BottomRotOffset;
-                            WaterOverlays.Add(RLO.name, RLO);
-                        }
-                    }
-                    else//remove overlay if water is above
-                    {
-                        if (WaterOverlays.ContainsKey("BottomLandOverlay"))
-                        {
-                            Destroy(WaterOverlays["BottomLandOverlay"]);
-                            WaterOverlays.Remove("BottomLandOverlay");
-                        }
-                    }
-                }
-                if (GCS.TilePos.ContainsKey(bottomLeftPos))
-                {
-                    //Debug.Log("tile pos contains key");
-                    if (GCS.TilePos[bottomLeftPos].name != gameObject.name)//is the tle above this one not water?
-                    {
-                        if (WaterOverlays.ContainsKey("BottomLeftLandOverlay"))//does the dictionary contain a key for this already?
-                        {
-                            //Debug.Log("wo contains key");
-                        }
-                        else
-                        {
-                            //Debug.Log("wo does not");
-                            GameObject RLO = new GameObject();
-                            RLO.name = "BottomLeftLandOverlay";
-                            RLO.transform.position = gameObject.transform.position;
-                            RLO.AddComponent<SpriteRenderer>().sprite = DBC.TerrainDictionary[ID].OverlayArtworkDirectory[0];
-                            RLO.GetComponent<SpriteRenderer>().sortingLayerName = "Terrain";
-                            RLO.GetComponent<SpriteRenderer>().sortingOrder = 2;
-                            RLO.transform.parent = gameObject.transform;
-                            RLO.transform.eulerAngles = BottomLeftRotOffset;
-                            WaterOverlays.Add(RLO.name, RLO);
-                        }
-                    }
-                    else//remove overlay if water is above
-                    {
-                        if (WaterOverlays.ContainsKey("BottomLeftLandOverlay"))
-                        {
-                            Destroy(WaterOverlays["BottomLeftLandOverlay"]);
-                            WaterOverlays.Remove("BottomLeftLandOverlay");
-                        }
-                    }
-                }
-                if (GCS.TilePos.ContainsKey(leftPos))
-                {
-                    //Debug.Log("tile pos contains key");
-                    if (GCS.TilePos[leftPos].name != gameObject.name)//is the tle above this one not water?
-                    {
-                        if (WaterOverlays.ContainsKey("LeftLandOverlay"))//does the dictionary contain a key for this already?
-                        {
-                            //Debug.Log("wo contains key");
-                        }
-                        else
-                        {
-                            //Debug.Log("wo does not");
-                            GameObject RLO = new GameObject();
-                            RLO.name = "LeftLandOverlay";
-                            RLO.transform.position = gameObject.transform.position;
-                            RLO.AddComponent<SpriteRenderer>().sprite = DBC.TerrainDictionary[ID].OverlayArtworkDirectory[1];
-                            RLO.GetComponent<SpriteRenderer>().sortingLayerName = "Terrain";
-                            RLO.GetComponent<SpriteRenderer>().sortingOrder = 2;
-                            RLO.transform.parent = gameObject.transform;
-                            RLO.transform.eulerAngles = LeftRotOffset;
-                            WaterOverlays.Add(RLO.name, RLO);
-                        }
-                    }
-                    else//remove overlay if water is above
-                    {
-                        if (WaterOverlays.ContainsKey("LeftLandOverlay"))
-                        {
-                            Destroy(WaterOverlays["LeftLandOverlay"]);
-                            WaterOverlays.Remove("LeftLandOverlay");
-                        }
-                    }
-                }
-                if (GCS.TilePos.ContainsKey(topLeftPos))
-                {
-                    //Debug.Log("tile pos contains key");
-                    if (GCS.TilePos[topLeftPos].name != "Water")//is the tle above this one not water?
-                    {
-                        if (WaterOverlays.ContainsKey("TopLeftLandOverlay"))//does the dictionary contain a key for this already?
-                        {
-                            //Debug.Log("wo contains key");
-                        }
-                        else
-                        {
-                            //Debug.Log("wo does not");
-                            GameObject RLO = new GameObject();
-                            RLO.name = "TopLeftLandOverlay";
-                            RLO.transform.position = gameObject.transform.position;
-                            RLO.AddComponent<SpriteRenderer>().sprite = DBC.TerrainDictionary[ID].OverlayArtworkDirectory[0];
-                            RLO.GetComponent<SpriteRenderer>().sortingLayerName = "Terrain";
-                            RLO.GetComponent<SpriteRenderer>().sortingOrder = 2;
-                            RLO.transform.parent = gameObject.transform;
-                            RLO.transform.eulerAngles = TopLeftRotOffset;
-                            WaterOverlays.Add(RLO.name, RLO);
-                        }
-                    }
-                    else//remove overlay if water is above
-                    {
-                        if (WaterOverlays.ContainsKey("TopLeftLandOverlay"))
-                        {
-                            Destroy(WaterOverlays["TopLeftLandOverlay"]);
-                            WaterOverlays.Remove("TopLeftLandOverlay");
-                        }
-                    }
-                }
 
-            }
-            else
-            {
-                if (WaterOverlays.Count > 0)
-                {
-                    var list = new List<GameObject>();
-                    foreach (var kvvp in WaterOverlays)
-                    {
-                        list.Add(kvvp.Value);
-                    }
-                    foreach (var item in list)
-                    {
-                        Destroy(item);
-                    }
-                    list.Clear();
-                    WaterOverlays = new Dictionary<string, GameObject>(); ;
                 }
+                else
+                {
+                    if (WaterOverlays.Count > 0)
+                    {
+                        var list = new List<GameObject>();
+                        foreach (var kvvp in WaterOverlays)
+                        {
+                            list.Add(kvvp.Value);
+                        }
+                        foreach (var item in list)
+                        {
+                            Destroy(item);
+                        }
+                        list.Clear();
+                        WaterOverlays = new Dictionary<string, GameObject>(); ;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                GCS.LogController(e.ToString());
+                throw;
             }
         } //Controlls the overlay for adding banks to the water sprites
 
         public void RoadSpriteController()
-        { //gameObject.name == DBC.TerrainDictionary[3].Title
-            if (Connectable)
+        {
+            try
             {
-                var currentPos = (Vector2)transform.position;
-                if (OriginalRot == null)
+                //gameObject.name == DBC.TerrainDictionary[3].Title
+                if (Connectable)
                 {
-                    OriginalRot = gameObject.transform.eulerAngles;
-                }
-                var SR = gameObject.GetComponent<SpriteRenderer>();
-                int counter = 0;
-                Vector2 topPos = currentPos + new Vector2(0, 1);
-                Vector2 rightPos = currentPos + new Vector2(1, 0);
-                Vector2 bottomPos = currentPos + new Vector2(0, -1);
-                Vector2 leftPos = currentPos + new Vector2(-1, 0);
-                bool topBool = false;
-                bool rightbool = false;
-                bool bottombool = false;
-                bool leftbool = false;
+                    var currentPos = (Vector2)transform.position;
+                    if (OriginalRot == null)
+                    {
+                        OriginalRot = gameObject.transform.eulerAngles;
+                    }
+                    var SR = gameObject.GetComponent<SpriteRenderer>();
+                    int counter = 0;
+                    Vector2 topPos = currentPos + new Vector2(0, 1);
+                    Vector2 rightPos = currentPos + new Vector2(1, 0);
+                    Vector2 bottomPos = currentPos + new Vector2(0, -1);
+                    Vector2 leftPos = currentPos + new Vector2(-1, 0);
+                    bool topBool = false;
+                    bool rightbool = false;
+                    bool bottombool = false;
+                    bool leftbool = false;
 
-                if (GCS.TilePos.ContainsKey(topPos))
-                {
-                    if (GCS.TilePos[topPos].name == gameObject.name)
+                    if (GCS.TilePos.ContainsKey(topPos))
                     {
-                        counter = counter + 1;
-                        topBool = true;
+                        if (GCS.TilePos[topPos].name == gameObject.name)
+                        {
+                            counter = counter + 1;
+                            topBool = true;
+                        }
                     }
-                }
-                if (GCS.TilePos.ContainsKey(rightPos))
-                {
-                    if (GCS.TilePos[rightPos].name == gameObject.name)
+                    if (GCS.TilePos.ContainsKey(rightPos))
                     {
-                        counter = counter + 1;
-                        rightbool = true;
+                        if (GCS.TilePos[rightPos].name == gameObject.name)
+                        {
+                            counter = counter + 1;
+                            rightbool = true;
+                        }
                     }
-                }
-                if (GCS.TilePos.ContainsKey(bottomPos))
-                {
-                    if (GCS.TilePos[bottomPos].name == gameObject.name)
+                    if (GCS.TilePos.ContainsKey(bottomPos))
                     {
-                        counter = counter + 1;
-                        bottombool = true;
+                        if (GCS.TilePos[bottomPos].name == gameObject.name)
+                        {
+                            counter = counter + 1;
+                            bottombool = true;
+                        }
                     }
-                }
-                if (GCS.TilePos.ContainsKey(leftPos))
-                {
-                    if (GCS.TilePos[leftPos].name == gameObject.name)
+                    if (GCS.TilePos.ContainsKey(leftPos))
                     {
-                        counter = counter + 1;
-                        leftbool = true;
+                        if (GCS.TilePos[leftPos].name == gameObject.name)
+                        {
+                            counter = counter + 1;
+                            leftbool = true;
+                        }
                     }
-                }
 
-                switch (counter)
-                {
-                    case 0:
-                        SR.sprite = DBC.TerrainDictionary[ID].ArtworkDirectory[0];
-                        break;
-                    case 1:
-                        SR.sprite = DBC.TerrainDictionary[ID].ArtworkDirectory[1];
-                        if (topBool)
-                        {
+                    switch (counter)
+                    {
+                        case 0:
+                            SR.sprite = DBC.TerrainDictionary[ID].ArtworkDirectory[0];
+                            break;
+                        case 1:
+                            SR.sprite = DBC.TerrainDictionary[ID].ArtworkDirectory[1];
+                            if (topBool)
+                            {
+                                gameObject.transform.eulerAngles = OriginalRot;
+                            }
+                            else if (rightbool)
+                            {
+                                gameObject.transform.eulerAngles = Road1wayRightRotOffset + OriginalRot;
+                            }
+                            else if (bottombool)
+                            {
+                                gameObject.transform.eulerAngles = Road1wayBottomRotOffset + OriginalRot;
+                            }
+                            else if (leftbool)
+                            {
+                                gameObject.transform.eulerAngles = Road1wayLeftRotOffset + OriginalRot;
+                            }
+                            break;
+                        case 2:
+                            if (topBool && rightbool)
+                            {
+                                SR.sprite = DBC.TerrainDictionary[ID].ArtworkDirectory[2];
+                                gameObject.transform.eulerAngles = Road2way90TopRotOffset + OriginalRot;
+                            }
+                            else if (rightbool && bottombool)
+                            {
+                                SR.sprite = DBC.TerrainDictionary[ID].ArtworkDirectory[2];
+                                gameObject.transform.eulerAngles = Road2way90RightRotOffset + OriginalRot;
+                            }
+                            else if (bottombool && leftbool)
+                            {
+                                SR.sprite = DBC.TerrainDictionary[ID].ArtworkDirectory[2];
+                                gameObject.transform.eulerAngles = OriginalRot;
+                            }
+                            else if (leftbool && topBool)
+                            {
+                                SR.sprite = DBC.TerrainDictionary[ID].ArtworkDirectory[2];
+                                gameObject.transform.eulerAngles = Road2way90LeftRotOffset + OriginalRot;
+                            }
+                            else if (topBool && bottombool)
+                            {
+                                SR.sprite = DBC.TerrainDictionary[ID].ArtworkDirectory[3];
+                                gameObject.transform.eulerAngles = OriginalRot;
+                            }
+                            else if (leftbool && rightbool)
+                            {
+                                SR.sprite = DBC.TerrainDictionary[ID].ArtworkDirectory[3];
+                                gameObject.transform.eulerAngles = Road2wayStraightTopBottomRotOffset + OriginalRot;
+                            }
+                            break;
+                        case 3:
+                            SR.sprite = DBC.TerrainDictionary[ID].ArtworkDirectory[4];
+                            if (!bottombool)
+                            {
+                                gameObject.transform.eulerAngles = Road3wayTopRotOffset + OriginalRot;
+                            }
+                            else if (!leftbool)
+                            {
+                                gameObject.transform.eulerAngles = Road3wayRightRotOffset + OriginalRot;
+                            }
+                            else if (!topBool)
+                            {
+                                gameObject.transform.eulerAngles = OriginalRot;
+                            }
+                            else if (!rightbool)
+                            {
+                                gameObject.transform.eulerAngles = Road3wayLeftRotOffset + OriginalRot;
+                            }
+                            break;
+                        case 4:
+                            SR.sprite = DBC.TerrainDictionary[ID].ArtworkDirectory[5];
                             gameObject.transform.eulerAngles = OriginalRot;
-                        }
-                        else if (rightbool)
-                        {
-                            gameObject.transform.eulerAngles = Road1wayRightRotOffset + OriginalRot;
-                        }
-                        else if (bottombool)
-                        {
-                            gameObject.transform.eulerAngles = Road1wayBottomRotOffset + OriginalRot;
-                        }
-                        else if (leftbool)
-                        {
-                            gameObject.transform.eulerAngles = Road1wayLeftRotOffset + OriginalRot;
-                        }
-                        break;
-                    case 2:
-                        if (topBool && rightbool)
-                        {
-                            SR.sprite = DBC.TerrainDictionary[ID].ArtworkDirectory[2];
-                            gameObject.transform.eulerAngles = Road2way90TopRotOffset + OriginalRot;
-                        }
-                        else if (rightbool && bottombool)
-                        {
-                            SR.sprite = DBC.TerrainDictionary[ID].ArtworkDirectory[2];
-                            gameObject.transform.eulerAngles = Road2way90RightRotOffset + OriginalRot;
-                        }
-                        else if (bottombool && leftbool)
-                        {
-                            SR.sprite = DBC.TerrainDictionary[ID].ArtworkDirectory[2];
-                            gameObject.transform.eulerAngles = OriginalRot;
-                        }
-                        else if (leftbool && topBool)
-                        {
-                            SR.sprite = DBC.TerrainDictionary[ID].ArtworkDirectory[2];
-                            gameObject.transform.eulerAngles = Road2way90LeftRotOffset + OriginalRot;
-                        }
-                        else if (topBool && bottombool)
-                        {
-                            SR.sprite = DBC.TerrainDictionary[ID].ArtworkDirectory[3];
-                            gameObject.transform.eulerAngles = OriginalRot;
-                        }
-                        else if (leftbool && rightbool)
-                        {
-                            SR.sprite = DBC.TerrainDictionary[ID].ArtworkDirectory[3];
-                            gameObject.transform.eulerAngles = Road2wayStraightTopBottomRotOffset + OriginalRot;
-                        }
-                        break;
-                    case 3:
-                        SR.sprite = DBC.TerrainDictionary[ID].ArtworkDirectory[4];
-                        if (!bottombool)
-                        {
-                            gameObject.transform.eulerAngles = Road3wayTopRotOffset + OriginalRot;
-                        }
-                        else if (!leftbool)
-                        {
-                            gameObject.transform.eulerAngles = Road3wayRightRotOffset + OriginalRot;
-                        }
-                        else if (!topBool)
-                        {
-                            gameObject.transform.eulerAngles = OriginalRot;
-                        }
-                        else if (!rightbool)
-                        {
-                            gameObject.transform.eulerAngles = Road3wayLeftRotOffset + OriginalRot;
-                        }
-                        break;
-                    case 4:
-                        SR.sprite = DBC.TerrainDictionary[ID].ArtworkDirectory[5];
-                        gameObject.transform.eulerAngles = OriginalRot;
-                        break;
+                            break;
+                    }
+                    counter = 0;
                 }
-                counter = 0;
+            }
+            catch (Exception e)
+            {
+                GCS.LogController(e.ToString());
+                throw;
             }
         } //Potential lua code
 
         public void FogOfWarController()
         {
-            if (GCS.CurrentScene == "MapEditorScene")
+            try
             {
-                FogOfWar.enabled = false;
-                FogOfWarBool = false;
+                if (GCS.CurrentScene == "MapEditorScene")
+                {
+                    FogOfWar.enabled = false;
+                    FogOfWarBool = false;
+                }
+                else if (GCS.CurrentScene == "PlayScene")
+                {
+                    bool UnitOnMe = false;
+                    foreach (var kvp in GCS.UnitPos)
+                    {
+                        if (kvp.Value.GetComponent<UnitController>().SightTiles.ContainsKey((Vector2)gameObject.transform.position) && kvp.Value.GetComponent<UnitController>().Team == GCS.CurrentTeamsTurn.Team)
+                        {
+                            FogOfWar.enabled = false;
+                            FogOfWarBool = false;
+                            break;
+                        }
+                        else if (!UnitOnMe)
+                        {
+                            FogOfWar.enabled = true;
+                            FogOfWarBool = true;
+                        }
+                        if (kvp.Key == (Vector2)gameObject.transform.position && kvp.Value.GetComponent<UnitController>().Team == GCS.CurrentTeamsTurn.Team)
+                        {
+                            FogOfWar.enabled = false;
+                            FogOfWarBool = false;
+                            UnitOnMe = true;
+                            break;
+                        }
+                    }
+                    if (GCS.BuildingPos.ContainsKey((Vector2)transform.position))
+                    {
+                        if (GCS.BuildingPos[(Vector2)transform.position].GetComponent<BuildingController>().Team == GCS.CurrentTeamsTurn.Team)
+                        {
+                            FogOfWar.enabled = false;
+                            FogOfWarBool = false;
+                        }
+                    }
+                }
             }
-            else if (GCS.CurrentScene == "PlayScene")
+            catch (Exception e)
             {
-                bool UnitOnMe = false;
-                foreach (var kvp in GCS.UnitPos)
-                {
-                    if (kvp.Value.GetComponent<UnitController>().SightTiles.ContainsKey((Vector2)gameObject.transform.position) && kvp.Value.GetComponent<UnitController>().Team == GCS.CurrentTeamsTurn.Team)
-                    {
-                        FogOfWar.enabled = false;
-                        FogOfWarBool = false;
-                        break;
-                    }
-                    else if (!UnitOnMe)
-                    {
-                        FogOfWar.enabled = true;
-                        FogOfWarBool = true;
-                    }
-                    if (kvp.Key == (Vector2)gameObject.transform.position && kvp.Value.GetComponent<UnitController>().Team == GCS.CurrentTeamsTurn.Team)
-                    {
-                        FogOfWar.enabled = false;
-                        FogOfWarBool = false;
-                        UnitOnMe = true;
-                        break;
-                    }
-                }
-                if (GCS.BuildingPos.ContainsKey((Vector2)transform.position))
-                {
-                    if (GCS.BuildingPos[(Vector2)transform.position].GetComponent<BuildingController>().Team == GCS.CurrentTeamsTurn.Team)
-                    {
-                        FogOfWar.enabled = false;
-                        FogOfWarBool = false;
-                    }
-                }
+                GCS.LogController(e.ToString());
+                throw;
             }
         }
 
         public void IdleAnimationController()
         {
-            if (IdleAnimations)
+            try
             {
-                if (GCS.IdleState == 1)
+                if (IdleAnimations)
                 {
-                    gameObject.GetComponent<SpriteRenderer>().sprite = IdleAnimationsDirectory[1];
-                    //Debug.Log("1");
-                }
-                else if (GCS.IdleState == 2)
-                {
-                    gameObject.GetComponent<SpriteRenderer>().sprite = IdleAnimationsDirectory[0];
-                    //Debug.Log("2");
-                }
-                else
-                {
-                    gameObject.GetComponent<SpriteRenderer>().sprite = IdleAnimationsDirectory[1];
-                    //Debug.Log("3");
-                }
+                    if (GCS.IdleState == 1)
+                    {
+                        gameObject.GetComponent<SpriteRenderer>().sprite = IdleAnimationsDirectory[1];
+                        //Debug.Log("1");
+                    }
+                    else if (GCS.IdleState == 2)
+                    {
+                        gameObject.GetComponent<SpriteRenderer>().sprite = IdleAnimationsDirectory[0];
+                        //Debug.Log("2");
+                    }
+                    else
+                    {
+                        gameObject.GetComponent<SpriteRenderer>().sprite = IdleAnimationsDirectory[1];
+                        //Debug.Log("3");
+                    }
 
+                }
+            }
+            catch (Exception e)
+            {
+                GCS.LogController(e.ToString());
+                throw;
             }
         } //currently used to control idle animations for water, will need polished later when other idle animations are added. can use for referance for making unit and building animations
 
         public void ChangeSpritesAroundThisTile()
         {
-            if (GCS.TilePos.ContainsKey((Vector2)gameObject.transform.position + new Vector2(1,0)))
+            try
             {
-                GCS.TilePos[(Vector2)gameObject.transform.position + new Vector2(1, 0)].GetComponent<TerrainController>().WaterSpriteController();
-                GCS.TilePos[(Vector2)gameObject.transform.position + new Vector2(1, 0)].GetComponent<TerrainController>().RoadSpriteController();
+                if (GCS.TilePos.ContainsKey((Vector2)gameObject.transform.position + new Vector2(1, 0)))
+                {
+                    GCS.TilePos[(Vector2)gameObject.transform.position + new Vector2(1, 0)].GetComponent<TerrainController>().WaterSpriteController();
+                    GCS.TilePos[(Vector2)gameObject.transform.position + new Vector2(1, 0)].GetComponent<TerrainController>().RoadSpriteController();
+                }
+                if (GCS.TilePos.ContainsKey((Vector2)gameObject.transform.position + new Vector2(1, 1)))
+                {
+                    GCS.TilePos[(Vector2)gameObject.transform.position + new Vector2(1, 1)].GetComponent<TerrainController>().WaterSpriteController();
+                    GCS.TilePos[(Vector2)gameObject.transform.position + new Vector2(1, 1)].GetComponent<TerrainController>().RoadSpriteController();
+                }
+                if (GCS.TilePos.ContainsKey((Vector2)gameObject.transform.position + new Vector2(1, -1)))
+                {
+                    GCS.TilePos[(Vector2)gameObject.transform.position + new Vector2(1, -1)].GetComponent<TerrainController>().WaterSpriteController();
+                    GCS.TilePos[(Vector2)gameObject.transform.position + new Vector2(1, -1)].GetComponent<TerrainController>().RoadSpriteController();
+                }
+                if (GCS.TilePos.ContainsKey((Vector2)gameObject.transform.position + new Vector2(-1, 0)))
+                {
+                    GCS.TilePos[(Vector2)gameObject.transform.position + new Vector2(-1, 0)].GetComponent<TerrainController>().WaterSpriteController();
+                    GCS.TilePos[(Vector2)gameObject.transform.position + new Vector2(-1, 0)].GetComponent<TerrainController>().RoadSpriteController();
+                }
+                if (GCS.TilePos.ContainsKey((Vector2)gameObject.transform.position + new Vector2(-1, 1)))
+                {
+                    GCS.TilePos[(Vector2)gameObject.transform.position + new Vector2(-1, 1)].GetComponent<TerrainController>().WaterSpriteController();
+                    GCS.TilePos[(Vector2)gameObject.transform.position + new Vector2(-1, 1)].GetComponent<TerrainController>().RoadSpriteController();
+                }
+                if (GCS.TilePos.ContainsKey((Vector2)gameObject.transform.position + new Vector2(-1, -1)))
+                {
+                    GCS.TilePos[(Vector2)gameObject.transform.position + new Vector2(-1, -1)].GetComponent<TerrainController>().WaterSpriteController();
+                    GCS.TilePos[(Vector2)gameObject.transform.position + new Vector2(-1, -1)].GetComponent<TerrainController>().RoadSpriteController();
+                }
+                if (GCS.TilePos.ContainsKey((Vector2)gameObject.transform.position + new Vector2(0, 1)))
+                {
+                    GCS.TilePos[(Vector2)gameObject.transform.position + new Vector2(0, 1)].GetComponent<TerrainController>().WaterSpriteController();
+                    GCS.TilePos[(Vector2)gameObject.transform.position + new Vector2(0, 1)].GetComponent<TerrainController>().RoadSpriteController();
+                }
+                if (GCS.TilePos.ContainsKey((Vector2)gameObject.transform.position + new Vector2(0, -1)))
+                {
+                    GCS.TilePos[(Vector2)gameObject.transform.position + new Vector2(0, -1)].GetComponent<TerrainController>().WaterSpriteController();
+                    GCS.TilePos[(Vector2)gameObject.transform.position + new Vector2(0, -1)].GetComponent<TerrainController>().RoadSpriteController();
+                }
+                WaterSpriteController();
+                RoadSpriteController();
             }
-            if (GCS.TilePos.ContainsKey((Vector2)gameObject.transform.position + new Vector2(1, 1)))
+            catch (Exception e)
             {
-                GCS.TilePos[(Vector2)gameObject.transform.position + new Vector2(1, 1)].GetComponent<TerrainController>().WaterSpriteController();
-                GCS.TilePos[(Vector2)gameObject.transform.position + new Vector2(1, 1)].GetComponent<TerrainController>().RoadSpriteController();
+                GCS.LogController(e.ToString());
+                throw;
             }
-            if (GCS.TilePos.ContainsKey((Vector2)gameObject.transform.position + new Vector2(1, -1)))
-            {
-                GCS.TilePos[(Vector2)gameObject.transform.position + new Vector2(1, -1)].GetComponent<TerrainController>().WaterSpriteController();
-                GCS.TilePos[(Vector2)gameObject.transform.position + new Vector2(1, -1)].GetComponent<TerrainController>().RoadSpriteController();
-            }
-            if (GCS.TilePos.ContainsKey((Vector2)gameObject.transform.position + new Vector2(-1, 0)))
-            {
-                GCS.TilePos[(Vector2)gameObject.transform.position + new Vector2(-1, 0)].GetComponent<TerrainController>().WaterSpriteController();
-                GCS.TilePos[(Vector2)gameObject.transform.position + new Vector2(-1, 0)].GetComponent<TerrainController>().RoadSpriteController();
-            }
-            if (GCS.TilePos.ContainsKey((Vector2)gameObject.transform.position + new Vector2(-1, 1)))
-            {
-                GCS.TilePos[(Vector2)gameObject.transform.position + new Vector2(-1, 1)].GetComponent<TerrainController>().WaterSpriteController();
-                GCS.TilePos[(Vector2)gameObject.transform.position + new Vector2(-1, 1)].GetComponent<TerrainController>().RoadSpriteController();
-            }
-            if (GCS.TilePos.ContainsKey((Vector2)gameObject.transform.position + new Vector2(-1, -1)))
-            {
-                GCS.TilePos[(Vector2)gameObject.transform.position + new Vector2(-1, -1)].GetComponent<TerrainController>().WaterSpriteController();
-                GCS.TilePos[(Vector2)gameObject.transform.position + new Vector2(-1, -1)].GetComponent<TerrainController>().RoadSpriteController();
-            }
-            if (GCS.TilePos.ContainsKey((Vector2)gameObject.transform.position + new Vector2(0, 1)))
-            {
-                GCS.TilePos[(Vector2)gameObject.transform.position + new Vector2(0, 1)].GetComponent<TerrainController>().WaterSpriteController();
-                GCS.TilePos[(Vector2)gameObject.transform.position + new Vector2(0, 1)].GetComponent<TerrainController>().RoadSpriteController();
-            }
-            if (GCS.TilePos.ContainsKey((Vector2)gameObject.transform.position + new Vector2(0, -1)))
-            {
-                GCS.TilePos[(Vector2)gameObject.transform.position + new Vector2(0, -1)].GetComponent<TerrainController>().WaterSpriteController();
-                GCS.TilePos[(Vector2)gameObject.transform.position + new Vector2(0, -1)].GetComponent<TerrainController>().RoadSpriteController();
-            }
-            WaterSpriteController();
-            RoadSpriteController();
         }
     }
 }

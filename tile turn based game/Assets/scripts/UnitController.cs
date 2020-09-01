@@ -12,11 +12,12 @@ namespace TileGame
     [MoonSharpUserData]
     public class UnitController : MonoBehaviour
     {
-        //json and stat stuff
+        //json and stat stuff hero specific
         [HideInInspector]
         public bool Hero;
         [HideInInspector]
         public Hero HClass;
+        //json and stat stuff for all units
         [HideInInspector]
         public int Team;
         [HideInInspector]
@@ -144,337 +145,385 @@ namespace TileGame
         }
         public void UnitRoundUpdater()
         {
-            if (Team == GCS.CurrentTeamsTurn.Team) //object is on the current team
+            try
             {
-                UnitMoved = false;
-                UnitMovable = true;
-                if (Hero)
+                if (Team == GCS.CurrentTeamsTurn.Team) //object is on the current team
                 {
-                    if (Health < MaxHealth) //is health less then maxhealth
+                    UnitMoved = false;
+                    UnitMovable = true;
+                    if (Hero)
                     {
-                        Health = Health + HClass.HealthRegen; //get us some regen
-                        if (Health > MaxHealth) //did we over regenerate?
+                        if (Health < MaxHealth) //is health less then maxhealth
                         {
-                            Health = MaxHealth; //remove that extra regen
+                            Health = Health + HClass.HealthRegen; //get us some regen
+                            if (Health > MaxHealth) //did we over regenerate?
+                            {
+                                Health = MaxHealth; //remove that extra regen
+                            }
                         }
+                        else
+                        {
+                            Health = MaxHealth; //if health gets over max somehow we need to fix that.
+                        }
+                        gameObject.GetComponentInChildren<Text>().text = Health.ToString();
                     }
-                    else
-                    {
-                        Health = MaxHealth; //if health gets over max somehow we need to fix that.
-                    }
-                    gameObject.GetComponentInChildren<Text>().text = Health.ToString();
+                    gameObject.GetComponent<SpriteRenderer>().color = new Color(.5F, .5F, .5F);
+                    GetTileValues();
+                    GetSightTiles();
                 }
-                gameObject.GetComponent<SpriteRenderer>().color = new Color(.5F, .5F, .5F);
-                GetTileValues();
-                GetSightTiles();
+                else
+                {
+                    UnitMovable = false;
+                    UnitMoved = false;
+                    gameObject.GetComponent<SpriteRenderer>().color = new Color(1F, 1F, 1F);
+                    GetTileValues();
+                }
             }
-            else
+            catch (Exception e)
             {
-                UnitMovable = false;
-                UnitMoved = false;
-                gameObject.GetComponent<SpriteRenderer>().color = new Color(1F, 1F, 1F);
-                GetTileValues();
+                GCS.LogController(e.ToString());
+                throw;
             }
 
         }
         public void TeamSpriteController()
         {
-            //gameObject.GetComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.UnitDictionary[ID].ArtworkDirectory[Team], DBC.UnitDictionary[ID].PixelsPerUnit);
-            switch (Team)
+            try
             {
-                case 1:
-                    gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").GetComponent<Image>().color = Color.black;
-                    gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").Find("Text").GetComponent<Text>().color = Color.white;
-                    break;
-                case 2:
-                    gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").GetComponent<Image>().color = Color.blue;
-                    gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").Find("Text").GetComponent<Text>().color = Color.white;
-                    break;
-                case 3:
-                    gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").GetComponent<Image>().color = Color.cyan;
-                    gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").Find("Text").GetComponent<Text>().color = Color.black;
-                    break;
-                case 4:
-                    gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").GetComponent<Image>().color = Color.gray;
-                    gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").Find("Text").GetComponent<Text>().color = Color.black;
-                    break;
-                case 5:
-                    gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").GetComponent<Image>().color = Color.green;
-                    gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").Find("Text").GetComponent<Text>().color = Color.black;
-                    break;
-                case 6:
-                    gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").GetComponent<Image>().color = Color.magenta;
-                    gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").Find("Text").GetComponent<Text>().color = Color.black;
-                    break;
-                case 7:
-                    gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").GetComponent<Image>().color = Color.red;
-                    gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").Find("Text").GetComponent<Text>().color = Color.black;
-                    break;
-                case 8:
-                    gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").GetComponent<Image>().color = Color.white;
-                    gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").Find("Text").GetComponent<Text>().color = Color.black;
-                    break;
-                case 9:
-                    gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").GetComponent<Image>().color = Color.yellow;
-                    gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").Find("Text").GetComponent<Text>().color = Color.black;
-                    break;
-                case 0:
-                    Color brown = new Color(.5f, .25f, 0, 255);
-                    gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").GetComponent<Image>().color = brown;
-                    gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").Find("Text").GetComponent<Text>().color = Color.black;
-                    break;
+                //gameObject.GetComponent<SpriteRenderer>().sprite = DBC.loadSprite(DBC.UnitDictionary[ID].ArtworkDirectory[Team], DBC.UnitDictionary[ID].PixelsPerUnit);
+                switch (Team)
+                {
+                    case 1:
+                        gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").GetComponent<Image>().color = Color.black;
+                        gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").Find("Text").GetComponent<Text>().color = Color.white;
+                        break;
+                    case 2:
+                        gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").GetComponent<Image>().color = Color.blue;
+                        gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").Find("Text").GetComponent<Text>().color = Color.white;
+                        break;
+                    case 3:
+                        gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").GetComponent<Image>().color = Color.cyan;
+                        gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").Find("Text").GetComponent<Text>().color = Color.black;
+                        break;
+                    case 4:
+                        gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").GetComponent<Image>().color = Color.gray;
+                        gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").Find("Text").GetComponent<Text>().color = Color.black;
+                        break;
+                    case 5:
+                        gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").GetComponent<Image>().color = Color.green;
+                        gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").Find("Text").GetComponent<Text>().color = Color.black;
+                        break;
+                    case 6:
+                        gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").GetComponent<Image>().color = Color.magenta;
+                        gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").Find("Text").GetComponent<Text>().color = Color.black;
+                        break;
+                    case 7:
+                        gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").GetComponent<Image>().color = Color.red;
+                        gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").Find("Text").GetComponent<Text>().color = Color.black;
+                        break;
+                    case 8:
+                        gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").GetComponent<Image>().color = Color.white;
+                        gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").Find("Text").GetComponent<Text>().color = Color.black;
+                        break;
+                    case 9:
+                        gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").GetComponent<Image>().color = Color.yellow;
+                        gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").Find("Text").GetComponent<Text>().color = Color.black;
+                        break;
+                    case 0:
+                        Color brown = new Color(.5f, .25f, 0, 255);
+                        gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").GetComponent<Image>().color = brown;
+                        gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").Find("Text").GetComponent<Text>().color = Color.black;
+                        break;
+                }
+            }
+            catch (Exception e)
+            {
+                GCS.LogController(e.ToString());
+                throw;
             }
         } //Potential lua method
         public void GetTileValues()
         {
-            ////Debug.log("MP = " + MovePoints);
-            int count = 1; //using this to make the algorith go more rounds then needed, as the most any unit should need is 6 rounds
-            TilesWeights = new Dictionary<Vector2, int>();
-            foreach (var dir in Directions)
+            try
             {
-                if (GCS.TilePos.ContainsKey(Position + dir) && GCS.TilePos[Position + dir].GetComponent<TerrainController>().Walkable) //tile there?  already added to tilewhieght? can the tile be walked on?
+                ////Debug.log("MP = " + MovePoints);
+                int count = 1; //using this to make the algorith go more rounds then needed, as the most any unit should need is 6 rounds
+                TilesWeights = new Dictionary<Vector2, int>();
+                foreach (var dir in Directions)
                 {
-                    if (GCS.TilePos[Position + dir].GetComponent<TerrainController>().Weight <= MovePoints && !GCS.UnitPos.ContainsKey(Position + dir)) //is the wheight less then the total movement points?
+                    if (GCS.TilePos.ContainsKey(Position + dir) && GCS.TilePos[Position + dir].GetComponent<TerrainController>().Walkable) //tile there?  already added to tilewhieght? can the tile be walked on?
                     {
-                        int temp; //array to store count and mp used to get to that tile, the count will be needed later for when a ai is added.
-                        temp = GCS.TilePos[Position + dir].GetComponent<TerrainController>().Weight; //this is the movement points used so far
-                        TilesWeights.Add(Position + dir, temp);
-                    }
-                    else if (GCS.UnitPos.ContainsKey(Position + dir))
-                    {
-                        if (GCS.UnitPos[Position + dir].GetComponent<UnitController>().Team == Team)
+                        if (GCS.TilePos[Position + dir].GetComponent<TerrainController>().Weight <= MovePoints && !GCS.UnitPos.ContainsKey(Position + dir)) //is the wheight less then the total movement points?
                         {
                             int temp; //array to store count and mp used to get to that tile, the count will be needed later for when a ai is added.
                             temp = GCS.TilePos[Position + dir].GetComponent<TerrainController>().Weight; //this is the movement points used so far
                             TilesWeights.Add(Position + dir, temp);
                         }
+                        else if (GCS.UnitPos.ContainsKey(Position + dir))
+                        {
+                            if (GCS.UnitPos[Position + dir].GetComponent<UnitController>().Team == Team)
+                            {
+                                int temp; //array to store count and mp used to get to that tile, the count will be needed later for when a ai is added.
+                                temp = GCS.TilePos[Position + dir].GetComponent<TerrainController>().Weight; //this is the movement points used so far
+                                TilesWeights.Add(Position + dir, temp);
+                            }
+                        }
                     }
+                }
+                while (count <= MovePoints)
+                {
+                    int tempInt;
+                    Dictionary<Vector2, int> Temp = new Dictionary<Vector2, int>();
+                    foreach (var kvp in TilesWeights) //we want to check all tiles in tile weight, maybe could change this to only check tiles that were last added?
+                    {
+                        foreach (var dir in Directions) //for each tile we are checking we need to look in each direction.
+                        {
+                            if (GCS.TilePos.ContainsKey(kvp.Key + dir)) //is there a tile there?
+                            {
+                                if (!Temp.ContainsKey(kvp.Key + dir)) //does the temp already contain the tile?
+                                {
+                                    if (kvp.Value + GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Weight <= MovePoints && GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Walkable && kvp.Key + dir != (Vector2)gameObject.transform.position) //is the wegiht of the tile + move points used already < move points total? Walkable?
+                                    {//enough mp? Is tile walkable? not the position of the unit currently?
+                                        if (!GCS.UnitPos.ContainsKey(kvp.Key + dir)) //is there not a unit there?
+                                        {
+                                            tempInt = GCS.TilePos[kvp.Key + dir].transform.GetComponent<TerrainController>().Weight + kvp.Value; //sets this to mp used so far + weight of tile.
+                                            Temp.Add(kvp.Key + dir, tempInt);
+                                        }
+                                        else
+                                        {
+                                            if (GCS.UnitPos[kvp.Key + dir].GetComponent<UnitController>().Team == Team) //is this unit on are team?
+                                            {
+                                                tempInt = GCS.TilePos[kvp.Key + dir].transform.GetComponent<TerrainController>().Weight + kvp.Value; //this is the movement points used so far
+                                                Temp.Add(kvp.Key + dir, tempInt);
+                                            }
+                                            else if (GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().FogOfWarBool) //if enemy are they in the fog of war?
+                                            {
+                                                tempInt = GCS.TilePos[kvp.Key + dir].transform.GetComponent<TerrainController>().Weight + kvp.Value; //this is the movement points used so far
+                                                Temp.Add(kvp.Key + dir, tempInt);
+                                            }
+                                        }
+                                    }
+                                }
+                                else //if temp already contains a key for this tile but more mp were used to get there then we want to replace the second value of the array with the lower number
+                                {
+                                    if (kvp.Value + GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Weight <= MovePoints && GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Walkable)
+                                    {
+                                        if (kvp.Value + GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Weight < Temp[kvp.Key + dir])
+                                        {
+                                            if (kvp.Key + dir != (Vector2)gameObject.transform.position)
+                                            {
+                                                Temp[kvp.Key + dir] = kvp.Value + GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Weight;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    foreach (var kvp in Temp) // need to put info in temp while we were going through TileWeights
+                    {
+                        if (TilesWeights.ContainsKey(kvp.Key))
+                        {
+                            if (kvp.Value < TilesWeights[kvp.Key])
+                            {
+                                TilesWeights[kvp.Key] = kvp.Value; // if tileWheights already contains info for this block, but the mp count is higher replace with lower.
+                            }
+                        }
+                        else
+                        {
+                            TilesWeights.Add(kvp.Key, kvp.Value); // other wise just add info
+                        }
+                    }
+                    if (count == MovePoints)
+                    {
+                        //Debug.log("Broke, count at:" + count); //used to make sure while loop dont get stuck some how, wierdly it does with out this.....
+                        break;
+                    }
+                    count = count + 1;
                 }
             }
-            while (count <= MovePoints)
+            catch (Exception e)
             {
-                int tempInt;
-                Dictionary<Vector2, int> Temp = new Dictionary<Vector2, int>();
-                foreach (var kvp in TilesWeights) //we want to check all tiles in tile weight, maybe could change this to only check tiles that were last added?
-                {
-                    foreach (var dir in Directions) //for each tile we are checking we need to look in each direction.
-                    {
-                        if (GCS.TilePos.ContainsKey(kvp.Key + dir)) //is there a tile there?
-                        {
-                            if (!Temp.ContainsKey(kvp.Key + dir)) //does the temp already contain the tile?
-                            {
-                                if (kvp.Value + GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Weight <= MovePoints && GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Walkable && kvp.Key + dir != (Vector2)gameObject.transform.position) //is the wegiht of the tile + move points used already < move points total? Walkable?
-                                {//enough mp? Is tile walkable? not the position of the unit currently?
-                                    if (!GCS.UnitPos.ContainsKey(kvp.Key + dir)) //is there not a unit there?
-                                    {
-                                        tempInt = GCS.TilePos[kvp.Key + dir].transform.GetComponent<TerrainController>().Weight + kvp.Value; //sets this to mp used so far + weight of tile.
-                                        Temp.Add(kvp.Key + dir, tempInt);
-                                    }
-                                    else
-                                    {
-                                        if (GCS.UnitPos[kvp.Key + dir].GetComponent<UnitController>().Team == Team) //is this unit on are team?
-                                        {
-                                            tempInt = GCS.TilePos[kvp.Key + dir].transform.GetComponent<TerrainController>().Weight + kvp.Value; //this is the movement points used so far
-                                            Temp.Add(kvp.Key + dir, tempInt);
-                                        }
-                                        else if (GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().FogOfWarBool) //if enemy are they in the fog of war?
-                                        {
-                                            tempInt = GCS.TilePos[kvp.Key + dir].transform.GetComponent<TerrainController>().Weight + kvp.Value; //this is the movement points used so far
-                                            Temp.Add(kvp.Key + dir, tempInt);
-                                        }
-                                    }
-                                }
-                            }
-                            else //if temp already contains a key for this tile but more mp were used to get there then we want to replace the second value of the array with the lower number
-                            {
-                                if (kvp.Value + GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Weight <= MovePoints && GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Walkable)
-                                {
-                                    if (kvp.Value + GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Weight < Temp[kvp.Key + dir])
-                                    {
-                                        if (kvp.Key + dir != (Vector2)gameObject.transform.position)
-                                        {
-                                            Temp[kvp.Key + dir] = kvp.Value + GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().Weight;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                foreach (var kvp in Temp) // need to put info in temp while we were going through TileWeights
-                {
-                    if (TilesWeights.ContainsKey(kvp.Key))
-                    {
-                        if (kvp.Value < TilesWeights[kvp.Key])
-                        {
-                            TilesWeights[kvp.Key] = kvp.Value; // if tileWheights already contains info for this block, but the mp count is higher replace with lower.
-                        }
-                    }
-                    else
-                    {
-                        TilesWeights.Add(kvp.Key, kvp.Value); // other wise just add info
-                    }
-                }
-                if (count == MovePoints)
-                {
-                    //Debug.log("Broke, count at:" + count); //used to make sure while loop dont get stuck some how, wierdly it does with out this.....
-                    break;
-                }
-                count = count + 1;
+                GCS.LogController(e.ToString());
+                throw;
             }
         } //Potential lua method
         public void GetSightTiles()
         {
-            ////Debug.log("MP = " + MovePoints);
-            int count = 1; //using this to make the algorith go more rounds then needed
-            SightTiles = new Dictionary<Vector2, int>();
-            foreach (var dir in Directions)
+            try
             {
-                if (GCS.TilePos.ContainsKey(Position + dir) && !SightTiles.ContainsKey(Position + dir)) //tile there?  already added to dict?
+                ////Debug.log("MP = " + MovePoints);
+                int count = 1; //using this to make the algorith go more rounds then needed
+                SightTiles = new Dictionary<Vector2, int>();
+                foreach (var dir in Directions)
                 {
-                    int temp; //array to store count and mp used to get to that tile, the count will be needed later for when a ai is added.
-                    temp = 1; //this is the range so far
-                    SightTiles.Add(Position + dir, temp);
+                    if (GCS.TilePos.ContainsKey(Position + dir) && !SightTiles.ContainsKey(Position + dir)) //tile there?  already added to dict?
+                    {
+                        int temp; //array to store count and mp used to get to that tile, the count will be needed later for when a ai is added.
+                        temp = 1; //this is the range so far
+                        SightTiles.Add(Position + dir, temp);
+                    }
+                }
+                while (count <= SightRange)
+                {
+                    int tempInt;
+                    Dictionary<Vector2, int> Temp = new Dictionary<Vector2, int>();
+                    foreach (var kvp in SightTiles) //we want to check all tiles in tile weight, maybe could change this to only check tiles that were last added?
+                    {
+                        foreach (var dir in Directions) //for each tile we are checking we need to look in each direction.
+                        {
+                            if (GCS.TilePos.ContainsKey(kvp.Key + dir)) //is there a tile there?
+                            {
+                                if (!Temp.ContainsKey(kvp.Key + dir)) //does the temp already contain the tile?
+                                {
+                                    if (kvp.Value + 1 <= SightRange) //is the wegiht of the tile + move points used already < move points total? unit there?
+                                    {
+                                        if (!GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().BlocksSight) // can the tile be walked on?
+                                        {
+                                            tempInt = kvp.Value + 1; //sets this to mp used so far + weight of tile.
+                                            Temp.Add(kvp.Key + dir, tempInt);
+                                        }
+                                    }
+                                }
+                                else //if temp already contains a key for this tile but more mp were used to get there then we want to replace the second value of the array with the lower number
+                                {
+                                    if (kvp.Value + 1 <= SightRange && !GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().BlocksSight)
+                                    {
+                                        if (kvp.Value + 1 < Temp[kvp.Key + dir])
+                                        {
+                                            Temp[kvp.Key + dir] = kvp.Value + 1;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    foreach (var kvp in Temp) // need to put info in temp while we were going through TileWeights
+                    {
+                        if (SightTiles.ContainsKey(kvp.Key))
+                        {
+                            if (kvp.Value < SightTiles[kvp.Key])
+                            {
+                                SightTiles[kvp.Key] = kvp.Value; // if tileWheights already contains info for this block, but the mp count is higher replace with lower.
+                            }
+                        }
+                        else
+                        {
+                            SightTiles.Add(kvp.Key, kvp.Value); // other wise just add info
+                        }
+                    }
+                    if (count == SightRange)
+                    {
+                        //Debug.log("Broke, count at:" + count); //used to make sure while loop dont get stuck some how, wierdly it does with out this.....
+                        break;
+                    }
+                    count = count + 1;
                 }
             }
-            while (count <= SightRange)
+            catch (Exception e)
             {
-                int tempInt;
-                Dictionary<Vector2, int> Temp = new Dictionary<Vector2, int>();
-                foreach (var kvp in SightTiles) //we want to check all tiles in tile weight, maybe could change this to only check tiles that were last added?
-                {
-                    foreach (var dir in Directions) //for each tile we are checking we need to look in each direction.
-                    {
-                        if (GCS.TilePos.ContainsKey(kvp.Key + dir)) //is there a tile there?
-                        {
-                            if (!Temp.ContainsKey(kvp.Key + dir)) //does the temp already contain the tile?
-                            {
-                                if (kvp.Value + 1 <= SightRange) //is the wegiht of the tile + move points used already < move points total? unit there?
-                                {
-                                    if (!GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().BlocksSight) // can the tile be walked on?
-                                    {
-                                        tempInt = kvp.Value + 1; //sets this to mp used so far + weight of tile.
-                                        Temp.Add(kvp.Key + dir, tempInt);
-                                    }
-                                }
-                            }
-                            else //if temp already contains a key for this tile but more mp were used to get there then we want to replace the second value of the array with the lower number
-                            {
-                                if (kvp.Value + 1 <= SightRange && !GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().BlocksSight)
-                                {
-                                    if (kvp.Value + 1 < Temp[kvp.Key + dir])
-                                    {
-                                        Temp[kvp.Key + dir] = kvp.Value + 1;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                foreach (var kvp in Temp) // need to put info in temp while we were going through TileWeights
-                {
-                    if (SightTiles.ContainsKey(kvp.Key))
-                    {
-                        if (kvp.Value < SightTiles[kvp.Key])
-                        {
-                            SightTiles[kvp.Key] = kvp.Value; // if tileWheights already contains info for this block, but the mp count is higher replace with lower.
-                        }
-                    }
-                    else
-                    {
-                        SightTiles.Add(kvp.Key, kvp.Value); // other wise just add info
-                    }
-                }
-                if (count == SightRange)
-                {
-                    //Debug.log("Broke, count at:" + count); //used to make sure while loop dont get stuck some how, wierdly it does with out this.....
-                    break;
-                }
-                count = count + 1;
+                GCS.LogController(e.ToString());
+                throw;
             }
         } //Potential lua method
         public void ChangeUnit()
         {
-            if (MEMCC.SelectedButtonDR == -1)
+            try
             {
-                //Debug.log("Deleting Unit");
-                Destroy(gameObject);
+                if (MEMCC.SelectedButtonDR == -1)
+                {
+                    //Debug.log("Deleting Unit");
+                    Destroy(gameObject);
+                }
+                else
+                {
+                    ////Debug.log("Changing tile to " + kvp.Value.Title);
+                    gameObject.name = DBC.UnitDictionary[MEMCC.SelectedButtonDR].Title;//change name of tile
+                    gameObject.GetComponent<SpriteRenderer>().sprite = DBC.UnitDictionary[MEMCC.SelectedButtonDR].IconSprite; //change sprite of tile
+                    Health = DBC.UnitDictionary[MEMCC.SelectedButtonDR].Health;
+                    ID = MEMCC.SelectedButtonDR;
+                    gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").Find("Text").GetComponent<Text>().text = Health.ToString();
+                }
             }
-            else
+            catch (Exception e)
             {
-                ////Debug.log("Changing tile to " + kvp.Value.Title);
-                gameObject.name = DBC.UnitDictionary[MEMCC.SelectedButtonDR].Title;//change name of tile
-                gameObject.GetComponent<SpriteRenderer>().sprite = DBC.UnitDictionary[MEMCC.SelectedButtonDR].IconSprite; //change sprite of tile
-                Health = DBC.UnitDictionary[MEMCC.SelectedButtonDR].Health;
-                ID = MEMCC.SelectedButtonDR;
-                gameObject.transform.Find("UnitHealthOverlay(Clone)").Find("Image").Find("Text").GetComponent<Text>().text = Health.ToString();
+                GCS.LogController(e.ToString());
+                throw;
             }
         }   //Potential lua method
         public int GetEnemyUnitsInRange()
         {
-            List<Vector2> Directions = new List<Vector2>();
-            Directions.Add(new Vector2(0, 1));
-            Directions.Add(new Vector2(1, 0));
-            Directions.Add(new Vector2(0, -1));
-            Directions.Add(new Vector2(-1, 0));
-            int count = 1;
-            EnemyUnitsInRange = new Dictionary<Vector2, int>();
-            TilesChecked = new Dictionary<Vector2, int>();
+            try
+            {
+                List<Vector2> Directions = new List<Vector2>();
+                Directions.Add(new Vector2(0, 1));
+                Directions.Add(new Vector2(1, 0));
+                Directions.Add(new Vector2(0, -1));
+                Directions.Add(new Vector2(-1, 0));
+                int count = 1;
+                EnemyUnitsInRange = new Dictionary<Vector2, int>();
+                TilesChecked = new Dictionary<Vector2, int>();
 
-            foreach (var dir in Directions)
-            {
-                if (GCS.TilePos.ContainsKey(Position + dir)) //is the tile on the map?
+                foreach (var dir in Directions)
                 {
-                    if (!EnemyUnitsInRange.ContainsKey(Position + dir) && GCS.UnitPos.ContainsKey(Position + dir)) //is the key already claimed?
+                    if (GCS.TilePos.ContainsKey(Position + dir)) //is the tile on the map?
                     {
-                        if (!GCS.TilePos[Position + dir].GetComponent<TerrainController>().FogOfWarBool) // if you cannot see the unit, you cannot attack it
+                        if (!EnemyUnitsInRange.ContainsKey(Position + dir) && GCS.UnitPos.ContainsKey(Position + dir)) //is the key already claimed?
                         {
-                            if (GCS.UnitPos[Position + dir].GetComponent<UnitController>().Team != gameObject.GetComponent<UnitController>().Team)
+                            if (!GCS.TilePos[Position + dir].GetComponent<TerrainController>().FogOfWarBool) // if you cannot see the unit, you cannot attack it
                             {
-                                EnemyUnitsInRange.Add(Position + dir, count); //add to dictionary 
-                            }
-                        }
-                    }
-                    TilesChecked.Add(Position + dir, count); //add to tiles checked
-                }
-            }
-            count = count + 1;
-            while (count <= AttackRange)
-            {
-                Dictionary<Vector2, int> Temp = new Dictionary<Vector2, int>();
-                foreach (var kvp in TilesChecked)
-                {
-                    foreach (var dir in Directions)
-                    {
-                        if (!TilesChecked.ContainsKey(kvp.Key + dir) && GCS.TilePos.ContainsKey(kvp.Key + dir) && !EnemyUnitsInRange.ContainsKey(kvp.Key + dir) && !Temp.ContainsKey(kvp.Key + dir)) //is teh tile there?is key claimed?
-                        {
-                            if (GCS.UnitPos.ContainsKey(kvp.Key + dir))//does tilesChecked not contain key? is there a unit there?
-                            {
-                                if (!GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().FogOfWarBool) //if we cannot see the unit, then we cannot attack it
+                                if (GCS.UnitPos[Position + dir].GetComponent<UnitController>().Team != gameObject.GetComponent<UnitController>().Team)
                                 {
-                                    if (GCS.UnitPos[kvp.Key + dir].GetComponent<UnitController>().Team != gameObject.GetComponent<UnitController>().Team) //is it not on the same team?
-                                    {
-                                        EnemyUnitsInRange.Add(kvp.Key + dir, count);
-                                    }
+                                    EnemyUnitsInRange.Add(Position + dir, count); //add to dictionary 
                                 }
                             }
-                            Temp.Add(kvp.Key + dir, count);
                         }
+                        TilesChecked.Add(Position + dir, count); //add to tiles checked
                     }
                 }
-                foreach (var kvp in Temp)
-                {
-                    TilesChecked.Add(kvp.Key, kvp.Value);
-                }
-                if (count == 15)
-                {
-                    //Debug.log("Broke, count at:" + count);
-                    break;
-                }
                 count = count + 1;
+                while (count <= AttackRange)
+                {
+                    Dictionary<Vector2, int> Temp = new Dictionary<Vector2, int>();
+                    foreach (var kvp in TilesChecked)
+                    {
+                        foreach (var dir in Directions)
+                        {
+                            if (!TilesChecked.ContainsKey(kvp.Key + dir) && GCS.TilePos.ContainsKey(kvp.Key + dir) && !EnemyUnitsInRange.ContainsKey(kvp.Key + dir) && !Temp.ContainsKey(kvp.Key + dir)) //is teh tile there?is key claimed?
+                            {
+                                if (GCS.UnitPos.ContainsKey(kvp.Key + dir))//does tilesChecked not contain key? is there a unit there?
+                                {
+                                    if (!GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().FogOfWarBool) //if we cannot see the unit, then we cannot attack it
+                                    {
+                                        if (GCS.UnitPos[kvp.Key + dir].GetComponent<UnitController>().Team != gameObject.GetComponent<UnitController>().Team) //is it not on the same team?
+                                        {
+                                            EnemyUnitsInRange.Add(kvp.Key + dir, count);
+                                        }
+                                    }
+                                }
+                                Temp.Add(kvp.Key + dir, count);
+                            }
+                        }
+                    }
+                    foreach (var kvp in Temp)
+                    {
+                        TilesChecked.Add(kvp.Key, kvp.Value);
+                    }
+                    if (count == 15)
+                    {
+                        //Debug.log("Broke, count at:" + count);
+                        break;
+                    }
+                    count = count + 1;
+                }
+                //Debug.log("Enemys in range:" + EnemyUnitsInRange.Count);
+                return EnemyUnitsInRange.Count;
             }
-            //Debug.log("Enemys in range:" + EnemyUnitsInRange.Count);
-            return EnemyUnitsInRange.Count;
+            catch (Exception e)
+            {
+                GCS.LogController(e.ToString());
+                throw;
+            }
         } //Potential lua method
 
         /*public void UnitAi()
@@ -652,390 +701,446 @@ namespace TileGame
         [MoonSharpHidden]
         public void HealUnitIfOnFriendlyBuilding()
         {
-            foreach (var b in GCS.BuildingPos)
+            try
             {
-                if (b.Key == (Vector2)gameObject.transform.position && b.Value.GetComponent<BuildingController>().Team == Team && Health < MaxHealth && GCS.CurrentTeamsTurn.Team == Team)
+                foreach (var b in GCS.BuildingPos)
                 {
-                    Health = Health + 1;
-                    gameObject.GetComponentInChildren<Text>().text = Health.ToString();
+                    if (b.Key == (Vector2)gameObject.transform.position && b.Value.GetComponent<BuildingController>().Team == Team && Health < MaxHealth && GCS.CurrentTeamsTurn.Team == Team)
+                    {
+                        Health = Health + 1;
+                        gameObject.GetComponentInChildren<Text>().text = Health.ToString();
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                GCS.LogController(e.ToString());
+                throw;
             }
         }  //Potential lua method
         public void MovementController()
         {
-            if (UnitMoved && !UnitMovable && Team == GCS.CurrentTeamsTurn.Team)
+            try
             {
-                gameObject.GetComponent<SpriteRenderer>().color = new Color(1F, 1F, 1F);
-            }
-            else
-            {
-                if (Team == GCS.CurrentTeamsTurn.Team)
+                if (UnitMoved && !UnitMovable && Team == GCS.CurrentTeamsTurn.Team)
                 {
-                    gameObject.GetComponent<SpriteRenderer>().color = new Color(.5F, .5F, .5F);
+                    gameObject.GetComponent<SpriteRenderer>().color = new Color(1F, 1F, 1F);
                 }
+                else
+                {
+                    if (Team == GCS.CurrentTeamsTurn.Team)
+                    {
+                        gameObject.GetComponent<SpriteRenderer>().color = new Color(.5F, .5F, .5F);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                GCS.LogController(e.ToString());
+                throw;
             }
         } //Potential lua method
         [MoonSharpHidden]
         public void AnimationTimers()
         {
-            if (!Hero)
+            try
             {
-                if (UnitIdleAnimation && !Attacking && !Dying && !Hurt && !Moving)
+                if (!Hero)
                 {
-                    IdleTimerFloat += Time.deltaTime;
-                    if (IdleTimerFloat >= IdleAnimationSpeed)
+                    if (UnitIdleAnimation && !Attacking && !Dying && !Hurt && !Moving)
                     {
-                        if ((DBC.UnitDictionary[ID].IdleAnimationDirectory.Count - 1) > IdleState)
+                        IdleTimerFloat += Time.deltaTime;
+                        if (IdleTimerFloat >= IdleAnimationSpeed)
                         {
-                            gameObject.GetComponent<SpriteRenderer>().sprite = DBC.UnitDictionary[ID].IdleAnimationDirectory[IdleState];
-                            IdleState = IdleState + 1;
+                            if ((DBC.UnitDictionary[ID].IdleAnimationDirectory.Count - 1) > IdleState)
+                            {
+                                gameObject.GetComponent<SpriteRenderer>().sprite = DBC.UnitDictionary[ID].IdleAnimationDirectory[IdleState];
+                                IdleState = IdleState + 1;
+                            }
+                            else
+                            {
+                                gameObject.GetComponent<SpriteRenderer>().sprite = DBC.UnitDictionary[ID].IdleAnimationDirectory[IdleState];
+                                IdleState = 0;
+                            }
+                            IdleTimerFloat = 0;
                         }
-                        else
-                        {
-                            gameObject.GetComponent<SpriteRenderer>().sprite = DBC.UnitDictionary[ID].IdleAnimationDirectory[IdleState];
-                            IdleState = 0;
-                        }
-                        IdleTimerFloat = 0;
                     }
-                }
-                else if (Attacking)
-                {
-                    AttackTimerFloat += Time.deltaTime;
-                    if (AttackTimerFloat >= AttackAnimationSpeed && UnitAttackAnimation)
+                    else if (Attacking)
                     {
-                        if ((DBC.UnitDictionary[ID].AttackAnimationDirectory.Count - 1) > AttackState)
+                        AttackTimerFloat += Time.deltaTime;
+                        if (AttackTimerFloat >= AttackAnimationSpeed && UnitAttackAnimation)
                         {
-                            gameObject.GetComponent<SpriteRenderer>().sprite = DBC.UnitDictionary[ID].AttackAnimationDirectory[AttackState];
-                            AttackState = AttackState + 1;
+                            if ((DBC.UnitDictionary[ID].AttackAnimationDirectory.Count - 1) > AttackState)
+                            {
+                                gameObject.GetComponent<SpriteRenderer>().sprite = DBC.UnitDictionary[ID].AttackAnimationDirectory[AttackState];
+                                AttackState = AttackState + 1;
+                            }
+                            else
+                            {
+                                AttackState = 0;
+                                Attacking = false;
+                            }
+                            AttackTimerFloat = 0;
                         }
-                        else
+                        else if (!UnitAttackAnimation)
                         {
-                            AttackState = 0;
                             Attacking = false;
                         }
-                        AttackTimerFloat = 0;
                     }
-                    else if (!UnitAttackAnimation)
+                    else if (Hurt)
                     {
-                        Attacking = false;
-                    }
-                }
-                else if (Hurt)
-                {
-                    HurtTimerFloat += Time.deltaTime;
-                    if (HurtTimerFloat >= HurtAnimationSpeed && UnitHurtAnimation)
-                    {
-                        if ((DBC.UnitDictionary[ID].HurtAnimationDirectory.Count - 1) > HurtState)
+                        HurtTimerFloat += Time.deltaTime;
+                        if (HurtTimerFloat >= HurtAnimationSpeed && UnitHurtAnimation)
                         {
-                            gameObject.GetComponent<SpriteRenderer>().sprite = DBC.UnitDictionary[ID].HurtAnimationDirectory[HurtState];
-                            HurtState = HurtState + 1;
+                            if ((DBC.UnitDictionary[ID].HurtAnimationDirectory.Count - 1) > HurtState)
+                            {
+                                gameObject.GetComponent<SpriteRenderer>().sprite = DBC.UnitDictionary[ID].HurtAnimationDirectory[HurtState];
+                                HurtState = HurtState + 1;
+                            }
+                            else
+                            {
+                                HurtState = 0;
+                                Hurt = false;
+                            }
+                            HurtTimerFloat = 0;
                         }
-                        else
+                        else if (!UnitHurtAnimation)
                         {
-                            HurtState = 0;
                             Hurt = false;
                         }
-                        HurtTimerFloat = 0;
                     }
-                    else if (!UnitHurtAnimation)
+                    else if (Dying)
                     {
-                        Hurt = false;
-                    }
-                }
-                else if (Dying)
-                {
-                    DiedTimerFloat += Time.deltaTime;
-                    if (DiedTimerFloat >= DiedAnimationSpeed && UnitDiedAnimation)
-                    {
-                        if ((DBC.UnitDictionary[ID].DiedAnimationDirectory.Count - 1) > DiedState)
+                        DiedTimerFloat += Time.deltaTime;
+                        if (DiedTimerFloat >= DiedAnimationSpeed && UnitDiedAnimation)
                         {
-                            gameObject.GetComponent<SpriteRenderer>().sprite = DBC.UnitDictionary[ID].DiedAnimationDirectory[DiedState];
-                            DiedState = DiedState + 1;
+                            if ((DBC.UnitDictionary[ID].DiedAnimationDirectory.Count - 1) > DiedState)
+                            {
+                                gameObject.GetComponent<SpriteRenderer>().sprite = DBC.UnitDictionary[ID].DiedAnimationDirectory[DiedState];
+                                DiedState = DiedState + 1;
+                            }
+                            else
+                            {
+                                DiedState = 0;
+                                Dying = false;
+                                Destroy(gameObject);
+                            }
+                            DiedTimerFloat = 0;
                         }
-                        else
+                        else if (!UnitDiedAnimation)
                         {
-                            DiedState = 0;
-                            Dying = false;
                             Destroy(gameObject);
                         }
-                        DiedTimerFloat = 0;
                     }
-                    else if (!UnitDiedAnimation)
+                    else if (Moving)
                     {
-                        Destroy(gameObject);
-                    }
-                }
-                else if (Moving)
-                {
-                    float step = MoveAnimationTime * Time.deltaTime; //get time that we want to move for
-                    transform.position = Vector2.MoveTowards(transform.position, vectorlist[VectorState], step); //apply move
-                    MoveAnimationTimerFloat += Time.deltaTime; // getting current time that we have moved for
-                    if (MoveAnimationTimerFloat >= 1/MoveAnimationTime) //have we moved to this position for the required time?
-                    {
-                        if ((vectorlist.Count - 1) > VectorState)
+                        float step = MoveAnimationTime * Time.deltaTime; //get time that we want to move for
+                        transform.position = Vector2.MoveTowards(transform.position, vectorlist[VectorState], step); //apply move
+                        MoveAnimationTimerFloat += Time.deltaTime; // getting current time that we have moved for
+                        if (MoveAnimationTimerFloat >= 1 / MoveAnimationTime) //have we moved to this position for the required time?
                         {
-                            VectorState += 1;
+                            if ((vectorlist.Count - 1) > VectorState)
+                            {
+                                VectorState += 1;
+                            }
+                            else
+                            {
+                                VectorState = 0;
+                                Moving = false;
+                                transform.position = Position;
+                            }
+                            MoveAnimationTimerFloat = 0;
                         }
-                        else
+                        MoveTimerFloat += Time.deltaTime;
+                        if (MoveTimerFloat >= MoveAnimationSpeed && UnitMoveAnimation)
                         {
-                            VectorState = 0;
-                            Moving = false;
-                            transform.position = Position;
+                            if ((DBC.UnitDictionary[ID].MoveAnimationDirectory.Count - 1) > MoveState)
+                            {
+                                gameObject.GetComponent<SpriteRenderer>().sprite = DBC.UnitDictionary[ID].MoveAnimationDirectory[MoveState];
+                                MoveState = MoveState + 1;
+                            }
+                            else
+                            {
+                                gameObject.GetComponent<SpriteRenderer>().sprite = DBC.UnitDictionary[ID].MoveAnimationDirectory[MoveState];
+                                MoveState = 0;
+                            }
+                            MoveTimerFloat = 0;
                         }
-                        MoveAnimationTimerFloat = 0;
-                    }
-                    MoveTimerFloat += Time.deltaTime;
-                    if (MoveTimerFloat >= MoveAnimationSpeed && UnitMoveAnimation)
-                    {
-                        if ((DBC.UnitDictionary[ID].MoveAnimationDirectory.Count - 1) > MoveState)
-                        {
-                            gameObject.GetComponent<SpriteRenderer>().sprite = DBC.UnitDictionary[ID].MoveAnimationDirectory[MoveState];
-                            MoveState = MoveState + 1;
-                        }
-                        else
-                        {
-                            gameObject.GetComponent<SpriteRenderer>().sprite = DBC.UnitDictionary[ID].MoveAnimationDirectory[MoveState];
-                            MoveState = 0;
-                        }
-                        MoveTimerFloat = 0;
-                    }
-                } 
-            } 
-            else
-            {
-                if (UnitIdleAnimation && !Attacking && !Dying && !Hurt && !Moving)
-                {
-                    IdleTimerFloat += Time.deltaTime;
-                    if (IdleTimerFloat >= IdleAnimationSpeed)
-                    {
-                        if ((DBC.HeroRaceDictionary[ID].IdleAnimationDirectory.Count - 1) > IdleState)
-                        {
-                            gameObject.GetComponent<SpriteRenderer>().sprite = DBC.HeroRaceDictionary[ID].IdleAnimationDirectory[IdleState];
-                            IdleState = IdleState + 1;
-                        }
-                        else
-                        {
-                            gameObject.GetComponent<SpriteRenderer>().sprite = DBC.HeroRaceDictionary[ID].IdleAnimationDirectory[IdleState];
-                            IdleState = 0;
-                        }
-                        IdleTimerFloat = 0;
                     }
                 }
-                else if (Attacking)
+                else
                 {
-                    AttackTimerFloat += Time.deltaTime;
-                    if (AttackTimerFloat >= AttackAnimationSpeed && UnitAttackAnimation)
+                    if (UnitIdleAnimation && !Attacking && !Dying && !Hurt && !Moving)
                     {
-                        if ((DBC.HeroRaceDictionary[ID].AttackAnimationDirectory.Count - 1) > AttackState)
+                        IdleTimerFloat += Time.deltaTime;
+                        if (IdleTimerFloat >= IdleAnimationSpeed)
                         {
-                            gameObject.GetComponent<SpriteRenderer>().sprite = DBC.HeroRaceDictionary[ID].AttackAnimationDirectory[AttackState];
-                            AttackState = AttackState + 1;
+                            if ((DBC.HeroRaceDictionary[ID].IdleAnimationDirectory.Count - 1) > IdleState)
+                            {
+                                gameObject.GetComponent<SpriteRenderer>().sprite = DBC.HeroRaceDictionary[ID].IdleAnimationDirectory[IdleState];
+                                IdleState = IdleState + 1;
+                            }
+                            else
+                            {
+                                gameObject.GetComponent<SpriteRenderer>().sprite = DBC.HeroRaceDictionary[ID].IdleAnimationDirectory[IdleState];
+                                IdleState = 0;
+                            }
+                            IdleTimerFloat = 0;
                         }
-                        else
+                    }
+                    else if (Attacking)
+                    {
+                        AttackTimerFloat += Time.deltaTime;
+                        if (AttackTimerFloat >= AttackAnimationSpeed && UnitAttackAnimation)
                         {
-                            AttackState = 0;
+                            if ((DBC.HeroRaceDictionary[ID].AttackAnimationDirectory.Count - 1) > AttackState)
+                            {
+                                gameObject.GetComponent<SpriteRenderer>().sprite = DBC.HeroRaceDictionary[ID].AttackAnimationDirectory[AttackState];
+                                AttackState = AttackState + 1;
+                            }
+                            else
+                            {
+                                AttackState = 0;
+                                Attacking = false;
+                            }
+                            AttackTimerFloat = 0;
+                        }
+                        else if (!UnitAttackAnimation)
+                        {
                             Attacking = false;
                         }
-                        AttackTimerFloat = 0;
                     }
-                    else if (!UnitAttackAnimation)
+                    else if (Hurt)
                     {
-                        Attacking = false;
-                    }
-                }
-                else if (Hurt)
-                {
-                    HurtTimerFloat += Time.deltaTime;
-                    if (HurtTimerFloat >= HurtAnimationSpeed && UnitHurtAnimation)
-                    {
-                        if ((DBC.HeroRaceDictionary[ID].HurtAnimationDirectory.Count - 1) > HurtState)
+                        HurtTimerFloat += Time.deltaTime;
+                        if (HurtTimerFloat >= HurtAnimationSpeed && UnitHurtAnimation)
                         {
-                            gameObject.GetComponent<SpriteRenderer>().sprite = DBC.HeroRaceDictionary[ID].HurtAnimationDirectory[HurtState];
-                            HurtState = HurtState + 1;
+                            if ((DBC.HeroRaceDictionary[ID].HurtAnimationDirectory.Count - 1) > HurtState)
+                            {
+                                gameObject.GetComponent<SpriteRenderer>().sprite = DBC.HeroRaceDictionary[ID].HurtAnimationDirectory[HurtState];
+                                HurtState = HurtState + 1;
+                            }
+                            else
+                            {
+                                HurtState = 0;
+                                Hurt = false;
+                            }
+                            HurtTimerFloat = 0;
                         }
-                        else
+                        else if (!UnitHurtAnimation)
                         {
-                            HurtState = 0;
                             Hurt = false;
                         }
-                        HurtTimerFloat = 0;
                     }
-                    else if (!UnitHurtAnimation)
+                    else if (Dying && !Hurt)
                     {
-                        Hurt = false;
-                    }
-                }
-                else if (Dying && !Hurt)
-                {
-                    DiedTimerFloat += Time.deltaTime;
-                    if (DiedTimerFloat >= DiedAnimationSpeed && UnitDiedAnimation)
-                    {
-                        if ((DBC.HeroRaceDictionary[ID].DiedAnimationDirectory.Count - 1) > DiedState)
+                        DiedTimerFloat += Time.deltaTime;
+                        if (DiedTimerFloat >= DiedAnimationSpeed && UnitDiedAnimation)
                         {
-                            gameObject.GetComponent<SpriteRenderer>().sprite = DBC.HeroRaceDictionary[ID].DiedAnimationDirectory[DiedState];
-                            DiedState = DiedState + 1;
+                            if ((DBC.HeroRaceDictionary[ID].DiedAnimationDirectory.Count - 1) > DiedState)
+                            {
+                                gameObject.GetComponent<SpriteRenderer>().sprite = DBC.HeroRaceDictionary[ID].DiedAnimationDirectory[DiedState];
+                                DiedState = DiedState + 1;
+                            }
+                            else
+                            {
+                                DiedState = 0;
+                                //Dying = false;
+                                Destroy(gameObject);
+                            }
+                            DiedTimerFloat = 0;
                         }
-                        else
+                        else if (!UnitDiedAnimation)
                         {
-                            DiedState = 0;
-                            //Dying = false;
                             Destroy(gameObject);
                         }
-                        DiedTimerFloat = 0;
                     }
-                    else if (!UnitDiedAnimation)
+                    else if (Moving)
                     {
-                        Destroy(gameObject);
+                        float step = MoveAnimationTime * Time.deltaTime; //get time that we want to move for
+                        transform.position = Vector2.MoveTowards(transform.position, vectorlist[VectorState], step);
+                        MoveAnimationTimerFloat += Time.deltaTime;
+                        if (MoveAnimationTimerFloat >= 1 / MoveAnimationTime)
+                        {
+                            if ((vectorlist.Count - 1) > VectorState)
+                            {
+                                VectorState += 1;
+                            }
+                            else
+                            {
+                                VectorState = 0;
+                                Moving = false;
+                                transform.position = Position;
+                            }
+                            MoveAnimationTimerFloat = 0;
+                        }
+                        MoveTimerFloat += Time.deltaTime;
+                        if (MoveTimerFloat >= MoveAnimationSpeed && UnitMoveAnimation)
+                        {
+                            if ((DBC.HeroRaceDictionary[ID].MoveAnimationDirectory.Count - 1) > MoveState)
+                            {
+                                gameObject.GetComponent<SpriteRenderer>().sprite = DBC.HeroRaceDictionary[ID].MoveAnimationDirectory[MoveState];
+                                MoveState = MoveState + 1;
+                            }
+                            else
+                            {
+                                gameObject.GetComponent<SpriteRenderer>().sprite = DBC.HeroRaceDictionary[ID].MoveAnimationDirectory[MoveState];
+                                MoveState = 0;
+                            }
+                            MoveTimerFloat = 0;
+                        }
                     }
                 }
-                else if (Moving)
-                {
-                    float step = MoveAnimationTime * Time.deltaTime; //get time that we want to move for
-                    transform.position = Vector2.Lerp(transform.position, vectorlist[VectorState], step);
-                    MoveAnimationTimerFloat += Time.deltaTime;
-                    if (MoveAnimationTimerFloat >= 1/MoveAnimationTime)
-                    {
-                        if ((vectorlist.Count - 1) > VectorState)
-                        {
-                            VectorState += 1;
-                        }
-                        else
-                        {
-                            VectorState = 0;
-                            Moving = false;
-                            transform.position = Position;
-                        }
-                        MoveAnimationTimerFloat = 0;
-                    }
-                    MoveTimerFloat += Time.deltaTime;
-                    if (MoveTimerFloat >= MoveAnimationSpeed && UnitMoveAnimation)
-                    {
-                        if ((DBC.HeroRaceDictionary[ID].MoveAnimationDirectory.Count - 1) > MoveState)
-                        {
-                            gameObject.GetComponent<SpriteRenderer>().sprite = DBC.HeroRaceDictionary[ID].MoveAnimationDirectory[MoveState];
-                            MoveState = MoveState + 1;
-                        }
-                        else
-                        {
-                            gameObject.GetComponent<SpriteRenderer>().sprite = DBC.HeroRaceDictionary[ID].MoveAnimationDirectory[MoveState];
-                            MoveState = 0;
-                        }
-                        MoveTimerFloat = 0;
-                    }
-                }
+            }
+            catch (Exception e)
+            {
+                GCS.LogController(e.ToString());
+                throw;
             }
         }
         [MoonSharpHidden]
         public void KilledEnemyUnit(UnitController UC)
         {
-            if (UC.Hero)
+            try
             {
-                XP += 5;
-            }
-            else
-            {
-                XP += 1;
-            }
-            if (XP >= Math.Pow(2, Level + 1))
-            {
-                XP = 0;
-                Level += 1;
-                if (!Hero)
+                if (UC.Hero)
                 {
-                    Defence += 1;
-                    if (Level % 2 == 0)
-                    {
-                        ConversionSpeed += 1;
-                    }
-                    if (Level % 3 == 0)
-                    {
-                        Attack += 1;
-                    }
-                    if (Level % 4 == 0)
-                    {
-                        MovePoints += 1;
-                    }
+                    XP += 5;
                 }
                 else
                 {
-                    UpdateHeroStats();
+                    XP += 1;
                 }
+                if (XP >= Math.Pow(2, Level + 1)) //this makes it double the amount of xp needed to lvl up every lvl, starting with 1 ---- takes 1xp to get to lvl2, 2xp for 3, 4xp for 4, total of 7xp to get to lvl 4
+                {
+                    XP = 0;
+                    Level += 1;
+                    if (!Hero)
+                    {
+                        Defence += 1;
+                        if (Level % 2 == 0) //if remainder of level/2 is = to 0 ----so that will increase this stat every 2 levels
+                        {
+                            ConversionSpeed += 1;
+                        }
+                        if (Level % 3 == 0)
+                        {
+                            Attack += 1;
+                        }
+                        if (Level % 4 == 0)
+                        {
+                            MovePoints += 1;
+                        }
+                    }
+                    else
+                    {
+                        UpdateHeroStats();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                GCS.LogController(e.ToString());
+                throw;
             }
         } //Potential lua method
         [MoonSharpHidden]
         public void RayCastForAttackRange()
         {
-            if (Input.GetKey(KeyCode.LeftControl) && Input.GetMouseButtonDown(0))
+            try
             {
-                if (!EventSystem.current.IsPointerOverGameObject()) //dont want to click through menus
+                if (Input.GetKey(KeyCode.LeftControl) && Input.GetMouseButtonDown(0))
                 {
-                    ////Debug.log("RayHitStarted");
-                    Ray ray = GameObject.Find("MainCamera").GetComponent<Camera>().ScreenPointToRay(Input.mousePosition); //GET THEM RAYS
-                    RaycastHit[] hits;
-                    hits = Physics.RaycastAll(ray);
-                    for (int i = 0; i < hits.Length; i++) // GO THROUGH THEM RAYS
+                    if (!EventSystem.current.IsPointerOverGameObject()) //dont want to click through menus
                     {
-                        RaycastHit hit = hits[i];
-                        if (hit.transform == gameObject.transform && AttackOverlay == false) //did we hit a this unit?
+                        ////Debug.log("RayHitStarted");
+                        Ray ray = GameObject.Find("MainCamera").GetComponent<Camera>().ScreenPointToRay(Input.mousePosition); //GET THEM RAYS
+                        RaycastHit[] hits;
+                        hits = Physics.RaycastAll(ray);
+                        for (int i = 0; i < hits.Length; i++) // GO THROUGH THEM RAYS
                         {
-                            GetEnemyUnitsInRange();
-                            foreach (var kvp in TilesChecked)
+                            RaycastHit hit = hits[i];
+                            if (hit.transform == gameObject.transform && AttackOverlay == false) //did we hit a this unit?
                             {
-                                GCS.TilePos[kvp.Key].transform.GetComponent<TerrainController>().AttackOverlay = true;
+                                GetEnemyUnitsInRange();
+                                foreach (var kvp in TilesChecked)
+                                {
+                                    GCS.TilePos[kvp.Key].transform.GetComponent<TerrainController>().AttackOverlay = true;
+                                }
+                                AttackOverlay = true;
+                                break;
                             }
-                            AttackOverlay = true;
-                            break;
-                        }
-                        else if (hit.transform == transform && AttackOverlay)
-                        {
-                            foreach (var kvp in TilesChecked)
+                            else if (hit.transform == transform && AttackOverlay)
                             {
-                                GCS.TilePos[kvp.Key].transform.GetComponent<TerrainController>().AttackOverlay = false;
+                                foreach (var kvp in TilesChecked)
+                                {
+                                    GCS.TilePos[kvp.Key].transform.GetComponent<TerrainController>().AttackOverlay = false;
+                                }
+                                AttackOverlay = false;
+                                break;
                             }
-                            AttackOverlay = false;
-                            break;
                         }
                     }
                 }
+            }
+            catch (Exception e)
+            {
+                GCS.LogController(e.ToString());
+                throw;
             }
         }
         [MoonSharpHidden]
         public void UpdateHeroStats()
         {
-            HClass.Intelligance = HClass.BaseIntelligance * Level;
-            HClass.Strenght = HClass.BaseStrenght * Level;
-            HClass.Dexterity = HClass.BaseDexterity * Level;
-            HClass.Charisma = HClass.BaseCharisma * Level;
-            HClass.Attack = (int)Math.Ceiling((double)HClass.Strenght / 2) + 1;
-            HClass.MaxHealth = HClass.Strenght + 1;
-            HClass.HealthRegen = (int)Math.Ceiling((double)HClass.Strenght / 3);
-            HClass.MovePoints = (int)Math.Ceiling((double)HClass.Dexterity / 3) + 1;
-            HClass.Defence = HClass.Dexterity;
-            HClass.ConversionSpeed = (int)Math.Ceiling((double)HClass.Dexterity / 3) + 1;
-            HClass.Mana = HClass.Intelligance;
-            HClass.ManaRegen = (int)Math.Ceiling((double)HClass.Intelligance / 3) + 1;
-            Attack = HClass.Attack;
-            MaxHealth = HClass.MaxHealth;
-            MovePoints = HClass.MovePoints;
-            Defence = HClass.Defence;
-            ConversionSpeed = HClass.ConversionSpeed;
-            //xp gain here
-            //unit cost here
-            //Moral here
-            //Return limit here
-            HClass.Level = Level;
-            HClass.XP = XP;
-            DBC.HeroDictionary[HClass.Name] = HClass;
+            try
+            {
+                HClass.Intelligance = HClass.BaseIntelligance * Level;
+                HClass.Strenght = HClass.BaseStrenght * Level;
+                HClass.Dexterity = HClass.BaseDexterity * Level;
+                HClass.Charisma = HClass.BaseCharisma * Level;
+                HClass.Attack = (int)Math.Ceiling((double)HClass.Strenght / 2) + 1;
+                HClass.MaxHealth = HClass.Strenght + 1;
+                HClass.HealthRegen = (int)Math.Ceiling((double)HClass.Strenght / 3);
+                HClass.MovePoints = (int)Math.Ceiling((double)HClass.Dexterity / 3) + 1;
+                HClass.Defence = HClass.Dexterity;
+                HClass.ConversionSpeed = (int)Math.Ceiling((double)HClass.Dexterity / 3) + 1;
+                HClass.Mana = HClass.Intelligance;
+                HClass.ManaRegen = (int)Math.Ceiling((double)HClass.Intelligance / 3) + 1;
+                HClass.XPGain = (int)Math.Ceiling((double)HClass.Intelligance / 3);
+                HClass.UnitCost = (int)Math.Ceiling((double)HClass.Charisma / 3);
+                HClass.MoralBonus = (int)Math.Ceiling((double)HClass.Charisma / 3);
+                HClass.ReturnAmount = (int)Math.Ceiling((double)HClass.Charisma / 3);
+                Attack = HClass.Attack;
+                MaxHealth = HClass.MaxHealth;
+                MovePoints = HClass.MovePoints;
+                Defence = HClass.Defence;
+                ConversionSpeed = HClass.ConversionSpeed;
+                HClass.Level = Level;
+                HClass.XP = XP;
+                DBC.HeroDictionary[HClass.Name] = HClass;
+            }
+            catch (Exception e)
+            {
+                GCS.LogController(e.ToString());
+                throw;
+            }
         } //Potential lua method
 
         public bool DoDamage(int damage)
         {
-            Health = Health - damage;
-            if (Health > 0)
+            try
             {
-                return false;
+                Health = Health - damage;
+                if (Health > 0)
+                {
+                    return false;
+                }
+                return true;
             }
-            return true;
+            catch (Exception e)
+            {
+                GCS.LogController(e.ToString());
+                throw;
+            }
         }
 
         public void StartAttackAnimation()
