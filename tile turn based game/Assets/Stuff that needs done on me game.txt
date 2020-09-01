@@ -4,8 +4,11 @@ Things that need done:
 -Add hashtables for checking mod integrety.(will only be used in multiplayer)
 --use lua to run custom scripts on maps
 
-/////////////////////////////////////////// Currnetly working on:
+/////////////////////////////////////////// tyrone is Currently working on:
 /////////////////////////////////////////// spell book system
+
+/////////////////////////////////////////// Monin is currently working on:
+/////////////////////////////////////////// Settings menue and settings
 
 -Multiplayer?
 -What to do here?
