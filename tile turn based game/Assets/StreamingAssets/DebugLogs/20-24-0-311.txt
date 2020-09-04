@@ -1,0 +1,7 @@
+System.ArgumentException: pixelsPerUnit must be set to a positive non-zero value.
+  at UnityEngine.Sprite.Create (UnityEngine.Texture2D texture, UnityEngine.Rect rect, UnityEngine.Vector2 pivot, System.Single pixelsPerUnit, System.UInt32 extrude, UnityEngine.SpriteMeshType meshType, UnityEngine.Vector4 border, System.Boolean generateFallbackPhysicsShape) [0x000b7] in <94c5f4c38cdc42d2b006f8badef04394>:0 
+  at UnityEngine.Sprite.Create (UnityEngine.Texture2D texture, UnityEngine.Rect rect, UnityEngine.Vector2 pivot, System.Single pixelsPerUnit, System.UInt32 extrude, UnityEngine.SpriteMeshType meshType, UnityEngine.Vector4 border) [0x00001] in <94c5f4c38cdc42d2b006f8badef04394>:0 
+  at UnityEngine.Sprite.Create (UnityEngine.Texture2D texture, UnityEngine.Rect rect, UnityEngine.Vector2 pivot, System.Single pixelsPerUnit, System.UInt32 extrude, UnityEngine.SpriteMeshType meshType) [0x0000e] in <94c5f4c38cdc42d2b006f8badef04394>:0 
+  at UnityEngine.Sprite.Create (UnityEngine.Texture2D texture, UnityEngine.Rect rect, UnityEngine.Vector2 pivot, System.Single pixelsPerUnit, System.UInt32 extrude) [0x00001] in <94c5f4c38cdc42d2b006f8badef04394>:0 
+  at UnityEngine.Sprite.Create (UnityEngine.Texture2D texture, UnityEngine.Rect rect, UnityEngine.Vector2 pivot, System.Single pixelsPerUnit) [0x00001] in <94c5f4c38cdc42d2b006f8badef04394>:0 
+  at TileGame.DatabaseController.loadSprite (System.String FilePath, System.Int32 PPU) [0x00029] in E:\TileGame\tile turn based game\Assets\scripts\DatabaseController.cs:425 

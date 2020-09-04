@@ -140,6 +140,7 @@ namespace TileGame
             GetBuildingData("Core");
             LoadState = 5;
             yield return null;
+            GetSpellData("Core");
             ModsLoaded.Add("Core");
             LoadState = 6;
             yield return null;
@@ -290,7 +291,7 @@ namespace TileGame
                 if (Directory.Exists(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Spells/SpellData"))
                 {
                     //Debug.Log("Fetching json hero files");
-                    foreach (string file in Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Spells/SpellData/", "*.json")) //gets only json files form this path
+                    foreach (string file in Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Spells/SpellData/SpellJsons/", "*.json")) //gets only json files form this path
                     {
                         var Tempstring = File.ReadAllText(file); //temp string to hold the json data
                         Spell s = JsonUtility.FromJson<Spell>(Tempstring);
@@ -1380,13 +1381,14 @@ namespace TileGame
         public string LuaCode;
         public bool SpawnUnit;
         public int UnitID;
+        public int Cost;
         public Sprite Sprite;
 
         public void GetSprites()
         {
             //Debug.log("Getting sprites for: " + Title);
             int count = new int();
-            foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/Core/Spells/Sprites/" + Title + "/", "*.png")))
+            foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/Core/Spells/Sprites/", "*.png")))
             {
                 if (file.Contains(Title))
                 {

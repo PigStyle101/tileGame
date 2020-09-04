@@ -1129,7 +1129,7 @@ namespace TileGame
         {
             try
             {
-                Health = Health - damage;
+                Health -= damage;
                 if (Health > 0)
                 {
                     return false;
@@ -1143,6 +1143,22 @@ namespace TileGame
             }
         }
 
+        public void DoHeal(int heal)
+        {
+            try
+            {
+                Health += heal;
+                if (Health > MaxHealth)
+                {
+                    Health = MaxHealth;
+                }
+            }
+            catch(Exception e)
+            {
+                GCS.LogController(e.ToString());
+                throw;
+            }
+        }
         public void StartAttackAnimation()
         {
             Attacking = true;

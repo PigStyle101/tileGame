@@ -15,5 +15,6 @@
   ],
   "Damage": 2,
   "Range": 2,
-  "ManaCost": 6
+  "ManaCost": 6,
+  "PixelsPerUnit": 64
 }

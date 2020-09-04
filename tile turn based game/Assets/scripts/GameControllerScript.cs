@@ -1862,6 +1862,11 @@ namespace TileGame
             }
         } //Can be lua
 
+        public void CastSpellActionPlayScene()
+        {
+
+        }
+
         /// <summary>
         /// Simple audio controller to test out audio functionallity
         /// </summary>

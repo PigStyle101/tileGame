@@ -14,5 +14,6 @@
   ],
   "HealAmount": 2,
   "Range": 1,
-  "ManaCost": 6
+  "ManaCost": 6,
+  "PixelsPerUnit": 64
 }
