@@ -8,11 +8,9 @@
   	  "Damage",
       "AOE"
   ],
-  "Targets": 
-  [
-      "Friendly",
-      "Enemy"
-  ],
+  "TargetsEnemy": true,
+  "TargetsFriendly": true,
+  "OnlyCastableOnSelf": true,
   "Damage": 2,
   "Range": 2,
   "ManaCost": 6,

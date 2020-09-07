@@ -1,0 +1,9 @@
+MoonSharp.Interpreter.ScriptRuntimeException: cannot access field Mana of userdata<TileGame.UnitController>
+  at MoonSharp.Interpreter.Execution.VM.Processor.ExecIndex (MoonSharp.Interpreter.Execution.VM.Instruction i, System.Int32 instructionPtr) [0x0014b] in E:\TileGame\tile turn based game\Assets\Plugins\MoonSharp\Interpreter\Execution\VM\Processor\Processor_InstructionLoop.cs:1333 
+  at MoonSharp.Interpreter.Execution.VM.Processor.Processing_Loop (System.Int32 instructionPtr) [0x008bf] in E:\TileGame\tile turn based game\Assets\Plugins\MoonSharp\Interpreter\Execution\VM\Processor\Processor_InstructionLoop.cs:304 
+  at MoonSharp.Interpreter.Execution.VM.Processor.Call (MoonSharp.Interpreter.DynValue function, MoonSharp.Interpreter.DynValue[] args) [0x00086] in E:\TileGame\tile turn based game\Assets\Plugins\MoonSharp\Interpreter\Execution\VM\Processor\Processor.cs:67 
+  at MoonSharp.Interpreter.Script.Call (MoonSharp.Interpreter.DynValue function, MoonSharp.Interpreter.DynValue[] args) [0x000cb] in E:\TileGame\tile turn based game\Assets\Plugins\MoonSharp\Interpreter\Script.cs:483 
+  at MoonSharp.Interpreter.Script.Call (MoonSharp.Interpreter.DynValue function, System.Object[] args) [0x00028] in E:\TileGame\tile turn based game\Assets\Plugins\MoonSharp\Interpreter\Script.cs:502 
+  at MoonSharp.Interpreter.Script.Call (System.Object function, System.Object[] args) [0x00001] in E:\TileGame\tile turn based game\Assets\Plugins\MoonSharp\Interpreter\Script.cs:525 
+  at TileGame.LuaMethods.CastLuaSpell (System.String spell, System.String scene, UnityEngine.GameObject target, UnityEngine.GameObject caster) [0x0005d] in E:\TileGame\tile turn based game\Assets\scripts\LuaMethods.cs:143 
+  at TileGame.GameControllerScript.RayCastForPlayScene () [0x00c88] in E:\TileGame\tile turn based game\Assets\scripts\GameControllerScript.cs:913 

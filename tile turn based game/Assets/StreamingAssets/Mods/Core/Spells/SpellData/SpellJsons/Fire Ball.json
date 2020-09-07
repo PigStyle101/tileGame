@@ -8,10 +8,9 @@
   	  "Damage",
       "SingleTarget"
   ],
-  "Targets": 
-  [
-      "Enemy"
-  ],
+  "TargetsEnemy": true,
+  "TargetsFriendly": false,
+  "OnlyCastableOnSelf": false,
   "Damage": 2,
   "Range": 2,
   "ManaCost": 4,

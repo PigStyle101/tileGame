@@ -53,3 +53,39 @@ Thoughts
 settings notes
 -disable info popup
 -KeyBindings
+
+
+
+
+--spell stuff
+-hide spell button unless hero is selected
+-highlight units in range when spell is selected
+-add mana and mana regen
+-
+
+
+                                            code from line 734 in game controller script, dont think its needed, here just in case it is
+
+                                    else if (hit.transform.tag == DBC.TerrainDictionary[0].Type || hit.transform.tag == DBC.BuildingDictionary[0].Type) //is the hit a terrain or building?
+                                    {
+                                        ////Debug.log("Building or terrain hit");
+                                        if (SelectedUnitPlayScene != null)
+                                        {
+                                            UnitController UC = SelectedUnitPlayScene.GetComponent<UnitController>();
+                                            if (hit.transform.position != SelectedUnitPlayScene.transform.position) //is the building or terrain not the one the unit is standing on?
+                                            {
+                                                if (!UnitPos.ContainsKey(hit.transform.position) && SelectedUnitPlayScene.transform.GetComponent<UnitController>().TilesWeights.ContainsKey(hit.transform.position)) //there a unit there already?
+                                                {
+                                                    if (UC.UnitMovable) //has unit been moved yet?
+                                                    {
+                                                        MoveToPosition = hit.transform.position; //get position we want to move to
+                                                        PSCC.MoveButton.SetActive(true);
+                                                    }
+                                                }
+                                                else if (!SelectedUnitPlayScene.transform.GetComponent<UnitController>().TilesWeights.ContainsKey(hit.transform.position))
+                                                {
+
+                                                }
+                                            }
+                                        }
+                                    }

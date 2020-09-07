@@ -16,6 +16,7 @@ namespace TileGame
         [HideInInspector]
         public Text CurrentPlayerTurnText;
         public bool AttackButtonSelected = false;
+        public bool SpellButtonSelected = false;
         [HideInInspector]
         public GameObject AttackButton;
         [HideInInspector]
@@ -26,6 +27,8 @@ namespace TileGame
         public GameObject CaptureButton;
         [HideInInspector]
         public GameObject MoveButton;
+        [HideInInspector]
+        public GameObject SpellButton;
         //ToolTip Stuff
         private GameObject TerrainImage;
         private Text TerrainText;
@@ -118,7 +121,8 @@ namespace TileGame
         private string UnitSelectedForBuildingFromKeyboardShortcuts = "NONE";
         private int MovableUnits;
         private int SelectedUnitDR;
-        private int SelectedSpell;
+        [HideInInspector]
+        public int SelectedSpell;
         private GameControllerScript GCS;
         private DatabaseController DBC;
 
@@ -134,6 +138,7 @@ namespace TileGame
             SetActionButtonsToFalse();
             BuildingPanel.SetActive(false);
             StartInfoPanel.SetActive(true);
+            SpellButton.SetActive(false);
         }
 
         void Update()
@@ -160,6 +165,7 @@ namespace TileGame
                 CaptureButton = transform.Find("Canvas").Find("Panel").Find("ActionPanel").Find("CaptureButton").gameObject;
                 MoveButton = transform.Find("Canvas").Find("Panel").Find("ActionPanel").Find("MoveButton").gameObject;
                 WaitButton = transform.Find("Canvas").Find("Panel").Find("ActionPanel").Find("WaitButton").gameObject;
+                SpellButton = transform.Find("Canvas").Find("Panel").Find("ActionPanel").Find("CastSpellButton").gameObject;
                 //tool tip stuff
                 TerrainImage = transform.Find("Canvas").Find("Panel").Find("ToolTip").Find("TerrainImage").gameObject;
                 TerrainText = transform.Find("Canvas").Find("Panel").Find("ToolTip").Find("TerrainText").GetComponent<Text>();
@@ -376,6 +382,7 @@ namespace TileGame
             {
                 GCS.AttackActionPlayScene();
                 AttackButtonSelected = true;
+                SpellButtonSelected = false;
             }
             catch (Exception e)
             {
@@ -393,6 +400,8 @@ namespace TileGame
             {
                 GCS.CancelActionPlayScene();
                 AttackButtonSelected = false;
+                SpellButtonSelected = false;
+                SpellButton.SetActive(false);
             }
             catch (Exception e)
             {
@@ -405,7 +414,6 @@ namespace TileGame
         {
             try
             {
-                GCS.CastSpellActionPlayScene();
                 AddSpellsToSpellContent();
                 SpellPanel.SetActive(true);
             }
@@ -691,10 +699,10 @@ namespace TileGame
         {
             try
             {
-                var childcount = ContentWindowBuilding.transform.childCount;
+                var childcount = ContentWindowSpells.transform.childCount;
                 for (int i = 0; i < childcount; i++)
                 {
-                    Destroy(ContentWindowBuilding.transform.GetChild(i).gameObject);
+                    Destroy(ContentWindowSpells.transform.GetChild(i).gameObject);
                 }
                 //Debug.log("Adding Unit buttons to content window");
                 foreach (var kvp in DBC.SpellJsonDictionary) //adds a button for each Unit in the database
@@ -707,6 +715,10 @@ namespace TileGame
                     tempbutton.AddComponent<ButtonProperties>();
                     tempbutton.GetComponent<ButtonProperties>().ID = kvp.Value.ID;
                 }
+                GameObject tempCancelButton = Instantiate(BuildingButtonPrefab, ContentWindowSpells.transform); //create button and set its parent to content
+                tempCancelButton.name = "Cancel"; //change name
+                tempCancelButton.transform.GetChild(0).GetComponent<Text>().text = "Cancel"; //change text on button to match sprite and create new line and add cost
+                tempCancelButton.GetComponent<Button>().onClick.AddListener(CancelSpellController); //adds method to button clicked 
             }
             catch (Exception e)
             {
@@ -719,19 +731,53 @@ namespace TileGame
         {
             try
             {
-                if (EventSystem.current.currentSelectedGameObject != null) //make sure player clicked on the unit button and did not use keyboard shortcut
+                if (EventSystem.current.currentSelectedGameObject != null)
                 {
                     SelectedSpell = EventSystem.current.currentSelectedGameObject.GetComponent<ButtonProperties>().ID;
                 }
-                
-
-                ////working on this
+                if (DBC.SpellJsonDictionary[SelectedSpell].TargetsEnemy && DBC.SpellJsonDictionary[SelectedSpell].TargetsFriendly)
+                {
+                    int unitCount = new int();
+                    unitCount = GCS.SelectedUnitPlayScene.GetComponent<UnitController>().GetFreindlyUnitsInRange();
+                    unitCount += GCS.SelectedUnitPlayScene.GetComponent<UnitController>().GetEnemyUnitsInRange();
+                    if (unitCount > 0)
+                    {
+                        foreach (var kvp in GCS.SelectedUnitPlayScene.GetComponent<UnitController>().EnemyUnitsInRange)
+                        {
+                            foreach (var kvp2 in GCS.UnitPos)
+                            {
+                                if (kvp.Key == kvp.Key)
+                                {
+                                    kvp2.Value.GetComponent<SpriteRenderer>().color = new Color(0f, .5f, 0f);
+                                }
+                            }
+                        }
+                        foreach (var kvp in GCS.SelectedUnitPlayScene.GetComponent<UnitController>().FriendlyUnitsInRange)
+                        {
+                            foreach (var kvp2 in GCS.UnitPos)
+                            {
+                                if (kvp.Key == kvp.Key)
+                                {
+                                    kvp2.Value.GetComponent<SpriteRenderer>().color = new Color(0f, .5f, 0f);
+                                }
+                            }
+                        }
+                        SpellButtonSelected = true;
+                    }
+                }
+                //check if spell selected hits allies or enemy
+                //then highlight units in range
             }
             catch (Exception e)
             {
                 GCS.LogController(e.ToString());
                 throw;
             }
+        }
+
+        public void CancelSpellController()
+        {
+            SpellPanel.SetActive(false);
         }
 
         /// <summary>

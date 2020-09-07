@@ -1,3 +1,0 @@
-System.NullReferenceException: Object reference not set to an instance of an object
-  at TileGame.TerrainController.CustomUpdate () [0x00100] in E:\TileGame\tile turn based game\Assets\scripts\TerrainController.cs:116 
-  at TileGame.GameControllerScript.UpdateController () [0x0001a] in E:\TileGame\tile turn based game\Assets\scripts\GameControllerScript.cs:2383 

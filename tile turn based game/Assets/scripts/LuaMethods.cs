@@ -127,17 +127,19 @@ namespace TileGame
             }
         }
 
-        public void CastLuaSpell(string sdirectory, string scene, GameObject target, GameObject caster)
+        public void CastLuaSpell(string spell, string scene, GameObject target, GameObject caster)
         {
             try
             {
                 Script script = new Script();
                 SetLuaGlobalsAndTypes(script, scene);
+                script.DoString(spell);
+                //DynValue castSpellFunc = script.Globals.Get("CastSpell");   //not sure if this is needed yet currently working on this
                 script.Call(script.Globals["CastSpell"], target, caster);
             }
-            catch (Exception e)
+            catch (ScriptRuntimeException e)
             {
-                GCS.LogController(e.ToString());
+                GCS.LogController(e.DecoratedMessage.ToString());
                 throw;
             }
         }

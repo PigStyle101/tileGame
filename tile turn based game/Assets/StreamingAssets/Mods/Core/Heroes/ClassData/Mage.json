@@ -14,5 +14,5 @@
   "CanMoveAndAttackModifier": true,
   "MovePointsModifier": 5,
   "SightModifier": 4,
-  "AttackRangeMofifier": 1
+  "AttackRangeMofifier": 2
 }

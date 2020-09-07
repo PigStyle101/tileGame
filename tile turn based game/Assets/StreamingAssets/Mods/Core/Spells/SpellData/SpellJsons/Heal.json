@@ -8,10 +8,9 @@
   	  "Heal",
       "SingleTarget"
   ],
-  "Targets": 
-  [
-      "Friendly"
-  ],
+  "TargetsEnemy": false,
+  "TargetsFriendly": true,
+  "OnlyCastableOnSelf": false,
   "HealAmount": 4,
   "Range": 2,
   "ManaCost": 4,
