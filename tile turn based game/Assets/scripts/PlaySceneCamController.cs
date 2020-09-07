@@ -778,6 +778,7 @@ namespace TileGame
         public void CancelSpellController()
         {
             SpellPanel.SetActive(false);
+            SpellButtonSelected = false;
         }
 
         /// <summary>

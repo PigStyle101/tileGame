@@ -930,6 +930,10 @@ namespace TileGame
             {
                 PSCC.SpellButton.SetActive(true);
             }
+            else
+            {
+                PSCC.SpellButton.SetActive(false);
+            }
             PSCC.MoveButton.SetActive(false);
             SelectedUnitPlayScene = null; //clear selected unit variable
             foreach (var kvp in TilePos)
@@ -2149,6 +2153,7 @@ namespace TileGame
                 throw;
             }
         }
+
         public void CreateNewHero(int RaceID, int ClassID, string name)
         {
             try

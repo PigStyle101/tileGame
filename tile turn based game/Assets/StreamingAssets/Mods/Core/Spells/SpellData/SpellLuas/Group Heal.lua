@@ -12,17 +12,12 @@ directions["W"] = LM.NewVector2(0,-1);
 directions["NW"] = LM.NewVector2(1,-1);
 
 function CastSpell(Target,Caster)
-	Debug.Log("Starting Casting");
 	Cunit = Caster.GetComponent("UnitController");
 	if Cunit.HClass.Mana >= cost then
-		Debug.Log("Starting 1st if");
 		for k,v in pairs(directions) do
-			Debug.Log("Starting for if");
-			if GCS.UnitPos.ContainsKey(Cunit.Position + v) then    ----something is wronge here, it flages for a nil value
-				Debug.Log("Starting 2nd if");
+			if LM.DictionaryContainsKey(GCS.UnitPos,Cunit.Position + v) then
 				unit = GCS.UnitPos[Cunit.Position + v].GetComponent("UnitController");
 				if unit.Team == Cunit.Team then
-					Debug.Log("Starting 3rd if");
 					unit.DoHeal(heal);
 					GCS.UpdateUnitHealthText(unit.Position);
 					for k,v in pairs(GCS.UnitPos) do
@@ -32,6 +27,8 @@ function CastSpell(Target,Caster)
 					PSCC.AttackButtonSelected = false;
 					PSCC.SetActionButtonsToFalse();
 					PSCC.HideOrShowSaveButton(false);
+					PSCC.SpellButton.SetActive(false);
+					PSCC.CancelSpellController();
 				end
 			end
 		end

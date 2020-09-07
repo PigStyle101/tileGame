@@ -231,6 +231,11 @@ namespace TileGame
             }
         }
 
+        public bool DictionaryContainsKey(Dictionary<Vector2,GameObject> dic,Vector2 v)
+        {
+            return dic.ContainsKey(v);
+        }
+
     }
 
 }

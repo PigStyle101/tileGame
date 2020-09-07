@@ -1,6 +1,6 @@
-local cost = 5
-local damage = 5
-local directions {}
+local cost = 1
+local damage = 1
+local directions = {}
 
 directions["N"] = LM.NewVector2(1,0);
 directions["NE"] = LM.NewVector2(1,1);
@@ -13,11 +13,11 @@ directions["NW"] = LM.NewVector2(1,-1);
 
 function CastSpell(Target,Caster)
 	Cunit = Caster.GetComponent("UnitController");
-	if Cunit.Mana >= cost then
-		for k,v in pairs(directions)
-			if GCS.UnitPos.ContainsKey(Cunit.Position + v) then
+	if Cunit.HClass.Mana >= cost then
+		for k,v in pairs(directions) do
+			if LM.DictionaryContainsKey(GCS.UnitPos,Cunit.Position + v) then
 				unit = GCS.UnitPos[Cunit.Position + v].GetComponent("UnitController");
-				if unit.Team != Cunit.Team then
+				--if unit.Team != Cunit.Team then
 					dead = unit.DoDamage(damage);
 					if dead then
 						GCS.KillUnitPlayScene(GCS.UnitPos[unit.Position]);
@@ -26,14 +26,16 @@ function CastSpell(Target,Caster)
 					else
 						GCS.UpdateUnitHealthText(unit.Position);
 					end
-					for k,v in pairs(GCS.UnitPos)
+					for k,v in pairs(GCS.UnitPos) do
 						LM.ChangeSpriteColor(v,1,1,1);
 					end
 					GCS.WaitActionPlayScene();
 					PSCC.AttackButtonSelected = false;
 					PSCC.SetActionButtonsToFalse();
 					PSCC.HideOrShowSaveButton(false);
-				end
+					PSCC.SpellButton.SetActive(false);
+					PSCC.CancelSpellController();
+				--end
 			end
 		end
 	end
