@@ -3,16 +3,9 @@
   "Description": "Heals ALL units next to caster.",
   "Type": "Spell",
   "Mod": "Core",
-  "Effects":
-  [
-  	  "Heal",
-      "AOE"
-  ],
   "TargetsEnemy": true,
   "TargetsFriendly": true,
   "OnlyCastableOnSelf": true,
-  "HealAmount": 2,
   "Range": 1,
-  "ManaCost": 6,
   "PixelsPerUnit": 64
 }

@@ -3,16 +3,9 @@
   "Description": "Sends a fire ball at an enemy in range.",
   "Type": "Spell",
   "Mod": "Core",
-  "Effects":
-  [
-  	  "Damage",
-      "SingleTarget"
-  ],
   "TargetsEnemy": true,
   "TargetsFriendly": false,
   "OnlyCastableOnSelf": false,
-  "Damage": 2,
   "Range": 2,
-  "ManaCost": 4,
   "PixelsPerUnit": 64
 }

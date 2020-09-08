@@ -1,5 +1,5 @@
 local cost = 1
-local heal = 5
+local heal = 1
 local directions = {}
 
 directions["N"] = LM.NewVector2(1,0);
@@ -17,21 +17,15 @@ function CastSpell(Target,Caster)
 		for k,v in pairs(directions) do
 			if LM.DictionaryContainsKey(GCS.UnitPos,Cunit.Position + v) then
 				unit = GCS.UnitPos[Cunit.Position + v].GetComponent("UnitController");
-				if unit.Team == Cunit.Team then
-					unit.DoHeal(heal);
-					GCS.UpdateUnitHealthText(unit.Position);
-					for k,v in pairs(GCS.UnitPos) do
-						LM.ChangeSpriteColor(v,1,1,1);
-					end
-					GCS.WaitActionPlayScene();
-					PSCC.AttackButtonSelected = false;
-					PSCC.SetActionButtonsToFalse();
-					PSCC.HideOrShowSaveButton(false);
-					PSCC.SpellButton.SetActive(false);
-					PSCC.CancelSpellController();
+				unit.DoHeal(heal);
+				GCS.UpdateUnitHealthText(unit.Position);
+				for k,v in pairs(GCS.UnitPos) do
+					LM.ChangeSpriteColor(v,1,1,1);
 				end
 			end
 		end
+		Cunit.DoHeal(heal);
+		GCS.UpdateUnitHealthText(Cunit.Position);
 	else 
 	Debug.Log("not enough mana");
 	end

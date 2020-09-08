@@ -3,7 +3,7 @@
   "Title": "Archer",
   "Type": "Unit",
   "Description": "Ranged unit with decent movement but low defence.",
-  "PixelsPerUnit": 600,
+  "PixelsPerUnit": 300,
   "IdleAnimations": true,
   "AttackAnimations": true,
   "MoveAnimations": true,

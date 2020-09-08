@@ -1,24 +1,20 @@
-local cost = 5
-local damage = 5
+local cost = 1
+local damage = 1
 
 function CastSpell(Target,Caster)
 Cunit = Caster.GetComponent("UnitController");
-  if Cunit.Mana >= cost;
+  if Cunit.HClass.Mana >= cost then
 	unit = Target.GetComponent("UnitController");
 	dead = unit.DoDamage(damage);
-	if dead
+	if dead then
 		GCS.KillUnitPlayScene(Target);
 		unit.StartDeadAmination();
 		Cunit.KilledEnemyUnit(unit);
 	else
-		GCS.UpdateUnitHealthText(Target.transform.position);
+		GCS.UpdateUnitHealthText(unit.position);
 	end
-	for k,v in pairs(GCS.UnitPos)
+	for k,v in pairs(GCS.UnitPos) do
 		LM.ChangeSpriteColor(v,1,1,1);
 	end
-	GCS.WaitActionPlayScene();
-	PSCC.AttackButtonSelected = false;
-	PSCC.SetActionButtonsToFalse();
-	PSCC.HideOrShowSaveButton(false);
   end
 end

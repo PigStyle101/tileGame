@@ -68,10 +68,6 @@ namespace TileGame
         void Update()
         {
             KeyBoardShortCuts();
-        }
-
-        private void FixedUpdate()
-        {
             MoveScreenXandY();
             MoveScreenZ();
         }

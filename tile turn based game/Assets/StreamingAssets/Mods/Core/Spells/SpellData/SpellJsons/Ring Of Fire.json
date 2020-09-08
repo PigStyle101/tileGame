@@ -3,16 +3,9 @@
   "Description": "Creates a ring of fire around the caster damaging ALL units in range.",
   "Type": "Spell",
   "Mod": "Core",
-  "Effects":
-  [
-  	  "Damage",
-      "AOE"
-  ],
   "TargetsEnemy": true,
   "TargetsFriendly": true,
   "OnlyCastableOnSelf": true,
-  "Damage": 2,
   "Range": 2,
-  "ManaCost": 6,
   "PixelsPerUnit": 64
 }

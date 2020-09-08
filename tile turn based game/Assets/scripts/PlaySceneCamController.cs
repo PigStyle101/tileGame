@@ -365,6 +365,8 @@ namespace TileGame
             {
                 GCS.WaitActionPlayScene();
                 MoveableUnitCount();
+                SpellButtonSelected = false;
+                SpellButton.SetActive(false);
             }
             catch (Exception e)
             {
@@ -383,6 +385,7 @@ namespace TileGame
                 GCS.AttackActionPlayScene();
                 AttackButtonSelected = true;
                 SpellButtonSelected = false;
+                SpellButton.SetActive(false);
             }
             catch (Exception e)
             {
@@ -731,32 +734,38 @@ namespace TileGame
         {
             try
             {
+                Spell SelectedtempSpell = new Spell();
                 if (EventSystem.current.currentSelectedGameObject != null)
                 {
                     SelectedSpell = EventSystem.current.currentSelectedGameObject.GetComponent<ButtonProperties>().ID;
+                    SelectedtempSpell = DBC.SpellJsonDictionary[SelectedSpell];
                 }
-                if (DBC.SpellJsonDictionary[SelectedSpell].TargetsEnemy && DBC.SpellJsonDictionary[SelectedSpell].TargetsFriendly)
+                if (SelectedtempSpell.OnlyCastableOnSelf)
+                {
+                    GCS.SelectedUnitPlayScene.GetComponent<SpriteRenderer>().color = new Color(0f, 0.5f, 0f);
+                    SpellButtonSelected = true;
+                }
+                else
                 {
                     int unitCount = new int();
-                    unitCount = GCS.SelectedUnitPlayScene.GetComponent<UnitController>().GetFreindlyUnitsInRange();
-                    unitCount += GCS.SelectedUnitPlayScene.GetComponent<UnitController>().GetEnemyUnitsInRange();
+                    unitCount = GCS.SelectedUnitPlayScene.GetComponent<UnitController>().GetUnitsInRangeForSpell(SelectedtempSpell.Range, SelectedtempSpell.TargetsFriendly, SelectedtempSpell.TargetsEnemy);
                     if (unitCount > 0)
                     {
-                        foreach (var kvp in GCS.SelectedUnitPlayScene.GetComponent<UnitController>().EnemyUnitsInRange)
+                        foreach (var kvp in GCS.SelectedUnitPlayScene.GetComponent<UnitController>().UnitsInRangeSpell)
                         {
                             foreach (var kvp2 in GCS.UnitPos)
                             {
-                                if (kvp.Key == kvp.Key)
+                                if (kvp.Key == kvp2.Key)
                                 {
-                                    kvp2.Value.GetComponent<SpriteRenderer>().color = new Color(0f, .5f, 0f);
+                                    kvp2.Value.GetComponent<SpriteRenderer>().color = new Color(0f, 0.5f, 0f);
                                 }
                             }
                         }
-                        foreach (var kvp in GCS.SelectedUnitPlayScene.GetComponent<UnitController>().FriendlyUnitsInRange)
+                        foreach (var kvp in GCS.SelectedUnitPlayScene.GetComponent<UnitController>().UnitsInRangeSpell)
                         {
                             foreach (var kvp2 in GCS.UnitPos)
                             {
-                                if (kvp.Key == kvp.Key)
+                                if (kvp.Key == kvp2.Key)
                                 {
                                     kvp2.Value.GetComponent<SpriteRenderer>().color = new Color(0f, .5f, 0f);
                                 }
@@ -1066,6 +1075,8 @@ namespace TileGame
         {
             GCS.MoveActionPlayScene();
             MoveableUnitCount();
+            SpellButtonSelected = false;
+            SpellButton.SetActive(false);
         }
 
         /// <summary>

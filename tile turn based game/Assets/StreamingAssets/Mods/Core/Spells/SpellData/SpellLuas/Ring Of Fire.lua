@@ -17,26 +17,26 @@ function CastSpell(Target,Caster)
 		for k,v in pairs(directions) do
 			if LM.DictionaryContainsKey(GCS.UnitPos,Cunit.Position + v) then
 				unit = GCS.UnitPos[Cunit.Position + v].GetComponent("UnitController");
-				--if unit.Team != Cunit.Team then
-					dead = unit.DoDamage(damage);
-					if dead then
-						GCS.KillUnitPlayScene(GCS.UnitPos[unit.Position]);
-						unit.StartDeadAmination();
-						Cunit.KilledEnemyUnit(unit);
-					else
-						GCS.UpdateUnitHealthText(unit.Position);
-					end
-					for k,v in pairs(GCS.UnitPos) do
-						LM.ChangeSpriteColor(v,1,1,1);
-					end
-					GCS.WaitActionPlayScene();
-					PSCC.AttackButtonSelected = false;
-					PSCC.SetActionButtonsToFalse();
-					PSCC.HideOrShowSaveButton(false);
-					PSCC.SpellButton.SetActive(false);
-					PSCC.CancelSpellController();
-				--end
+				dead = unit.DoDamage(damage);
+				if dead then
+					GCS.KillUnitPlayScene(GCS.UnitPos[unit.Position]);
+					unit.StartDeadAmination();
+					Cunit.KilledEnemyUnit(unit);
+				else
+					GCS.UpdateUnitHealthText(unit.Position);
+				end
+				for k,v in pairs(GCS.UnitPos) do
+					LM.ChangeSpriteColor(v,1,1,1);
+				end
 			end
+		end
+		dead = Cunit.DoDamage(damage);
+		if dead then
+			GCS.KillUnitPlayScene(GCS.UnitPos[Cunit.Position]);
+			unit.StartDeadAmination();
+			Cunit.KilledEnemyUnit(Cunit);
+		else
+			GCS.UpdateUnitHealthText(Cunit.Position);
 		end
 	end
 end

@@ -1617,12 +1617,12 @@ MonoBehaviour:
 
 
     -If you
-    Left Control click a unit it will highlight the tiles that unit can attack. Control
-    Click the unit again to remove the highlight.
+    Left Control + left click a unit it will highlight the tiles that unit can attack.This
+    will disaper when you release control.
 
 
-    -If you Left Shift click
-    a unit it will pull up a window with more details about that unit.'
+    -If you Left Shift click a unit
+    it will pull up a window with more details about that unit.'
 --- !u!222 &175941917
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1648,7 +1648,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &177414276
 RectTransform:
   m_ObjectHideFlags: 0
@@ -7304,7 +7304,7 @@ MonoBehaviour:
 
 
     -Once
-    attack button is clicked attackable units will have a gray tint
+    attack button is clicked attackable units will have a red tint
 
 
     -Game can
@@ -7312,16 +7312,20 @@ MonoBehaviour:
 
 
     -Units that can do an action will be
-    tinted.
+    tinted grey.
 
 
-    -If the only action a unit can do after moving is wait, the wait
-    action will automaticly activate
+    -If the only action a unit can do after moving is wait, the
+    wait action will automaticly activate.
 
 
-    -If moving a unit into the fog of war
-    and you run into another unit, your unit will be unable to preform any actions
-    tell your next turn'
+    -If moving a unit into the fog of
+    war and you run into another unit, your unit will be unable to preform any actions
+    tell your next turn.
+
+
+    -Grey stuff is fog of war, you cannot see what is
+    behind it tell you move units forward.'
 --- !u!222 &1226519255
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -10338,11 +10342,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CurrentPlayerTurnText: {fileID: 835956914}
   AttackButtonSelected: 0
+  SpellButtonSelected: 0
   AttackButton: {fileID: 0}
   CancelButton: {fileID: 13183136}
   WaitButton: {fileID: 0}
   CaptureButton: {fileID: 0}
   MoveButton: {fileID: 0}
+  SpellButton: {fileID: 0}
   BuildingButtonPrefab: {fileID: 5068642067974219700, guid: 15c16f805c7135e489ad59aff671853b,
     type: 3}
   CurrentPlayerTurnImage: {fileID: 0}
@@ -10351,6 +10357,7 @@ MonoBehaviour:
   GoldText: {fileID: 0}
   CurrentlySelectedBuilding: {x: 0, y: 0}
   BuildingRayBool: 0
+  SelectedSpell: 0
 --- !u!45 &1713310736
 Skybox:
   m_ObjectHideFlags: 0

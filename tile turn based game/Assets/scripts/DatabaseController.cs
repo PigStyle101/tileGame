@@ -873,58 +873,6 @@ namespace TileGame
                 throw;
             }
         }
-
-        public void ReloadDataOnly()
-        {
-            try
-            {
-                foreach (var Mod in ModsLoaded)
-                {
-                    if (Directory.Exists(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Units"))
-                    {
-                        //Debug.log("Fetching json unit files");
-                        foreach (string file in Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Units/Data/", "*.json")) //gets only json files form this path
-                        {
-                            var Tempstring = File.ReadAllText(file); //temp string to hold the json data
-                            Unit u = JsonUtility.FromJson<Unit>(Tempstring);
-                            //u.ID = NextUnitDicIndex;
-                            //u.GetSprites();
-                            //UnitDictionary.Add(u.ID, u);
-                            //NextUnitDicIndex += 1;
-                            foreach (var kvp in UnitDictionary)
-                            {
-                                if (kvp.Value.Title == u.Title)
-                                {
-                                    kvp.Value.Attack = u.Attack;
-                                    kvp.Value.AttackAnimationSpeed = u.AttackAnimationSpeed;
-                                    kvp.Value.AttackRange = u.AttackRange;
-                                    kvp.Value.CanConvert = u.CanConvert;
-                                    kvp.Value.CanMoveAndAttack = u.CanMoveAndAttack;
-                                    kvp.Value.ConversionSpeed = u.ConversionSpeed;
-                                    kvp.Value.Cost = u.Cost;
-                                    kvp.Value.Defence = u.Defence;
-                                    kvp.Value.Description = u.Description;
-                                    kvp.Value.DiedAnimationSpeed = u.DiedAnimationSpeed;
-                                    kvp.Value.Health = u.Health;
-                                    kvp.Value.HurtAnimationSpeed = u.HurtAnimationSpeed;
-                                    kvp.Value.IdleAnimationSpeed = u.IdleAnimationSpeed;
-                                    kvp.Value.MoveAnimationSpeed = u.MoveAnimationSpeed;
-                                    kvp.Value.MoveAnimationTime = u.MoveAnimationTime;
-                                    kvp.Value.MovePoints = u.MovePoints;
-                                    kvp.Value.PixelsPerUnit = u.PixelsPerUnit;
-                                    kvp.Value.SightRange = u.SightRange;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                GCS.LogController(e.ToString());
-                throw;
-            }
-        }
     }
 
     [MoonSharpUserData]
@@ -1400,6 +1348,7 @@ namespace TileGame
         public bool SpawnUnit;
         public int UnitID;
         public int Cost;
+        public int Range;
         public bool TargetsEnemy;
         public bool TargetsFriendly;
         public bool OnlyCastableOnSelf;

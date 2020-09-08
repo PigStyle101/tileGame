@@ -12412,7 +12412,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Reloads the json data for all the stuffs
+  m_Text: Reloads Everything (Same as closing and reopening game)
 --- !u!222 &790169017
 CanvasRenderer:
   m_ObjectHideFlags: 0

@@ -908,9 +908,33 @@ namespace TileGame
                             }
                             else if (PSCC.SpellButtonSelected)
                             {
-                                if (DBC.SpellJsonDictionary[PSCC.SelectedSpell].OnlyCastableOnSelf && SelectedUnitPlayScene == hit.transform.gameObject)
+                                if (DBC.SpellJsonDictionary[PSCC.SelectedSpell].OnlyCastableOnSelf) //if only castable on self
                                 {
-                                    LM.CastLuaSpell(DBC.SpellLuaDictionary[PSCC.SelectedSpell],"PlayScene",hit.transform.gameObject,SelectedUnitPlayScene);
+                                    if (SelectedUnitPlayScene == hit.transform.gameObject) //did we hit are self? 
+                                    {
+                                        LM.CastLuaSpell(DBC.SpellLuaDictionary[PSCC.SelectedSpell], "PlayScene", hit.transform.gameObject, SelectedUnitPlayScene);
+                                        WaitActionPlayScene();
+                                        PSCC.AttackButtonSelected = false;
+                                        PSCC.SetActionButtonsToFalse();
+                                        PSCC.HideOrShowSaveButton(false);
+                                        PSCC.SpellButton.SetActive(false);
+                                        PSCC.CancelSpellController(); 
+                                    }
+                                }
+                                else if (hit.transform.tag == DBC.UnitDictionary[0].Type || hit.transform.tag == DBC.HeroRaceDictionary[0].Type) //if not castable on self and we hit a unit or hero
+                                {
+                                    UnitController UC = SelectedUnitPlayScene.GetComponent<UnitController>();
+                                    UnitController HitUC = hit.transform.GetComponent<UnitController>();
+                                    if (UC.UnitsInRangeSpell.ContainsKey(hit.transform.position)) //is unit in range?
+                                    {
+                                        LM.CastLuaSpell(DBC.SpellLuaDictionary[PSCC.SelectedSpell], "PlayScene", hit.transform.gameObject, SelectedUnitPlayScene);
+                                        WaitActionPlayScene();
+                                        PSCC.AttackButtonSelected = false;
+                                        PSCC.SetActionButtonsToFalse();
+                                        PSCC.HideOrShowSaveButton(false);
+                                        PSCC.SpellButton.SetActive(false);
+                                        PSCC.CancelSpellController();
+                                    }
                                 }
                             }
                         }

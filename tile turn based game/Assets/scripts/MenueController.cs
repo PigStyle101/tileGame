@@ -289,6 +289,13 @@ namespace TileGame
                 DBC.GetBuildingData(Mod);
                 LoadState = 3;
                 yield return null;
+                DBC.GetHeroClassData(Mod);
+                DBC.GetHeroRaceData(Mod);
+                DBC.GetSpellData(Mod);
+                DBC.GetMasterJson();
+                DBC.GetMouseJson();
+                DBC.GetFogOfWarJson();
+                DBC.GetLuaCoreScripts();
                 DBC.ModsLoaded.Add(Mod);
                 LoadState = 4;
                 yield return null;
@@ -1435,7 +1442,23 @@ namespace TileGame
         {
             try
             {
-                DBC.ReloadDataOnly();
+                DBC.UnitDictionary.Clear();
+                DBC.BuildingDictionary.Clear();
+                DBC.TerrainDictionary.Clear();
+                DBC.HeroClassDictionary.Clear();
+                DBC.HeroRaceDictionary.Clear();
+                DBC.SpellJsonDictionary.Clear();
+                DBC.SpellLuaDictionary.Clear();
+                DBC.MouseDictionary.Clear();
+                DBC.FogOfWarDictionary.Clear();
+                DBC.LuaCoreScripts.Clear();
+                ModsList = DBC.ModsLoaded;
+                DBC.ModsLoaded = new List<string>();
+                DBC.ResetNextIndexes();
+                //ModsList.Sort();
+                LoadingModsPanels.SetActive(true);
+                StartCoroutine(ModLoader());
+                ModLoader();
             }
             catch (Exception e)
             {
