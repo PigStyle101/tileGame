@@ -1,4 +1,0 @@
-System.ArgumentException: An item with the same key has already been added. Key: CancelActionPlayScene
-  at System.Collections.Generic.Dictionary`2[TKey,TValue].TryInsert (TKey key, TValue value, System.Collections.Generic.InsertionBehavior behavior) [0x000c1] in <437ba245d8404784b9fbab9b439ac908>:0 
-  at System.Collections.Generic.Dictionary`2[TKey,TValue].Add (TKey key, TValue value) [0x00000] in <437ba245d8404784b9fbab9b439ac908>:0 
-  at TileGame.DatabaseController.GetLuaCoreScripts () [0x00026] in E:\TileGame\tile turn based game\Assets\scripts\DatabaseController.cs:411 

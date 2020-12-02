@@ -8,6 +8,7 @@ TagManager:
   - Unit
   - Building
   - Hero
+  - MenuPanel
   layers:
   - Default
   - TransparentFX

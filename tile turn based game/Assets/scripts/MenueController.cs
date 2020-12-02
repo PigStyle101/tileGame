@@ -8,6 +8,8 @@ using System.Text.RegularExpressions;
 using MoonSharp.Interpreter;
 using System.Threading;
 using System;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace TileGame
 {
@@ -33,14 +35,6 @@ namespace TileGame
         private Text LoadHeroCharValue;
         private Text LoadHeroClassText;
         private Text LoadHeroRaceText;
-        private GameObject MainMenuePanel;
-        private GameObject MapEditorMenuePanel;
-        private GameObject NewGameMenuePanel;
-        private GameObject LoadGamePanel;
-        private GameObject ModPanel;
-        private GameObject NewHeroPanel;
-        private GameObject LoadHeroPanel;
-        private GameObject LoadingModsPanels;
         public GameObject LoadMenueButtonPrefab;
         public GameObject ModsButtonPrefab;
         private GameObject ContentWindowLoad;
@@ -92,6 +86,8 @@ namespace TileGame
         public int LoadState;
         private bool Loading;
 
+        private List<GameObject> menuPanel = new List<GameObject>();
+
         // everything in here is pretty self explanitory.
         void Start()
         {
@@ -99,7 +95,7 @@ namespace TileGame
             {
                 ClassDropDown.onValueChanged.AddListener(delegate { ClassDropDownChanged(ClassDropDown); });
                 ClassDropDown.onValueChanged.AddListener(delegate { ClassDropDownChanged(ClassDropDown); });
-                MainMenueButtonClicked();
+                ReturnToMainMenuClicked();
                 if (DBC.MasterData.HeroSelectedWhenGameClosed != "" && DBC.HeroDictionary.ContainsKey(DBC.MasterData.HeroSelectedWhenGameClosed))
                 {
                     GCS.HeroCurrentlySelectedP1 = DBC.HeroDictionary[DBC.MasterData.HeroSelectedWhenGameClosed];
@@ -161,14 +157,15 @@ namespace TileGame
         {
             try
             {
-                MainMenuePanel = transform.Find("Canvas").Find("MainPanel").Find("MainMenuePanel").gameObject;
-                MapEditorMenuePanel = transform.Find("Canvas").Find("MainPanel").Find("MapEditorMenuePanel").gameObject;
-                NewGameMenuePanel = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").gameObject;
-                LoadGamePanel = transform.Find("Canvas").Find("MainPanel").Find("LoadGamePanel").gameObject;
-                NewHeroPanel = transform.Find("Canvas").Find("MainPanel").Find("NewHeroPanel").gameObject;
-                LoadHeroPanel = transform.Find("Canvas").Find("MainPanel").Find("LoadHeroPanel").gameObject;
-                LoadingModsPanels = transform.Find("Canvas").Find("MainPanel").Find("LoadingModsPanel").gameObject;
-                ModPanel = transform.Find("Canvas").Find("MainPanel").Find("ModsPanel").gameObject;
+                foreach (GameObject myPanel in Resources.FindObjectsOfTypeAll(typeof(GameObject)) as GameObject[])
+                {
+                    if (myPanel.tag == "MenuPanel")
+                    {
+                        menuPanel.Add(myPanel);
+                        //UnityEngine.Debug.Log("Added a panel " + myPanel.name);
+                    }
+                }
+
                 DeleteHeroNeverMind = transform.Find("Canvas").Find("MainPanel").Find("LoadHeroPanel").Find("DeleteNoButton").gameObject;
                 YesDeleteHero = transform.Find("Canvas").Find("MainPanel").Find("LoadHeroPanel").Find("DeleteYesButon").gameObject;
                 NewHeroPreview = transform.Find("Canvas").Find("MainPanel").Find("NewHeroPanel").Find("Preview").GetComponent<Image>();
@@ -232,46 +229,6 @@ namespace TileGame
             }
         }
 
-        public void MapEditorButtonClicked()
-        {
-            try
-            {
-                MainMenuePanel.SetActive(false);
-                MapEditorMenuePanel.SetActive(true);
-                NewGameMenuePanel.SetActive(false);
-                LoadGamePanel.SetActive(false);
-                ModPanel.SetActive(false);
-                NewHeroPanel.SetActive(false);
-                LoadHeroPanel.SetActive(false);
-                GetMapsForMapEditorWindow();
-            }
-            catch (Exception e)
-            {
-                GCS.LogController(e.ToString());
-                throw;
-            }
-        }
-
-        public void MainMenueButtonClicked()
-        {
-            try
-            {
-                MainMenuePanel.SetActive(true);
-                MapEditorMenuePanel.SetActive(false);
-                NewGameMenuePanel.SetActive(false);
-                LoadGamePanel.SetActive(false);
-                ModPanel.SetActive(false);
-                NewHeroPanel.SetActive(false);
-                LoadHeroPanel.SetActive(false);
-                LoadingModsPanels.SetActive(false);
-            }
-            catch (Exception e)
-            {
-                GCS.LogController(e.ToString());
-                throw;
-            }
-        }
-
         [MoonSharpHidden]
         public IEnumerator ModLoader()
         {
@@ -302,7 +259,7 @@ namespace TileGame
             }
             Loading = false;
             LoadState = 0;
-            LoadingModsPanels.SetActive(false);
+            SetOnePanelActive(FindPanel("LoadingModsPanel"), false);
             LoadingModsFinished();
         }
 
@@ -310,8 +267,9 @@ namespace TileGame
         {
             try
             {
-                Slider LoadingSlider = LoadingModsPanels.transform.Find("Slider").GetComponent<Slider>();
-                Text LoadingText = LoadingModsPanels.transform.Find("Text").GetComponent<Text>();
+                var myLocalPanel = FindPanel("LoadingModsPanel");
+                Slider LoadingSlider = myLocalPanel.transform.Find("Slider").GetComponent<Slider>();
+                Text LoadingText = myLocalPanel.transform.Find("Text").GetComponent<Text>();
                 LoadingSlider.value = f;
                 LoadingText.text = State;
             }
@@ -352,19 +310,13 @@ namespace TileGame
                         DBC.ModsLoaded.Clear();
                         DBC.ResetNextIndexes();
                         ModsList.Sort();
-                        LoadingModsPanels.SetActive(true);
+                        SetOnePanelActive(FindPanel("LoadingModsPanel"), true);
                         StartCoroutine(ModLoader());
                         ModLoader();
                     }
                     else
                     {
-                        MainMenuePanel.SetActive(true);
-                        MapEditorMenuePanel.SetActive(false);
-                        NewGameMenuePanel.SetActive(false);
-                        LoadGamePanel.SetActive(false);
-                        ModPanel.SetActive(false);
-                        NewHeroPanel.SetActive(false);
-                        LoadHeroPanel.SetActive(false);
+                        ReturnToMainMenuClicked();
                     }
                 }
                 else
@@ -400,13 +352,7 @@ namespace TileGame
                 {
                     if (HasHeroSP)
                     {
-                        MainMenuePanel.SetActive(true);
-                        MapEditorMenuePanel.SetActive(false);
-                        NewGameMenuePanel.SetActive(false);
-                        LoadGamePanel.SetActive(false);
-                        ModPanel.SetActive(false);
-                        NewHeroPanel.SetActive(false);
-                        LoadHeroPanel.SetActive(false);
+                        ReturnToMainMenuClicked();
                     }
                     else
                     {
@@ -429,13 +375,7 @@ namespace TileGame
         {
             try
             {
-                MainMenuePanel.SetActive(false);
-                MapEditorMenuePanel.SetActive(false);
-                NewGameMenuePanel.SetActive(true);
-                LoadGamePanel.SetActive(false);
-                ModPanel.SetActive(false);
-                NewHeroPanel.SetActive(false);
-                LoadHeroPanel.SetActive(false);
+                SetOnePanelActive(FindPanel("NewGamePanel"), true);
                 GetMapsFornewGameWindow();
                 Team1Image.SetActive(false);
                 Team2Image.SetActive(false);
@@ -472,38 +412,56 @@ namespace TileGame
             }
         }
 
-        public void LoadGameButtonClicked()
+        public void ReturnToMainMenuClicked()
         {
-            try
-            {
-                MainMenuePanel.SetActive(false);
-                MapEditorMenuePanel.SetActive(false);
-                NewGameMenuePanel.SetActive(false);
-                LoadGamePanel.SetActive(true);
-                ModPanel.SetActive(false);
-                NewHeroPanel.SetActive(false);
-                LoadHeroPanel.SetActive(false);
-                GetSaves();
-            }
-            catch (Exception e)
-            {
-                GCS.LogController(e.ToString());
-                throw;
-            }
+            SetOnePanelActive(FindPanel("MainMenuePanel"), true);
         }
 
-        public void ModButtonClicked()
+        private GameObject FindPanel(String myPanelName)
+        {
+            UnityEngine.Debug.Log("Looking for " + myPanelName);
+            foreach (GameObject myPanel in menuPanel)
+            {
+                if (myPanel.name == myPanelName)
+                {
+                    UnityEngine.Debug.Log("Found" + myPanel.name);
+                    return myPanel;
+                }
+            }
+            // if nothing was found
+            // UGLY, FIX IT
+            return menuPanel[0];
+        }
+
+        public void SubMenuButtonClicked(GameObject gameObject)
+        {
+            SetOnePanelActive(gameObject, true);
+        }
+
+        private void SetOnePanelActive(GameObject gameObject, Boolean isActive)
         {
             try
             {
-                MainMenuePanel.SetActive(false);
-                MapEditorMenuePanel.SetActive(false);
-                NewGameMenuePanel.SetActive(false);
-                LoadGamePanel.SetActive(false);
-                ModPanel.SetActive(true);
-                NewHeroPanel.SetActive(false);
-                LoadHeroPanel.SetActive(false);
-                GetMods();
+                foreach (GameObject myPanel in menuPanel)
+                {
+                    if (gameObject == myPanel)
+                        myPanel.SetActive(isActive);
+                    else
+                        myPanel.SetActive(!isActive);
+                }
+                if (gameObject.name == "ModsPanel")
+                {
+                    GetMods();
+                }
+                else if (gameObject.name == "NewHeroPanel")
+                {
+                    GetHeroesNew();
+                    GetHeroClassesNew();
+                }
+                else if (gameObject.name == "LoadHeroPanel")
+                {
+                    GetHeroesLoad();
+                }
             }
             catch (Exception e)
             {
@@ -543,48 +501,6 @@ namespace TileGame
             }
         }
 
-        public void NewHeroButtonClicked()
-        {
-            try
-            {
-                MainMenuePanel.SetActive(false);
-                MapEditorMenuePanel.SetActive(false);
-                NewGameMenuePanel.SetActive(false);
-                LoadGamePanel.SetActive(false);
-                ModPanel.SetActive(false);
-                NewHeroPanel.SetActive(true);
-                LoadHeroPanel.SetActive(false);
-                GetHeroesNew();
-                GetHeroClassesNew();
-            }
-            catch (Exception e)
-            {
-                GCS.LogController(e.ToString());
-                throw;
-            }
-        }
-
-        public void LoadHeroButtonClicked()
-        {
-            try
-            {
-                MainMenuePanel.SetActive(false);
-                MapEditorMenuePanel.SetActive(false);
-                NewGameMenuePanel.SetActive(false);
-                LoadGamePanel.SetActive(false);
-                ModPanel.SetActive(false);
-                NewHeroPanel.SetActive(false);
-                LoadHeroPanel.SetActive(true);
-                YesDeleteHero.SetActive(false);
-                DeleteHeroNeverMind.SetActive(false);
-                GetHeroesLoad();
-            }
-            catch (Exception e)
-            {
-                GCS.LogController(e.ToString());
-                throw;
-            }
-        }
 
         public void CreateMapButtonClickedMapEditorScreen()
         {
@@ -639,7 +555,7 @@ namespace TileGame
                             }
                             else
                             {
-                                SameMods = false; //if a mod is not found go to false, ending teh loop
+                                SameMods = false; //if a mod is not found go to false, ending the loop
                             }
                         }
                     }
@@ -750,7 +666,7 @@ namespace TileGame
                         GameObject tempbutton = Instantiate(LoadMenueButtonPrefab, ContentWindowLoad.transform); //create button and set its parent to content
                         tempbutton.name = Path.GetFileNameWithoutExtension(file); //change name
                         tempbutton.transform.GetChild(0).GetComponent<Text>().text = Path.GetFileNameWithoutExtension(file);
-                        tempbutton.GetComponent<Button>().onClick.AddListener(SaveGameSelected); //adds method to button clicked 
+                        tempbutton.GetComponent<Button>().onClick.AddListener(SavedGameSelected); //adds method to button clicked 
                     }
                 }
             }
@@ -964,7 +880,7 @@ namespace TileGame
             }
         }
 
-        public void SaveGameSelected()
+        public void SavedGameSelected()
         {
             try
             {
@@ -1456,7 +1372,7 @@ namespace TileGame
                 DBC.ModsLoaded = new List<string>();
                 DBC.ResetNextIndexes();
                 //ModsList.Sort();
-                LoadingModsPanels.SetActive(true);
+                SetOnePanelActive(FindPanel("LoadingModsPanel"), true);
                 StartCoroutine(ModLoader());
                 ModLoader();
             }
