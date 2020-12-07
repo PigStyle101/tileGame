@@ -9,6 +9,7 @@ TagManager:
   - Building
   - Hero
   - MenuPanel
+  - MenuStuff
   layers:
   - Default
   - TransparentFX

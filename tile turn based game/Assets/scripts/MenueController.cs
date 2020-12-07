@@ -15,64 +15,8 @@ namespace TileGame
 {
     public class MenueController : MonoBehaviour
     {
-
-        private Image NewHeroPreview;
-        private Image LoadHeroPreview;
-        private InputField mapsizeIF;
-        private InputField HeroInputField;
-        private Text errorTextField;
-        private Text ModDescriptionText;
-        private Text FeedBackNewGame;
-        public Text NewHeroFeedBackText;
-        private Text NewHeroIntValue;
-        private Text NewHeroStrValue;
-        private Text NewHeroDexValue;
-        private Text NewHeroCharValue;
-        private Text LoadHeroFeedBackText;
-        private Text LoadHeroIntValue;
-        private Text LoadHeroStrValue;
-        private Text LoadHeroDexValue;
-        private Text LoadHeroCharValue;
-        private Text LoadHeroClassText;
-        private Text LoadHeroRaceText;
         public GameObject LoadMenueButtonPrefab;
         public GameObject ModsButtonPrefab;
-        private GameObject ContentWindowLoad;
-        private GameObject ContentWindowNewGame;
-        private GameObject ContentWindowMods;
-        private GameObject ContentWindowMapEditor;
-        private GameObject ContentWindowNewHero;
-        private GameObject ContentWindowLoadHero;
-        private GameObject DeleteHeroNeverMind;
-        private GameObject YesDeleteHero;
-        private GameObject Team1Image;
-        private GameObject Team2Image;
-        private GameObject Team3Image;
-        private GameObject Team4Image;
-        private GameObject Team5Image;
-        private GameObject Team6Image;
-        private GameObject Team7Image;
-        private GameObject Team8Image;
-        private GameObject Team9Image;
-        private GameObject Team1Dropdown;
-        private GameObject Team2Dropdown;
-        private GameObject Team3Dropdown;
-        private GameObject Team4Dropdown;
-        private GameObject Team5Dropdown;
-        private GameObject Team6Dropdown;
-        private GameObject Team7Dropdown;
-        private GameObject Team8Dropdown;
-        private GameObject Team9Dropdown;
-        private GameObject Team1HeroDropdown;
-        private GameObject Team2HeroDropdown;
-        private GameObject Team3HeroDropdown;
-        private GameObject Team4HeroDropdown;
-        private GameObject Team5HeroDropdown;
-        private GameObject Team6HeroDropdown;
-        private GameObject Team7HeroDropdown;
-        private GameObject Team8HeroDropdown;
-        private GameObject Team9HeroDropdown;
-        private Dropdown ClassDropDown;
         private GameObject CurrentlySellectedLoadObject;
         private string SaveGameSelectedString;
         private string CurrentlySellectedMod;
@@ -87,14 +31,15 @@ namespace TileGame
         private bool Loading;
 
         private List<GameObject> menuPanel = new List<GameObject>();
+        private List<GameObject> menuStuff = new List<GameObject>();
 
         // everything in here is pretty self explanitory.
         void Start()
         {
             try
             {
-                ClassDropDown.onValueChanged.AddListener(delegate { ClassDropDownChanged(ClassDropDown); });
-                ClassDropDown.onValueChanged.AddListener(delegate { ClassDropDownChanged(ClassDropDown); });
+                FindMenuStuff("NewHeroClassDropDown").GetComponent<Dropdown>().onValueChanged.AddListener(delegate { ClassDropDownChanged(FindMenuStuff("NewHeroClassDropDown").GetComponent<Dropdown>()); });
+                //FindMenuStuff("ClassDropDown").GetComponent<Dropdown>().onValueChanged.AddListener(delegate { ClassDropDownChanged(FindMenuStuff("ClassDropDown").GetComponent<Dropdown>()); });
                 ReturnToMainMenuClicked();
                 if (DBC.MasterData.HeroSelectedWhenGameClosed != "" && DBC.HeroDictionary.ContainsKey(DBC.MasterData.HeroSelectedWhenGameClosed))
                 {
@@ -107,6 +52,7 @@ namespace TileGame
             }
             catch (Exception e)
             {
+                //If you get this error you probably need to switch to the initalization screen
                 GCS.LogController(e.ToString());
                 throw;
             }
@@ -166,61 +112,13 @@ namespace TileGame
                     }
                 }
 
-                DeleteHeroNeverMind = transform.Find("Canvas").Find("MainPanel").Find("LoadHeroPanel").Find("DeleteNoButton").gameObject;
-                YesDeleteHero = transform.Find("Canvas").Find("MainPanel").Find("LoadHeroPanel").Find("DeleteYesButon").gameObject;
-                NewHeroPreview = transform.Find("Canvas").Find("MainPanel").Find("NewHeroPanel").Find("Preview").GetComponent<Image>();
-                LoadHeroPreview = transform.Find("Canvas").Find("MainPanel").Find("LoadHeroPanel").Find("Preview").GetComponent<Image>();
-                mapsizeIF = transform.Find("Canvas").Find("MainPanel").Find("MapEditorMenuePanel").Find("InputFieldSize").GetComponent<InputField>();
-                HeroInputField = transform.Find("Canvas").Find("MainPanel").Find("NewHeroPanel").Find("HeroInputField").GetComponent<InputField>();
-                FeedBackNewGame = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").Find("FeedBackText").GetComponent<Text>();
-                LoadHeroFeedBackText = transform.Find("Canvas").Find("MainPanel").Find("LoadHeroPanel").Find("LoadHeroFeedback").GetComponent<Text>();
-                LoadHeroClassText = transform.Find("Canvas").Find("MainPanel").Find("LoadHeroPanel").Find("RaceImage").Find("LoadHeroClassText").GetComponent<Text>();
-                LoadHeroRaceText = transform.Find("Canvas").Find("MainPanel").Find("LoadHeroPanel").Find("ClassImage").Find("LoadHeroRaceText").GetComponent<Text>();
-                errorTextField = transform.Find("Canvas").Find("MainPanel").Find("MapEditorMenuePanel").Find("ErrorHandlertext").GetComponent<Text>();
-                ModDescriptionText = transform.Find("Canvas").Find("MainPanel").Find("ModsPanel").Find("DescriptionText").gameObject.GetComponent<Text>();
-                NewHeroFeedBackText = transform.Find("Canvas").Find("MainPanel").Find("NewHeroPanel").Find("FeedbackText").gameObject.GetComponent<Text>();
-                NewHeroIntValue = transform.Find("Canvas").Find("MainPanel").Find("NewHeroPanel").Find("IntImage").Find("IntValue").gameObject.GetComponent<Text>();
-                NewHeroStrValue = transform.Find("Canvas").Find("MainPanel").Find("NewHeroPanel").Find("StrImage").Find("StrValue").gameObject.GetComponent<Text>();
-                NewHeroDexValue = transform.Find("Canvas").Find("MainPanel").Find("NewHeroPanel").Find("DexImage").Find("DexValue").gameObject.GetComponent<Text>();
-                NewHeroCharValue = transform.Find("Canvas").Find("MainPanel").Find("NewHeroPanel").Find("CharImage").Find("CharValue").gameObject.GetComponent<Text>();
-                LoadHeroIntValue = transform.Find("Canvas").Find("MainPanel").Find("LoadHeroPanel").Find("IntImage").Find("IntValue").gameObject.GetComponent<Text>();
-                LoadHeroStrValue = transform.Find("Canvas").Find("MainPanel").Find("LoadHeroPanel").Find("StrImage").Find("StrValue").gameObject.GetComponent<Text>();
-                LoadHeroDexValue = transform.Find("Canvas").Find("MainPanel").Find("LoadHeroPanel").Find("DexImage").Find("DexValue").gameObject.GetComponent<Text>();
-                LoadHeroCharValue = transform.Find("Canvas").Find("MainPanel").Find("LoadHeroPanel").Find("CharImage").Find("CharValue").gameObject.GetComponent<Text>();
-                ContentWindowLoad = transform.Find("Canvas").Find("MainPanel").Find("LoadGamePanel").Find("LoadGameScrollView").Find("Viewport").Find("LoadGameContent").gameObject;
-                ContentWindowNewGame = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").Find("NewGameScrollView").Find("Viewport").Find("NewGameContent").gameObject;
-                ContentWindowMods = transform.Find("Canvas").Find("MainPanel").Find("ModsPanel").Find("ModsScrollView").Find("ModsViewport").Find("ModsContent").gameObject;
-                ContentWindowMapEditor = transform.Find("Canvas").Find("MainPanel").Find("MapEditorMenuePanel").Find("MapEditorScrollView").Find("Viewport").Find("MapEditorContent").gameObject;
-                ContentWindowLoadHero = transform.Find("Canvas").Find("MainPanel").Find("LoadHeroPanel").Find("LoadHeroScrollView").Find("HeroViewport").Find("LoadHeroContent").gameObject;
-                ContentWindowNewHero = transform.Find("Canvas").Find("MainPanel").Find("NewHeroPanel").Find("NewHeroScrollView").Find("HeroViewport").Find("NewHeroContent").gameObject;
-                Team1Image = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team1Image").gameObject;
-                Team2Image = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team2Image").gameObject;
-                Team3Image = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team3Image").gameObject;
-                Team4Image = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team4Image").gameObject;
-                Team5Image = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team5Image").gameObject;
-                Team6Image = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team6Image").gameObject;
-                Team7Image = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team7Image").gameObject;
-                Team8Image = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team8Image").gameObject;
-                Team9Image = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team9Image").gameObject;
-                Team1Dropdown = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team1Dropdown").gameObject;
-                Team2Dropdown = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team2Dropdown").gameObject;
-                Team3Dropdown = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team3Dropdown").gameObject;
-                Team4Dropdown = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team4Dropdown").gameObject;
-                Team5Dropdown = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team5Dropdown").gameObject;
-                Team6Dropdown = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team6Dropdown").gameObject;
-                Team7Dropdown = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team7Dropdown").gameObject;
-                Team8Dropdown = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team8Dropdown").gameObject;
-                Team9Dropdown = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team9Dropdown").gameObject;
-                Team1HeroDropdown = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team1HeroDropdown").gameObject;
-                Team2HeroDropdown = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team2HeroDropdown").gameObject;
-                Team3HeroDropdown = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team3HeroDropdown").gameObject;
-                Team4HeroDropdown = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team4HeroDropdown").gameObject;
-                Team5HeroDropdown = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team5HeroDropdown").gameObject;
-                Team6HeroDropdown = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team6HeroDropdown").gameObject;
-                Team7HeroDropdown = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team7HeroDropdown").gameObject;
-                Team8HeroDropdown = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team8HeroDropdown").gameObject;
-                Team9HeroDropdown = transform.Find("Canvas").Find("MainPanel").Find("NewGamePanel").Find("TeamPanel").Find("Team9HeroDropdown").gameObject;
-                ClassDropDown = transform.Find("Canvas").Find("MainPanel").Find("NewHeroPanel").Find("ClassDropDown").GetComponent<Dropdown>();
+                foreach (GameObject stuff in Resources.FindObjectsOfTypeAll(typeof(GameObject)) as GameObject[])
+                {
+                    if (stuff.tag == "MenuStuff")
+                    {
+                        menuStuff.Add(stuff);
+                    }
+                }
             }
             catch (Exception e)
             {
@@ -321,7 +219,7 @@ namespace TileGame
                 }
                 else
                 {
-                    ModDescriptionText.text = "Must have at least one mod loaded!";
+                    FindMenuStuff("ModDescriptionText").GetComponent<Text>().text = "Must have at least one mod loaded!";
                 }
             }
             catch (Exception e)
@@ -356,12 +254,12 @@ namespace TileGame
                     }
                     else
                     {
-                        ModDescriptionText.text = "Must have at least one building with property HeroSpawnPoint = true";
+                        FindMenuStuff("ModDescriptionText").GetComponent<Text>().text = "Must have at least one building with property HeroSpawnPoint = true";
                     }
                 }
                 else
                 {
-                    ModDescriptionText.text = "Must have at least one building with property MainBase = true";
+                    FindMenuStuff("ModDescriptionText").GetComponent<Text>().text = "Must have at least one building with property MainBase = true";
                 }
             }
             catch (Exception e)
@@ -377,33 +275,33 @@ namespace TileGame
             {
                 SetOnePanelActive(FindPanel("NewGamePanel"), true);
                 GetMapsFornewGameWindow();
-                Team1Image.SetActive(false);
-                Team2Image.SetActive(false);
-                Team3Image.SetActive(false);
-                Team4Image.SetActive(false);
-                Team5Image.SetActive(false);
-                Team6Image.SetActive(false);
-                Team7Image.SetActive(false);
-                Team8Image.SetActive(false);
-                Team9Image.SetActive(false);
-                Team1Dropdown.SetActive(false);
-                Team2Dropdown.SetActive(false);
-                Team3Dropdown.SetActive(false);
-                Team4Dropdown.SetActive(false);
-                Team5Dropdown.SetActive(false);
-                Team6Dropdown.SetActive(false);
-                Team7Dropdown.SetActive(false);
-                Team8Dropdown.SetActive(false);
-                Team9Dropdown.SetActive(false);
-                Team1HeroDropdown.SetActive(false);
-                Team2HeroDropdown.SetActive(false);
-                Team3HeroDropdown.SetActive(false);
-                Team4HeroDropdown.SetActive(false);
-                Team5HeroDropdown.SetActive(false);
-                Team6HeroDropdown.SetActive(false);
-                Team7HeroDropdown.SetActive(false);
-                Team8HeroDropdown.SetActive(false);
-                Team9HeroDropdown.SetActive(false);
+                FindMenuStuff("Team1Image").SetActive(false);
+                FindMenuStuff("Team2Image").SetActive(false);
+                FindMenuStuff("Team3Image").SetActive(false);
+                FindMenuStuff("Team4Image").SetActive(false);
+                FindMenuStuff("Team5Image").SetActive(false);
+                FindMenuStuff("Team6Image").SetActive(false);
+                FindMenuStuff("Team7Image").SetActive(false);
+                FindMenuStuff("Team8Image").SetActive(false);
+                FindMenuStuff("Team9Image").SetActive(false);
+                FindMenuStuff("Team1Dropdown").SetActive(false);
+                FindMenuStuff("Team2Dropdown").SetActive(false);
+                FindMenuStuff("Team3Dropdown").SetActive(false);
+                FindMenuStuff("Team4Dropdown").SetActive(false);
+                FindMenuStuff("Team5Dropdown").SetActive(false);
+                FindMenuStuff("Team6Dropdown").SetActive(false);
+                FindMenuStuff("Team7Dropdown").SetActive(false);
+                FindMenuStuff("Team8Dropdown").SetActive(false);
+                FindMenuStuff("Team9Dropdown").SetActive(false);
+                FindMenuStuff("Team1HeroDropdown").SetActive(false);
+                FindMenuStuff("Team2HeroDropdown").SetActive(false);
+                FindMenuStuff("Team3HeroDropdown").SetActive(false);
+                FindMenuStuff("Team4HeroDropdown").SetActive(false);
+                FindMenuStuff("Team5HeroDropdown").SetActive(false);
+                FindMenuStuff("Team6HeroDropdown").SetActive(false);
+                FindMenuStuff("Team7HeroDropdown").SetActive(false);
+                FindMenuStuff("Team8HeroDropdown").SetActive(false);
+                FindMenuStuff("Team9HeroDropdown").SetActive(false);
             }
             catch (Exception e)
             {
@@ -431,6 +329,21 @@ namespace TileGame
             // if nothing was found
             // UGLY, FIX IT
             return menuPanel[0];
+        }
+
+        public GameObject FindMenuStuff (string stuffName)
+        {
+            UnityEngine.Debug.Log("Looking for " + stuffName);
+            foreach (GameObject stuff in menuStuff)
+            {
+                if (stuff.name == stuffName)
+                {
+                    UnityEngine.Debug.Log("Found " + stuff.name);
+                    return stuff;
+                }
+            }
+            UnityEngine.Debug.Log("FindMenuStuff Failed");
+            return null;
         }
 
         public void SubMenuButtonClicked(GameObject gameObject)
@@ -461,6 +374,18 @@ namespace TileGame
                 else if (gameObject.name == "LoadHeroPanel")
                 {
                     GetHeroesLoad();
+                }
+                else if (gameObject.name == "NewGamePanel")
+                {
+                    GetMapsFornewGameWindow();
+                }
+                else if (gameObject.name == "LoadGamePanel")
+                {
+                    GetSaves();
+                }
+                else if (gameObject.name == "MapEditorMenuePanel")
+                {
+                    GetMapsForMapEditorWindow();
                 }
             }
             catch (Exception e)
@@ -501,13 +426,12 @@ namespace TileGame
             }
         }
 
-
         public void CreateMapButtonClickedMapEditorScreen()
         {
             try
             {
                 int tempMapSize = new int();
-                if (int.TryParse(mapsizeIF.text, out tempMapSize))
+                if (int.TryParse(FindMenuStuff("MapEditorInputField").GetComponent<Text>().text, out tempMapSize))
                 {
                     if (tempMapSize >= 10 && tempMapSize <= 100)
                     {
@@ -515,12 +439,12 @@ namespace TileGame
                     }
                     else
                     {
-                        errorTextField.text = "Map size to big or to small";
+                        FindMenuStuff("MapEditorErrorText").GetComponent<Text>().text = "Map size to big or to small";
                     }
                 }
                 else
                 {
-                    errorTextField.text = "Not a valid input";
+                    FindMenuStuff("MapEditorErrorText").GetComponent<Text>().text = "Not a valid input";
                 }
             }
             catch (Exception e)
@@ -534,10 +458,10 @@ namespace TileGame
         {
             try
             {
-                var childcount = ContentWindowNewGame.transform.childCount;
+                var childcount = FindMenuStuff("NewGameContent").transform.childCount;
                 for (int i = 0; i < childcount; i++)
                 {
-                    Destroy(ContentWindowNewGame.transform.GetChild(i).gameObject);
+                    Destroy(FindMenuStuff("NewGameContent").transform.GetChild(i).gameObject);
                 }
                 foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/Maps", "*.json")))
                 {
@@ -565,7 +489,7 @@ namespace TileGame
                     }
                     if (SameMods) //must have same mods as when save was made to be able to load the save
                     {
-                        GameObject tempbutton = Instantiate(LoadMenueButtonPrefab, ContentWindowNewGame.transform); //create button and set its parent to content
+                        GameObject tempbutton = Instantiate(LoadMenueButtonPrefab, FindMenuStuff("NewGameContent").transform); //create button and set its parent to content
                         tempbutton.name = Path.GetFileNameWithoutExtension(file); //change name
                         tempbutton.transform.GetChild(0).GetComponent<Text>().text = Path.GetFileNameWithoutExtension(file);
                         tempbutton.GetComponent<Button>().onClick.AddListener(MapSelectedNewGame); //adds method to button clicked
@@ -583,10 +507,10 @@ namespace TileGame
         {
             try
             {
-                var childcount = ContentWindowMapEditor.transform.childCount;
+                var childcount = FindMenuStuff("MapEditorContent").transform.childCount;
                 for (int i = 0; i < childcount; i++)
                 {
-                    Destroy(ContentWindowMapEditor.transform.GetChild(i).gameObject);
+                    Destroy(FindMenuStuff("MapEditorContent").transform.GetChild(i).gameObject);
                 }
                 foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/Maps", "*.json")))
                 {
@@ -614,7 +538,7 @@ namespace TileGame
                     }
                     if (SameMods)
                     {
-                        GameObject tempbutton = Instantiate(LoadMenueButtonPrefab, ContentWindowMapEditor.transform); //create button and set its parent to content
+                        GameObject tempbutton = Instantiate(LoadMenueButtonPrefab, FindMenuStuff("MapEditorContent").transform); //create button and set its parent to content
                         tempbutton.name = Path.GetFileNameWithoutExtension(file); //change name
                         tempbutton.transform.GetChild(0).GetComponent<Text>().text = Path.GetFileNameWithoutExtension(file);
                         tempbutton.GetComponent<Button>().onClick.AddListener(MapSelectedEditor); //adds method to button clicked 
@@ -632,10 +556,10 @@ namespace TileGame
         {
             try
             {
-                var childcount = ContentWindowLoad.transform.childCount;
+                var childcount = FindMenuStuff("LoadGameContent").transform.childCount;
                 for (int i = 0; i < childcount; i++)
                 {
-                    Destroy(ContentWindowLoad.transform.GetChild(i).gameObject);
+                    Destroy(FindMenuStuff("LoadGameContent").transform.GetChild(i).gameObject);
                 }
                 foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/Saves", "*.json")))
                 {
@@ -663,7 +587,7 @@ namespace TileGame
                     }
                     if (SameMods) //must have same mods as when save was made to be able to load the save
                     {
-                        GameObject tempbutton = Instantiate(LoadMenueButtonPrefab, ContentWindowLoad.transform); //create button and set its parent to content
+                        GameObject tempbutton = Instantiate(LoadMenueButtonPrefab, FindMenuStuff("LoadGameContent").transform); //create button and set its parent to content
                         tempbutton.name = Path.GetFileNameWithoutExtension(file); //change name
                         tempbutton.transform.GetChild(0).GetComponent<Text>().text = Path.GetFileNameWithoutExtension(file);
                         tempbutton.GetComponent<Button>().onClick.AddListener(SavedGameSelected); //adds method to button clicked 
@@ -681,15 +605,15 @@ namespace TileGame
         {
             try
             {
-                var childcount = ContentWindowMods.transform.childCount;
+                var childcount = FindMenuStuff("ModsContent").transform.childCount;
                 for (int i = 0; i < childcount; i++)
                 {
-                    Destroy(ContentWindowMods.transform.GetChild(i).gameObject);
+                    Destroy(FindMenuStuff("ModsContent").transform.GetChild(i).gameObject);
                 }
                 ModsInModContentWindow.Clear();
                 foreach (string file in Directory.GetDirectories(Application.dataPath + "/StreamingAssets/Mods/"))
                 {
-                    GameObject tempbutton = Instantiate(ModsButtonPrefab, ContentWindowMods.transform); //create button and set its parent to content
+                    GameObject tempbutton = Instantiate(ModsButtonPrefab, FindMenuStuff("ModsContent").transform); //create button and set its parent to content
                     tempbutton.name = Path.GetFileNameWithoutExtension(file); //change name
                     tempbutton.transform.GetChild(0).GetComponent<Text>().text = Path.GetFileNameWithoutExtension(file);
                     tempbutton.GetComponent<Button>().onClick.AddListener(ModSelected); //adds method to button clicked
@@ -714,14 +638,14 @@ namespace TileGame
         {
             try
             {
-                var childcount = ContentWindowNewHero.transform.childCount;
+                var childcount = FindMenuStuff("NewHeroContent").transform.childCount;
                 for (int i = 0; i < childcount; i++)
                 {
-                    Destroy(ContentWindowNewHero.transform.GetChild(i).gameObject);
+                    Destroy(FindMenuStuff("NewHeroContent").transform.GetChild(i).gameObject);
                 }
                 foreach (var kvp in DBC.HeroRaceDictionary)
                 {
-                    GameObject tempbutton = Instantiate(LoadMenueButtonPrefab, ContentWindowNewHero.transform); //create button and set its parent to content
+                    GameObject tempbutton = Instantiate(LoadMenueButtonPrefab, FindMenuStuff("NewHeroContent").transform); //create button and set its parent to content
                     tempbutton.name = kvp.Value.Title; //change name
                     tempbutton.transform.GetChild(0).GetComponent<Text>().text = kvp.Value.Title;
                     tempbutton.GetComponent<Button>().onClick.AddListener(NewHeroSelectedButton); //adds method to button clicked 
@@ -729,7 +653,7 @@ namespace TileGame
                     tempbutton.GetComponent<ButtonProperties>().ID = kvp.Value.ID;
                 }
                 NewHeroCurrentlySelected = 0;
-                NewHeroPreview.sprite = DBC.HeroRaceDictionary[NewHeroCurrentlySelected].IconSprite;
+                FindMenuStuff("NewHeroPreview").GetComponent<Image>().sprite = DBC.HeroRaceDictionary[NewHeroCurrentlySelected].IconSprite;
             }
             catch (Exception e)
             {
@@ -742,13 +666,13 @@ namespace TileGame
         {
             try
             {
-                ClassDropDown.ClearOptions();
+                FindMenuStuff("NewHeroClassDropDown").GetComponent<Dropdown>().ClearOptions();
                 foreach (var kvp in DBC.HeroClassDictionary)
                 {
                     //Debug.Log("Adding:" + kvp.Value.Title);
-                    ClassDropDown.options.Add(new Dropdown.OptionData() { text = kvp.Value.Title });
+                    FindMenuStuff("NewHeroClassDropDown").GetComponent<Dropdown>().options.Add(new Dropdown.OptionData() { text = kvp.Value.Title });
                 }
-                ClassDropDown.RefreshShownValue();
+                FindMenuStuff("NewHeroClassDropDown").GetComponent<Dropdown>().RefreshShownValue();
                 NewHeroClassCurrentlySelected = 0;
                 ChangeNewHeroStats();
             }
@@ -813,28 +737,28 @@ namespace TileGame
         {
             try
             {
-                var childcount = ContentWindowLoadHero.transform.childCount;
+                var childcount = FindMenuStuff("LoadHeroContent").transform.childCount;
                 for (int i = 0; i < childcount; i++)
                 {
-                    Destroy(ContentWindowLoadHero.transform.GetChild(i).gameObject);
+                    Destroy(FindMenuStuff("LoadHeroContent").transform.GetChild(i).gameObject);
                 }
                 foreach (var kvp in DBC.HeroDictionary)
                 {
-                    GameObject tempbutton = Instantiate(LoadMenueButtonPrefab, ContentWindowLoadHero.transform); //create button and set its parent to content
+                    GameObject tempbutton = Instantiate(LoadMenueButtonPrefab, FindMenuStuff("LoadHeroContent").transform); //create button and set its parent to content
                     tempbutton.name = Path.GetFileNameWithoutExtension(kvp.Value.Name); //change name
                     tempbutton.transform.GetChild(0).GetComponent<Text>().text = kvp.Value.Name;
                     tempbutton.GetComponent<Button>().onClick.AddListener(LoadHeroSelectedButton); //adds method to button clicked 
                 }
                 if (GCS.HeroCurrentlySelectedP1 != null)
                 {
-                    LoadHeroPreview.sprite = DBC.HeroRaceDictionary[GCS.HeroCurrentlySelectedP1.RaceID].IconSprite;
-                    LoadHeroIntValue.text = DBC.HeroDictionary[GCS.HeroCurrentlySelectedP1.Name].Intelligance.ToString();
-                    LoadHeroStrValue.text = DBC.HeroDictionary[GCS.HeroCurrentlySelectedP1.Name].Strenght.ToString();
-                    LoadHeroDexValue.text = DBC.HeroDictionary[GCS.HeroCurrentlySelectedP1.Name].Dexterity.ToString();
-                    LoadHeroCharValue.text = DBC.HeroDictionary[GCS.HeroCurrentlySelectedP1.Name].Charisma.ToString();
-                    LoadHeroFeedBackText.text = "Current hero selected: " + GCS.HeroCurrentlySelectedP1.Name;
-                    LoadHeroRaceText.text = "Race:" + DBC.HeroRaceDictionary[GCS.HeroCurrentlySelectedP1.RaceID].Title;
-                    LoadHeroClassText.text = "Class:" + DBC.HeroClassDictionary[GCS.HeroCurrentlySelectedP1.ClassID].Title;
+                    FindMenuStuff("LoadHeroPreview").GetComponent<Image>().sprite = DBC.HeroRaceDictionary[GCS.HeroCurrentlySelectedP1.RaceID].IconSprite;
+                    FindMenuStuff("LoadHeroIntValue").GetComponent<Text>().text = DBC.HeroDictionary[GCS.HeroCurrentlySelectedP1.Name].Intelligance.ToString();
+                    FindMenuStuff("LoadHeroStrValue").GetComponent<Text>().text = DBC.HeroDictionary[GCS.HeroCurrentlySelectedP1.Name].Strenght.ToString();
+                    FindMenuStuff("LoadHeroDexValue").GetComponent<Text>().text = DBC.HeroDictionary[GCS.HeroCurrentlySelectedP1.Name].Dexterity.ToString();
+                    FindMenuStuff("LoadHeroCharValue").GetComponent<Text>().text = DBC.HeroDictionary[GCS.HeroCurrentlySelectedP1.Name].Charisma.ToString();
+                    FindMenuStuff("LoadHeroFeedback").GetComponent<Text>().text = "Current hero selected: " + GCS.HeroCurrentlySelectedP1.Name;
+                    FindMenuStuff("LoadHeroRaceText").GetComponent<Text>().text = "Race:" + DBC.HeroRaceDictionary[GCS.HeroCurrentlySelectedP1.RaceID].Title;
+                    FindMenuStuff("LoadHeroClassText").GetComponent<Text>().text = "Class:" + DBC.HeroClassDictionary[GCS.HeroCurrentlySelectedP1.ClassID].Title;
                 }
             }
             catch (Exception e)
@@ -849,7 +773,7 @@ namespace TileGame
             try
             {
                 NewHeroCurrentlySelected = EventSystem.current.currentSelectedGameObject.transform.GetComponent<ButtonProperties>().ID;
-                NewHeroPreview.sprite = DBC.HeroRaceDictionary[NewHeroCurrentlySelected].IconSprite;
+                FindMenuStuff("NewHeroPreview").GetComponent<Image>().sprite = DBC.HeroRaceDictionary[NewHeroCurrentlySelected].IconSprite;
                 ChangeNewHeroStats();
             }
             catch (Exception e)
@@ -864,14 +788,14 @@ namespace TileGame
             try
             {
                 GCS.HeroCurrentlySelectedP1 = DBC.HeroDictionary[EventSystem.current.currentSelectedGameObject.name];
-                LoadHeroPreview.sprite = DBC.HeroRaceDictionary[GCS.HeroCurrentlySelectedP1.RaceID].IconSprite;
-                LoadHeroIntValue.text = DBC.HeroDictionary[GCS.HeroCurrentlySelectedP1.Name].Intelligance.ToString();
-                LoadHeroStrValue.text = DBC.HeroDictionary[GCS.HeroCurrentlySelectedP1.Name].Strenght.ToString();
-                LoadHeroDexValue.text = DBC.HeroDictionary[GCS.HeroCurrentlySelectedP1.Name].Dexterity.ToString();
-                LoadHeroCharValue.text = DBC.HeroDictionary[GCS.HeroCurrentlySelectedP1.Name].Charisma.ToString();
-                LoadHeroFeedBackText.text = "Current hero selected: " + GCS.HeroCurrentlySelectedP1.Name;
-                LoadHeroRaceText.text = "Race:" + DBC.HeroRaceDictionary[GCS.HeroCurrentlySelectedP1.RaceID].Title;
-                LoadHeroClassText.text = "Class:" + DBC.HeroClassDictionary[GCS.HeroCurrentlySelectedP1.ClassID].Title;
+                FindMenuStuff("LoadHeroPreview").GetComponent<Image>().sprite = DBC.HeroRaceDictionary[GCS.HeroCurrentlySelectedP1.RaceID].IconSprite;
+                FindMenuStuff("LoadHeroIntValue").GetComponent<Text>().text = DBC.HeroDictionary[GCS.HeroCurrentlySelectedP1.Name].Intelligance.ToString();
+                FindMenuStuff("LoadHeroStrValue").GetComponent<Text>().text = DBC.HeroDictionary[GCS.HeroCurrentlySelectedP1.Name].Strenght.ToString();
+                FindMenuStuff("LoadHeroDexValue").GetComponent<Text>().text = DBC.HeroDictionary[GCS.HeroCurrentlySelectedP1.Name].Dexterity.ToString();
+                FindMenuStuff("LoadHeroCharValue").GetComponent<Text>().text = DBC.HeroDictionary[GCS.HeroCurrentlySelectedP1.Name].Charisma.ToString();
+                FindMenuStuff("LoadHeroFeedback").GetComponent<Text>().text = "Current hero selected: " + GCS.HeroCurrentlySelectedP1.Name;
+                FindMenuStuff("LoadHeroRaceText").GetComponent<Text>().text = "Race:" + DBC.HeroRaceDictionary[GCS.HeroCurrentlySelectedP1.RaceID].Title;
+                FindMenuStuff("LoadHeroClassText").GetComponent<Text>().text = "Class:" + DBC.HeroClassDictionary[GCS.HeroCurrentlySelectedP1.ClassID].Title;
             }
             catch (Exception e)
             {
@@ -956,7 +880,7 @@ namespace TileGame
                 TempTeamList.RemoveAll(GCS.TeamIsNotActive);
                 if (aiCount == TempTeamList.Count)
                 {
-                    FeedBackNewGame.text = "Cannot start a game with all ai";
+                    FindMenuStuff("NewGameFeedBack").GetComponent<Text>().text = "Cannot start a game with all ai";
                 }
                 else
                 {
@@ -976,7 +900,7 @@ namespace TileGame
             try
             {
                 CurrentlySellectedMod = EventSystem.current.currentSelectedGameObject.name;
-                ModDescriptionText.text = File.ReadAllText(Application.dataPath + "/StreamingAssets/Mods/" + EventSystem.current.currentSelectedGameObject.name + "/Description.json");
+                FindMenuStuff("ModDescriptionText").GetComponent<Text>().text = File.ReadAllText(Application.dataPath + "/StreamingAssets/Mods/" + EventSystem.current.currentSelectedGameObject.name + "/Description.json");
             }
             catch (Exception e)
             {
@@ -991,7 +915,7 @@ namespace TileGame
             {
                 if (ModsList.Contains(CurrentlySellectedMod))
                 {
-                    ModDescriptionText.text = "Mod " + CurrentlySellectedMod + "is already added.";
+                    FindMenuStuff("ModDescriptionText").GetComponent<Text>().text = "Mod " + CurrentlySellectedMod + "is already added.";
                     UpdateModsActive();
                 }
                 else
@@ -1018,7 +942,7 @@ namespace TileGame
                 }
                 else
                 {
-                    ModDescriptionText.text = "Mod " + CurrentlySellectedMod + " cannot be romoved as it is not on the list";
+                    FindMenuStuff("ModDescriptionText").GetComponent<Text>().text = "Mod " + CurrentlySellectedMod + " cannot be romoved as it is not on the list";
                     UpdateModsActive();
                 }
             }
@@ -1063,120 +987,120 @@ namespace TileGame
                 GCS.TeamList = Load.Teamlist;
                 if (GCS.TeamList[1].Active)
                 {
-                    Team1Image.SetActive(true);
-                    Team1Dropdown.SetActive(true);
-                    Team1HeroDropdown.SetActive(true);
-                    GetHeroesForNewGame(Team1HeroDropdown, 1);
+                    FindMenuStuff("Team1Image").SetActive(true);
+                    FindMenuStuff("Team1Dropdown").SetActive(true);
+                    FindMenuStuff("Team1HeroDropdown").SetActive(true);
+                    GetHeroesForNewGame(FindMenuStuff("Team1HeroDropdown"), 1);
                 }
                 else
                 {
-                    Team1Image.SetActive(false);
-                    Team1Dropdown.SetActive(false);
-                    Team1HeroDropdown.SetActive(false);
+                    FindMenuStuff("Team1Image").SetActive(false);
+                    FindMenuStuff("Team1Dropdown").SetActive(false);
+                    FindMenuStuff("Team1HeroDropdown").SetActive(false);
                 }
                 if (GCS.TeamList[2].Active)
                 {
-                    Team2Image.SetActive(true);
-                    Team2Dropdown.SetActive(true);
-                    Team2HeroDropdown.SetActive(true);
-                    GetHeroesForNewGame(Team2HeroDropdown, 2);
+                    FindMenuStuff("Team2Image").SetActive(true);
+                    FindMenuStuff("Team2Dropdown").SetActive(true);
+                    FindMenuStuff("Team2HeroDropdown").SetActive(true);
+                    GetHeroesForNewGame(FindMenuStuff("Team2HeroDropdown"), 2);
                 }
                 else
                 {
-                    Team2Image.SetActive(false);
-                    Team2Dropdown.SetActive(false);
-                    Team2HeroDropdown.SetActive(false);
+                    FindMenuStuff("Team2Image").SetActive(false);
+                    FindMenuStuff("Team2Dropdown").SetActive(false);
+                    FindMenuStuff("Team2HeroDropdown").SetActive(false);
                 }
                 if (GCS.TeamList[3].Active)
                 {
-                    Team3Image.SetActive(true);
-                    Team3Dropdown.SetActive(true);
-                    Team3HeroDropdown.SetActive(true);
-                    GetHeroesForNewGame(Team3HeroDropdown, 3);
+                    FindMenuStuff("Team3Image").SetActive(true);
+                    FindMenuStuff("Team3Dropdown").SetActive(true);
+                    FindMenuStuff("Team3HeroDropdown").SetActive(true);
+                    GetHeroesForNewGame(FindMenuStuff("Team3HeroDropdown"), 3);
                 }
                 else
                 {
-                    Team3Image.SetActive(false);
-                    Team3Dropdown.SetActive(false);
-                    Team3HeroDropdown.SetActive(false);
+                    FindMenuStuff("Team3Image").SetActive(false);
+                    FindMenuStuff("Team3Dropdown").SetActive(false);
+                    FindMenuStuff("Team3HeroDropdown").SetActive(false);
                 }
                 if (GCS.TeamList[4].Active)
                 {
-                    Team4Image.SetActive(true);
-                    Team4Dropdown.SetActive(true);
-                    Team4HeroDropdown.SetActive(true);
-                    GetHeroesForNewGame(Team4HeroDropdown, 4);
+                    FindMenuStuff("Team4Image").SetActive(true);
+                    FindMenuStuff("Team4Dropdown").SetActive(true);
+                    FindMenuStuff("Team4HeroDropdown").SetActive(true);
+                    GetHeroesForNewGame(FindMenuStuff("Team4HeroDropdown"), 4);
                 }
                 else
                 {
-                    Team4Image.SetActive(false);
-                    Team4Dropdown.SetActive(false);
-                    Team4HeroDropdown.SetActive(false);
+                    FindMenuStuff("Team4Image").SetActive(false);
+                    FindMenuStuff("Team4Dropdown").SetActive(false);
+                    FindMenuStuff("Team4HeroDropdown").SetActive(false);
                 }
                 if (GCS.TeamList[5].Active)
                 {
-                    Team5Image.SetActive(true);
-                    Team5Dropdown.SetActive(true);
-                    Team5HeroDropdown.SetActive(true);
-                    GetHeroesForNewGame(Team5HeroDropdown, 5);
+                    FindMenuStuff("Team5Image").SetActive(true);
+                    FindMenuStuff("Team5Dropdown").SetActive(true);
+                    FindMenuStuff("Team5HeroDropdown").SetActive(true);
+                    GetHeroesForNewGame(FindMenuStuff("Team5HeroDropdown"), 5);
                 }
                 else
                 {
-                    Team5Image.SetActive(false);
-                    Team5Dropdown.SetActive(false);
-                    Team5HeroDropdown.SetActive(false);
+                    FindMenuStuff("Team5Image").SetActive(false);
+                    FindMenuStuff("Team5Dropdown").SetActive(false);
+                    FindMenuStuff("Team5HeroDropdown").SetActive(false);
                 }
                 if (GCS.TeamList[6].Active)
                 {
-                    Team6Image.SetActive(true);
-                    Team6Dropdown.SetActive(true);
-                    Team6HeroDropdown.SetActive(true);
-                    GetHeroesForNewGame(Team6HeroDropdown, 6);
+                    FindMenuStuff("Team6Image").SetActive(true);
+                    FindMenuStuff("Team6Dropdown").SetActive(true);
+                    FindMenuStuff("Team6HeroDropdown").SetActive(true);
+                    GetHeroesForNewGame(FindMenuStuff("Team6HeroDropdown"), 6);
                 }
                 else
                 {
-                    Team6Image.SetActive(false);
-                    Team6Dropdown.SetActive(false);
-                    Team6HeroDropdown.SetActive(false);
+                    FindMenuStuff("Team6Image").SetActive(false);
+                    FindMenuStuff("Team6Dropdown").SetActive(false);
+                    FindMenuStuff("Team6HeroDropdown").SetActive(false);
                 }
                 if (GCS.TeamList[7].Active)
                 {
-                    Team7Image.SetActive(true);
-                    Team7Dropdown.SetActive(true);
-                    Team7HeroDropdown.SetActive(true);
-                    GetHeroesForNewGame(Team7HeroDropdown, 7);
+                    FindMenuStuff("Team7Image").SetActive(true);
+                    FindMenuStuff("Team7Dropdown").SetActive(true);
+                    FindMenuStuff("Team7HeroDropdown").SetActive(true);
+                    GetHeroesForNewGame(FindMenuStuff("Team7HeroDropdown"), 7);
                 }
                 else
                 {
-                    Team7Image.SetActive(false);
-                    Team7Dropdown.SetActive(false);
-                    Team7HeroDropdown.SetActive(false);
+                    FindMenuStuff("Team7Image").SetActive(false);
+                    FindMenuStuff("Team7Dropdown").SetActive(false);
+                    FindMenuStuff("Team7HeroDropdown").SetActive(false);
                 }
                 if (GCS.TeamList[8].Active)
                 {
-                    Team8Image.SetActive(true);
-                    Team8Dropdown.SetActive(true);
-                    Team8HeroDropdown.SetActive(true);
-                    GetHeroesForNewGame(Team8HeroDropdown, 8);
+                    FindMenuStuff("Team8Image").SetActive(true);
+                    FindMenuStuff("Team8Dropdown").SetActive(true);
+                    FindMenuStuff("Team8HeroDropdown").SetActive(true);
+                    GetHeroesForNewGame(FindMenuStuff("Team8HeroDropdown"), 8);
                 }
                 else
                 {
-                    Team8Image.SetActive(false);
-                    Team8Dropdown.SetActive(false);
-                    Team8HeroDropdown.SetActive(false);
+                    FindMenuStuff("Team8Image").SetActive(false);
+                    FindMenuStuff("Team8Dropdown").SetActive(false);
+                    FindMenuStuff("Team8HeroDropdown").SetActive(false);
                 }
                 if (GCS.TeamList[9].Active)
                 {
-                    Team9Image.SetActive(true);
-                    Team9Dropdown.SetActive(true);
-                    Team9HeroDropdown.SetActive(true);
-                    GetHeroesForNewGame(Team9HeroDropdown, 9);
+                    FindMenuStuff("Team9Image").SetActive(true);
+                    FindMenuStuff("Team9Dropdown").SetActive(true);
+                    FindMenuStuff("Team9HeroDropdown").SetActive(true);
+                    GetHeroesForNewGame(FindMenuStuff("Team9HeroDropdown"), 9);
                 }
                 else
                 {
-                    Team9Image.SetActive(false);
-                    Team9Dropdown.SetActive(false);
-                    Team9HeroDropdown.SetActive(false);
+                    FindMenuStuff("Team9Image").SetActive(false);
+                    FindMenuStuff("Team9Dropdown").SetActive(false);
+                    FindMenuStuff("Team9HeroDropdown").SetActive(false);
                 }
             }
             catch (Exception e)
@@ -1209,7 +1133,7 @@ namespace TileGame
                 }
                 else
                 {
-                    errorTextField.text = "Must select a map to load";
+                    FindMenuStuff("MapEditorErrorText").GetComponent<Text>().text = "Must select a map to load";
                 }
             }
             catch (Exception e)
@@ -1223,28 +1147,28 @@ namespace TileGame
         {
             try
             {
-                if (!File.Exists(Application.dataPath + "/StreamingAssets/HeroList/" + HeroInputField.text + ".txt"))
+                if (!File.Exists(Application.dataPath + "/StreamingAssets/HeroList/" + FindMenuStuff("NewHeroInputField").GetComponent<Text>().text + ".txt"))
                 {
-                    if (HeroInputField.text != "")
+                    if (FindMenuStuff("NewHeroInputField").GetComponent<Text>().text != "")
                     {
-                        if (!Regex.IsMatch(HeroInputField.text, @"^[a-z][A-Z]+$"))
+                        if (!Regex.IsMatch(FindMenuStuff("NewHeroInputField").GetComponent<Text>().text, @"^[a-z][A-Z]+$"))
                         {
-                            GCS.CreateNewHero(NewHeroCurrentlySelected, NewHeroClassCurrentlySelected, HeroInputField.text);
-                            NewHeroFeedBackText.text = "New hero created.";
+                            GCS.CreateNewHero(NewHeroCurrentlySelected, NewHeroClassCurrentlySelected, FindMenuStuff("NewHeroInputField").GetComponent<Text>().text);
+                            FindMenuStuff("NewHeroFeedback").GetComponent<Text>().text = "New hero created.";
                         }
                         else
                         {
-                            NewHeroFeedBackText.text = "Only use letters";
+                            FindMenuStuff("NewHeroFeedback").GetComponent<Text>().text = "Only use letters";
                         }
                     }
                     else
                     {
-                        NewHeroFeedBackText.text = "Cannot leave name blank";
+                        FindMenuStuff("NewHeroFeedback").GetComponent<Text>().text = "Cannot leave name blank";
                     }
                 }
                 else
                 {
-                    NewHeroFeedBackText.text = "Hero With this name already exist.";
+                    FindMenuStuff("NewHeroFeedback").GetComponent<Text>().text = "Hero With this name already exist.";
                 }
             }
             catch (Exception e)
@@ -1258,9 +1182,9 @@ namespace TileGame
         {
             try
             {
-                YesDeleteHero.SetActive(true);
-                DeleteHeroNeverMind.SetActive(true);
-                LoadHeroFeedBackText.text = "You sure???";
+                FindMenuStuff("LoadHeroDeleteYesButton").SetActive(true);
+                FindMenuStuff("LoadHeroDeleteNoButton").SetActive(true);
+                FindMenuStuff("LoadHeroFeedback").GetComponent<Text>().text = "You sure???";
             }
             catch (Exception e)
             {
@@ -1273,12 +1197,12 @@ namespace TileGame
         {
             try
             {
-                YesDeleteHero.SetActive(false);
-                DeleteHeroNeverMind.SetActive(false);
+                FindMenuStuff("LoadHeroDeleteYesButton").SetActive(false);
+                FindMenuStuff("LoadHeroDeleteNoButton").SetActive(false);
                 File.Delete(Application.dataPath + "/StreamingAssets/HeroList/" + GCS.HeroCurrentlySelectedP1.Name + ".txt");
                 DBC.HeroDictionary.Remove(GCS.HeroCurrentlySelectedP1.Name);
                 GCS.HeroCurrentlySelectedP1 = null;
-                LoadHeroFeedBackText.text = "Current hero selected: None";
+                FindMenuStuff("LoadHeroFeedback").GetComponent<Text>().text = "Current hero selected: None";
                 GetHeroesLoad();
             }
             catch (Exception e)
@@ -1292,9 +1216,9 @@ namespace TileGame
         {
             try
             {
-                YesDeleteHero.SetActive(false);
-                DeleteHeroNeverMind.SetActive(false);
-                LoadHeroFeedBackText.text = "";
+                FindMenuStuff("LoadHeroDeleteYesButton").SetActive(false);
+                FindMenuStuff("LoadHeroDeleteNoButton").SetActive(false);
+                FindMenuStuff("LoadHeroFeedback").GetComponent<Text>().text = "";
             }
             catch (Exception e)
             {
@@ -1342,10 +1266,10 @@ namespace TileGame
                 {
                     charis = 0;
                 }
-                NewHeroIntValue.text = intell.ToString();
-                NewHeroDexValue.text = dext.ToString();
-                NewHeroStrValue.text = stren.ToString();
-                NewHeroCharValue.text = charis.ToString();
+                FindMenuStuff("NewHeroIntValue").GetComponent<Text>().text = intell.ToString();
+                FindMenuStuff("NewHeroDexValue").GetComponent<Text>().text = dext.ToString();
+                FindMenuStuff("NewHeroStrValue").GetComponent<Text>().text = stren.ToString();
+                FindMenuStuff("NewHeroCharValue").GetComponent<Text>().text = charis.ToString();
             }
             catch (Exception e)
             {
@@ -1567,7 +1491,7 @@ namespace TileGame
         {
             try
             {
-                GCS.HeroCurrentlySelectedP1 = DBC.HeroDictionary[Team1HeroDropdown.GetComponent<Dropdown>().options[index].text];
+                GCS.HeroCurrentlySelectedP1 = DBC.HeroDictionary[FindMenuStuff("Team1HeroDropdown").GetComponent<Dropdown>().options[index].text];
             }
             catch (Exception e)
             {
@@ -1580,7 +1504,7 @@ namespace TileGame
         {
             try
             {
-                GCS.HeroCurrentlySelectedP2 = DBC.HeroDictionary[Team2HeroDropdown.GetComponent<Dropdown>().options[index].text];
+                GCS.HeroCurrentlySelectedP2 = DBC.HeroDictionary[FindMenuStuff("Team2HeroDropdown").GetComponent<Dropdown>().options[index].text];
             }
             catch (Exception e)
             {
@@ -1593,7 +1517,7 @@ namespace TileGame
         {
             try
             {
-                GCS.HeroCurrentlySelectedP3 = DBC.HeroDictionary[Team3HeroDropdown.GetComponent<Dropdown>().options[index].text];
+                GCS.HeroCurrentlySelectedP3 = DBC.HeroDictionary[FindMenuStuff("Team3HeroDropdown").GetComponent<Dropdown>().options[index].text];
             }
             catch (Exception e)
             {
@@ -1606,7 +1530,7 @@ namespace TileGame
         {
             try
             {
-                GCS.HeroCurrentlySelectedP4 = DBC.HeroDictionary[Team4HeroDropdown.GetComponent<Dropdown>().options[index].text];
+                GCS.HeroCurrentlySelectedP4 = DBC.HeroDictionary[FindMenuStuff("Team4HeroDropdown").GetComponent<Dropdown>().options[index].text];
             }
             catch (Exception e)
             {
@@ -1619,7 +1543,7 @@ namespace TileGame
         {
             try
             {
-                GCS.HeroCurrentlySelectedP5 = DBC.HeroDictionary[Team5HeroDropdown.GetComponent<Dropdown>().options[index].text];
+                GCS.HeroCurrentlySelectedP5 = DBC.HeroDictionary[FindMenuStuff("Team5HeroDropdown").GetComponent<Dropdown>().options[index].text];
             }
             catch (Exception e)
             {
@@ -1632,7 +1556,7 @@ namespace TileGame
         {
             try
             {
-                GCS.HeroCurrentlySelectedP6 = DBC.HeroDictionary[Team6HeroDropdown.GetComponent<Dropdown>().options[index].text];
+                GCS.HeroCurrentlySelectedP6 = DBC.HeroDictionary[FindMenuStuff("Team6HeroDropdown").GetComponent<Dropdown>().options[index].text];
             }
             catch (Exception e)
             {
@@ -1645,7 +1569,7 @@ namespace TileGame
         {
             try
             {
-                GCS.HeroCurrentlySelectedP7 = DBC.HeroDictionary[Team7HeroDropdown.GetComponent<Dropdown>().options[index].text];
+                GCS.HeroCurrentlySelectedP7 = DBC.HeroDictionary[FindMenuStuff("Team7HeroDropdown").GetComponent<Dropdown>().options[index].text];
             }
             catch (Exception e)
             {
@@ -1658,7 +1582,7 @@ namespace TileGame
         {
             try
             {
-                GCS.HeroCurrentlySelectedP8 = DBC.HeroDictionary[Team8HeroDropdown.GetComponent<Dropdown>().options[index].text];
+                GCS.HeroCurrentlySelectedP8 = DBC.HeroDictionary[FindMenuStuff("Team8HeroDropdown").GetComponent<Dropdown>().options[index].text];
             }
             catch (Exception e)
             {
@@ -1671,7 +1595,7 @@ namespace TileGame
         {
             try
             {
-                GCS.HeroCurrentlySelectedP9 = DBC.HeroDictionary[Team9HeroDropdown.GetComponent<Dropdown>().options[index].text];
+                GCS.HeroCurrentlySelectedP9 = DBC.HeroDictionary[FindMenuStuff("Team9HeroDropdown").GetComponent<Dropdown>().options[index].text];
             }
             catch (Exception e)
             {
