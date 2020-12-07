@@ -34,9 +34,10 @@ namespace TileGame
 
         private void Start()
         {
-            try { 
-            DBC = DatabaseController.instance;
-            GCS = GameControllerScript.instance;
+            try
+            {
+                DBC = DatabaseController.instance;
+                GCS = GameControllerScript.instance;
             }
             catch (Exception e)
             {
@@ -47,61 +48,62 @@ namespace TileGame
 
         public void SetLuaGlobalsAndTypes(Script script, string scene)
         {
-            try { 
-            //class
-            UserData.RegisterType<GameObject>();
-            UserData.RegisterType<AudioClip>();
-            UserData.RegisterType<Building>();
-            UserData.RegisterType<BuildingController>();
-            UserData.RegisterType<ButtonProperties>();
-            UserData.RegisterType<Camera>();
-            UserData.RegisterType<Canvas>();
-            UserData.RegisterType<CharacterController>();
-            UserData.RegisterType<DatabaseController>();
-            UserData.RegisterType<Debug>();
-            UserData.RegisterType<Transform>();
-            UserData.RegisterType<SpriteRenderer>();
-            UserData.RegisterType<Component>();
-            UserData.RegisterType<UnitController>();
-            UserData.RegisterType<TerrainController>();
-
-            //struc
-            UserData.RegisterType<Vector2>();
-            UserData.RegisterType<Vector3>();
-            UserData.RegisterType<Color>();
-
-            DynValue vec = UserData.Create(new Vector2());
-            DynValue obj = UserData.Create(new GameObject());
-            DynValue sprrend = UserData.Create(new SpriteRenderer());
-            DynValue dbg = UserData.Create(new Debug());
-            DynValue color = UserData.Create(new Color());
-            DynValue comp = UserData.Create(new Component());
-            DynValue unitcont = UserData.Create(new UnitController());
-            DynValue terraincont = UserData.Create(new TerrainController());
-
-            script.Globals.Set("Vector2", vec);
-            script.Globals.Set("GameObject", obj);
-            script.Globals.Set("SpriteRenderer", sprrend);
-            script.Globals.Set("Debug", dbg);
-            script.Globals.Set("Color", color);
-            script.Globals.Set("Component", comp);
-            script.Globals.Set("UnitController", unitcont);
-            script.Globals.Set("TerrainController", terraincont);
-            //UserData.RegisterProxyType<myProx, Color.>(r => new myProx(r)); //this is for classes
-
-            script.Globals["GCS"] = GCS;
-            script.Globals["LM"] = LuaMethods.instance;
-
-            if (scene == "MapEditorScene")
+            try
             {
-                MEMCC = GameObject.Find("MainCamera").GetComponent<MapEditMenueCamController>();
-                script.Globals["MEMCC"] = MEMCC;
-            }
-            else if (scene == "PlayScene")
-            {
-                PSCC = GameObject.Find("MainCamera").GetComponent<PlaySceneCamController>();
-                script.Globals["PSCC"] = PSCC;
-            }
+                //class
+                UserData.RegisterType<GameObject>();
+                UserData.RegisterType<AudioClip>();
+                UserData.RegisterType<Building>();
+                UserData.RegisterType<BuildingController>();
+                UserData.RegisterType<ButtonProperties>();
+                UserData.RegisterType<Camera>();
+                UserData.RegisterType<Canvas>();
+                UserData.RegisterType<CharacterController>();
+                UserData.RegisterType<DatabaseController>();
+                UserData.RegisterType<Debug>();
+                UserData.RegisterType<Transform>();
+                UserData.RegisterType<SpriteRenderer>();
+                UserData.RegisterType<Component>();
+                UserData.RegisterType<UnitController>();
+                UserData.RegisterType<TerrainController>();
+
+                //struc
+                UserData.RegisterType<Vector2>();
+                UserData.RegisterType<Vector3>();
+                UserData.RegisterType<Color>();
+
+                DynValue vec = UserData.Create(new Vector2());
+                DynValue obj = UserData.Create(new GameObject());
+                DynValue sprrend = UserData.Create(new SpriteRenderer());
+                DynValue dbg = UserData.Create(new Debug());
+                DynValue color = UserData.Create(new Color());
+                DynValue comp = UserData.Create(new Component());
+                DynValue unitcont = UserData.Create(new UnitController());
+                DynValue terraincont = UserData.Create(new TerrainController());
+
+                script.Globals.Set("Vector2", vec);
+                script.Globals.Set("GameObject", obj);
+                script.Globals.Set("SpriteRenderer", sprrend);
+                script.Globals.Set("Debug", dbg);
+                script.Globals.Set("Color", color);
+                script.Globals.Set("Component", comp);
+                script.Globals.Set("UnitController", unitcont);
+                script.Globals.Set("TerrainController", terraincont);
+                //UserData.RegisterProxyType<myProx, Color.>(r => new myProx(r)); //this is for classes
+
+                script.Globals["GCS"] = GCS;
+                script.Globals["LM"] = LuaMethods.instance;
+
+                if (scene == "MapEditorScene")
+                {
+                    MEMCC = GameObject.Find("MainCamera").GetComponent<MapEditMenueCamController>();
+                    script.Globals["MEMCC"] = MEMCC;
+                }
+                else if (scene == "PlayScene")
+                {
+                    PSCC = GameObject.Find("MainCamera").GetComponent<PlaySceneCamController>();
+                    script.Globals["PSCC"] = PSCC;
+                }
             }
             catch (Exception e)
             {
@@ -110,12 +112,13 @@ namespace TileGame
             }
         }
 
-        public void RunLuaScript(string sdirectory,string scene)
+        public void RunLuaScript(string sdirectory, string scene)
         {
-            try { 
-            Script script = new Script();
-            SetLuaGlobalsAndTypes(script, scene);
-            script.DoString(File.ReadAllText(sdirectory));
+            try
+            {
+                Script script = new Script();
+                SetLuaGlobalsAndTypes(script, scene);
+                script.DoString(File.ReadAllText(sdirectory));
             }
             catch (Exception e)
             {
@@ -124,16 +127,19 @@ namespace TileGame
             }
         }
 
-        public void CastLuaSpell(string sdirectory, string scene,GameObject target,GameObject caster)
+        public void CastLuaSpell(string spell, string scene, GameObject target, GameObject caster)
         {
-            try {
-            Script script = new Script();
-            SetLuaGlobalsAndTypes(script, scene);
-            script.Call(script.Globals["CastSpell"], target, caster);
-            }
-            catch (Exception e)
+            try
             {
-                GCS.LogController(e.ToString());
+                Script script = new Script();
+                SetLuaGlobalsAndTypes(script, scene);
+                script.DoString(spell);
+                //DynValue castSpellFunc = script.Globals.Get("CastSpell");   //not sure if this is needed yet currently working on this
+                script.Call(script.Globals["CastSpell"], target, caster);
+            }
+            catch (ScriptRuntimeException e)
+            {
+                GCS.LogController(e.DecoratedMessage.ToString());
                 throw;
             }
         }
@@ -147,9 +153,10 @@ namespace TileGame
 
         public Color NewColor(int r, int g, int b)
         {
-            try { 
-            Color c = new Color(r, g, b);
-            return c;
+            try
+            {
+                Color c = new Color(r, g, b);
+                return c;
             }
             catch (Exception e)
             {
@@ -157,7 +164,7 @@ namespace TileGame
                 throw;
             }
         }
-        
+
         /// <summary>
         /// Returns a vector with the suppled floats
         /// </summary>
@@ -166,9 +173,10 @@ namespace TileGame
         /// <returns></returns>
         public Vector2 NewVector2(float x, float y)
         {
-            try { 
-            Vector2 v = new Vector2(x, y);
-            return v;
+            try
+            {
+                Vector2 v = new Vector2(x, y);
+                return v;
             }
             catch (Exception e)
             {
@@ -179,8 +187,9 @@ namespace TileGame
 
         public void ChangeSpriteColor(GameObject G, float r, float g, float b)
         {
-            try { 
-            G.GetComponent<SpriteRenderer>().color = new Color(r, g, b);
+            try
+            {
+                G.GetComponent<SpriteRenderer>().color = new Color(r, g, b);
             }
             catch (Exception e)
             {
@@ -189,10 +198,11 @@ namespace TileGame
             }
         }
 
-        public void ChangeChildSpriteColor(GameObject G,int ChildNum, float r, float g, float b)
+        public void ChangeChildSpriteColor(GameObject G, int ChildNum, float r, float g, float b)
         {
-            try { 
-            G.transform.GetChild(ChildNum).GetComponent<SpriteRenderer>().color = new Color(r, g, b);
+            try
+            {
+                G.transform.GetChild(ChildNum).GetComponent<SpriteRenderer>().color = new Color(r, g, b);
             }
             catch (Exception e)
             {
@@ -203,21 +213,27 @@ namespace TileGame
 
         public bool VectorCompair(Vector2 v1, Vector2 v2)
         {
-            try { 
-            if (v1.x == v2.x && v1.y == v2.y)
+            try
             {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+                if (v1.x == v2.x && v1.y == v2.y)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
             catch (Exception e)
             {
                 GCS.LogController(e.ToString());
                 throw;
             }
+        }
+
+        public bool DictionaryContainsKey(Dictionary<Vector2,GameObject> dic,Vector2 v)
+        {
+            return dic.ContainsKey(v);
         }
 
     }

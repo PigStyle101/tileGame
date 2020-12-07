@@ -719,76 +719,18 @@ namespace TileGame
                         for (int i = 0; i < hits.Length; i++) // GO THROUGH THEM RAYS
                         {
                             RaycastHit hit = hits[i];
-                            if (!PSCC.AttackButtonSelected)
+                            if (!PSCC.AttackButtonSelected && !PSCC.SpellButtonSelected)
                             {
                                 if (hit.transform.tag == DBC.UnitDictionary[0].Type)
                                 {
+                                    PSCC.SpellButton.SetActive(false);
                                     if (SelectedUnitPlayScene == null && hit.transform.GetComponent<UnitController>().UnitMovable)//is the unit movable ? is there no unit selected ?
                                     {
-                                        SelectedUnitPlayScene = hit.transform.gameObject; //set unit to selected unit
-                                        UnitController UC = SelectedUnitPlayScene.GetComponent<UnitController>();
-                                        originalPositionOfUnit = SelectedUnitPlayScene.transform.position; //get unit position
-                                        PSCC.CancelButton.SetActive(true);
-                                        foreach (var kvp in UC.TilesWeights)
-                                        {
-                                            if (TilePos[kvp.Key].GetComponent<TerrainController>().FogOfWarBool)
-                                            {
-                                                TilePos[kvp.Key].transform.GetChild(1).GetComponent<SpriteRenderer>().color = new Color(.5f, .5f, .5f); //sets fog of war that unit can move to to darker tint.
-                                            }
-                                            else if (!TilePos[kvp.Key].GetComponent<TerrainController>().Occupied)
-                                            {
-                                                TilePos[kvp.Key].transform.GetComponent<SpriteRenderer>().color = new Color(.5F, .5F, .5F); //sets dark tint to tiles that the unit can move too
-                                            }
-                                        }
-                                        foreach (var b in BuildingPos)
-                                        {
-                                            if (originalPositionOfUnit == (Vector2)b.Value.transform.position && UC.Team != b.Value.GetComponent<BuildingController>().Team && UC.CanConvert)
-                                            {//are we on a building? is the building not on are team? can this unit convert?
-                                                PSCC.CaptureButton.SetActive(true);
-                                                break;
-                                            }
-                                            else
-                                            {
-                                                PSCC.CaptureButton.SetActive(false);
-                                            }
-                                        }
-                                        PSCC.AttackButtonController(UC.GetEnemyUnitsInRange()); //set attakc button to active if there is any enemy units in range 
+                                        ChangeSelectedUnit(hit, hit.transform.GetComponent<UnitController>().Hero);
                                     }
                                     else if (SelectedUnitPlayScene == hit.transform.gameObject && (Vector2)hit.transform.position == originalPositionOfUnit)//is the unit selected already?
                                     {
-                                        SelectedUnitPlayScene = null; //clear selected unit variable
-                                                                      ////Debug.log("Selected unit set to null");
-                                        foreach (var kvp in TilePos)
-                                        {
-                                            kvp.Value.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1);
-                                            TilePos[kvp.Key].transform.GetChild(1).GetComponent<SpriteRenderer>().color = new Color(1, 1, 1);
-                                        }
-                                        originalPositionOfUnit = new Vector2(-1, -1); //set unit position to -1, other methods will ignore anything negative
-                                        MoveToPosition = new Vector2(-1, -1);
-                                        PSCC.SetActionButtonsToFalse();
-                                    }
-                                    else if (hit.transform.tag == DBC.TerrainDictionary[0].Type || hit.transform.tag == DBC.BuildingDictionary[0].Type) //is the hit a terrain or building?
-                                    {
-                                        ////Debug.log("Building or terrain hit");
-                                        if (SelectedUnitPlayScene != null)
-                                        {
-                                            UnitController UC = SelectedUnitPlayScene.GetComponent<UnitController>();
-                                            if (hit.transform.position != SelectedUnitPlayScene.transform.position) //is the building or terrain not the one the unit is standing on?
-                                            {
-                                                if (!UnitPos.ContainsKey(hit.transform.position) && SelectedUnitPlayScene.transform.GetComponent<UnitController>().TilesWeights.ContainsKey(hit.transform.position)) //there a unit there already?
-                                                {
-                                                    if (UC.UnitMovable) //has unit been moved yet?
-                                                    {
-                                                        MoveToPosition = hit.transform.position; //get position we want to move to
-                                                        PSCC.MoveButton.SetActive(true);
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    //Debug.log("Unit in the way");
-                                                }
-                                            }
-                                        }
+                                        ClearSelectedUnit();
                                     }
                                     else if (SelectedUnitPlayScene != null) //did we hit another unit
                                     {
@@ -800,10 +742,23 @@ namespace TileGame
                                                 MoveToPosition = hit.transform.position; //get position we want to move to
                                                 PSCC.MoveButton.SetActive(true);
                                             }
-                                            else //if there is no fog of war, then we cant attempt ro move onto another unit
+                                            else //if there is no fog of war, then we cant attempt to move onto another unit
                                             {
-                                                PSCC.MoveButton.SetActive(false);
+
+                                                ChangeSelectedUnit(hit, hit.transform.GetComponent<UnitController>().Hero);
                                             }
+                                        }
+                                        else if (hit.transform.GetComponent<UnitController>().Team == SelectedUnitPlayScene.GetComponent<UnitController>().Team)
+                                        {
+                                            SelectedUnitPlayScene = null; //clear selected unit variable
+                                            foreach (var kvp in TilePos)
+                                            {
+                                                kvp.Value.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1);
+                                                TilePos[kvp.Key].transform.GetChild(1).GetComponent<SpriteRenderer>().color = new Color(1, 1, 1);
+                                            }
+                                            originalPositionOfUnit = new Vector2(-1, -1); //set unit position to -1, other methods will ignore anything negative
+                                            MoveToPosition = new Vector2(-1, -1);
+                                            PSCC.SetActionButtonsToFalse();
                                         }
                                     }
                                 }
@@ -811,34 +766,7 @@ namespace TileGame
                                 {
                                     if (SelectedUnitPlayScene == null && hit.transform.GetComponent<UnitController>().UnitMovable)//is the unit movable ? is there no unit selected ?
                                     {
-                                        SelectedUnitPlayScene = hit.transform.gameObject; //set unit to selected unit
-                                        UnitController UC = SelectedUnitPlayScene.GetComponent<UnitController>();
-                                        originalPositionOfUnit = SelectedUnitPlayScene.transform.position; //get unit position
-                                        PSCC.CancelButton.SetActive(true);
-                                        foreach (var kvp in UC.TilesWeights)
-                                        {
-                                            if (TilePos[kvp.Key].GetComponent<TerrainController>().FogOfWarBool)
-                                            {
-                                                TilePos[kvp.Key].transform.GetChild(1).GetComponent<SpriteRenderer>().color = new Color(.5f, .5f, .5f); //sets fog of war that unit can move to to darker tint.
-                                            }
-                                            else if (!TilePos[kvp.Key].GetComponent<TerrainController>().Occupied)
-                                            {
-                                                TilePos[kvp.Key].transform.GetComponent<SpriteRenderer>().color = new Color(.5F, .5F, .5F); //sets dark tint to tiles that the unit can move too
-                                            }
-                                        }
-                                        foreach (var b in BuildingPos)
-                                        {
-                                            if (originalPositionOfUnit == (Vector2)b.Value.transform.position && UC.Team != b.Value.GetComponent<BuildingController>().Team && UC.CanConvert)
-                                            {//are we on a building? is the building not on are team? can this unit convert?
-                                                PSCC.CaptureButton.SetActive(true);
-                                                break;
-                                            }
-                                            else
-                                            {
-                                                PSCC.CaptureButton.SetActive(false);
-                                            }
-                                        }
-                                        PSCC.AttackButtonController(UC.GetEnemyUnitsInRange()); //set attakc button to active if there is any enemy units in range 
+                                        ChangeSelectedUnit(hit, hit.transform.GetComponent<UnitController>().Hero);
                                     }
                                     else if (SelectedUnitPlayScene == hit.transform.gameObject && (Vector2)hit.transform.position == originalPositionOfUnit)//is the unit selected already?
                                     {
@@ -865,7 +793,7 @@ namespace TileGame
                                             }
                                             else //if there is no fog of war, then we cant attempt ro move onto another unit
                                             {
-                                                PSCC.MoveButton.SetActive(false);
+                                                ChangeSelectedUnit(hit, hit.transform.GetComponent<UnitController>().Hero);
                                             }
                                         }
                                     }
@@ -886,15 +814,15 @@ namespace TileGame
                                                     PSCC.MoveButton.SetActive(true);
                                                 }
                                             }
-                                            else
+                                            else if (!SelectedUnitPlayScene.transform.GetComponent<UnitController>().TilesWeights.ContainsKey(hit.transform.position)) //building is not in range
                                             {
-                                                //Debug.log("Unit in the way");
+                                                ClearSelectedUnit();
                                             }
                                         }
                                     }
                                 }
                             }
-                            else //attack button is selected actions
+                            else if (PSCC.AttackButtonSelected)//attack button is selected actions
                             {
                                 if (SelectedUnitPlayScene.tag == DBC.UnitDictionary[0].Type) //do we have a regular unit selected?
                                 {
@@ -978,6 +906,37 @@ namespace TileGame
                                     }
                                 }
                             }
+                            else if (PSCC.SpellButtonSelected)
+                            {
+                                if (DBC.SpellJsonDictionary[PSCC.SelectedSpell].OnlyCastableOnSelf) //if only castable on self
+                                {
+                                    if (SelectedUnitPlayScene == hit.transform.gameObject) //did we hit are self? 
+                                    {
+                                        LM.CastLuaSpell(DBC.SpellLuaDictionary[PSCC.SelectedSpell], "PlayScene", hit.transform.gameObject, SelectedUnitPlayScene);
+                                        WaitActionPlayScene();
+                                        PSCC.AttackButtonSelected = false;
+                                        PSCC.SetActionButtonsToFalse();
+                                        PSCC.HideOrShowSaveButton(false);
+                                        PSCC.SpellButton.SetActive(false);
+                                        PSCC.CancelSpellController(); 
+                                    }
+                                }
+                                else if (hit.transform.tag == DBC.UnitDictionary[0].Type || hit.transform.tag == DBC.HeroRaceDictionary[0].Type) //if not castable on self and we hit a unit or hero
+                                {
+                                    UnitController UC = SelectedUnitPlayScene.GetComponent<UnitController>();
+                                    UnitController HitUC = hit.transform.GetComponent<UnitController>();
+                                    if (UC.UnitsInRangeSpell.ContainsKey(hit.transform.position)) //is unit in range?
+                                    {
+                                        LM.CastLuaSpell(DBC.SpellLuaDictionary[PSCC.SelectedSpell], "PlayScene", hit.transform.gameObject, SelectedUnitPlayScene);
+                                        WaitActionPlayScene();
+                                        PSCC.AttackButtonSelected = false;
+                                        PSCC.SetActionButtonsToFalse();
+                                        PSCC.HideOrShowSaveButton(false);
+                                        PSCC.SpellButton.SetActive(false);
+                                        PSCC.CancelSpellController();
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -988,6 +947,70 @@ namespace TileGame
                 throw;
             }
         } //used to check were mouse is hitting and then act acordingly
+
+        public void ChangeSelectedUnit(RaycastHit hit, bool hero)
+        {
+            if (hit.transform.GetComponent<UnitController>().Hero)
+            {
+                PSCC.SpellButton.SetActive(true);
+            }
+            else
+            {
+                PSCC.SpellButton.SetActive(false);
+            }
+            PSCC.MoveButton.SetActive(false);
+            SelectedUnitPlayScene = null; //clear selected unit variable
+            foreach (var kvp in TilePos)
+            {
+                kvp.Value.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1);
+                TilePos[kvp.Key].transform.GetChild(1).GetComponent<SpriteRenderer>().color = new Color(1, 1, 1);
+            }
+            originalPositionOfUnit = new Vector2(-1, -1); //set unit position to -1, other methods will ignore anything negative
+            MoveToPosition = new Vector2(-1, -1);
+            PSCC.SetActionButtonsToFalse();
+
+            SelectedUnitPlayScene = hit.transform.gameObject; //set unit to selected unit
+            UnitController UC2 = SelectedUnitPlayScene.GetComponent<UnitController>();
+            originalPositionOfUnit = SelectedUnitPlayScene.transform.position; //get unit position
+            PSCC.CancelButton.SetActive(true);
+            foreach (var kvp in UC2.TilesWeights)
+            {
+                if (TilePos[kvp.Key].GetComponent<TerrainController>().FogOfWarBool)
+                {
+                    TilePos[kvp.Key].transform.GetChild(1).GetComponent<SpriteRenderer>().color = new Color(.5f, .5f, .5f); //sets fog of war that unit can move to to darker tint.
+                }
+                else if (!TilePos[kvp.Key].GetComponent<TerrainController>().Occupied)
+                {
+                    TilePos[kvp.Key].transform.GetComponent<SpriteRenderer>().color = new Color(.5F, .5F, .5F); //sets dark tint to tiles that the unit can move too
+                }
+            }
+            foreach (var b in BuildingPos)
+            {
+                if (originalPositionOfUnit == (Vector2)b.Value.transform.position && UC2.Team != b.Value.GetComponent<BuildingController>().Team && UC2.CanConvert)
+                {//are we on a building? is the building not on are team? can this unit convert?
+                    PSCC.CaptureButton.SetActive(true);
+                    break;
+                }
+                else
+                {
+                    PSCC.CaptureButton.SetActive(false);
+                }
+            }
+            PSCC.AttackButtonController(UC2.GetEnemyUnitsInRange()); //set attakc button to active if there is any enemy units in range 
+        }
+
+        public void ClearSelectedUnit()
+        {
+            SelectedUnitPlayScene = null; //clear selected unit variable
+            foreach (var kvp in TilePos)
+            {
+                kvp.Value.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1);
+                TilePos[kvp.Key].transform.GetChild(1).GetComponent<SpriteRenderer>().color = new Color(1, 1, 1);
+            }
+            originalPositionOfUnit = new Vector2(-1, -1); //set unit position to -1, other methods will ignore anything negative
+            MoveToPosition = new Vector2(-1, -1);
+            PSCC.SetActionButtonsToFalse();
+        }
 
         public void UpdateUnitHealthText(Vector2 u)
         {
@@ -1862,6 +1885,11 @@ namespace TileGame
             }
         } //Can be lua
 
+        public void CastSpellActionPlayScene()
+        {
+
+        }
+
         /// <summary>
         /// Simple audio controller to test out audio functionallity
         /// </summary>
@@ -2149,6 +2177,7 @@ namespace TileGame
                 throw;
             }
         }
+
         public void CreateNewHero(int RaceID, int ClassID, string name)
         {
             try
@@ -2174,6 +2203,7 @@ namespace TileGame
                 h.Strenght = IfNegativeMakeZero(h.Strenght);
                 h.Dexterity = IfNegativeMakeZero(h.Dexterity);
                 h.Charisma = IfNegativeMakeZero(h.Charisma);
+                h.AttackRange = DBC.HeroClassDictionary[ClassID].AttackRangeModifier + DBC.HeroRaceDictionary[RaceID].AttackRange;
                 h.BaseCharisma = h.Charisma;
                 h.BaseDexterity = h.Dexterity;
                 h.BaseIntelligance = h.Intelligance;
@@ -2198,7 +2228,7 @@ namespace TileGame
                 sr.Dispose();
                 fs.Close();
                 fs.Dispose();*/
-                GameObject.Find("Main Camera").GetComponent<MenueController>().NewHeroFeedBackText.text = "File saved as: " + name;
+                GameObject.Find("Main Camera").GetComponent<MenueController>().FindMenuStuff("NewHeroFeedBack").GetComponent<Text>().text = "File saved as: " + name;
             }
             catch (Exception e)
             {

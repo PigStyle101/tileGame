@@ -1,0 +1,11 @@
+{
+  "Title": "Group Heal",
+  "Description": "Heals ALL units next to caster.",
+  "Type": "Spell",
+  "Mod": "Core",
+  "TargetsEnemy": true,
+  "TargetsFriendly": true,
+  "OnlyCastableOnSelf": true,
+  "Range": 1,
+  "PixelsPerUnit": 64
+}

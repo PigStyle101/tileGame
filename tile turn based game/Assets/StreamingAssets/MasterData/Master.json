@@ -1,5 +1,5 @@
 {
     "DragSpeed": 1,
     "ScrollSpeed": 2,
-    "HeroSelectedWhenGameClosed": "qw"
+    "HeroSelectedWhenGameClosed": "arch"
 }

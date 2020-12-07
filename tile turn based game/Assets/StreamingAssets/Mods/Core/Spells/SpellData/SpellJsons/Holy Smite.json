@@ -1,0 +1,11 @@
+{
+  "Title": "Holy Smite",
+  "Description": "Smites a enemy with holy power.",
+  "Type": "Spell",
+  "Mod": "Core",
+  "TargetsEnemy": true,
+  "TargetsFriendly": false,
+  "OnlyCastableOnSelf": false,
+  "Range": 2,
+  "PixelsPerUnit": 64
+}

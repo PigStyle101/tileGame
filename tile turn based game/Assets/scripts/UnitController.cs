@@ -30,7 +30,7 @@ namespace TileGame
         public List<Vector2> FloodFillList;
         [HideInInspector]
         public int MovePoints;
-        [HideInInspector]
+        //[HideInInspector]
         public int AttackRange;
         [HideInInspector]
         public int SightRange;
@@ -59,6 +59,8 @@ namespace TileGame
         public Dictionary<Vector2, int> SightTiles = new Dictionary<Vector2, int>();
         public Dictionary<Vector2, int> TilesChecked = new Dictionary<Vector2, int>();
         public Dictionary<Vector2, int> EnemyUnitsInRange = new Dictionary<Vector2, int>();
+        public Dictionary<Vector2, int> FriendlyUnitsInRange = new Dictionary<Vector2, int>();
+        public Dictionary<Vector2, int> UnitsInRangeSpell = new Dictionary<Vector2, int>();
         [HideInInspector]
         public List<Vector2> Directions = new List<Vector2>();//list for holding north,south,east,west
         [HideInInspector]
@@ -525,6 +527,187 @@ namespace TileGame
                 throw;
             }
         } //Potential lua method
+        public int GetUnitsInRangeForSpell(int range, bool targetsfriendly, bool targetsenemy)
+        {
+            try
+            {
+                List<Vector2> Directions = new List<Vector2>();
+                Directions.Add(new Vector2(0, 1));
+                Directions.Add(new Vector2(1, 0));
+                Directions.Add(new Vector2(0, -1));
+                Directions.Add(new Vector2(-1, 0));
+                int count = 1;
+                UnitsInRangeSpell = new Dictionary<Vector2, int>();
+                TilesChecked = new Dictionary<Vector2, int>();
+
+                if (targetsfriendly && !targetsenemy) //only targets friendly units
+                {
+                    foreach (var dir in Directions)
+                    {
+                        if (GCS.TilePos.ContainsKey(Position + dir)) //is the tile on the map?
+                        {
+                            if (!UnitsInRangeSpell.ContainsKey(Position + dir) && GCS.UnitPos.ContainsKey(Position + dir)) //is the key already claimed?
+                            {
+                                if (!GCS.TilePos[Position + dir].GetComponent<TerrainController>().FogOfWarBool) // if you cannot see the unit, you cannot attack it
+                                {
+                                    if (GCS.UnitPos[Position + dir].GetComponent<UnitController>().Team == gameObject.GetComponent<UnitController>().Team) //is unit on are team?
+                                    {
+                                        UnitsInRangeSpell.Add(Position + dir, count); //add to dictionary 
+                                    }
+                                }
+                            }
+                            TilesChecked.Add(Position + dir, count); //add to tiles checked
+                        }
+                    }
+                    count = count + 1;
+                    while (count <= range)
+                    {
+                        Dictionary<Vector2, int> Temp = new Dictionary<Vector2, int>();
+                        foreach (var kvp in TilesChecked)
+                        {
+                            foreach (var dir in Directions)
+                            {
+                                if (!TilesChecked.ContainsKey(kvp.Key + dir) && GCS.TilePos.ContainsKey(kvp.Key + dir) && !UnitsInRangeSpell.ContainsKey(kvp.Key + dir) && !Temp.ContainsKey(kvp.Key + dir)) //is teh tile there?is key claimed?
+                                {
+                                    if (GCS.UnitPos.ContainsKey(kvp.Key + dir))//does tilesChecked not contain key? is there a unit there?
+                                    {
+                                        if (!GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().FogOfWarBool) //if we cannot see the unit, then we cannot attack it
+                                        {
+                                            if (GCS.UnitPos[kvp.Key + dir].GetComponent<UnitController>().Team == gameObject.GetComponent<UnitController>().Team) //is it on the same team?
+                                            {
+                                                UnitsInRangeSpell.Add(kvp.Key + dir, count);
+                                            }
+                                        }
+                                    }
+                                    Temp.Add(kvp.Key + dir, count);
+                                }
+                            }
+                        }
+                        foreach (var kvp in Temp)
+                        {
+                            TilesChecked.Add(kvp.Key, kvp.Value);
+                        }
+                        if (count == 15)
+                        {
+                            Debug.Log("F Broke, count at:" + count);
+                            break;
+                        }
+                        count = count + 1;
+                    } 
+                }
+                else if (targetsenemy && !targetsfriendly) //only targets enemyunits
+                {
+                    foreach (var dir in Directions)
+                    {
+                        if (GCS.TilePos.ContainsKey(Position + dir)) //is the tile on the map?
+                        {
+                            if (!UnitsInRangeSpell.ContainsKey(Position + dir) && GCS.UnitPos.ContainsKey(Position + dir)) //is the key already claimed?
+                            {
+                                if (!GCS.TilePos[Position + dir].GetComponent<TerrainController>().FogOfWarBool) // if you cannot see the unit, you cannot attack it
+                                {
+                                    if (GCS.UnitPos[Position + dir].GetComponent<UnitController>().Team != gameObject.GetComponent<UnitController>().Team) //is unit on are team?
+                                    {
+                                        UnitsInRangeSpell.Add(Position + dir, count); //add to dictionary 
+                                    }
+                                }
+                            }
+                            TilesChecked.Add(Position + dir, count); //add to tiles checked
+                        }
+                    }
+                    count = count + 1;
+                    while (count <= range)
+                    {
+                        Dictionary<Vector2, int> Temp = new Dictionary<Vector2, int>();
+                        foreach (var kvp in TilesChecked)
+                        {
+                            foreach (var dir in Directions)
+                            {
+                                if (!TilesChecked.ContainsKey(kvp.Key + dir) && GCS.TilePos.ContainsKey(kvp.Key + dir) && !UnitsInRangeSpell.ContainsKey(kvp.Key + dir) && !Temp.ContainsKey(kvp.Key + dir)) //is teh tile there?is key claimed?
+                                {
+                                    if (GCS.UnitPos.ContainsKey(kvp.Key + dir))//does tilesChecked not contain key? is there a unit there?
+                                    {
+                                        if (!GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().FogOfWarBool) //if we cannot see the unit, then we cannot attack it
+                                        {
+                                            if (GCS.UnitPos[kvp.Key + dir].GetComponent<UnitController>().Team != gameObject.GetComponent<UnitController>().Team) //is it on the same team?
+                                            {
+                                                UnitsInRangeSpell.Add(kvp.Key + dir, count);
+                                            }
+                                        }
+                                    }
+                                    Temp.Add(kvp.Key + dir, count);
+                                }
+                            }
+                        }
+                        foreach (var kvp in Temp)
+                        {
+                            TilesChecked.Add(kvp.Key, kvp.Value);
+                        }
+                        if (count == 15)
+                        {
+                            Debug.Log("E Broke, count at:" + count);
+                            break;
+                        }
+                        count = count + 1;
+                    }
+                }
+                else //spell targets both enemy and friends
+                {
+                    foreach (var dir in Directions)
+                    {
+                        if (GCS.TilePos.ContainsKey(Position + dir)) //is the tile on the map?
+                        {
+                            if (!UnitsInRangeSpell.ContainsKey(Position + dir) && GCS.UnitPos.ContainsKey(Position + dir)) //is the key already claimed?
+                            {
+                                if (!GCS.TilePos[Position + dir].GetComponent<TerrainController>().FogOfWarBool) // if you cannot see the unit, you cannot attack it
+                                {
+                                    UnitsInRangeSpell.Add(Position + dir, count); //add to dictionary 
+                                }
+                            }
+                            TilesChecked.Add(Position + dir, count); //add to tiles checked
+                        }
+                    }
+                    count = count + 1;
+                    while (count <= range)
+                    {
+                        Dictionary<Vector2, int> Temp = new Dictionary<Vector2, int>();
+                        foreach (var kvp in TilesChecked)
+                        {
+                            foreach (var dir in Directions)
+                            {
+                                if (!TilesChecked.ContainsKey(kvp.Key + dir) && GCS.TilePos.ContainsKey(kvp.Key + dir) && !UnitsInRangeSpell.ContainsKey(kvp.Key + dir) && !Temp.ContainsKey(kvp.Key + dir)) //is teh tile there?is key claimed?
+                                {
+                                    if (GCS.UnitPos.ContainsKey(kvp.Key + dir))//does tilesChecked not contain key? is there a unit there?
+                                    {
+                                        if (!GCS.TilePos[kvp.Key + dir].GetComponent<TerrainController>().FogOfWarBool) //if we cannot see the unit, then we cannot attack it
+                                        {
+                                            UnitsInRangeSpell.Add(kvp.Key + dir, count);
+                                        }
+                                    }
+                                    Temp.Add(kvp.Key + dir, count);
+                                }
+                            }
+                        }
+                        foreach (var kvp in Temp)
+                        {
+                            TilesChecked.Add(kvp.Key, kvp.Value);
+                        }
+                        if (count == 15)
+                        {
+                            Debug.Log("FE Broke, count at:" + count);
+                            break;
+                        }
+                        count = count + 1;
+                    }
+                }
+                //Debug.log("Enemys in range:" + EnemyUnitsInRange.Count);
+                return UnitsInRangeSpell.Count;
+            }
+            catch (Exception e)
+            {
+                GCS.LogController(e.ToString());
+                throw;
+            }
+        } //potential lua method
 
         /*public void UnitAi()
         {
@@ -1069,7 +1252,7 @@ namespace TileGame
                                 AttackOverlay = true;
                                 break;
                             }
-                            else if (hit.transform == transform && AttackOverlay)
+                            /*else if (hit.transform == transform && AttackOverlay)
                             {
                                 foreach (var kvp in TilesChecked)
                                 {
@@ -1077,9 +1260,17 @@ namespace TileGame
                                 }
                                 AttackOverlay = false;
                                 break;
-                            }
+                            }*/
                         }
                     }
+                }
+                else if (!Input.GetKey(KeyCode.LeftControl) && AttackOverlay)
+                {
+                    foreach (var kvp in TilesChecked)
+                    {
+                        GCS.TilePos[kvp.Key].transform.GetComponent<TerrainController>().AttackOverlay = false;
+                    }
+                    AttackOverlay = false;
                 }
             }
             catch (Exception e)
@@ -1129,7 +1320,7 @@ namespace TileGame
         {
             try
             {
-                Health = Health - damage;
+                Health -= damage;
                 if (Health > 0)
                 {
                     return false;
@@ -1143,6 +1334,22 @@ namespace TileGame
             }
         }
 
+        public void DoHeal(int heal)
+        {
+            try
+            {
+                Health += heal;
+                if (Health > MaxHealth)
+                {
+                    Health = MaxHealth;
+                }
+            }
+            catch(Exception e)
+            {
+                GCS.LogController(e.ToString());
+                throw;
+            }
+        }
         public void StartAttackAnimation()
         {
             Attacking = true;

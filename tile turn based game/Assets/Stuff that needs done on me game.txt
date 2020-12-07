@@ -2,7 +2,9 @@ Things that need done:
 -add settings menu
 -add unit return(a list of units that you keep through battles)
 -Add hashtables for checking mod integrety.(will only be used in multiplayer)
+-add sound stuff(like attack sounds, maybe some bacround music or something)
 --use lua to run custom scripts on maps
+-add bountys to unit based on kills/lvl
 
 -- learn how to code // Monin
 
@@ -32,7 +34,7 @@ Features to add later
 -add campain editor and some sort of scripting
 
 
-Bugs:unit movement not correct after build, moves to slow then snaps
+Bugs:
 
 
 - have trigger property to stuff? And a string to define what the trigger is?
@@ -48,3 +50,11 @@ Create Seperate script to handle in game scripting
 Thoughts
 -Have all client side data pulled from json files, and use server to keep integrity through pvp.
 --will need to use some seralization for things like hero stats, that way player cant edit them, and then server can use them to check make sure they are not cheating.
+settings notes
+-disable info popup
+-KeyBindings
+
+
+Art Needed:
+-Spell animations
+-projectile animations

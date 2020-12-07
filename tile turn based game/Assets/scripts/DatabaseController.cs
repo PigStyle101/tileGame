@@ -27,8 +27,8 @@ namespace TileGame
         public Dictionary<string, Hero> HeroDictionary = new Dictionary<string, Hero>();
         public Dictionary<int, HeroRace> HeroRaceDictionary = new Dictionary<int, HeroRace>();
         public Dictionary<int, HeroClass> HeroClassDictionary = new Dictionary<int, HeroClass>();
-        public Dictionary<string, Spell> SpellJsonDictionary = new Dictionary<string, Spell>();
-        public Dictionary<string, string> SpellLuaDictionary = new Dictionary<string, string>();
+        public Dictionary<int, Spell> SpellJsonDictionary = new Dictionary<int, Spell>();
+        public Dictionary<int, string> SpellLuaDictionary = new Dictionary<int, string>();
         public Master MasterData = new Master();
         public List<string> ModsLoaded = new List<string>();
         public Dictionary<string, string> LuaCoreScripts = new Dictionary<string, string>();
@@ -140,6 +140,7 @@ namespace TileGame
             GetBuildingData("Core");
             LoadState = 5;
             yield return null;
+            GetSpellData("Core");
             ModsLoaded.Add("Core");
             LoadState = 6;
             yield return null;
@@ -290,14 +291,29 @@ namespace TileGame
                 if (Directory.Exists(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Spells/SpellData"))
                 {
                     //Debug.Log("Fetching json hero files");
-                    foreach (string file in Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Spells/SpellData/", "*.json")) //gets only json files form this path
+                    foreach (string file in Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Spells/SpellData/SpellJsons/", "*.json")) //gets only json files form this path
                     {
                         var Tempstring = File.ReadAllText(file); //temp string to hold the json data
                         Spell s = JsonUtility.FromJson<Spell>(Tempstring);
                         s.ID = NextSpellIndex;
                         s.GetSprites();
-                        SpellJsonDictionary.Add(s.Title, s);
+                        SpellJsonDictionary.Add(NextSpellIndex, s);
                         NextSpellIndex += 1;
+                    }
+                }
+                if (Directory.Exists(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Spells/SpellData"))
+                {
+                    //Debug.Log("Fetching json hero files");
+                    foreach (string file in Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Spells/SpellData/SpellLuas/", "*.lua")) //gets only json files form this path
+                    {
+                        foreach (var kvp in SpellJsonDictionary)
+                        {
+                            if (kvp.Value.Title == Path.GetFileNameWithoutExtension(file))
+                            {
+                                var Tempstring = File.ReadAllText(file); //temp string to hold the lua data
+                                SpellLuaDictionary.Add(kvp.Value.ID, Tempstring);
+                            }
+                        }
                     }
                 }
             }
@@ -580,6 +596,7 @@ namespace TileGame
                 TGO.GetComponent<BoxCollider>().size = new Vector3(.95f, .95f, .1f);
                 TGO.AddComponent<UnitController>();
                 TGO.GetComponent<UnitController>().Team = team;
+                TGO.GetComponent<UnitController>().Hero = false;
                 TGO.GetComponent<UnitController>().MovePoints = UnitDictionary[index].MovePoints;
                 TGO.GetComponent<UnitController>().Attack = UnitDictionary[index].Attack;
                 TGO.GetComponent<UnitController>().Defence = UnitDictionary[index].Defence;
@@ -696,7 +713,7 @@ namespace TileGame
                 TGO.GetComponent<UnitController>().Hero = true;
                 TGO.GetComponent<UnitController>().Team = team;
                 TGO.GetComponent<UnitController>().Health = HeroDictionary[thero.Name].MaxHealth;
-                TGO.GetComponent<UnitController>().AttackRange = HeroRaceDictionary[thero.RaceID].AttackRange;
+                TGO.GetComponent<UnitController>().AttackRange = HeroDictionary[thero.Name].AttackRange;
                 TGO.GetComponent<UnitController>().CanConvert = HeroRaceDictionary[thero.RaceID].CanConvert;
                 TGO.GetComponent<UnitController>().SightRange = HeroRaceDictionary[thero.RaceID].SightRange;
                 TGO.GetComponent<UnitController>().HClass = HeroDictionary[Hname];
@@ -848,58 +865,6 @@ namespace TileGame
                     fs.Close();
                     HeroDictionary.Add(h.Name, h);
                     //GCS.HeroCurrentlySelectedP1 = h;
-                }
-            }
-            catch (Exception e)
-            {
-                GCS.LogController(e.ToString());
-                throw;
-            }
-        }
-
-        public void ReloadDataOnly()
-        {
-            try
-            {
-                foreach (var Mod in ModsLoaded)
-                {
-                    if (Directory.Exists(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Units"))
-                    {
-                        //Debug.log("Fetching json unit files");
-                        foreach (string file in Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/" + Mod + "/Units/Data/", "*.json")) //gets only json files form this path
-                        {
-                            var Tempstring = File.ReadAllText(file); //temp string to hold the json data
-                            Unit u = JsonUtility.FromJson<Unit>(Tempstring);
-                            //u.ID = NextUnitDicIndex;
-                            //u.GetSprites();
-                            //UnitDictionary.Add(u.ID, u);
-                            //NextUnitDicIndex += 1;
-                            foreach (var kvp in UnitDictionary)
-                            {
-                                if (kvp.Value.Title == u.Title)
-                                {
-                                    kvp.Value.Attack = u.Attack;
-                                    kvp.Value.AttackAnimationSpeed = u.AttackAnimationSpeed;
-                                    kvp.Value.AttackRange = u.AttackRange;
-                                    kvp.Value.CanConvert = u.CanConvert;
-                                    kvp.Value.CanMoveAndAttack = u.CanMoveAndAttack;
-                                    kvp.Value.ConversionSpeed = u.ConversionSpeed;
-                                    kvp.Value.Cost = u.Cost;
-                                    kvp.Value.Defence = u.Defence;
-                                    kvp.Value.Description = u.Description;
-                                    kvp.Value.DiedAnimationSpeed = u.DiedAnimationSpeed;
-                                    kvp.Value.Health = u.Health;
-                                    kvp.Value.HurtAnimationSpeed = u.HurtAnimationSpeed;
-                                    kvp.Value.IdleAnimationSpeed = u.IdleAnimationSpeed;
-                                    kvp.Value.MoveAnimationSpeed = u.MoveAnimationSpeed;
-                                    kvp.Value.MoveAnimationTime = u.MoveAnimationTime;
-                                    kvp.Value.MovePoints = u.MovePoints;
-                                    kvp.Value.PixelsPerUnit = u.PixelsPerUnit;
-                                    kvp.Value.SightRange = u.SightRange;
-                                }
-                            }
-                        }
-                    }
                 }
             }
             catch (Exception e)
@@ -1112,7 +1077,7 @@ namespace TileGame
             count = 0;
         }
     }//same use as terrian class
-
+    [MoonSharpUserData]
     public class MouseOverlays
     {
         public int ID;
@@ -1143,7 +1108,7 @@ namespace TileGame
             count = 0;
         }
     }//same use as terrian class
-
+    [MoonSharpUserData]
     public class FogOfWar
     {
         public int ID;
@@ -1183,6 +1148,7 @@ namespace TileGame
     }
 
     [Serializable]
+    [MoonSharpUserData]
     public class Hero
     {
         //Populated by CreateNewHero();
@@ -1367,6 +1333,7 @@ namespace TileGame
     }
 
     [Serializable]
+    [MoonSharpUserData]
     public class Spell
     {
         public string Title;
@@ -1380,13 +1347,18 @@ namespace TileGame
         public string LuaCode;
         public bool SpawnUnit;
         public int UnitID;
+        public int Cost;
+        public int Range;
+        public bool TargetsEnemy;
+        public bool TargetsFriendly;
+        public bool OnlyCastableOnSelf;
         public Sprite Sprite;
 
         public void GetSprites()
         {
             //Debug.log("Getting sprites for: " + Title);
             int count = new int();
-            foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/Core/Spells/Sprites/" + Title + "/", "*.png")))
+            foreach (string file in (Directory.GetFiles(Application.dataPath + "/StreamingAssets/Mods/Core/Spells/Sprites/", "*.png")))
             {
                 if (file.Contains(Title))
                 {

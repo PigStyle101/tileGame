@@ -3,16 +3,9 @@
   "Description": "Heals a single unit within range.",
   "Type": "Spell",
   "Mod": "Core",
-  "Effects":
-  [
-  	  "Heal",
-      "SingleTarget"
-  ],
-  "Targets": 
-  [
-      "Friendly"
-  ],
-  "HealAmount": 4,
+  "TargetsEnemy": false,
+  "TargetsFriendly": true,
+  "OnlyCastableOnSelf": false,
   "Range": 2,
-  "ManaCost": 4
+  "PixelsPerUnit": 64
 }
