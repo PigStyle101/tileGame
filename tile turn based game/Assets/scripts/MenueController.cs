@@ -387,6 +387,10 @@ namespace TileGame
                 {
                     GetMapsForMapEditorWindow();
                 }
+                else if (gameObject.name == "MultiplayerPanel")
+                {
+                    MultiplayerController.instance.Connect();
+                }
             }
             catch (Exception e)
             {
@@ -468,6 +472,7 @@ namespace TileGame
                     var Tempstring = File.ReadAllText(file); //temp string to hold the json data
                     Save tempjson = JsonUtility.FromJson<Save>(Tempstring); //this converts from json string to unity object
                     bool SameMods;
+                    bool firstLoop = true;
                     if (DBC.ModsLoaded.Count == tempjson.Mods.Count) // is there the same number of mods when the save was made?
                     {
                         SameMods = true; //set this to true, and then check through mods
@@ -493,6 +498,11 @@ namespace TileGame
                         tempbutton.name = Path.GetFileNameWithoutExtension(file); //change name
                         tempbutton.transform.GetChild(0).GetComponent<Text>().text = Path.GetFileNameWithoutExtension(file);
                         tempbutton.GetComponent<Button>().onClick.AddListener(MapSelectedNewGame); //adds method to button clicked
+                        if (firstLoop)
+                        {
+                            SelectMapOnNewGamePanelLoad(tempbutton.name);
+                            firstLoop = false;
+                        }
                     }
                 }
             }
@@ -981,6 +991,140 @@ namespace TileGame
             try
             {
                 GCS.MapNameForPlayScene = EventSystem.current.currentSelectedGameObject.name;
+                StreamReader SR = new StreamReader(Application.dataPath + "/StreamingAssets/Maps/" + GCS.MapNameForPlayScene + ".json");
+                string tempstring = SR.ReadToEnd();
+                Map Load = JsonUtility.FromJson<Map>(tempstring);
+                GCS.TeamList = Load.Teamlist;
+                if (GCS.TeamList[1].Active)
+                {
+                    FindMenuStuff("Team1Image").SetActive(true);
+                    FindMenuStuff("Team1Dropdown").SetActive(true);
+                    FindMenuStuff("Team1HeroDropdown").SetActive(true);
+                    GetHeroesForNewGame(FindMenuStuff("Team1HeroDropdown"), 1);
+                }
+                else
+                {
+                    FindMenuStuff("Team1Image").SetActive(false);
+                    FindMenuStuff("Team1Dropdown").SetActive(false);
+                    FindMenuStuff("Team1HeroDropdown").SetActive(false);
+                }
+                if (GCS.TeamList[2].Active)
+                {
+                    FindMenuStuff("Team2Image").SetActive(true);
+                    FindMenuStuff("Team2Dropdown").SetActive(true);
+                    FindMenuStuff("Team2HeroDropdown").SetActive(true);
+                    GetHeroesForNewGame(FindMenuStuff("Team2HeroDropdown"), 2);
+                }
+                else
+                {
+                    FindMenuStuff("Team2Image").SetActive(false);
+                    FindMenuStuff("Team2Dropdown").SetActive(false);
+                    FindMenuStuff("Team2HeroDropdown").SetActive(false);
+                }
+                if (GCS.TeamList[3].Active)
+                {
+                    FindMenuStuff("Team3Image").SetActive(true);
+                    FindMenuStuff("Team3Dropdown").SetActive(true);
+                    FindMenuStuff("Team3HeroDropdown").SetActive(true);
+                    GetHeroesForNewGame(FindMenuStuff("Team3HeroDropdown"), 3);
+                }
+                else
+                {
+                    FindMenuStuff("Team3Image").SetActive(false);
+                    FindMenuStuff("Team3Dropdown").SetActive(false);
+                    FindMenuStuff("Team3HeroDropdown").SetActive(false);
+                }
+                if (GCS.TeamList[4].Active)
+                {
+                    FindMenuStuff("Team4Image").SetActive(true);
+                    FindMenuStuff("Team4Dropdown").SetActive(true);
+                    FindMenuStuff("Team4HeroDropdown").SetActive(true);
+                    GetHeroesForNewGame(FindMenuStuff("Team4HeroDropdown"), 4);
+                }
+                else
+                {
+                    FindMenuStuff("Team4Image").SetActive(false);
+                    FindMenuStuff("Team4Dropdown").SetActive(false);
+                    FindMenuStuff("Team4HeroDropdown").SetActive(false);
+                }
+                if (GCS.TeamList[5].Active)
+                {
+                    FindMenuStuff("Team5Image").SetActive(true);
+                    FindMenuStuff("Team5Dropdown").SetActive(true);
+                    FindMenuStuff("Team5HeroDropdown").SetActive(true);
+                    GetHeroesForNewGame(FindMenuStuff("Team5HeroDropdown"), 5);
+                }
+                else
+                {
+                    FindMenuStuff("Team5Image").SetActive(false);
+                    FindMenuStuff("Team5Dropdown").SetActive(false);
+                    FindMenuStuff("Team5HeroDropdown").SetActive(false);
+                }
+                if (GCS.TeamList[6].Active)
+                {
+                    FindMenuStuff("Team6Image").SetActive(true);
+                    FindMenuStuff("Team6Dropdown").SetActive(true);
+                    FindMenuStuff("Team6HeroDropdown").SetActive(true);
+                    GetHeroesForNewGame(FindMenuStuff("Team6HeroDropdown"), 6);
+                }
+                else
+                {
+                    FindMenuStuff("Team6Image").SetActive(false);
+                    FindMenuStuff("Team6Dropdown").SetActive(false);
+                    FindMenuStuff("Team6HeroDropdown").SetActive(false);
+                }
+                if (GCS.TeamList[7].Active)
+                {
+                    FindMenuStuff("Team7Image").SetActive(true);
+                    FindMenuStuff("Team7Dropdown").SetActive(true);
+                    FindMenuStuff("Team7HeroDropdown").SetActive(true);
+                    GetHeroesForNewGame(FindMenuStuff("Team7HeroDropdown"), 7);
+                }
+                else
+                {
+                    FindMenuStuff("Team7Image").SetActive(false);
+                    FindMenuStuff("Team7Dropdown").SetActive(false);
+                    FindMenuStuff("Team7HeroDropdown").SetActive(false);
+                }
+                if (GCS.TeamList[8].Active)
+                {
+                    FindMenuStuff("Team8Image").SetActive(true);
+                    FindMenuStuff("Team8Dropdown").SetActive(true);
+                    FindMenuStuff("Team8HeroDropdown").SetActive(true);
+                    GetHeroesForNewGame(FindMenuStuff("Team8HeroDropdown"), 8);
+                }
+                else
+                {
+                    FindMenuStuff("Team8Image").SetActive(false);
+                    FindMenuStuff("Team8Dropdown").SetActive(false);
+                    FindMenuStuff("Team8HeroDropdown").SetActive(false);
+                }
+                if (GCS.TeamList[9].Active)
+                {
+                    FindMenuStuff("Team9Image").SetActive(true);
+                    FindMenuStuff("Team9Dropdown").SetActive(true);
+                    FindMenuStuff("Team9HeroDropdown").SetActive(true);
+                    GetHeroesForNewGame(FindMenuStuff("Team9HeroDropdown"), 9);
+                }
+                else
+                {
+                    FindMenuStuff("Team9Image").SetActive(false);
+                    FindMenuStuff("Team9Dropdown").SetActive(false);
+                    FindMenuStuff("Team9HeroDropdown").SetActive(false);
+                }
+            }
+            catch (Exception e)
+            {
+                GCS.LogController(e.ToString());
+                throw;
+            }
+        }
+
+        public void SelectMapOnNewGamePanelLoad(string MapName)
+        {
+            try
+            {
+                GCS.MapNameForPlayScene = MapName;
                 StreamReader SR = new StreamReader(Application.dataPath + "/StreamingAssets/Maps/" + GCS.MapNameForPlayScene + ".json");
                 string tempstring = SR.ReadToEnd();
                 Map Load = JsonUtility.FromJson<Map>(tempstring);
@@ -1601,6 +1745,14 @@ namespace TileGame
             {
                 GCS.LogController(e.ToString());
                 throw;
+            }
+        }
+
+        public void CreateUserNameButtonClicked()
+        {
+            if (FindMenuStuff("UserNameInputField").GetComponent<Text>().text != "")
+            {
+
             }
         }
     }

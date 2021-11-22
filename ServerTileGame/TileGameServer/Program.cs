@@ -9,18 +9,19 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Net;
 using System.Net.Sockets;
-using ClassForNetworking;
 
 namespace TileBasedServer
 {
     [Serializable]
     public class ServerController
     {
+        //static private MySqlConnection connection;
         private static string exitString;
         private static Thread ShutdownThread;
         public static bool exitBool;
         //public static Dictionary<string, TcpClient> ConnectedClients = new Dictionary<string, TcpClient>();
-        
+        public static Dictionary<PlayerInfo, TcpClient> ClientsInStartArea = new Dictionary<PlayerInfo, TcpClient>();
+        public static List<PlayerInfo> PlayersOnline = new List<PlayerInfo>();
 
         static void Main() // program starts form here
         {
@@ -83,6 +84,12 @@ namespace TileBasedServer
                 Console.WriteLine("Error..... " + e.StackTrace);
             }
         } /* used to wait for clients to connect, then starts new thread for each client */
+    }
+
+    [Serializable]
+    public class HandleClientsUDP
+    {
+
     }
 
     [Serializable]
@@ -755,5 +762,41 @@ namespace TileBasedServer
                 Console.WriteLine(e);
             }
         } // adds user to whatever scene he is logging into
+    }
+
+    [Serializable]
+    public class PlayerInfo
+    {
+        public string UserName { get; set; }
+        public bool FileCreated { get; set; }
+        public Hero H1 { get; set; }
+        public Hero H2 { get; set; }
+        public Hero H3 { get; set; }
+        public Hero H4 { get; set; }
+        public Hero SelectedHero { get; set; }
+
+        [Serializable]
+        public class Hero
+        {
+            public string Name { get; set; }
+            public string Gender { get; set; }
+            public int Level { get; set; }
+            public int XP { get; set; }
+            public float Health { get; set; }
+            public String Area { get; set; }
+            public float xPosition { get; set; }
+            public float yPosition { get; set; }
+            public float zPosition { get; set; }
+            public float Rotation { get; set; }
+        }
+        public PlayerInfo()
+        {
+
+        }
+
+        public PlayerInfo(string name)
+        {
+            UserName = name;
+        }
     }
 }

@@ -2,17 +2,14 @@ Things that need done:
 -add settings menu
 -add unit return(a list of units that you keep through battles)
 -Add hashtables for checking mod integrety.(will only be used in multiplayer)
--add sound stuff(like attack sounds, maybe some bacround music or something)
+-add sound stuff(like attack sounds, maybe some backround music or something)
 --use lua to run custom scripts on maps
 -add bountys to unit based on kills/lvl
 
 -- learn how to code // Monin
 
 /////////////////////////////////////////// tyrone is Currently working on:
-/////////////////////////////////////////// spell book system
-
-/////////////////////////////////////////// Monin is currently working on:
-/////////////////////////////////////////// Settings menue and settings
+/////////////////////////////////////////// multiplayer
 
 -Multiplayer?
 -What to do here?
