@@ -918,7 +918,7 @@ namespace TileGame
                                         PSCC.SetActionButtonsToFalse();
                                         PSCC.HideOrShowSaveButton(false);
                                         PSCC.SpellButton.SetActive(false);
-                                        PSCC.CancelSpellController(); 
+                                        PSCC.CancelSpellController();
                                     }
                                 }
                                 else if (hit.transform.tag == DBC.UnitDictionary[0].Type || hit.transform.tag == DBC.HeroRaceDictionary[0].Type) //if not castable on self and we hit a unit or hero
@@ -2228,7 +2228,7 @@ namespace TileGame
                 sr.Dispose();
                 fs.Close();
                 fs.Dispose();*/
-                GameObject.Find("Main Camera").GetComponent<MenueController>().FindMenuStuff("NewHeroFeedBack").GetComponent<Text>().text = "File saved as: " + name;
+                GameObject.Find("Main Camera").GetComponent<MenueController>().FindMenuStuff("NewHeroFeedBack").GetComponent<InputField>().text = "File saved as: " + name;
             }
             catch (Exception e)
             {

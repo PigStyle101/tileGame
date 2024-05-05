@@ -1,0 +1,2 @@
+System.NullReferenceException: Object reference not set to an instance of an object
+  at TileGame.GameControllerScript.CreateNewHero (System.Int32 RaceID, System.Int32 ClassID, System.String name) [0x00339] in D:\tilegame\tileGame\tile turn based game\Assets\scripts\GameControllerScript.cs:2231 

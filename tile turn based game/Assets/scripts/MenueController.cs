@@ -1291,13 +1291,13 @@ namespace TileGame
         {
             try
             {
-                if (!File.Exists(Application.dataPath + "/StreamingAssets/HeroList/" + FindMenuStuff("NewHeroInputField").GetComponent<Text>().text + ".txt"))
+                if (!File.Exists(Application.dataPath + "/StreamingAssets/HeroList/" + FindMenuStuff("NewHeroInputField").GetComponent<InputField>().text + ".txt"))
                 {
-                    if (FindMenuStuff("NewHeroInputField").GetComponent<Text>().text != "")
+                    if (FindMenuStuff("NewHeroInputField").GetComponent<InputField>().text != "")
                     {
-                        if (!Regex.IsMatch(FindMenuStuff("NewHeroInputField").GetComponent<Text>().text, @"^[a-z][A-Z]+$"))
+                        if (!Regex.IsMatch(FindMenuStuff("NewHeroInputField").GetComponent<InputField>().text, @"^[a-z][A-Z]+$"))
                         {
-                            GCS.CreateNewHero(NewHeroCurrentlySelected, NewHeroClassCurrentlySelected, FindMenuStuff("NewHeroInputField").GetComponent<Text>().text);
+                            GCS.CreateNewHero(NewHeroCurrentlySelected, NewHeroClassCurrentlySelected, FindMenuStuff("NewHeroInputField").GetComponent<InputField>().text);
                             FindMenuStuff("NewHeroFeedback").GetComponent<Text>().text = "New hero created.";
                         }
                         else

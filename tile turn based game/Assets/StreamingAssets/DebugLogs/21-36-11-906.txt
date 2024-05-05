@@ -1,3 +1,0 @@
-System.NullReferenceException: Object reference not set to an instance of an object
-  at TileGame.MenueController.GetMapsForMapEditorWindow () [0x001b1] in E:\TileGame\tile turn based game\Assets\scripts\MenueController.cs:551 
-  at TileGame.MenueController.SetOnePanelActive (UnityEngine.GameObject gameObject, System.Boolean isActive) [0x0011c] in E:\TileGame\tile turn based game\Assets\scripts\MenueController.cs:388 
